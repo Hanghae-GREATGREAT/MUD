@@ -1,56 +1,69 @@
-const signupToggleHandler = () => {
-    $('#signinSubmit').addClass('is-hidden');
-    $('#signupToggle').addClass('is-hidden');
-    
-    $('#signupSubmit').removeClass('is-hidden');
-    $('#signinToggle').removeClass('is-hidden'); 
-    
-    $('#confirm').removeClass('is-hidden');
+
+
+
+
+function signupForm() {
+    console.log('this is signup')
 }
 
-const signinToggleHandler = () => {
-    $('#signinSubmit').removeClass('is-hidden');
-    $('#signupToggle').removeClass('is-hidden');
+
+
+
+
+
+// const signupToggleHandler = () => {
+//     $('#signinSubmit').addClass('is-hidden');
+//     $('#signupToggle').addClass('is-hidden');
     
-    $('#signupSubmit').addClass('is-hidden');
-    $('#signinToggle').addClass('is-hidden');
+//     $('#signupSubmit').removeClass('is-hidden');
+//     $('#signinToggle').removeClass('is-hidden'); 
     
-    $('#confirm').addClass('is-hidden');
-}
+//     $('#confirm').removeClass('is-hidden');
+// }
 
-const signinSubmitHandler = async() => {
-    const inputname = $('#inputName').val();
-    const password = $('#inputPass').val();
+// const signinToggleHandler = () => {
+//     $('#signinSubmit').removeClass('is-hidden');
+//     $('#signupToggle').removeClass('is-hidden');
+    
+//     $('#signupSubmit').addClass('is-hidden');
+//     $('#signinToggle').addClass('is-hidden');
+    
+//     $('#confirm').addClass('is-hidden');
+// }
 
-    const response = await fetch('/user/signin', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ username: inputname, password, confirm })
-    });
+// const signinSubmitHandler = async() => {
+//     const inputname = $('#inputName').val();
+//     const password = $('#inputPass').val();
 
-    const { user } = await response.json();
-    localStorage.setItem('user', JSON.stringify(user));
+//     const response = await fetch('/user/signin', {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json'
+//         },
+//         body: JSON.stringify({ username: inputname, password, confirm })
+//     });
 
-    location.replace('/');
-};
+//     const { user } = await response.json();
+//     localStorage.setItem('user', JSON.stringify(user));
 
-const signupSubmitHandler = async() => {
-    const username = $('#inputName').val();
-    const password = $('#inputPass').val();
-    const confirm = $('#inputConfirm').val();
+//     location.replace('/');
+// };
 
-    fetch('/user/signup', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ username, password, confirm })
-    });
+// const signupSubmitHandler = async() => {
+//     const username = $('#inputName').val();
+//     const password = $('#inputPass').val();
+//     const confirm = $('#inputConfirm').val();
 
-    signinToggleHandler();
-    $('#inputName').val('');
-    $('#inputPass').val('');
-    $('#inputConfirm').val('');
-};
+//     fetch('/user/signup', {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json'
+//         },
+//         body: JSON.stringify({ username, password, confirm })
+//     });
+
+//     signinToggleHandler();
+//     $('#inputName').val('');
+//     $('#inputPass').val('');
+//     $('#inputConfirm').val('');
+// };

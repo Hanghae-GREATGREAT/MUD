@@ -1,85 +1,70 @@
 import { Socket } from 'socket.io';
-// import CharacterService from '../character/character.service';
-import { ChatInput, ChatOutput } from './interfaces/socket';
-import { UserSession } from './interfaces/user';
+import { LineInput, CommandRouter, ReturnScript, ChatInput, ChatOutput } from './interfaces/socket';
 import redis from './db/redis/config';
 
 
-interface LineInput {
-    line: string;
-    user: UserSession;
-}
+import front from './front';
 
-interface returnScript {
-    script: string;
-    user: UserSession;
-    field: string;
-}
-
-type commandHandler = (CMD: string, user: UserSession) => returnScript;
-
-interface CommandRouter {
-    [key: string]: commandHandler;
-}
-
-// RUNCommand(CMD) {
-//     switch (CMD) {
-//         case 'test':
-//         case 'tutorial':
-//     }
-// }
-
-import { questHandler } from './village/questHandler';
-import { example1Handler } from './battle/example';
-import { example2Handler } from './dungeon/example';
 
 const onConnection = (socket: Socket) => {
     console.log('SOCKET CONNECTED');
 
+    socket.on('none', ({ line, user }: LineInput) => {
+        const [ CMD1, CMD2 ]: string[] = line.trim().toUpperCase().split(' ');
+        console.log(line, user);
 
-    socket.on('village', ({ line, user }: LineInput)=>{
-        const [ CMD1, CMD2 ]: string[] = line.trim().split(' ');
-        console.log('village', CMD1, CMD2);
-
-        // 예시
         const commandRouter: CommandRouter = {
-            QUEST: questHandler,
-            // STORE: storeHandler,
-        };
+            'LOAD': front.loadHome
+        }
+        const result = commandRouter[CMD1](CMD2, user);
 
-        const result: returnScript = commandRouter[CMD1](CMD2, user)
-
-        socket.emit('print', result)
+        socket.emit('print', result);
     });
 
-    socket.on('dungeon', ({ line, user }: LineInput)=>{
-        const [ CMD1, CMD2 ]: string[] = line.trim().split(' ');
-        console.log('dungeon', CMD1, CMD2);
+    socket.on('front', async({ line, user }: LineInput) => {
+        const [ CMD1, CMD2 ]: string[] = line.trim().toUpperCase().split(' ');
+        console.log('front', CMD1, CMD2);
 
         // 예시
         const commandRouter: CommandRouter = {
-            COMMAND: example2Handler
+            'IN': front.test,
+            'UP': front.signupUsername,
+            'OUT': front.signout,
+            'EMPTY': front.emptyCommand,
             // STORE: storeHandler,
         };
+        if (!commandRouter[CMD1]) {  
+            const result = await commandRouter['EMPTY'](line, user)
+            return socket.emit('print', result);
+        }
 
-        const result: returnScript = commandRouter[CMD1](CMD2, user)
+        const result = await commandRouter[CMD1](CMD2, user)
 
-        socket.emit('print', result)
+        if (result.field === 'signout') {
+            socket.emit('signout', result);
+        } else {
+            socket.emit('print', result);
+        }
+        
     });
 
-    socket.on('battle', ({ line, user }: LineInput)=>{
+    socket.on('signup', async({ line, user, option }: LineInput) => {
         const [ CMD1, CMD2 ]: string[] = line.trim().split(' ');
-        console.log('battle', CMD1, CMD2);
+        console.log(line, user);
 
-        // 예시
         const commandRouter: CommandRouter = {
-            COMMAND: example1Handler,
-            // STORE: storeHandler,
-        };
+            10: front.signupPassword,
+            11: front.createUser,
+            12: front.createCharacter,
+            'EMPTY': front.emptyCommand,
+        }
+        if (!CMD1 || !option) {  
+            const result = commandRouter['EMPTY'](line, user)
+            return socket.emit('print', result);
+        }
 
-        const result: returnScript = commandRouter[CMD1](CMD2, user)
-
-        socket.emit('print', result)
+        const result = await commandRouter[option](CMD1, user, socket.id);
+        socket.emit('print', result);
     });
 
 

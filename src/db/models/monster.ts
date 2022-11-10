@@ -8,7 +8,7 @@ import {
 } from 'sequelize';
 import sequelize from '../config/connection';
 import Fields from './field';
-import { MonsterInputForm } from '../../interfaces/interface';
+import { MonsterInputForm } from '../../interfaces/monster';
 
 class Monsters extends Model<
     InferAttributes<Monsters>,

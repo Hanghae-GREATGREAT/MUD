@@ -3,11 +3,13 @@
 interface SignupForm {
     username: string;
     password: string;
-    confirm: string;
+    confirm?: string;
 }
 
 interface UserSession {
+    userId: number;
     username: string;
+    characterId: number;
     name: string;
     level: number;
     levelup?: boolean;
