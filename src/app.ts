@@ -47,7 +47,6 @@ app.set('views', path.join(__dirname, 'views'));
 app.engine('html', ejs.renderFile);
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
-app.use('/', pageRouter);
 
 // app.use(morgan.middleware);
 app.use(express.static(path.join(__dirname, 'views' , 'public')));
@@ -57,7 +56,7 @@ app.use(express.json());
 //     credentials: true,
 // }));
 
-
+app.use('/', pageRouter);
 app.use('/api', apiRouter);
 
 app.use(error.logger, error.handler);

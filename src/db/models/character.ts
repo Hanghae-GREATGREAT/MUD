@@ -93,14 +93,11 @@ class Characters extends Model<
         result.update({ hp: newHp, mp: newMp });
 
         return {
+            ...Characters.getSessionData(result)!,
+            userId: result.User.getDataValue('userId'),
             username: result.User.getDataValue('username'),
-            name: result.get('name'),
-            level: result.get('level'),
-            maxhp: result.get('maxhp'),
-            maxmp: result.get('maxmp'),
             hp: newHp,
             mp: newMp,
-            exp: result.get('exp'),
             questId: 1
         }
     }
@@ -130,15 +127,28 @@ class Characters extends Model<
         }
 
         return {
+            ...Characters.getSessionData(result)!,
+            userId: result.User.getDataValue('userId'),
             username: result.User.getDataValue('username'),
-            name: result.get('name'),
-            level, levelup,
-            maxhp: result.get('maxhp'),
-            maxmp: result.get('maxmp'),
-            hp: result.get('hp'),
-            mp: result.get('mp'),
+            levelup,
             exp: result.get('exp') + exp,
             questId: 1,
+        }
+    }
+
+    static getSessionData(character: Partial<Characters>) {
+        if (!character) {
+            return null;
+        }
+        return {
+            characterId: Number(character.characterId),
+            name: character.name!.toString(),
+            level: Number(character.level),
+            maxhp: Number(character.maxhp),
+            maxmp: Number(character.maxmp),
+            hp: Number(character.hp),
+            mp: Number(character.mp),
+            exp: Number(character.exp),
         }
     }
 
@@ -192,31 +202,31 @@ Characters.init({
     },
     level: {
         type: DataTypes.TINYINT.UNSIGNED,
-        defaultValue: 0,
+        defaultValue: 1,
     },
     attack: {
         type: DataTypes.SMALLINT.UNSIGNED,
-        defaultValue: 0,
+        defaultValue: 10,
     },
     defense: {
         type: DataTypes.SMALLINT.UNSIGNED,
-        defaultValue: 0,
+        defaultValue: 10,
     },
     maxhp: {
         type: DataTypes.SMALLINT.UNSIGNED,
-        defaultValue: 0,
+        defaultValue: 100,
     },
     maxmp: {
         type: DataTypes.SMALLINT.UNSIGNED,
-        defaultValue: 0,
+        defaultValue: 100,
     },
     hp: {
         type: DataTypes.SMALLINT.UNSIGNED,
-        defaultValue: 0,
+        defaultValue: 100,
     },
     mp: {
         type: DataTypes.SMALLINT.UNSIGNED,
-        defaultValue: 0,
+        defaultValue: 100,
     },
     exp: {
         type: DataTypes.INTEGER.UNSIGNED,
