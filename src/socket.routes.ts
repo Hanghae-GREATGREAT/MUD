@@ -6,7 +6,7 @@ import redis from './db/redis/config';
 import front from './front';
 
 import dungeon from './dungeon/dungeonHandler';
-import battle from './battle/battle.Handler';
+import battle from './battle'
 
 const onConnection = (socket: Socket) => {
     console.log('SOCKET CONNECTED');
