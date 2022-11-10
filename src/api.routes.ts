@@ -16,7 +16,12 @@ router.get('/', async (req, res, next) => {
         message: 'API INDEX',
     });
 });
-
+// import { Monsters } from './db/models';
+// router.get('/testtest', async (req, res) => {
+//     const result = await Monsters.changeMonsterStatus(6,10);
+//     console.log(result);
+//     res.json({ data: result });
+// });
 
 // router.use('/user', UserRouter);
 // router.use('/battle', BattleRouter);
