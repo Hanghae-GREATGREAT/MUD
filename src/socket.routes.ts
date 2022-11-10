@@ -4,19 +4,22 @@ import { ChatInput, ChatOutput } from './interfaces/socket';
 import { UserSession } from './interfaces/user';
 import redis from './db/redis/config';
 
-
 interface LineInput {
     line: string;
     user: UserSession;
 }
 
-interface returnScript {
+interface ReturnScript {
     script: string;
     user: UserSession;
     field: string;
 }
 
-type commandHandler = (CMD: string, user: UserSession) => returnScript;
+type commandHandler = (
+    CMD: string,
+    user: UserSession,
+    ...args: any[]
+) => ReturnScript | Promise<ReturnScript>;
 
 interface CommandRouter {
     [key: string]: commandHandler;
@@ -30,15 +33,14 @@ interface CommandRouter {
 // }
 
 import { questHandler } from './village/questHandler';
-import { example1Handler } from './battle/example';
-import { example2Handler } from './dungeon/example';
+import dungeon from './dungeon/dungeonHandler';
+import battle from './battle/battle.Handler';
 
 const onConnection = (socket: Socket) => {
     console.log('SOCKET CONNECTED');
 
-
-    socket.on('village', ({ line, user }: LineInput)=>{
-        const [ CMD1, CMD2 ]: string[] = line.trim().split(' ');
+    socket.on('village', ({ line, user }: LineInput) => {
+        const [CMD1, CMD2]: string[] = line.trim().split(' ');
         console.log('village', CMD1, CMD2);
 
         // 예시
@@ -47,41 +49,72 @@ const onConnection = (socket: Socket) => {
             // STORE: storeHandler,
         };
 
-        const result: returnScript = commandRouter[CMD1](CMD2, user)
+        const result = commandRouter[CMD1](CMD2, user);
 
-        socket.emit('print', result)
+        socket.emit('print', result);
     });
 
-    socket.on('dungeon', ({ line, user }: LineInput)=>{
-        const [ CMD1, CMD2 ]: string[] = line.trim().split(' ');
-        console.log('dungeon', CMD1, CMD2);
+    socket.on('dungeon', ({ line, user }: LineInput) => {
+        const [CMD1, CMD2]: string[] = line.trim().split(' ');
+        console.log('inputCommand : ', CMD1, CMD2);
 
-        // 예시
         const commandRouter: CommandRouter = {
-            COMMAND: example2Handler
-            // STORE: storeHandler,
+            도움말: dungeon.help,
+            목록: dungeon.getDungeonList,
+            입장: dungeon.getDungeonInfo,
         };
 
-        const result: returnScript = commandRouter[CMD1](CMD2, user)
+        if (!commandRouter[CMD1]) {
+            console.log(`is wrong command : '${CMD1}'`);
+            const result = dungeon.wrongCommand(CMD1, user);
+            return socket.emit('print', result);
+        }
 
-        socket.emit('print', result)
+        const result = commandRouter[CMD1](CMD2, user);
+
+        socket.emit('print', result);
     });
 
-    socket.on('battle', ({ line, user }: LineInput)=>{
-        const [ CMD1, CMD2 ]: string[] = line.trim().split(' ');
-        console.log('battle', CMD1, CMD2);
+    socket.on('battle', ({ line, user }: LineInput) => {
+        const [CMD1, CMD2]: string[] = line.trim().split(' ');
+        console.log('inputCommand : ', CMD1, CMD2);
 
-        // 예시
         const commandRouter: CommandRouter = {
-            COMMAND: example1Handler,
-            // STORE: storeHandler,
+            도움말: battle.help,
+            수동: battle.fight,
+            자동: battle.auto,
+            돌: dungeon.getDungeonList,
         };
 
-        const result: returnScript = commandRouter[CMD1](CMD2, user)
+        if (!commandRouter[CMD1]) {
+            console.log(`is wrong command : '${CMD1}'`);
+            const result = battle.wrongCommand(CMD1, user);
+            return socket.emit('print', result);
+        }
 
-        socket.emit('print', result)
+        const result = commandRouter[CMD1](CMD2, user);
+
+        socket.emit('print', result);
     });
 
+    socket.on('fight', ({ line, user }: LineInput) => {
+        const [CMD1, CMD2]: string[] = line.trim().split(' ');
+        console.log('inputCommand : ', CMD1, CMD2);
+
+        const commandRouter: CommandRouter = {
+            도움말: battle.help,
+        };
+
+        if (!commandRouter[CMD1]) {
+            console.log(`is wrong command : '${CMD1}'`);
+            const result = battle.wrongCommand(CMD1, user);
+            return socket.emit('print', result);
+        }
+
+        const result = commandRouter[CMD1](CMD2, user);
+
+        socket.emit('print', result);
+    });
 
     // socket.on('info', ({ name }: UserSession)=>{
     //     CharacterService.findOneByName(name).then((character)=>{
@@ -96,7 +129,7 @@ const onConnection = (socket: Socket) => {
     // socket.on('submit', ({ name, message }: ChatInput) => {
     //     console.log(message);
     //     redis.set(socket.id, name, { EX: 60*5 });
-        
+
     //     const script = `${name}: ${message}\n`
     //     socket.broadcast.emit('print', { script });
     //     socket.emit('print', { script });
@@ -106,7 +139,6 @@ const onConnection = (socket: Socket) => {
         redis.del(socket.id);
         console.log(socket.id, 'SOCKET DISCONNECTED');
     });
-}
-
+};
 
 export default onConnection;
