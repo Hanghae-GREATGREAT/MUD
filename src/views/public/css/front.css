@@ -1,0 +1,30 @@
+.wrap {
+    max-width: 1280px;
+    max-height: 720px;
+    margin: 0px auto 0px auto;
+    background-color: antiquewhite;
+}
+
+.wrap > .box {
+    display: block;
+    max-width: 500px;
+    margin: 20% auto auto auto;
+}
+
+/* .wrap > .box > .field {}
+
+.wrap > .box > .field > .label {}
+.wrap > .box > .field > .control {}
+.wrap > .box > .field > .control > .input {} */
+
+.wrap > .box > .Buttons {
+    display: flex;
+    flex-direction: row;
+}
+.wrap > .box > .Buttons > div {
+    margin-right: 10px;
+}
+
+/* .wrap > .box > .submitBtns > .toggleBtns {}
+
+.wrap > .box > .submitBtns > .signupBtn {} */
