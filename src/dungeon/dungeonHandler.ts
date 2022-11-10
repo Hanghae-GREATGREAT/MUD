@@ -1,5 +1,6 @@
 import { UserSession } from '../interfaces/user';
 import DungeonService from '../services/dungeon.service';
+import redis from '../db/redis/config';
 
 export default {
     help: (CMD: string | undefined, user: UserSession) => {
@@ -20,7 +21,6 @@ export default {
 
         // 던전 목록 불러오기
         const dungeonList = DungeonService.getDungeonList();
-        console.log(dungeonList);
 
         // 임시 스크립트 선언
         const tempLine = '========================================\n';
@@ -48,6 +48,13 @@ export default {
         tempScript += `1. [수동] 전투 진행\n`;
         tempScript += `2. [자동] 전투 진행\n`;
         tempScript += `3. [돌]아가기\n`;
+
+        // 던전 진행상황 업데이트
+        const dungeonSession = {
+            dungeonLevel: Number(CMD),
+            monsterId: 0,
+        };
+        redis.hSet(String(user.characterId), dungeonSession);
 
         const script = tempLine + tempScript;
         const field = 'battle';

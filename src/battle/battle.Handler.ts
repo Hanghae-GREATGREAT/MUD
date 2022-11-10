@@ -5,22 +5,26 @@ export default {
     // help: (CMD: string | undefined, user: UserSession) => {}
     help: (CMD: string | undefined, user: UserSession) => {
         let tempScript: string = '';
+        const tempLine = '========================================\n';
 
         tempScript += '명령어 : \n';
         tempScript += '[수동] 전투 진행 - 수동 전투를 진행합니다.\n';
         tempScript += '[자동] 전투 진행 - 자동 전투를 진행합니다.\n';
         tempScript += '[돌]아가기 - 이전 단계로 돌아갑니다.\n';
 
-        const script = tempScript;
+        const script = tempLine + tempScript;
         const field = 'battle';
+
         return { script, user, field };
     },
 
-    fight: (CMD: string | undefined, user: UserSession) => {
+    manual: (CMD: string | undefined, user: UserSession) => {
+        // 적 조우
+
         let tempScript: string = '';
 
         const script = tempScript;
-        const field = 'battle';
+        const field = 'fight';
         return { script, user, field };
     },
 
