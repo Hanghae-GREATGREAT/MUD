@@ -51,6 +51,11 @@ class RedisCache {
         await this.client.hDel(key, field);
     }
 
+    async hDelAll(key: string, data: any) {
+        const fields = Object.keys(data);
+        await this.client.hDel(key, [...fields]);
+    }
+
     async disconnect() {
         await this.client.disconnect();
     }

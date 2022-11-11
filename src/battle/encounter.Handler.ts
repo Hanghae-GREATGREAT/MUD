@@ -38,7 +38,7 @@ export default {
 
         // 던전 진행상황 업데이트
         dungeonSession = {
-            sungeonLevel: String(dungeonLevel),
+            dungeonLevel: String(dungeonLevel),
             monsterId: String(newMonster.monsterId),
         };
         await redis.hSet(String(user.characterId), dungeonSession);
@@ -50,6 +50,7 @@ export default {
     },
 
     run: async (CMD: string | undefined, user: UserSession) => {
+        console.log('도망 실행');
         const dungeonSession = await redis.hGetAll(String(user.characterId));
         let tempScript: string = '';
         const tempLine = '========================================\n';

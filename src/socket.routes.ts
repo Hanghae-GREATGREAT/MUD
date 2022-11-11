@@ -5,7 +5,9 @@ import {
     ReturnScript,
     ChatInput,
     ChatOutput,
+    BattleLoop,
 } from './interfaces/socket';
+const battleLoops: BattleLoop = {};
 import redis from './db/redis/config';
 
 import front from './front';
@@ -115,17 +117,40 @@ const onConnection = (socket: Socket) => {
         const commandRouter: CommandRouter = {
             load: battle.encounter,
             도움말: battle.ehelp,
-            공격: battle.ehelp,
+            공격: battle.manualLogic,
             도망: battle.run,
         };
 
-        if (!commandRouter[CMD1]) {
+        console.log(`encounter CMD : ${CMD1}`);
+        console.log('공격 T/F : ', commandRouter[CMD1] === battle.manualLogic);
+        console.log('도망 T/F : ', commandRouter[CMD1] === battle.run);
+
+        let result;
+        if (commandRouter[CMD1] === battle.manualLogic) {
+            result = await battle.manualLogic(CMD2, user);
+            if (result.field === 'encounter') {
+                console.log('next field : encounter');
+                clearInterval(battleLoops[user.characterId]);
+                result = await battle.encounter(CMD2, user);
+            }
+            if (result.field === 'dungeon') {
+                console.log('next field : dungeon');
+                clearInterval(battleLoops[user.characterId]);
+                result = dungeon.getDungeonList(CMD2, user);
+            }
+
+            socket.emit('print', result);
+            const basicFight = setInterval(async () => {}, 2000);
+
+            battleLoops[user.characterId] = basicFight;
+            socket.emit('print', result);
+        } else if (!commandRouter[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
             const result = battle.ewrongCommand(CMD1, user);
             return socket.emit('print', result);
+        } else {
+            result = await commandRouter[CMD1](CMD2, user);
         }
-
-        const result = await commandRouter[CMD1](CMD2, user);
 
         socket.emit('print', result);
     });
@@ -135,11 +160,11 @@ const onConnection = (socket: Socket) => {
         console.log('socketon fight');
 
         const commandRouter: CommandRouter = {
-            도움말: battle.fhelp,
-            탐색: battle.ehelp,
-
-            // 계속 탐색하기
-            // 돌아가기
+            stop: battle.fhelp,
+            스킬1: battle.ehelp,
+            스킬2: battle.ehelp,
+            스킬3: battle.ehelp,
+            스킬4: battle.ehelp,
         };
 
         if (!commandRouter[CMD1]) {
@@ -149,7 +174,6 @@ const onConnection = (socket: Socket) => {
         }
 
         const result = await commandRouter[CMD1](CMD2, user);
-
         socket.emit('print', result);
     });
 
