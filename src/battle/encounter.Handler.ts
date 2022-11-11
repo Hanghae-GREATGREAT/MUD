@@ -2,11 +2,14 @@ import { UserSession } from '../interfaces/user';
 import { BattleService } from '../services';
 import redis from '../db/redis/config';
 import { Monsters } from '../db/models';
-import { ReturnScript } from '../interfaces/socket';
+import { BattleLoop, CommandRouter, ReturnScript } from '../interfaces/socket';
+import battle from './battle.Handler'
+import dungeon from '../dungeon';
+import { socket } from '../socket.routes'
 
-export default {
+class EncounterHandler {
     // help: (CMD: string | undefined, user: UserSession) => {}
-    ehelp: (CMD: string | undefined, user: UserSession) => {
+    ehelp = (CMD: string | undefined, user: UserSession) => {
         let tempScript: string = '';
 
         tempScript += '명령어 : \n';
@@ -19,9 +22,9 @@ export default {
         const script = tempScript;
         const field = 'encounter';
         return { script, user, field };
-    },
+    }
 
-    encounter: async (CMD: string | undefined, user: UserSession): Promise<ReturnScript> => {
+    encounter = async (CMD: string | undefined, user: UserSession): Promise<ReturnScript> => {
         // 던전 진행상황 불러오기
         let dungeonSession = await redis.hGetAll(String(user.characterId));
         const dungeonLevel = Number(dungeonSession!.dungeonLevel);
@@ -47,9 +50,62 @@ export default {
         const field = 'encounter';
 
         return { script, user, field };
-    },
+    }
 
-    run: async (CMD: string | undefined, user: UserSession) => {
+    attack = async(CMD: string | undefined, user: UserSession) => {
+        const newScript: CommandRouter = {
+            player: dungeon.getDungeonList,
+            monster: this.reEncounter,
+        }
+        let result;
+        const basicFight = setInterval(async () => {
+            result = await battle.manualLogic(CMD, user);
+            socket.emit('printBattle', result);
+
+            const { dead } = result;
+            if (typeof dead === 'string') {
+                // dead ... player / monster
+
+                result = await newScript[dead]('', user);
+                socket.emit('print', result);
+                clearInterval(battleLoops[user.characterId]);
+            }
+        }, 1500);
+
+        battleLoops[user.characterId] = basicFight;
+
+        return { script: '', user, field: 'action' }
+    }
+
+    reEncounter = async (CMD: string, user: UserSession): Promise<ReturnScript> => {
+        // 던전 진행상황 불러오기
+        let dungeonSession = await redis.hGetAll(String(user.characterId));
+        const dungeonLevel = Number(dungeonSession!.dungeonLevel);
+
+        let tempScript: string = '';
+        const tempLine =
+            '=======================================================================\n';
+
+        // 적 생성
+        const newMonster = await BattleService.createNewMonster(dungeonLevel);
+        tempScript += `너머에 ${newMonster.name}의 그림자가 보인다\n\n`;
+        tempScript += `[공격] 하기\n`;
+        tempScript += `[도망] 가기\n`;
+
+        // 던전 진행상황 업데이트
+        dungeonSession = {
+            dungeonLevel: String(dungeonLevel),
+            monsterId: String(newMonster.monsterId),
+        };
+        await redis.hSet(String(user.characterId), dungeonSession);
+
+        const script = tempLine + tempScript;
+        const field = 'encounter';
+
+        return { script, user, field };
+    }
+
+    run = async (CMD: string | undefined, user: UserSession) => {
         console.log('도망 실행');
         const dungeonSession = await redis.hGetAll(String(user.characterId));
         let tempScript: string = '';
@@ -69,9 +125,9 @@ export default {
         const script = tempLine + tempScript;
         const field = 'dungeon';
         return { script, user, field };
-    },
+    }
 
-    ewrongCommand: (CMD: string | undefined, user: UserSession) => {
+    ewrongCommand = (CMD: string | undefined, user: UserSession) => {
         let tempScript: string = '';
 
         tempScript += `입력값을 확인해주세요.\n`;
@@ -81,5 +137,10 @@ export default {
         const script = 'Error : \n' + tempScript;
         const field = 'encounter';
         return { script, user, field };
-    },
+    }
 };
+
+export const battleLoops: BattleLoop = {};
+
+
+export default new EncounterHandler();
