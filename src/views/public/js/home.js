@@ -42,6 +42,9 @@ function checkValidation(user) {
 ******************************************************************************/
 
 function loadScript(field, user) {
+    if (field === 'undefined' || user === 'undefined' || !field || !user) {
+        return socket.emit('none', { line: 'LOAD', user: {} });
+    }
     socket.emit(field, { line: 'LOAD', user: JSON.parse(user) });
 }
 

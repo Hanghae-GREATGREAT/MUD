@@ -90,7 +90,6 @@ class Characters extends Model<
         // const questId = await QuestCompletes.findOne()        
         if (!result) throw new Error('존재하지 않는 캐릭터');
 
-        console.log(result.get())
         const { hp, mp } = result.get();
         const newHp = hp - damage > 0 ? hp - damage : 0;
         const newMp = mp - cost > 0 ? mp - cost : 0;

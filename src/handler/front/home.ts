@@ -2,6 +2,7 @@ import { UserSession } from "../../interfaces/user";
 import { UserService, CharacterService } from "../../services";
 import { dungeonList } from "../../dungeon/dungeonHandler";
 import { homeScript } from "../../scripts";
+import { Characters } from "../../db/models";
 
 export default {
 
@@ -15,11 +16,9 @@ export default {
 
     checkUser: async(user: UserSession) => {
         console.log('CHECK USER');
-        console.log(user);
-
         const { userId, characterId, name } = user;
-        const character = await CharacterService.findOneByUserId(userId);
-
+        const character = await Characters.findByPk(userId);
+        
         return (!character || character.characterId !== characterId || character.name !== name);
     },
 

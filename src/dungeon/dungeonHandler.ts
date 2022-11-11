@@ -22,17 +22,14 @@ export default {
 
     getDungeonList: async(CMD: string | undefined, user: UserSession): Promise<ReturnScript> => {
         console.log('dungeon list.');
-        front.checkUser(user).then((result)=>{
-            if (result) {
-                const script = homeScript.loadHome;
-                const field = 'front'
-                return { script, user, field };
-            }
-        })
-
+        const result = await front.checkUser(user)
+        if (result) {
+            const script = homeScript.loadHome;
+            const field = 'front'
+            return { script, user, field };
+        }
         // 던전 목록 불러오기
         const dungeonList = DungeonService.getDungeonList();
-
         // 임시 스크립트 선언
         const tempLine =
             '=======================================================================\n';

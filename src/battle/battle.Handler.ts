@@ -23,8 +23,8 @@ export default {
 
     manualLogic: async (CMD: string | undefined, user: UserSession) => {
         let tempScript: string = '';
-        let dead = '';
-        let nextField = 'encounter';
+        let dead: string | undefined;
+        let nextField = 'action';
 
         // 유저 정보 불러오기
         const characterStatus: any = await Characters.findByPk(
