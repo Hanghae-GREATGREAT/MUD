@@ -26,7 +26,7 @@ describe('api test', () => {
 
         redis.disconnect().then(async()=>{
             while (redis.status === "connected") {
-                await new Promise(r => setTimeout(r, 200));
+                await new Promise(r => setTimeout(r, 500));
             }
         });
     });
