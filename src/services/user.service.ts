@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import { Users } from '../db/models';
+import redis from '../db/redis/config'
 import { HttpException, HttpStatus } from '../common';
 
 
@@ -17,10 +18,10 @@ class UserService {
         const user = await Users.findOne({
             where: { username }
         });
-        if (!user) throw new HttpException('아이디가 일치하지 않습니다', HttpStatus.BAD_REQUEST);
+        if (!user) return null;
         
         const result = await bcrypt.compare(password!, user!.password);
-        if (!result) throw new HttpException('비밀번호가 일치하지 않습니다', HttpStatus.BAD_REQUEST);
+        if (!result) return null;
 
         return user;
     }
@@ -33,8 +34,9 @@ class UserService {
         return Boolean(user);
     }
 
-    async signout(userId: number) {
+    async signout(userId: number, id: string) {
         console.log('SIGNOUT')
+        redis.hDelAll(id, { userId: 0, characterId: 0 });
     };
 }
 

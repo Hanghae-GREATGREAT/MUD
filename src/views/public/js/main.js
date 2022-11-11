@@ -201,10 +201,10 @@ const chatSubmitdHandler = () => {
     console.log(user);
     const data = {
         name,
-        message: chatSubmitId.val(),
+        message: chatInput.val(),
     };
     socket.emit('submit', data);
-    chatSubmitId.val('');
+    chatInput.val('');
 };
 
 socket.on('print', chatNewMessage);
