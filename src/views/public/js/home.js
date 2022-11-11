@@ -1,5 +1,7 @@
 const socket = io('/');
 
+
+
 const commandLine = $('.commendLine');
 const commendInput = $('#commendInput');
 const commendForm = $('.commendInput');
@@ -30,13 +32,17 @@ function checkStorage() {
     return new Promise((resolve, reject) => resolve({ field, user }));
 }
 
+function checkValidation(user) {
+    socket.emit('none', { line: 'CHECK', user });
+}
+
 
 /*****************************************************************************
                                 커맨드 스크립트
 ******************************************************************************/
 
 function loadScript(field, user) {
-    socket.emit(field, { line: 'load', user: JSON.parse(user) });
+    socket.emit(field, { line: 'LOAD', user: JSON.parse(user) });
 }
 
 commendForm.submit((e) => {
@@ -62,6 +68,7 @@ function printHandler({ script, user, field }) {
 
     commandLine.append(script);
     commandLine.scrollTop(Number.MAX_SAFE_INTEGER);
+    statusLoader(user);
 }
 
 socket.on('printBattle', printBattleHandler);
@@ -88,6 +95,16 @@ async function signoutHandler({ script }) {
 }
 
 const statusLoader = ({ username, name, level, maxhp, maxmp, hp, mp, exp }) => {
+    userInfo.empty();
+
+    if (localStorage.getItem('field') === 'none' || username === undefined || name === undefined) {
+            const status = `
+        <div class="infoName">
+            <span>로그인을 해주세요</span>
+        </div>
+        `;
+        return userInfo.append(status);;
+    }
     const status = `
     <div class="infoName">
         <span>${name} / Lv. ${level}</span><span class="exp">경험치: ${exp}</span>

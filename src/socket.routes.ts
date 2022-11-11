@@ -26,13 +26,13 @@ const onConnection = (server: Socket) => {
                                     홈                                      
      ************************************************************************/
 
-    socket.on('none', ({ line, user }: LineInput) => {
+    socket.on('none', async({ line, user }: LineInput) => {
         const [CMD1, CMD2]: string[] = line.trim().toUpperCase().split(' ');
 
         const commandRouter: CommandRouter = {
             LOAD: front.loadHome,
         };
-        const result = commandRouter[CMD1](CMD2, user);
+        const result = await commandRouter[CMD1](CMD2, user);
         socket.emit('print', result);
         socket.emit('enterChat', 'none');
     });

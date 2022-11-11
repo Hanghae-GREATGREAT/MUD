@@ -1,5 +1,5 @@
 import { UserSession } from "../interfaces/user";
-import { UserService } from "../services";
+import { UserService, CharacterService } from "../services";
 import { dungeonList } from "../dungeon/dungeonHandler";
 
 export default {
@@ -10,6 +10,15 @@ export default {
         const script = homeScript.loadHome;
         const field = 'front'
         return { script, user, field };
+    },
+
+    checkUser: async(user: UserSession) => {
+        console.log('CHECK USER');
+
+        const { userId, characterId, name } = user;
+        const character = await CharacterService.findOneByUserId(userId);
+
+        return (!character || character.characterId !== characterId || character.name !== name);
     },
 
     signout: (CMD: string | undefined, user: UserSession, id: string) => {

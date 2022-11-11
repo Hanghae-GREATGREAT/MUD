@@ -45,7 +45,8 @@ export default {
         }
         await redis.hSet(id, userSession);
 
-        user = Object.assign(user, Characters.getSessionData(character));
+        const newCharacter = await Characters.getSessionData(character)
+        user = Object.assign(user, newCharacter);
         const script = signupScript.title;
         const field = 'front';
         return { script, user, field };

@@ -27,10 +27,10 @@ describe("my awesome project", () => {
         clientSocket.close();
         redis.disconnect().then(async()=>{
             while (redis.status === "connected") {
-                await new Promise(r => setTimeout(r, 1000));
+                await new Promise(r => setTimeout(r, 200));
             }
             done();
-        });        
+        });
     });
 
     test("should work", (done) => {
