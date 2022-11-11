@@ -9,8 +9,7 @@ class DungeonService {
         dungeons.forEach((dungeon) => {
             tempScript += `${dungeon.no}. `;
             tempScript += `${dungeon.name}(`;
-            tempScript += `${dungeon.level})\n`;
-            tempScript += `${dungeon.script}\n\n`;
+            tempScript += `${dungeon.level})\n\n`;
         });
 
         return tempScript;

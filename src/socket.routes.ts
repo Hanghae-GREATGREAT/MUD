@@ -7,7 +7,7 @@ import {
     ChatOutput,
     BattleLoop,
 } from './interfaces/socket';
-const battleLoops: BattleLoop = {};
+export const battleLoops: BattleLoop = {};
 import redis from './db/redis/config';
 
 import front from './front';
@@ -113,6 +113,7 @@ const onConnection = (socket: Socket) => {
 
         const commandRouter: CommandRouter = {
             load: dungeon.getDungeonList,
+            목록: dungeon.getDungeonList,
             도움말: dungeon.help,
             입장: dungeon.getDungeonInfo,
         };
@@ -158,41 +159,41 @@ const onConnection = (socket: Socket) => {
         const commandRouter: CommandRouter = {
             load: battle.encounter,
             도움말: battle.ehelp,
-            공격: battle.manualLogic,
             도망: battle.run,
         };
 
-        console.log(`encounter CMD : ${CMD1}`);
-        console.log('공격 T/F : ', commandRouter[CMD1] === battle.manualLogic);
-        console.log('도망 T/F : ', commandRouter[CMD1] === battle.run);
+        const newScript: CommandRouter = {
+            monster: battle.encounter,
+            player: dungeon.getDungeonList,
+        };
 
         let result;
-        if (commandRouter[CMD1] === battle.manualLogic) {
-            result = await battle.manualLogic(CMD2, user);
-            if (result.field === 'encounter') {
-                console.log('next field : encounter');
-                clearInterval(battleLoops[user.characterId]);
-                result = await battle.encounter(CMD2, user);
-            }
-            if (result.field === 'dungeon') {
-                console.log('next field : dungeon');
-                clearInterval(battleLoops[user.characterId]);
-                result = dungeon.getDungeonList(CMD2, user);
-            }
+        if (CMD1 === '공격') {
+            const basicFight = setInterval(async () => {
+                result = await battle.manualLogic(CMD2, user);
+                socket.emit('printBattle', result);
 
-            socket.emit('print', result);
-            const basicFight = setInterval(async () => {}, 2000);
-
+                if (result.dead.match(/player|monster/)) {
+                    clearInterval(battleLoops[user.characterId]);
+                    result = await newScript[result.dead](CMD2, user);
+                    socket.emit('print', result);
+                }
+            }, 1500);
             battleLoops[user.characterId] = basicFight;
-            socket.emit('print', result);
+        } else if (CMD1 === '스킬') {
+            result = await battle.skill(CMD2, user);
+
+            if (result.dead.match(/player|monster/)) {
+                socket.emit('print', result);
+                clearInterval(battleLoops[user.characterId]);
+                result = await newScript[result.dead](CMD2, user);
+            }
         } else if (!commandRouter[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
-            const result = battle.ewrongCommand(CMD1, user);
-            return socket.emit('print', result);
+            result = battle.ewrongCommand(CMD1, user);
         } else {
             result = await commandRouter[CMD1](CMD2, user);
         }
-
         socket.emit('print', result);
     });
 
@@ -202,10 +203,29 @@ const onConnection = (socket: Socket) => {
 
         const commandRouter: CommandRouter = {
             stop: battle.fhelp,
-            스킬1: battle.ehelp,
-            스킬2: battle.ehelp,
-            스킬3: battle.ehelp,
-            스킬4: battle.ehelp,
+            스킬: battle.skill,
+        };
+
+        if (!commandRouter[CMD1]) {
+            console.log(`is wrong command : '${CMD1}'`);
+            const result = battle.fwrongCommand(CMD1, user);
+            return socket.emit('print', result);
+        }
+
+        const result = await commandRouter[CMD1](CMD2, user);
+        socket.emit('print', result);
+    });
+
+    /************************************************************************
+                                   모험 종료                                      
+     ************************************************************************/
+
+    socket.on('adventureResult', async ({ line, user }: LineInput) => {
+        const [CMD1, CMD2]: string[] = line.trim().split(' ');
+
+        const commandRouter: CommandRouter = {
+            확인: battle.fhelp,
+            마을: battle.skill,
         };
 
         if (!commandRouter[CMD1]) {

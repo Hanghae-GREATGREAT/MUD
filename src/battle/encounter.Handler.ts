@@ -12,10 +12,8 @@ export default {
         tempScript += '[공격] 하기 - 전투를 진행합니다.\n';
         tempScript += '[도망] 가기 - 전투를 포기하고 도망갑니다.\n';
         tempScript += '---전투 중 명령어---\n';
-        tempScript += '[스킬1] 사용 - 1번 슬롯에 장착된 스킬을 사용합니다.\n';
-        tempScript += '[스킬2] 사용 - 2번 슬롯에 장착된 스킬을 사용합니다.\n';
-        tempScript += '[스킬3] 사용 - 3번 슬롯에 장착된 스킬을 사용합니다.\n';
-        tempScript += '[스킬4] 사용 - 4번 슬롯에 장착된 스킬을 사용합니다.\n';
+        tempScript +=
+            '[스킬] [num] 사용 - 1번 슬롯에 장착된 스킬을 사용합니다.\n';
 
         const script = tempScript;
         const field = 'encounter';
@@ -28,7 +26,8 @@ export default {
         const dungeonLevel = Number(dungeonSession!.dungeonLevel);
 
         let tempScript: string = '';
-        const tempLine = '========================================\n';
+        const tempLine =
+            '=======================================================================\n';
 
         // 적 생성
         const newMonster = await BattleService.createNewMonster(dungeonLevel);
@@ -53,13 +52,18 @@ export default {
         console.log('도망 실행');
         const dungeonSession = await redis.hGetAll(String(user.characterId));
         let tempScript: string = '';
-        const tempLine = '========================================\n';
+        const tempLine =
+            '=======================================================================\n';
 
-        tempScript += `당신은 도망쳤습니다. \n\n`;
-        tempScript += `??? : 하남자특. 도망감.\n`;
+        tempScript += `... 몬스터와 눈이 마주친 순간,\n`;
+        tempScript += `당신은 던전 입구를 향해 필사적으로 뒷걸음질쳤습니다.\n\n`;
+        tempScript += `??? : 하남자특. 도망감.\n\n`;
+        tempScript += `목록 - 던전 목록을 불러옵니다.\n`;
+        tempScript += `입장 [number] - 선택한 번호의 던전에 입장합니다.\n\n`;
 
         // 몬스터 삭제
         await Monsters.destroyMonster(Number(dungeonSession.monsterId));
+        await redis.hDel(String(user.userId), 'monsterId');
 
         const script = tempLine + tempScript;
         const field = 'dungeon';
