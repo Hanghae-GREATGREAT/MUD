@@ -1,6 +1,8 @@
 import { UserSession } from '../interfaces/user';
 import DungeonService from '../services/dungeon.service';
 import redis from '../db/redis/config';
+import front from '../front';
+import { homeScript } from '../front/home';
 
 export default {
     help: (CMD: string | undefined, user: UserSession) => {
@@ -18,6 +20,13 @@ export default {
 
     getDungeonList: (CMD: string | undefined, user: UserSession) => {
         console.log('dungeon list.');
+        front.checkUser(user).then((result)=>{
+            if (result) {
+                const script = homeScript.loadHome;
+                const field = 'front'
+                return { script, user, field };
+            }
+        })
 
         // 던전 목록 불러오기
         const dungeonList = DungeonService.getDungeonList();

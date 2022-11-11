@@ -35,7 +35,8 @@ export default {
         await redis.hSet(id, userSession);
 
         if (character) {
-            user = Object.assign(user, Characters.getSessionData(character));
+            const characterSession = await Characters.getSessionData(character)
+            user = Object.assign(user, characterSession);
         }
         const script = result ? signinScript.title: signinScript.incorrect;
         const field = result ? 'front' : 'sign:21';
