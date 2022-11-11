@@ -11,10 +11,11 @@ class DungeonService {
         });
 
         return tempScript;
-    }
+    };
 
     getDungeonInfo = (dungeonNumber: number) => {
         const target = this.dungeons[dungeonNumber - 1];
+
         if (!target) return null;
 
         let tempScript: string = '';
@@ -26,7 +27,7 @@ class DungeonService {
         tempScript += `${target.mops} 등의 몬스터가 출현한다\n\n`;
 
         return tempScript;
-    }
+    };
 
     dungeons = [
         {
