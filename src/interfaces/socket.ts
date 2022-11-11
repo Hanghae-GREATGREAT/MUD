@@ -10,6 +10,7 @@ interface ReturnScript {
     script: string;
     user: UserSession;
     field: string;
+    chat?: boolean;
 }
 
 type commandHandler = (CMD: string, user: UserSession, ...args: any[]) => ReturnScript | Promise<ReturnScript>;
@@ -21,6 +22,7 @@ interface CommandRouter {
 interface ChatInput {
     name: string,
     message: string;
+    field: string;
 }
 
 interface ChatOutput {
