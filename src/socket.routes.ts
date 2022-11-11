@@ -136,7 +136,7 @@ const onConnection = (server: Socket) => {
         if (result.error) {
             return server.emit('print', result);
         }  
-        if (result.dead!.length === 0) return server.emit('print', result);
+        if (result.dead?.length === 0) return server.emit('print', result);
 
         const deadResult = await battle.reEncounter('', result.user);
         // console.log('deadScript', deadResult.script);
