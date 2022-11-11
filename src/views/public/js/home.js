@@ -63,6 +63,7 @@ commendForm.submit((e) => {
 socket.on('print', printHandler);
 
 function printHandler({ script, user, field }) {
+    console.log(script, user, field);
     localStorage.setItem('user', JSON.stringify(user));
     localStorage.setItem('field', field);
 

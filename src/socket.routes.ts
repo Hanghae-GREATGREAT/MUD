@@ -2,17 +2,14 @@ import { Socket } from 'socket.io';
 import {
     LineInput,
     CommandRouter,
-    ReturnScript,
-    ChatInput,
-    ChatOutput,
     BattleLoop,
+    ReturnScript,
 } from './interfaces/socket';
 export const battleLoops: BattleLoop = {};
 import redis from './db/redis/config';
 
-import { noneController } from './controller/home';
+import { chat, home } from './controller';
 
-import front from './front';
 
 import dungeon from './dungeon/dungeonHandler';
 import battle from './battle';
@@ -26,100 +23,23 @@ const onConnection = (server: Socket) => {
                                     홈                                      
      ************************************************************************/
 
-    socket.on('none', async({ line, user }: LineInput) => {
-        const [CMD1, CMD2]: string[] = line.trim().toUpperCase().split(' ');
+    socket.on('none', home.noneController);
 
-        const commandRouter: CommandRouter = {
-            LOAD: front.loadHome,
-        };
-        const result = await commandRouter[CMD1](CMD2, user);
-        socket.emit('print', result);
-        socket.emit('enterChat', 'none');
-    });
+    socket.on('front', home.frontController);
 
-    socket.on('front', async ({ line, user }: LineInput) => {
-        const [CMD1, CMD2]: string[] = line.trim().toUpperCase().split(' ');
-        console.log('front', CMD1, CMD2);
+    socket.on('sign', home.signController);
 
-        const commandRouter: CommandRouter = {
-            IN: front.signinUsername,
-            UP: front.signupUsername,
-            OUT: front.signout,
-            D: front.toDungeon,
-            DUNGEON: front.toDungeon,
-            V: front.toVillage,
-            VILLAGE: front.toVillage,
-            EMPTY: front.emptyCommand,
-        };
-        if (!commandRouter[CMD1]) {
-            const result = commandRouter['EMPTY'](line, user);
-            return socket.emit('print', result);
-
-        }
-
-        const result = await commandRouter[CMD1](CMD2, user, server.id);
-        if (result.chat) server.emit('enterChat', result.field);
-        if (result.field === 'signout') {
-            server.emit('signout', result);
-        } else {
-            server.emit('print', result);
-        }
-    });
-
-
-    socket.on('sign', async ({ line, user, option }: LineInput) => {
-        const [CMD1, CMD2]: string[] = line.trim().split(' ');
-
-        const commandRouter: CommandRouter = {
-            10: front.signupPassword,
-            11: front.createUser,
-            12: front.createCharacter,
-            20: front.signinPassword,
-            21: front.signinCheck,
-            EMPTY: front.emptyCommand,
-        };
-        if (!CMD1 || !option) {
-            const result = commandRouter['EMPTY'](line, user);
-            return socket.emit('print', result);
-        }
-
-        const result = await commandRouter[option](CMD1, user, server.id);
-        if (result.chat) server.emit('enterChat', result.field);
-        server.emit('print', result);
-    });
-
-    socket.on('signup', async ({ line, user, option }: LineInput) => {
-        const [CMD1, CMD2]: string[] = line.trim().split(' ');
-
-        const commandRouter: CommandRouter = {
-            10: front.signupPassword,
-            11: front.createUser,
-            12: front.createCharacter,
-            EMPTY: front.emptyCommand,
-        };
-        if (!CMD1 || !option) {
-            const result = commandRouter['EMPTY'](line, user);
-            return socket.emit('print', result);
-        }
-        // if (!commandRouter[CMD1]) {
-        //     const result = await commandRouter['EMPTY'](line, user)
-        //     return socket.emit('print', result);
-        // }
-
-        const result = await commandRouter[option](CMD1, user, socket.id);
-        socket.emit('print', result);
-    });
 
     /************************************************************************
                                     필드                                      
      ************************************************************************/
 
     server.on('dungeon', async ({ line, user }: LineInput) => {
-        const [CMD1, CMD2]: string[] = line.trim().split(' ');
+        const [CMD1, CMD2]: string[] = line.trim().toUpperCase().split(' ');
         console.log('inputCommand : ', CMD1, CMD2);
 
         const commandRouter: CommandRouter = {
-            load: dungeon.getDungeonList,
+            LOAD: dungeon.getDungeonList,
             목록: dungeon.getDungeonList,
             도움말: dungeon.help,
             입장: dungeon.getDungeonInfo,
@@ -181,10 +101,9 @@ const onConnection = (server: Socket) => {
             const basicFight = setInterval(async () => {
                 result = await battle.manualLogic(CMD2, user);
                 socket.emit('printBattle', result);
-
                 if (result.dead.match(/player|monster/)) {
                     clearInterval(battleLoops[user.characterId]);
-                    result = await newScript[result.dead](CMD2, user);
+                    result = await newScript[result.dead](CMD2, user)
                     socket.emit('print', result);
                 }
             }, 1500);
@@ -252,24 +171,7 @@ const onConnection = (server: Socket) => {
                                     채팅박스                                      
      ************************************************************************/
 
-    // socket.on('info', ({ name }: UserSession)=>{
-    //     CharacterService.findOneByName(name).then((character)=>{
-    //         if (character === null) throw new Error();
-
-    //         const script = `${character.Field.name} 채팅방에 입장하였습니다.\n`
-    //         socket.emit('print', { script });
-    //     });
-    //     redis.set(socket.id, name, { EX: 60*5 });
-    // });
-
-
-    socket.on('submit', ({ name, message, field }: ChatInput) => {
-        redis.set(socket.id, name, { EX: 60 * 5 });
-
-        const script = `${name}: ${message}\n`;
-        socket.broadcast.emit('chat', { script, field });
-        socket.emit('chat', { script, field });
-    });
+    socket.on('submit', chat.chatController);
 
     server.on('disconnect', () => {
         redis.del(server.id);

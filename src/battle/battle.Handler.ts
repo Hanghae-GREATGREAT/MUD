@@ -94,7 +94,9 @@ export default {
             if (playerHP - monsterHit <= 0) {
                 console.log('유저 사망');
                 await Monsters.destroyMonster(Number(dungeonData.monsterId));
+                console.log('monster deleted')
                 await redis.hDel(String(user.characterId), 'monsterId');
+                console.log('redis deleted');
 
                 nextField = 'dungeon';
                 tempScript += '으악 ! 당신은 죽어버렸다.\n';

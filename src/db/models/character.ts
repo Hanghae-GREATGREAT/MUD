@@ -82,19 +82,24 @@ class Characters extends Model<
     /***************************************************************
      * 전투 턴이 종료되고 hp, mp 상태 갱신
      ***************************************************************/
-    static async refreshStatus(characterId: number, damage: number, cost: number): Promise<UserSession> {
-        const result = await Characters.findByPk(characterId);
+    static async refreshStatus(characterId: number, damage: number, cost: number): Promise<any> {
+        const result = await Characters.findOne({
+            where: { characterId },
+            include: Users,
+        });
         // const questId = await QuestCompletes.findOne()        
         if (!result) throw new Error('존재하지 않는 캐릭터');
 
+        console.log(result.get())
         const { hp, mp } = result.get();
         const newHp = hp - damage > 0 ? hp - damage : 0;
         const newMp = mp - cost > 0 ? mp - cost : 0;
+        console.log(newHp, newMp)
         result.update({ hp: newHp, mp: newMp });
         
         // const characters = await Characters.getSessionData(result)
         return {
-            ...result!,
+            ...result.get()!,
             userId: result.User.getDataValue('userId'),
             username: result.User.getDataValue('username'),
             questId: 1,
@@ -112,8 +117,11 @@ class Characters extends Model<
         return exp >= reqExp ? level + 1 : level;
     }    
 
-    static async addExp(characterId: number, exp: number): Promise<UserSession> {
-        const result = await Characters.findByPk(characterId);
+    static async addExp(characterId: number, exp: number): Promise<any> {
+        const result = await Characters.findOne({
+            where: { characterId },
+            include: Users,
+        });
         if (!result) throw new Error('존재하지 않는 캐릭터');
 
         await result.increment({ exp });
@@ -127,7 +135,7 @@ class Characters extends Model<
 
         // const character = await Characters.getSessionData(result);
         return {
-            ...result!,
+            ...result.get()!,
             userId: result.User.getDataValue('userId')!,
             username: result.User.getDataValue('username')!,
             levelup,
@@ -153,6 +161,7 @@ class Characters extends Model<
         });
 
         return {
+            userId: Number(character.userId),
             characterId: Number(character.characterId),
             name: character.name!.toString(),
             level: Number(character.level),

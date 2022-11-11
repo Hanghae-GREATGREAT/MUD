@@ -1,8 +1,10 @@
 import { UserSession } from '../interfaces/user';
 import DungeonService from '../services/dungeon.service';
 import redis from '../db/redis/config';
-import front from '../front';
-import { homeScript } from '../front/home';
+import { front } from '../handler';
+import { homeScript } from '../scripts';
+import { ReturnScript } from '../interfaces/socket';
+
 
 export default {
     help: (CMD: string | undefined, user: UserSession) => {
@@ -18,7 +20,7 @@ export default {
         return { script, user, field };
     },
 
-    getDungeonList: (CMD: string | undefined, user: UserSession) => {
+    getDungeonList: async(CMD: string | undefined, user: UserSession): Promise<ReturnScript> => {
         console.log('dungeon list.');
         front.checkUser(user).then((result)=>{
             if (result) {
