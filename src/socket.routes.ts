@@ -54,7 +54,6 @@ const onConnection = (server: Socket) => {
         if (!commandRouter[CMD1]) {
             const result = commandRouter['EMPTY'](line, user);
             return socket.emit('print', result);
-
         }
 
         const result = await commandRouter[CMD1](CMD2, user, server.id);
@@ -65,7 +64,6 @@ const onConnection = (server: Socket) => {
             server.emit('print', result);
         }
     });
-
 
     socket.on('sign', async ({ line, user, option }: LineInput) => {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
@@ -138,9 +136,7 @@ const onConnection = (server: Socket) => {
                                     전투                                      
      ************************************************************************/
 
-
     socket.on('battle', async ({ line, user }: LineInput) => {
-
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
         console.log('socketon battle');
 
@@ -173,7 +169,7 @@ const onConnection = (server: Socket) => {
 
         const newScript: CommandRouter = {
             monster: battle.encounter,
-            player: dungeon.getDungeonList,
+            player: battle.adventureload,
         };
 
         let result;
@@ -223,7 +219,6 @@ const onConnection = (server: Socket) => {
 
         const result = await commandRouter[CMD1](CMD2, user);
         socket.emit('print', result);
-
     });
 
     /************************************************************************
@@ -234,13 +229,14 @@ const onConnection = (server: Socket) => {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
 
         const commandRouter: CommandRouter = {
-            확인: battle.fhelp,
-            마을: battle.skill,
+            load: battle.adventureload,
+            확인: battle.getDetail,
+            마을: battle.returnVillage,
         };
 
         if (!commandRouter[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
-            const result = battle.fwrongCommand(CMD1, user);
+            const result = battle.adventureWrongCommand(CMD1, user);
             return socket.emit('print', result);
         }
 
@@ -261,7 +257,6 @@ const onConnection = (server: Socket) => {
     //     });
     //     redis.set(socket.id, name, { EX: 60*5 });
     // });
-
 
     socket.on('submit', ({ name, message, field }: ChatInput) => {
         redis.set(socket.id, name, { EX: 60 * 5 });

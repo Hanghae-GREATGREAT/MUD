@@ -96,8 +96,9 @@ export default {
                 await Monsters.destroyMonster(Number(dungeonData.monsterId));
                 await redis.hDel(String(user.characterId), 'monsterId');
 
-                nextField = 'dungeon';
-                tempScript += '으악 ! 당신은 죽어버렸다.\n';
+                nextField = 'adventureResult';
+                tempScript += '\n!! 치명상 !!\n';
+                tempScript += `당신은 ${monsterName}의 공격을 버티지 못했습니다.. \n`;
                 dead = 'player';
             }
         }
