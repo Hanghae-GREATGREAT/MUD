@@ -23,6 +23,16 @@ interface CommandRouter {
     [key: string]: commandHandler;
 }
 
+type commandHandlerP = (
+    CMD: string,
+    user: UserSession,
+    ...args: any[]
+) => Promise<ReturnScript>;
+
+interface CommandRouterP {
+    [key: string]: commandHandlerP;
+}
+
 interface ChatInput {
     name: string;
     message: string;
@@ -41,6 +51,7 @@ export {
     LineInput,
     ReturnScript,
     CommandRouter,
+    CommandRouterP,
     ChatInput,
     ChatOutput,
     BattleLoop,

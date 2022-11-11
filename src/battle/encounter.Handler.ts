@@ -2,6 +2,7 @@ import { UserSession } from '../interfaces/user';
 import { BattleService } from '../services';
 import redis from '../db/redis/config';
 import { Monsters } from '../db/models';
+import { ReturnScript } from '../interfaces/socket';
 
 export default {
     // help: (CMD: string | undefined, user: UserSession) => {}
@@ -20,7 +21,7 @@ export default {
         return { script, user, field };
     },
 
-    encounter: async (CMD: string | undefined, user: UserSession) => {
+    encounter: async (CMD: string | undefined, user: UserSession): Promise<ReturnScript> => {
         // 던전 진행상황 불러오기
         let dungeonSession = await redis.hGetAll(String(user.characterId));
         const dungeonLevel = Number(dungeonSession!.dungeonLevel);
