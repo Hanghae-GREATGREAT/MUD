@@ -5,7 +5,7 @@ const router = Router();
 
 
 router.get('/', (req, res)=>{
-    res.render('home.html');
+    res.status(200).render('home.html');
 });
 
 router.get('/front', (_, res)=>{
