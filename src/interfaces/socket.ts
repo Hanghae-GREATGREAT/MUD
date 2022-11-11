@@ -10,6 +10,7 @@ interface ReturnScript {
     script: string;
     user: UserSession;
     field: string;
+    chat?: boolean;
 }
 
 type commandHandler = (
@@ -25,6 +26,7 @@ interface CommandRouter {
 interface ChatInput {
     name: string;
     message: string;
+    field: string;
 }
 
 interface ChatOutput {
