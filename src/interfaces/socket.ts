@@ -13,14 +13,18 @@ interface ReturnScript {
     chat?: boolean;
 }
 
-type commandHandler = (CMD: string, user: UserSession, ...args: any[]) => ReturnScript | Promise<ReturnScript>;
+type commandHandler = (
+    CMD: string,
+    user: UserSession,
+    ...args: any[]
+) => ReturnScript | Promise<ReturnScript>;
 
 interface CommandRouter {
     [key: string]: commandHandler;
 }
 
 interface ChatInput {
-    name: string,
+    name: string;
     message: string;
     field: string;
 }
@@ -29,20 +33,18 @@ interface ChatOutput {
     output: string;
 }
 
+interface BattleLoop {
+    [key: string]: NodeJS.Timer;
+}
+
 export {
     LineInput,
     ReturnScript,
     CommandRouter,
     ChatInput,
     ChatOutput,
-}
-
-
-
-
-
-
-
+    BattleLoop,
+};
 
 // import { Socket } from 'socket.io';
 
@@ -53,10 +55,7 @@ export {
 // }
 // type ASICallback = (socket: Socket, userInfo: any, params: any) => void;
 
-
-
 // export { ASIMessage, ASICallback }
-
 
 // export enum MessageSource {
 //     normal = 'normal',  // others

@@ -1,5 +1,6 @@
 import { UserSession } from '../interfaces/user';
 import DungeonService from '../services/dungeon.service';
+import redis from '../db/redis/config';
 
 export default {
     help: (CMD: string | undefined, user: UserSession) => {
@@ -20,10 +21,10 @@ export default {
 
         // 던전 목록 불러오기
         const dungeonList = DungeonService.getDungeonList();
-        console.log(dungeonList);
 
         // 임시 스크립트 선언
-        const tempLine = '========================================\n';
+        const tempLine =
+            '=======================================================================\n';
         let tempScript: string = '';
 
         tempScript += `${user.name}은(는) 깊은 심연으로 발걸음을 내딛습니다.\n\n`;
@@ -31,14 +32,15 @@ export default {
 
         const script = tempLine + tempScript;
         const field = 'dungeon';
-        return { script, user, field, chat:true };
+        return { script, user, field, chat: true };
     },
 
     getDungeonInfo: (CMD: string | undefined, user: UserSession) => {
         console.log('dungeonInfo.');
 
         // 임시 스크립트 선언
-        const tempLine = '========================================\n';
+        const tempLine =
+            '=======================================================================\n';
         let tempScript: string = '';
 
         // 던전 정보 불러오기
@@ -48,6 +50,14 @@ export default {
         tempScript += `1. [수동] 전투 진행\n`;
         tempScript += `2. [자동] 전투 진행\n`;
         tempScript += `3. [돌]아가기\n`;
+
+        // 던전 진행상황 업데이트
+        const dungeonSession = {
+            dungeonLevel: Number(CMD),
+            characterId: Number(user.characterId),
+            monsterId: 0,
+        };
+        redis.hSet(String(user.characterId), dungeonSession);
 
         const script = tempLine + tempScript;
         const field = 'battle';
@@ -67,16 +77,14 @@ export default {
     },
 };
 
-
-
-
 export function dungeonList(name: string) {
     // 던전 목록 불러오기
     const dungeonList = DungeonService.getDungeonList();
     console.log(dungeonList);
 
     // 임시 스크립트 선언
-    const tempLine = '========================================\n';
+    const tempLine =
+        '=======================================================================\n';
     let tempScript: string = '';
 
     tempScript += `${name}은(는) 깊은 심연으로 발걸음을 내딛습니다.\n\n`;
