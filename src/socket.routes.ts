@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io';
-import { LineInput, CommandRouter, ReturnScript, ChatInput, ChatOutput } from './interfaces/socket';
+import { LineInput, CommandRouter, ChatInput } from './interfaces/socket';
 import redis from './db/redis/config';
 
 
@@ -11,6 +11,10 @@ import battle from './battle'
 const onConnection = (socket: Socket) => {
     console.log('SOCKET CONNECTED');
 
+
+    /************************************************************************
+                                    홈                                      
+     ************************************************************************/
     socket.on('none', ({ line, user }: LineInput) => {
         const [ CMD1, CMD2 ]: string[] = line.trim().toUpperCase().split(' ');
 
@@ -19,6 +23,7 @@ const onConnection = (socket: Socket) => {
         }
         const result = commandRouter[CMD1](CMD2, user);
         socket.emit('print', result);
+        socket.emit('enterChat', 'none');
     });
 
     socket.on('front', async({ line, user }: LineInput) => {
@@ -26,13 +31,22 @@ const onConnection = (socket: Socket) => {
         console.log('front', CMD1, CMD2);
 
         const commandRouter: CommandRouter = {
-            'IN': front.test,
+            'IN': front.signinUsername,
             'UP': front.signupUsername,
             'OUT': front.signout,
+            'D': front.toDungeon,
+            'DUNGEON': front.toDungeon,
+            'V': front.toVillage,
+            'VILLAGE': front.toVillage,
             'EMPTY': front.emptyCommand,
         }
-        const result = await commandRouter[CMD1](CMD2, user);
+        if (!commandRouter[CMD1]) {  
+            const result = commandRouter['EMPTY'](line, user)
+            return socket.emit('print', result);
+        }
 
+        const result = await commandRouter[CMD1](CMD2, user, socket.id);
+        if (result.chat) socket.emit('enterChat', result.field);
         if (result.field === 'signout') {
             socket.emit('signout', result);
         } else {
@@ -40,13 +54,39 @@ const onConnection = (socket: Socket) => {
         }
     });
 
-    socket.on('dungeon', ({ line, user }: LineInput) => {
+    socket.on('sign', async({ line, user, option }: LineInput) => {
+        const [ CMD1, CMD2 ]: string[] = line.trim().split(' ');
+
+        const commandRouter: CommandRouter = {
+            10: front.signupPassword,
+            11: front.createUser,
+            12: front.createCharacter,
+            20: front.signinPassword,
+            21: front.signinCheck,
+            'EMPTY': front.emptyCommand,
+        }
+        if (!CMD1 || !option) {  
+            const result = commandRouter['EMPTY'](line, user)
+            return socket.emit('print', result);
+        }
+
+        const result = await commandRouter[option](CMD1, user, socket.id);
+        if (result.chat) socket.emit('enterChat', result.field);
+        socket.emit('print', result);
+    });
+
+
+    /************************************************************************
+                                    필드                                      
+     ************************************************************************/
+
+    socket.on('dungeon', async ({ line, user }: LineInput) => {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
         console.log('inputCommand : ', CMD1, CMD2);
 
         const commandRouter: CommandRouter = {
             도움말: dungeon.help,
-            목록: dungeon.getDungeonList,
+            load: dungeon.getDungeonList,
             입장: dungeon.getDungeonInfo,
         };
         if (!commandRouter[CMD1]) {
@@ -55,33 +95,15 @@ const onConnection = (socket: Socket) => {
             return socket.emit('print', result);
         }
         
-        const result = commandRouter[CMD1](CMD2, user);
+        const result = await commandRouter[CMD1](CMD2, user);
+        if (result.chat) socket.emit('enterChat', result.field);
         socket.emit('print', result);
     });
 
 
-    socket.on('signup', async({ line, user, option }: LineInput) => {
-        const [ CMD1, CMD2 ]: string[] = line.trim().split(' ');
-
-        const commandRouter: CommandRouter = {
-            10: front.signupPassword,
-            11: front.createUser,
-            12: front.createCharacter,
-            'EMPTY': front.emptyCommand,
-        }
-        if (!CMD1 || !option) {  
-            const result = commandRouter['EMPTY'](line, user)
-            return socket.emit('print', result);
-        }
-        if (!commandRouter[CMD1]) {  
-            const result = await commandRouter['EMPTY'](line, user)
-            return socket.emit('print', result);
-        }
-        
-
-        const result = await commandRouter[option](CMD1, user, socket.id);
-        socket.emit('print', result);
-    });
+    /************************************************************************
+                                    전투                                      
+     ************************************************************************/
 
     socket.on('battle', ({ line, user }: LineInput) => {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
@@ -123,6 +145,11 @@ const onConnection = (socket: Socket) => {
         socket.emit('print', result);
     });
 
+
+    /************************************************************************
+                                    채팅박스                                      
+     ************************************************************************/
+
     // socket.on('info', ({ name }: UserSession)=>{
     //     CharacterService.findOneByName(name).then((character)=>{
     //         if (character === null) throw new Error();
@@ -133,14 +160,13 @@ const onConnection = (socket: Socket) => {
     //     redis.set(socket.id, name, { EX: 60*5 });
     // });
 
-    // socket.on('submit', ({ name, message }: ChatInput) => {
-    //     console.log(message);
-    //     redis.set(socket.id, name, { EX: 60*5 });
+    socket.on('submit', ({ name, message, field }: ChatInput) => {
+        redis.set(socket.id, name, { EX: 60*5 });
 
-    //     const script = `${name}: ${message}\n`
-    //     socket.broadcast.emit('print', { script });
-    //     socket.emit('print', { script });
-    // });
+        const script = `${name}: ${message}\n`
+        socket.broadcast.emit('chat', { script, field });
+        socket.emit('chat', { script, field });
+    });
 
     socket.on('disconnect', () => {
         redis.del(socket.id);

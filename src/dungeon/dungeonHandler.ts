@@ -31,7 +31,7 @@ export default {
 
         const script = tempLine + tempScript;
         const field = 'dungeon';
-        return { script, user, field };
+        return { script, user, field, chat:true };
     },
 
     getDungeonInfo: (CMD: string | undefined, user: UserSession) => {
@@ -66,3 +66,21 @@ export default {
         return { script, user, field };
     },
 };
+
+
+
+
+export function dungeonList(name: string) {
+    // 던전 목록 불러오기
+    const dungeonList = DungeonService.getDungeonList();
+    console.log(dungeonList);
+
+    // 임시 스크립트 선언
+    const tempLine = '========================================\n';
+    let tempScript: string = '';
+
+    tempScript += `${name}은(는) 깊은 심연으로 발걸음을 내딛습니다.\n\n`;
+    tempScript += `${dungeonList}`;
+
+    return tempLine + tempScript;
+}

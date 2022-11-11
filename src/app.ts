@@ -4,12 +4,10 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import onConnection from './socket.routes';
 
-// import morgan from './middlewares/morgan';
 import path from 'path';
 import ejs from 'ejs';
 import sequelize from './db/config/connection';
 import associate from './db/config/associate';
-// import cors from 'cors'
 
 import apiRouter from './api.routes';
 import pageRouter from './page.routes';
@@ -48,13 +46,8 @@ app.engine('html', ejs.renderFile);
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
-// app.use(morgan.middleware);
 app.use(express.static(path.join(__dirname, 'views' , 'public')));
 app.use(express.json());
-// app.use(cors({
-//     origin: 'http://localhost:3000',
-//     credentials: true,
-// }));
 
 app.use('/', pageRouter);
 app.use('/api', apiRouter);
