@@ -82,12 +82,12 @@ class Characters extends Model<
     /***************************************************************
      * 전투 턴이 종료되고 hp, mp 상태 갱신
      ***************************************************************/
-    static async refreshStatus(characterId: number, damage: number, cost: number) {
+    static async refreshStatus(characterId: number, damage: number, cost: number): Promise<UserSession> {
         const result = await Characters.findByPk(characterId, {
             include: [ Users, Fields, Titles ]
         });
         // const questId = await QuestCompletes.findOne()        
-        if (!result) return null;
+        if (!result) throw new Error('존재하지 않는 캐릭터');
 
         const { hp, mp } = result.get();
         const newHp = hp - damage > 0 ? hp - damage : 0;
@@ -99,7 +99,7 @@ class Characters extends Model<
             userId: result.User.getDataValue('userId'),
             username: result.User.getDataValue('username'),
             questId: 1,
-            ...characters,
+            ...characters!,
             hp: newHp,
             mp: newMp,
         }
@@ -114,11 +114,11 @@ class Characters extends Model<
         return exp >= reqExp ? level + 1 : level;
     }    
 
-    static async addExp(characterId: number, exp: number) {
+    static async addExp(characterId: number, exp: number): Promise<UserSession> {
         const result = await Characters.findByPk(characterId, {
             include: [ Users, Fields, Titles ]
         });
-        if (!result) return null;
+        if (!result) throw new Error('존재하지 않는 캐릭터');
 
         await result.increment({ exp });
 
@@ -135,7 +135,7 @@ class Characters extends Model<
             username: result.User.getDataValue('username')!,
             levelup,
             questId: 1,
-            ...character,
+            ...character!,
             exp: result.get('exp') + exp,
         }
     }
