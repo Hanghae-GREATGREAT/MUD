@@ -1,18 +1,16 @@
 import { createClient, RedisClientType, SetOptions } from 'redis';
 import env from '../../config.env';
 
-
 interface KeyPair {
     [key: string]: string | number;
 }
 
 class RedisCache {
-
     private readonly client: RedisClientType;
 
     constructor() {
         this.client = createClient({
-            url: `redis://${env.REDIS_USER}:${env.REDIS_PASSWORD}@${env.REDIS_HOST}/0`
+            url: `redis://${env.REDIS_USER}:${env.REDIS_PASSWORD}@${env.REDIS_HOST}/0`,
         });
         this.connect();
 
@@ -29,7 +27,7 @@ class RedisCache {
         await this.client.connect();
     }
 
-    async set(key: string, value: string, option: SetOptions = {} ) {
+    async set(key: string, value: string, option: SetOptions = {}) {
         await this.client.set(key, value, option);
     }
 
@@ -40,7 +38,7 @@ class RedisCache {
     async del(key: string) {
         await this.client.del(key);
     }
-    
+
     async hSet(key: string, data: any) {
         await this.client.hSet(key, data);
     }
@@ -71,9 +69,7 @@ class RedisCache {
     }
 }
 
-
 export default new RedisCache();
-
 
 // export class RedisCache {
 //     private readonly cache: RedisClientType;
