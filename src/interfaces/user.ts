@@ -1,3 +1,5 @@
+import { InferAttributes } from "sequelize";
+import { Items, Skills } from "../db/models";
 
 
 interface SignupForm {
@@ -19,6 +21,8 @@ interface UserSession {
     mp: number;
     exp: number;
     questId: number;
+    item: InferAttributes<Items, { omit: never; }>[];
+    skill: InferAttributes<Skills, { omit: never; }>[];
 }
 
 

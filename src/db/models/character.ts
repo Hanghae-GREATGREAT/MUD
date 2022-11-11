@@ -4,7 +4,7 @@ import {
     InferAttributes, InferCreationAttributes,
     CreationOptional, ForeignKey, NonAttribute
 } from 'sequelize';
-import { Users, Titles, Fields } from '../models';
+import { Users, Titles, Fields, Items, Skills } from '../models';
 import { UserSession } from '../../interfaces/user'
 
 
@@ -51,6 +51,8 @@ class Characters extends Model<
     declare hp: CreationOptional<number>;
     declare mp: CreationOptional<number>;
     declare exp: CreationOptional<number>;
+    declare item: CreationOptional<string>;
+    declare skill: CreationOptional<string>;
 
     declare createdAt: CreationOptional<number>;
     declare updatedAt: CreationOptional<number>;
@@ -80,7 +82,7 @@ class Characters extends Model<
     /***************************************************************
      * 전투 턴이 종료되고 hp, mp 상태 갱신
      ***************************************************************/
-    static async refreshStatus(characterId: number, damage: number, cost: number): Promise<UserSession | null> {
+    static async refreshStatus(characterId: number, damage: number, cost: number) {
         const result = await Characters.findByPk(characterId, {
             include: [ Users, Fields, Titles ]
         });
@@ -91,14 +93,15 @@ class Characters extends Model<
         const newHp = hp - damage > 0 ? hp - damage : 0;
         const newMp = mp - cost > 0 ? mp - cost : 0;
         result.update({ hp: newHp, mp: newMp });
-
+        
+        const characters = await Characters.getSessionData(result)
         return {
-            ...Characters.getSessionData(result)!,
             userId: result.User.getDataValue('userId'),
             username: result.User.getDataValue('username'),
+            questId: 1,
+            ...characters,
             hp: newHp,
             mp: newMp,
-            questId: 1
         }
     }
 
@@ -111,7 +114,7 @@ class Characters extends Model<
         return exp >= reqExp ? level + 1 : level;
     }    
 
-    static async addExp(characterId: number, exp: number): Promise<UserSession | null> {
+    static async addExp(characterId: number, exp: number) {
         const result = await Characters.findByPk(characterId, {
             include: [ Users, Fields, Titles ]
         });
@@ -126,20 +129,33 @@ class Characters extends Model<
             await result.increment({ level: 1 });
         }
 
+        const character = await Characters.getSessionData(result);
         return {
-            ...Characters.getSessionData(result)!,
-            userId: result.User.getDataValue('userId'),
-            username: result.User.getDataValue('username'),
+            userId: result.User.getDataValue('userId')!,
+            username: result.User.getDataValue('username')!,
             levelup,
-            exp: result.get('exp') + exp,
             questId: 1,
+            ...character,
+            exp: result.get('exp') + exp,
         }
     }
 
-    static getSessionData(character: Partial<Characters>) {
+    static async getSessionData(character: Partial<Characters>) {
         if (!character) {
             return null;
         }
+
+        const getItems = await Items.findAll({
+            where: {
+                itemId: character.item!.split(':')
+            }
+        });
+        const getSkills = await Skills.findAll({
+            where: {
+                skillId: character.skill!.split(':')
+            }
+        });
+
         return {
             characterId: Number(character.characterId),
             name: character.name!.toString(),
@@ -149,6 +165,8 @@ class Characters extends Model<
             hp: Number(character.hp),
             mp: Number(character.mp),
             exp: Number(character.exp),
+            item: getItems.map(item=>item.get()),
+            skill: getSkills.map(skill=>skill.get()),
         }
     }
 
@@ -231,6 +249,14 @@ Characters.init({
     exp: {
         type: DataTypes.INTEGER.UNSIGNED,
         defaultValue: 0,
+    },
+    item: {
+        type: DataTypes.STRING,
+        defaultValue: '',
+    },
+    skill: {
+        type: DataTypes.STRING,
+        defaultValue: '',
     },
 
     createdAt: {
