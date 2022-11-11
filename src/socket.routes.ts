@@ -10,7 +10,6 @@ import redis from './db/redis/config';
 
 import { chat, home } from './controller';
 
-
 import dungeon from './dungeon/dungeonHandler';
 import battle from './battle';
 
@@ -28,7 +27,6 @@ const onConnection = (server: Socket) => {
     socket.on('front', home.frontController);
 
     socket.on('sign', home.signController);
-
 
     /************************************************************************
                                     필드                                      
@@ -58,9 +56,7 @@ const onConnection = (server: Socket) => {
                                     전투                                      
      ************************************************************************/
 
-
     socket.on('battle', async ({ line, user }: LineInput) => {
-
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
         console.log('socketon battle');
 
@@ -93,7 +89,7 @@ const onConnection = (server: Socket) => {
 
         const newScript: CommandRouter = {
             monster: battle.encounter,
-            player: dungeon.getDungeonList,
+            player: battle.adventureload,
         };
 
         let result;
@@ -103,7 +99,7 @@ const onConnection = (server: Socket) => {
                 socket.emit('printBattle', result);
                 if (result.dead.match(/player|monster/)) {
                     clearInterval(battleLoops[user.characterId]);
-                    result = await newScript[result.dead](CMD2, user)
+                    result = await newScript[result.dead](CMD2, user);
                     socket.emit('print', result);
                 }
             }, 1500);
@@ -142,7 +138,6 @@ const onConnection = (server: Socket) => {
 
         const result = await commandRouter[CMD1](CMD2, user);
         socket.emit('print', result);
-
     });
 
     /************************************************************************
@@ -153,13 +148,14 @@ const onConnection = (server: Socket) => {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
 
         const commandRouter: CommandRouter = {
-            확인: battle.fhelp,
-            마을: battle.skill,
+            load: battle.adventureload,
+            확인: battle.getDetail,
+            마을: battle.returnVillage,
         };
 
         if (!commandRouter[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
-            const result = battle.fwrongCommand(CMD1, user);
+            const result = battle.adventureWrongCommand(CMD1, user);
             return socket.emit('print', result);
         }
 

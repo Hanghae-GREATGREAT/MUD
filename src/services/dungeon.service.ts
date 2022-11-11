@@ -1,6 +1,16 @@
 // import { Monsters } from '../db/models';
 
 class DungeonService {
+    validationCMD(CMD: string | undefined): boolean {
+        if (CMD === undefined || Number(CMD) === NaN) {
+            return false;
+        } else if (Number(CMD) < 1 || Number(CMD) > 5) {
+            return false;
+        }
+
+        return true;
+    }
+
     getDungeonList() {
         const dungeons = this.dungeons();
 
