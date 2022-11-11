@@ -26,7 +26,7 @@ const onConnection = (server: Socket) => {
                                     홈                                      
      ************************************************************************/
 
-    socket.on('none', async({ line, user }: LineInput) => {
+    socket.on('none', async ({ line, user }: LineInput) => {
         const [CMD1, CMD2]: string[] = line.trim().toUpperCase().split(' ');
 
         const commandRouter: CommandRouter = {
