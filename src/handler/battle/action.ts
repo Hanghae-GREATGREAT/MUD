@@ -1,16 +1,10 @@
-import { Characters, Monsters } from "../db/models";
-import { UserSession } from "../interfaces/user";
-import { CharacterService, BattleService } from "../services";
-import redis from '../db/redis/config';
+import { Characters, Monsters } from "../../db/models";
+import { UserSession } from "../../interfaces/user";
+import { BattleService } from "../../services";
+import redis from '../../db/redis/config';
 import { battleLoops } from './encounter.Handler';
 import battle from '../battle'
 
-
-interface SkillForm {
-    name: string;
-    multiple: number;
-    cost: number;
-}
 
 class BattleAction {
     actionSkill = async(CMD: string, user: UserSession) => {

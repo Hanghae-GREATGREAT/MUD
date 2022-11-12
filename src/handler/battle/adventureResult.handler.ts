@@ -1,7 +1,7 @@
-import { UserSession } from '../interfaces/user';
-import { BattleService } from '../services';
-import redis from '../db/redis/config';
-import { Monsters } from '../db/models';
+import { UserSession } from '../../interfaces/user';
+import { BattleService } from '../../services';
+import redis from '../../db/redis/config';
+import { Monsters } from '../../db/models';
 
 export default {
     adventureload: (CMD: string | undefined, user: UserSession) => {

@@ -1,6 +1,6 @@
 import { UserSession } from "../../interfaces/user";
 import { UserService, CharacterService } from "../../services";
-import { dungeonList } from "../../dungeon/dungeonHandler";
+import { dungeonList } from "../../handler";
 import { homeScript } from "../../scripts";
 import { Characters } from "../../db/models";
 

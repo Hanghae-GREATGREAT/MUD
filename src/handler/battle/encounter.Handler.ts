@@ -1,11 +1,11 @@
-import { UserSession } from '../interfaces/user';
-import { BattleService } from '../services';
-import redis from '../db/redis/config';
-import { Monsters } from '../db/models';
-import { BattleLoop, CommandRouter, ReturnScript } from '../interfaces/socket';
+import { UserSession } from '../../interfaces/user';
+import { BattleService } from '../../services';
+import redis from '../../db/redis/config';
+import { Monsters } from '../../db/models';
+import { BattleLoop, CommandRouter, ReturnScript } from '../../interfaces/socket';
 import battle from './battle.Handler'
-import dungeon from '../dungeon';
-import { socket } from '../socket.routes'
+import { dungeon } from '../../handler';
+import { socket } from '../../socket.routes'
 
 class EncounterHandler {
     // help: (CMD: string | undefined, user: UserSession) => {}

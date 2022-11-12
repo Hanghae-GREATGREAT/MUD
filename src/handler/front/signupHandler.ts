@@ -44,7 +44,9 @@ export default {
             userId,
             characterId: character?.characterId,
         }
-        await redis.hSet(id, userSession);
+        // await redis.hSet(id, userSession);
+        const data = JSON.stringify(userSession);
+        await redis.set(id, data, { EX: 60*5 });
 
         const newCharacter = await Characters.getSessionData(character)
         user = Object.assign(user, newCharacter);
