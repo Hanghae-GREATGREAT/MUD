@@ -2,7 +2,6 @@ import { UserSession } from "../../interfaces/user";
 import { UserService, CharacterService } from "../../services";
 import { dungeonList } from "../../handler";
 import { homeScript } from "../../scripts";
-import { Characters } from "../../db/models";
 
 export default {
 
@@ -17,8 +16,9 @@ export default {
     checkUser: async(user: UserSession) => {
         console.log('CHECK USER');
         const { userId, characterId, name } = user;
-        const character = await Characters.findByPk(userId);
+        const character = await CharacterService.findOneByUserId(userId);
         
+        // userSession으로 들어온 정보와 일치하는 캐릭터가 없을 때
         return (!character || character.characterId !== characterId || character.name !== name);
     },
 

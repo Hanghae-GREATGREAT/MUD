@@ -1,6 +1,7 @@
 
 
 interface MonsterInputForm {
+    characterId: number;
     fieldId: number;
     name: string;
     type: number;

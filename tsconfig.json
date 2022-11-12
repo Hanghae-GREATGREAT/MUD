@@ -3,7 +3,7 @@
     "compilerOptions": {
         "target": "ES6",
         "module": "CommonJs",
-        "lib": ["ES6"],
+        "lib": ["ES6", "ES2022"],
         "esModuleInterop": true,
         "outDir": "build",
         "strict": true,

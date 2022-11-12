@@ -1,11 +1,7 @@
-import { Monsters } from '../db/models';
+
 
 class BattleService {
-    async createNewMonster(dungeonLevel: number) {
-        const newMonster = await Monsters.createMonster(dungeonLevel);
-
-        return newMonster;
-    }
+    
     hitStrength(damage: number): number {
         const hitStrength = Math.floor(Math.random() * 40) + 80;
         return Math.floor((damage * hitStrength) / 100);

@@ -8,8 +8,9 @@ import {
     ForeignKey,
     NonAttribute,
 } from 'sequelize';
-import { Users, Titles, Fields, Items, Skills } from '../models';
+import { Users, Titles, Fields, Items, Skills, Monsters } from '../models';
 import { UserSession } from '../../interfaces/user';
+import { MonsterService } from '../../services';
 
 /***************************************************************
  * 레벨별 필요 경험치
@@ -70,6 +71,10 @@ class Characters extends Model<
     ) => Promise<UserSession | null>;
 
     static associate() {
+        this.hasMany(Monsters, {
+            sourceKey: 'characterId',
+            foreignKey: 'characterId'
+        });
         this.belongsTo(Users, {
             targetKey: 'userId',
             foreignKey: 'userId',
@@ -85,77 +90,15 @@ class Characters extends Model<
     }
 
     /***************************************************************
-     * 전투 턴이 종료되고 hp, mp 상태 갱신
-     ***************************************************************/
-    static async refreshStatus(
-        characterId: number,
-        damage: number,
-        cost: number,
-    ): Promise<any> {
-        const result = await Characters.findOne({
-            where: { characterId },
-            include: Users,
-        });
-        // const questId = await QuestCompletes.findOne()
-        if (!result) throw new Error('존재하지 않는 캐릭터');
-
-        const { hp, mp } = result.get();
-        const newHp = hp - damage > 0 ? hp - damage : 0;
-        const newMp = mp - cost > 0 ? mp - cost : 0;
-        console.log(newHp, newMp);
-        result.update({ hp: newHp, mp: newMp });
-
-        // const characters = await Characters.getSessionData(result)
-        return {
-            ...result.get()!,
-            userId: result.User.getDataValue('userId'),
-            username: result.User.getDataValue('username'),
-            questId: 1,
-            hp: newHp,
-            mp: newMp,
-        };
-    }
-
-    /***************************************************************
      * 전투 종료 후 경험치&레벨 계산
      ***************************************************************/
-    private static levelCalc(exp: number, level: number) {
+    static levelCalc(exp: number, level: number) {
         const reqExp =
             Characters.getInstance().expMap.get(level) ||
             Number.MAX_SAFE_INTEGER;
 
         return exp >= reqExp ? level + 1 : level;
-    }
-
-    static async addExp(characterId: number, exp: number): Promise<any> {
-        const result = await Characters.findOne({
-            where: { characterId },
-            include: Users,
-        });
-        if (!result) throw new Error('존재하지 않는 캐릭터');
-
-        await result.increment({ exp });
-
-        const level = this.levelCalc(
-            result.get('exp') + exp,
-            result.get('level'),
-        );
-        let levelup = false;
-        if (level > result.get('level')) {
-            levelup = true;
-            await result.increment({ level: 1 });
-        }
-
-        // const character = await Characters.getSessionData(result);
-        return {
-            ...result.get()!,
-            userId: result.User.getDataValue('userId')!,
-            username: result.User.getDataValue('username')!,
-            levelup,
-            questId: 1,
-            exp: result.get('exp') + exp,
-        };
-    }
+    }    
 
     static async getSessionData(character: Partial<Characters>) {
         if (!character) {
@@ -185,21 +128,6 @@ class Characters extends Model<
             exp: Number(character.exp),
             item: getItems.map((item) => item.get()),
             skill: getSkills.map((skill) => skill.get()),
-        };
-    }
-
-    static async findByPk(characterId: number): Promise<any> {
-        const character: Characters | null = await Characters.findOne({
-            where: { characterId },
-            include: [Users, Fields, Titles],
-        });
-        if (!character) return null;
-
-        const session = await Characters.getSessionData(character!);
-
-        return {
-            ...character.get(),
-            ...session,
         };
     }
 
@@ -273,7 +201,7 @@ Characters.init(
             defaultValue: 100,
         },
         hp: {
-            type: DataTypes.SMALLINT.UNSIGNED,
+            type: DataTypes.SMALLINT,
             defaultValue: 100,
         },
         mp: {

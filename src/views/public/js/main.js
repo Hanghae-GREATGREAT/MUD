@@ -16,7 +16,7 @@ $(() => {
     dungeon();
     statusLoader(user);
 
-    socket.emit('info', { name: user.name });
+    server.emit('info', { name: user.name });
 });
 
 /*****************************************************************************
@@ -203,8 +203,8 @@ const chatSubmitdHandler = () => {
         name,
         message: chatInput.val(),
     };
-    socket.emit('submit', data);
+    server.emit('submit', data);
     chatInput.val('');
 };
 
-socket.on('print', chatNewMessage);
+server.on('print', chatNewMessage);

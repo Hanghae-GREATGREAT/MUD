@@ -50,16 +50,13 @@ export default {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
 
         const result = await battle.actionSkill(CMD1, user);
-        if (result.error) {
+        if (Object.hasOwn(result, 'error')) {
             return socket.emit('print', result);
         }  
-        if (result.dead?.length === 0) return socket.emit('print', result);
+        if (!result.dead) return socket.emit('print', result);
 
         const deadResult = await battle.reEncounter('', result.user);
-        // console.log('deadScript', deadResult.script);
-        // console.log('original script', result.script)
         deadResult.script = result.script + deadResult.script;
-        console.log(deadResult)
         socket.emit('print', deadResult);
     },
 
