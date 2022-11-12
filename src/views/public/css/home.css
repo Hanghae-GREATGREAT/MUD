@@ -181,6 +181,8 @@ body > .container > .windows > .chatingWindow > .chatingList {
     font-size: 20px;
     margin-left: 25px;
     white-space: pre-line;
+
+    word-break: break-all;
 }
 
 body > .container > .windows > .chatingWindow > .chatingList::-webkit-scrollbar {
