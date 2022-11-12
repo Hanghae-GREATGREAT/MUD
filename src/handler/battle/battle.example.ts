@@ -1,4 +1,4 @@
-import { UserSession } from '../interfaces/user';
+import { UserSession } from '../../interfaces/user';
 
 interface BattleLoop {
     [key: string]: NodeJS.Timer;

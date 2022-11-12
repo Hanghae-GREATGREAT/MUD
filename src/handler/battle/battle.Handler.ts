@@ -1,7 +1,7 @@
-import { UserSession } from '../interfaces/user';
-import redis from '../db/redis/config';
-import { Monsters, Characters, Users } from '../db/models';
-import { BattleService } from '../services';
+import { UserSession } from '../../interfaces/user';
+import redis from '../../db/redis/config';
+import { Monsters, Characters, Users } from '../../db/models';
+import { BattleService } from '../../services';
 
 export default {
     // help: (CMD: string | undefined, user: UserSession) => {}
