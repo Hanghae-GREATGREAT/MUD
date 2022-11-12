@@ -148,7 +148,10 @@ const chatNewMessage = ({ script, field }) => {
     console.log('NEEEEEEEEEEEW', field, script);
     const newMessage = `<span>${script}</span>`;
     const currentField = localStorage.getItem('field');
-    if (currentField.includes(field)) chatBoxId.append(newMessage);
+    if (currentField.includes(field)) {
+        chatBoxId.append(newMessage);
+        chatBoxId.scrollTop(Number.MAX_SAFE_INTEGER);
+    };
 };
 
 chatForm.submit((e) => {
