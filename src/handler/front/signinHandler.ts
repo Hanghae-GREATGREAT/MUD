@@ -3,6 +3,7 @@ import { CharacterService, UserService, DungeonService } from '../../services';
 import { Characters } from '../../db/models';
 import redis from '../../db/redis/config'
 import { signinScript } from '../../scripts';
+import userService from '../../services/user.service';
 
 
 export default {
@@ -34,7 +35,9 @@ export default {
             userId,
             characterId: character?.characterId,
         }
-        await redis.hSet(id, userSession);
+        // await redis.hSet(id, userSession);
+        const data = JSON.stringify(userSession);
+        await redis.set(id, data, { EX: 60*5 });
 
         if (character) {
             const characterSession = await Characters.getSessionData(character)
