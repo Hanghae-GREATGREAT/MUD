@@ -1,7 +1,6 @@
 import { UserSession } from '../../interfaces/user';
-import { BattleService } from '../../services';
+import { BattleService, MonsterService } from '../../services';
 import redis from '../../db/redis/config';
-import { Monsters } from '../../db/models';
 
 export default {
     // help: (CMD: string | undefined, user: UserSession) => {}
@@ -31,7 +30,7 @@ export default {
         tempScript += `??? : 하남자특. 도망감.\n`;
 
         // 몬스터 삭제
-        await Monsters.destroyMonster(Number(dungeonSession.monsterId));
+        MonsterService.destroyMonster(+dungeonSession.monsterId, user.characterId);
 
         const script = tempLine + tempScript;
         const field = 'dungeon';

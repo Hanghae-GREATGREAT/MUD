@@ -1,4 +1,4 @@
-const socket = io('/');
+const server = io('/');
 
 
 
@@ -33,7 +33,7 @@ function checkStorage() {
 }
 
 function checkValidation(user) {
-    socket.emit('none', { line: 'CHECK', user });
+    server.emit('none', { line: 'CHECK', user });
 }
 
 
@@ -43,9 +43,9 @@ function checkValidation(user) {
 
 function loadScript(field, user) {
     if (field === 'undefined' || user === 'undefined' || !field || !user) {
-        return socket.emit('none', { line: 'LOAD', user: {} });
+        return server.emit('none', { line: 'LOAD', user: {} });
     }
-    socket.emit(field, { line: 'LOAD', user: JSON.parse(user) });
+    server.emit(field, { line: 'LOAD', user: JSON.parse(user) });
 }
 
 commendForm.submit((e) => {
@@ -59,11 +59,11 @@ commendForm.submit((e) => {
     const [field, option] = localStorage.getItem('field').split(':');
     const user = localStorage.getItem('user');
 
-    socket.emit(field, { line, user: JSON.parse(user), option });
+    server.emit(field, { line, user: JSON.parse(user), option });
 });
 
 
-socket.on('print', printHandler);
+server.on('print', printHandler);
 
 function printHandler({ script, user, field }) {
     console.log(script, user, field);
@@ -75,7 +75,7 @@ function printHandler({ script, user, field }) {
     statusLoader(user);
 }
 
-socket.on('printBattle', printBattleHandler);
+server.on('printBattle', printBattleHandler);
 
 function printBattleHandler({ script, user, field }) {
     localStorage.setItem('user', JSON.stringify(user));
@@ -86,7 +86,7 @@ function printBattleHandler({ script, user, field }) {
     statusLoader(user);
 }
 
-socket.on('signout', signoutHandler);
+server.on('signout', signoutHandler);
 
 async function signoutHandler({ script }) {
     localStorage.clear();
@@ -163,10 +163,10 @@ chatForm.submit((e) => {
         message: chatInput.val(),
         field
     };
-    socket.emit('submit', data);
+    server.emit('submit', data);
     chatInput.val('');
 });
 
-socket.on('chat', chatNewMessage);
+server.on('chat', chatNewMessage);
 
-socket.on('enterChat', chatEnterRoom);
+server.on('enterChat', chatEnterRoom);

@@ -7,24 +7,30 @@ import {
     ForeignKey,
 } from 'sequelize';
 import sequelize from '../config/connection';
-import Fields from './field';
+import { Characters, Fields} from '../models';
 import { MonsterInputForm } from '../../interfaces/monster';
+
 
 class Monsters extends Model<
     InferAttributes<Monsters>,
     InferCreationAttributes<Monsters>
 > {
     declare monsterId: CreationOptional<number>;
+    declare characterId: ForeignKey<number>;
     declare fieldId: ForeignKey<number>;
 
-    declare name: CreationOptional<string>;
-    declare type: CreationOptional<number>;
-    declare hp: CreationOptional<number>;
-    declare attack: CreationOptional<number>;
-    declare defense: CreationOptional<number>;
-    declare exp: CreationOptional<number>;
+    declare name: string;
+    declare type: number;
+    declare hp: number;
+    declare attack: number;
+    declare defense: number;
+    declare exp: number;
 
     static associate() {
+        this.belongsTo(Characters, {
+            targetKey: 'characterId',
+            foreignKey: 'characterId'
+        });
         this.belongsTo(Fields, {
             targetKey: 'fieldId',
             foreignKey: 'fieldId',
@@ -58,7 +64,7 @@ class Monsters extends Model<
     /***************************************************************
      * 해당 던전의 몬스터 생성
      ***************************************************************/
-    static async createMonster(fieldId: number) {
+    static async createMonster(fieldId: number, characterId: number) {
         // 여기에 일반, 희귀, 보스 몬스터를 결정할 확률을 만드는 코드를 만들자.
         // 0이 나올 확률은 80, 1은 15, 2는 5
         // 기본적으로 monsterId 1, 2, 3 은 첫 던전의 일반 3가지 몬스터
@@ -114,6 +120,7 @@ class Monsters extends Model<
         };
         if (!type) type = 0;
         const dumyMonsters: MonsterInputForm = {
+            characterId,
             fieldId,
             type,
             name: name!,
@@ -124,27 +131,6 @@ class Monsters extends Model<
         };
         return await Monsters.create(dumyMonsters);
     }
-
-    /***************************************************************
-     * 전투 턴이 종료되고 hp, mp 상태 갱신
-     ***************************************************************/
-    static async changeMonsterStatus(monsterId: number, damage: number) {
-        const result = await Monsters.findByPk(monsterId, {
-            include: [Fields],
-        });
-
-        if (!result) return null;
-
-        const { hp } = result.get();
-        const newHp = hp - damage > 0 ? hp - damage : 0;
-        return result.update({ hp: newHp });
-    }
-    /***************************************************************
-     * 전투 종료 후 몬스터 테이블 삭제 - 위에서 hp가 0이되면 삭제되게 만들까 ?
-     ***************************************************************/
-    static async destroyMonster(monsterId: number) {
-        await Monsters.destroy({ where: { monsterId } });
-    }
 }
 
 Monsters.init(
@@ -154,17 +140,25 @@ Monsters.init(
             autoIncrement: true,
             primaryKey: true,
         },
-        fieldId: {
+        characterId: {
             type: DataTypes.INTEGER.UNSIGNED,
             allowNull: false,
-            //   references: {
-            //       model: 'Fields',
-            //       key: 'fieldId'
-            //   }
+            references: {
+                model: 'Characters',
+                key: 'characterId'
+            }
+        },
+        fieldId: {
+            type: DataTypes.TINYINT.UNSIGNED,
+            allowNull: false,
+            references: {
+                model: 'Fields',
+                key: 'fieldId'
+            }
         },
         name: DataTypes.STRING(40),
         type: DataTypes.TINYINT.UNSIGNED,
-        hp: DataTypes.SMALLINT.UNSIGNED,
+        hp: DataTypes.SMALLINT,
         attack: DataTypes.SMALLINT.UNSIGNED,
         defense: DataTypes.SMALLINT.UNSIGNED,
         exp: DataTypes.SMALLINT.UNSIGNED,
