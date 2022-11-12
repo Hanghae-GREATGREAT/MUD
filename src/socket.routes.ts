@@ -13,11 +13,11 @@ const onConnection = (server: Socket) => {
                                     홈                                      
      ************************************************************************/
 
-    socket.on('none', home.noneController);
+    server.on('none', home.noneController);
 
-    socket.on('front', home.frontController);
+    server.on('front', home.frontController);
 
-    socket.on('sign', home.signController);
+    server.on('sign', home.signController);
 
     /************************************************************************
                                     필드                                      
@@ -31,25 +31,25 @@ const onConnection = (server: Socket) => {
                                     전투                                      
      ************************************************************************/
 
-    socket.on('battle', battle.battleController);
+    server.on('battle', battle.battleController);
 
-    socket.on('encounter', battle.encounterController);
+    server.on('encounter', battle.encounterController);
 
-    socket.on('action', battle.actionController);
+    server.on('action', battle.actionController);
 
-    socket.on('fight', battle.fightController);
+    server.on('fight', battle.fightController);
 
     /************************************************************************
                                    모험 종료                                      
      ************************************************************************/
 
-    socket.on('adventureResult', battle.resultController);
+    server.on('adventureResult', battle.resultController);
 
     /************************************************************************
                                     채팅박스                                      
      ************************************************************************/
 
-    socket.on('submit', chat.chatController);
+    server.on('submit', chat.chatController);
 
     server.on('disconnect', () => {
         redis.del(server.id);

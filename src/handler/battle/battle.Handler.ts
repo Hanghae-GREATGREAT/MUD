@@ -1,7 +1,8 @@
 import { UserSession } from '../../interfaces/user';
 import redis from '../../db/redis/config';
 import { Monsters, Characters, Users } from '../../db/models';
-import { BattleService } from '../../services';
+import { BattleService, CharacterService, MonsterService } from '../../services';
+import battle from '.';
 
 export default {
     // help: (CMD: string | undefined, user: UserSession) => {}
@@ -24,22 +25,15 @@ export default {
     manualLogic: async (CMD: string | undefined, user: UserSession) => {
         let tempScript: string = '';
         let dead: string | undefined;
-        let nextField = 'action';
+        let field = 'action';
+        const { characterId } = user;
 
-        // 유저 정보 불러오기
-        const characterStatus: any = await Characters.findByPk(
-            user.characterId,
-        );
-        const playerHP: number = characterStatus?.hp;
-        const playerDamage: number = characterStatus?.attack;
-        // 몬스터 정보 불러오기
-        const dungeonData = await redis.hGetAll(String(user.characterId));
-        const monsterId: number = Number(dungeonData.monsterId);
-        const monster: any = await Monsters.findByPk(monsterId);
-        const monsterName: string = monster?.name;
-        const monsterHP: number = monster?.hp;
-        const monsterDamage: number = monster?.attack;
-        const monsterExp: number = monster?.exp;
+        // 유저&몬스터 정보 불러오기
+        const { hp: playerHP, attack: playerDamage } = await CharacterService.findByPk(characterId);
+        const { monsterId } = await redis.hGetAll(String(characterId));
+        const monster = await Monsters.findByPk(monsterId);
+        if (!monster) throw new Error('몬스터 정보 불러오기 실패');
+        const { name: monsterName, hp: monsterHP, attack: monsterDamage, exp: monsterExp } = monster;
 
         // 유저 턴
         console.log('유저턴');
@@ -50,72 +44,43 @@ export default {
         );
         tempScript += `\n당신의 ${playerAdjective} 공격이 ${monsterName}에게 적중했다. => ${playerHit}의 데미지!\n`;
 
-        // 몬스터 사망 판정
-        if (monsterHP - playerHit <= 0) {
+        const isDead = await MonsterService.refreshStatus(+monsterId, playerHit, characterId);
+        if (!isDead) throw new Error('몬스터 정보를 찾을 수 없습니다');
+
+        if (isDead === 'dead') {
             console.log('몬스터 사망');
-            await Monsters.destroyMonster(Number(dungeonData.monsterId));
-            await redis.hDel(String(user.characterId), 'monsterId');
-            user =
-                (await Characters.addExp(
-                    Number(user.characterId),
-                    monsterExp,
-                )) || user;
-            nextField = 'encounter';
-            dead = 'monster';
-            tempScript += `\n${monsterName} 은(는) 쓰러졌다 ! => Exp + ${monsterExp}\n`;
-            // 레벨 업 이벤트 발생
-            if (user.levelup) {
-                tempScript += `\n==!! LEVEL UP !! 레벨이 ${user.level - 1} => ${
-                    user.level
-                } 올랐습니다 !! LEVEL UP !!==\n\n`;
-            }
-        } else {
-            console.log('몬스터 체력 감소 반영');
-            await Monsters.changeMonsterStatus(monsterId, playerHit);
+            return await battle.resultMonsterDead(monster, tempScript)
+        }
 
-            // 몬스터 턴
-            console.log('몬스터 턴');
+        // 몬스터 턴
+        console.log('몬스터 턴');
+        const monsterHit = BattleService.hitStrength(monsterDamage);
+        const monsterAdjective = BattleService.dmageAdjective(
+            monsterHit,
+            monsterDamage,
+        );
+        tempScript += `${monsterName} 이(가) 당신에게 ${monsterAdjective} 공격! => ${monsterHit}의 데미지!\n`;
 
-            const monsterHit = BattleService.hitStrength(monsterDamage);
-            const monsterAdjective = BattleService.dmageAdjective(
-                monsterHit,
-                monsterDamage,
-            );
-            tempScript += `${monsterName} 이(가) 당신에게 ${monsterAdjective} 공격! => ${monsterHit}의 데미지!\n`;
-            // 유저 상태 업데이트
-            user =
-                (await Characters.refreshStatus(
-                    Number(user.characterId),
-                    monsterHit,
-                    0,
-                )) || user;
+        user = await CharacterService.refreshStatus(characterId, monsterHit, 0, +monsterId);
+        if (user.isDead === 'dead') {
+            console.log('유저 사망');
 
-            // 유저 사망 판정
-            if (playerHP - monsterHit <= 0) {
-                console.log('유저 사망');
-                await Monsters.destroyMonster(Number(dungeonData.monsterId));
-                console.log('monster deleted')
-                await redis.hDel(String(user.characterId), 'monsterId');
-                console.log('redis deleted');
-
-                nextField = 'adventureResult';
-                tempScript += '\n!! 치명상 !!\n';
-                tempScript += `당신은 ${monsterName}의 공격을 버티지 못했습니다.. \n`;
-                dead = 'player';
-            }
+            field = 'adventureResult';
+            tempScript += '\n!! 치명상 !!\n';
+            tempScript += `당신은 ${monsterName}의 공격을 버티지 못했습니다.. \n`;
+            dead = 'player';
         }
 
         const script = tempScript;
-        const field = nextField;
         return { script, user, field, dead };
     },
 
     skill: async (CMD: string | undefined, user: UserSession) => {
         let tempScript = '';
         let dead = '';
+        const { characterId } = user;
 
-        const dungeonData = await redis.hGetAll(String(user.characterId));
-        const characterId: number = Number(user.characterId);
+        const dungeonData = await redis.hGetAll(String(characterId));
         const characterStatus: any = await Characters.findByPk(characterId);
         const playerDamage: number = characterStatus.attack;
         const playerMP: number = characterStatus.mp;
@@ -158,28 +123,20 @@ export default {
                 BattleService.hitStrength(playerSkillDamage);
 
             // 스킬 Cost 적용
-            user =
-                (await Characters.refreshStatus(
-                    Number(user.characterId),
-                    0,
-                    0,
-                )) || user;
+            user = await CharacterService.refreshStatus(characterId, 0, 0, +monsterId) || user;
 
             tempScript += `\n당신의 ${skillName} 스킬이 ${monsterName}에게 적중! => ${realDamage}의 데미지!\n`;
 
             // 몬스터 데미지 적용
             if (monsterHP - realDamage > 0) {
                 console.log('몬스터 체력 감소 반영');
-                await Monsters.changeMonsterStatus(monsterId, realDamage);
+                await MonsterService.refreshStatus(monsterId, realDamage, characterId);
             } else {
                 console.log('몬스터 사망');
-                await Monsters.destroyMonster(Number(dungeonData.monsterId));
-                await redis.hDel(String(user.characterId), 'monsterId');
-                user =
-                    (await Characters.addExp(
-                        Number(user.characterId),
-                        monsterExp,
-                    )) || user;
+                // await MonsterService.destroyMonster(Number(dungeonData.monsterId));
+                await redis.hDel(String(characterId), 'monsterId');
+
+                user = await CharacterService.addExp(characterId, monsterExp) || user;
                 dead = 'monster';
                 tempScript += `\n${monsterName} 은(는) 쓰러졌다 ! => Exp + ${monsterExp}\n`;
                 // 레벨 업 이벤트 발생
@@ -193,6 +150,22 @@ export default {
 
         const script = tempScript;
         const field = 'encounter';
+        return { script, user, field, dead };
+    },
+
+    resultMonsterDead: async(monster: Monsters, script: string) => {
+        const { characterId, name: monsterName, exp: monsterExp } = monster;
+        const user = await CharacterService.addExp(characterId, monsterExp!);
+        const field = 'encounter';
+        script += `\n${monsterName} 은(는) 쓰러졌다 ! => Exp + ${monsterExp}\n`;
+        const dead = 'monster';
+
+        if (user.levelup) {
+            script += `\n==!! LEVEL UP !! 레벨이 ${user.level - 1} => ${
+                user.level
+            } 올랐습니다 !! LEVEL UP !!==\n\n`;
+        }
+
         return { script, user, field, dead };
     },
 

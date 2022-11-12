@@ -11,8 +11,8 @@ import Users from "./user";
 export {
     Skills,
     Items,
-    Characters,
     Monsters,
+    Characters,
     Fields,
     Titles,
     Users,
