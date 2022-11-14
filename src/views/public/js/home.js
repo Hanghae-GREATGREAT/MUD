@@ -24,7 +24,7 @@ function checkStorage() {
     let field = localStorage.getItem('field');
     let user = localStorage.getItem('user');
 
-    if (!field || !user || user==='{}') {
+    if (!field.match(/dungeon|village/) || !user || user==='{}') {
         field = 'none';
         user = '{}';
     }
@@ -42,10 +42,10 @@ function checkValidation(user) {
 ******************************************************************************/
 
 function loadScript(field, user) {
-    if (field === 'undefined' || user === 'undefined' || !field || !user) {
+    if (field.match === 'none' || user === '{}') {
         return server.emit('none', { line: 'LOAD', user: {} });
     }
-    server.emit(field, { line: 'LOAD', user: JSON.parse(user) });
+    server.emit('dungeon', { line: 'LOAD', user: JSON.parse(user) });
 }
 
 commendForm.submit((e) => {
@@ -58,10 +58,29 @@ commendForm.submit((e) => {
      */
     const [field, option] = localStorage.getItem('field').split(':');
     const user = localStorage.getItem('user');
+    // field = line ? 'field' : 'global'    글로벌 명령어 판별
 
-    server.emit(field, { line, user: JSON.parse(user), option });
+    switch (field) {
+        case 'action':
+            const cooldown = localStorage.getItem('cooldown');
+            if (checkSkillCD(+cooldown)) {
+                const script = '아직 스킬이 준비되지 않았습니다.\n'
+                commandLine.append(script);
+                commandLine.scrollTop(Number.MAX_SAFE_INTEGER);
+                return;
+            }
+            server.emit(field, { line, user: JSON.parse(user), option });
+            break;
+        case 'global':
+            break;
+        default:
+            server.emit(field, { line, user: JSON.parse(user), option });
+    }
 });
 
+function checkSkillCD(cooldown) {
+    return ((Date.now() - cooldown) < 1500);
+}
 
 server.on('print', printHandler);
 
@@ -77,9 +96,10 @@ function printHandler({ script, user, field }) {
 
 server.on('printBattle', printBattleHandler);
 
-function printBattleHandler({ script, user, field }) {
+function printBattleHandler({ script, user, field, cooldown }) {
     localStorage.setItem('user', JSON.stringify(user));
     localStorage.setItem('field', field);
+    if (cooldown) localStorage.setItem('cooldown', cooldown);
 
     commandLine.append(script);
     commandLine.scrollTop(Number.MAX_SAFE_INTEGER);

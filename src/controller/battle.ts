@@ -12,7 +12,7 @@ export default {
         const commandRouter: CommandRouter = {
             도움말: battle.help,
             수동: battle.encounter,
-            자동: battle.auto,
+            자동: battle.autoBattle,
             돌: dungeon.getDungeonList,
         };
 
@@ -34,7 +34,7 @@ export default {
             load: battle.encounter,
             도움말: battle.ehelp,
             공격: battle.attack,
-            도망: battle.run,
+            도망: battle.quitBattle,
         };
         if (!commandRouter[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
@@ -43,40 +43,48 @@ export default {
         }
 
         let result = await commandRouter[CMD1](CMD2, user);
-        socket.emit('print', result);
+        const target = result.field === 'action' ? 'printBattle' : 'print';
+        socket.emit(target, result);
     },
 
-    actionController: async({ line, user }: LineInput) => {
+    actionController: async({ line, user, option }: LineInput) => {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
+        /**
+         * action:time
+         * 타임스탬프를 함께 전달하고 이를 바탕으로 스킬 재사용 가능여부 판별
+         */
 
         const result = await battle.actionSkill(CMD1, user);
         if (Object.hasOwn(result, 'error')) {
             return socket.emit('print', result);
         }  
-        if (!result.dead) return socket.emit('print', result);
+        if (!result.dead) {
+            result.cooldown = Date.now();            
+            return socket.emit('printBattle', result);
+        }
 
         const deadResult = await battle.reEncounter('', result.user);
         deadResult.script = result.script + deadResult.script;
         socket.emit('print', deadResult);
     },
 
-    fightController: async ({ line, user }: LineInput) => {
+    autoBattleController: async ({ line, user }: LineInput) => {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
-        console.log('socketon fight');
+        console.log('socketon enccounter');
 
         const commandRouter: CommandRouter = {
-            stop: battle.fhelp,
-            스킬: battle.skill,
+            도움말: battle.autoBattleHelp,
+            중단: battle.quitAutoBattle,
         };
-
         if (!commandRouter[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
-            const result = battle.fwrongCommand(CMD1, user);
+            const result = await commandRouter['도움말'](CMD1, user);
             return socket.emit('print', result);
         }
 
-        const result = await commandRouter[CMD1](CMD2, user);
-        socket.emit('print', result);
+        let result = await commandRouter[CMD1](CMD2, user);
+        const target = result.field === 'action' ? 'printBattle' : 'print';
+        socket.emit(target, result);
     },
 
     resultController: async ({ line, user }: LineInput) => {

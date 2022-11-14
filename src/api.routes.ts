@@ -3,17 +3,21 @@ import { Router } from 'express';
 
 const router = Router();
 
-import { CharacterService } from './services';
-import { Characters } from './db/models'
-import redis from './db/redis/config'
+import redis from './db/redis/config';
 router.get('/', async (req, res, next) => {
-    redis.getClient().flushAll()
-    const character = await CharacterService.findOneByUserId(1)
-    // const result = await Characters.findByPk(100);
-console.log(character)
+
+    const dungeonSession = {
+        dungeonLevel: 999,
+        monsterId: 789
+    }
+    // await redis.hSet('222', dungeonSession);
+    const result = await redis.hGetAll('222');
+    console.log(result);
+    console.log(typeof result.dungeonLevel)
+    console.log(typeof result.monsterId)
+
     res.status(200).json({
         message: 'API INDEX',
-        // result
     });
 });
 

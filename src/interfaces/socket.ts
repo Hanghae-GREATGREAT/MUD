@@ -11,6 +11,9 @@ interface ReturnScript {
     user: UserSession;
     field: string;
     chat?: boolean;
+    cooldown?: number;
+    error?: boolean | Error;
+    dead?: string;
 }
 
 type commandHandler = (
@@ -43,10 +46,6 @@ interface ChatOutput {
     output: string;
 }
 
-interface BattleLoop {
-    [key: string]: NodeJS.Timer;
-}
-
 export {
     LineInput,
     ReturnScript,
@@ -54,7 +53,6 @@ export {
     CommandRouterP,
     ChatInput,
     ChatOutput,
-    BattleLoop,
 };
 
 // import { Socket } from 'socket.io';

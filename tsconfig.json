@@ -1,5 +1,5 @@
 {
-    "include": ["src"],
+    "include": ["src", "server.ts"],
     "compilerOptions": {
         "target": "ES6",
         "module": "CommonJs",
