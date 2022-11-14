@@ -46,10 +46,6 @@ interface ChatOutput {
     output: string;
 }
 
-interface BattleLoop {
-    [key: string]: NodeJS.Timer;
-}
-
 export {
     LineInput,
     ReturnScript,
@@ -57,7 +53,6 @@ export {
     CommandRouterP,
     ChatInput,
     ChatOutput,
-    BattleLoop,
 };
 
 // import { Socket } from 'socket.io';

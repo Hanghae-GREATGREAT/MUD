@@ -17,7 +17,7 @@ class BattleAction {
         // 스킬 정보 가져오기
         const { attack, mp, skill } = await CharacterService.findByPk(characterId);
         if (skill[Number(CMD)-1] === undefined) {
-            const result = battle.wrongCommand(CMD, user);
+            const result = battle.battleHelp(CMD, user);
             return {
                 script: result.script,
                 user: result.user,
@@ -62,7 +62,6 @@ class BattleAction {
         if (isDead === 'dead') {
             console.log('몬스터 사망');
 
-            clearInterval(battleLoops[characterId]);
             console.log('LOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOP CLEARED');
 
             return await battle.resultMonsterDead(monster, tempScript);

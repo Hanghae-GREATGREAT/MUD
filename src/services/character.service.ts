@@ -150,7 +150,15 @@ class CharacterService {
         let levelup = false;
         if (level > result.get('level')) {
             levelup = true;
-            await result.increment({ level: 1 });
+            await result.update({
+                level,
+                maxhp: 100 * level,
+                maxmp: 100 * level,
+                hp: 100 * level,
+                mp: 100 * level,
+                attack: 10 + level,
+                defense: 10 + level,
+            });
         }
 
         // const character = await Characters.getSessionData(result);

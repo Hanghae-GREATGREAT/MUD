@@ -2,7 +2,7 @@ import { UserSession } from '../../interfaces/user';
 import { BattleService, CharacterService, MonsterService } from '../../services';
 import redis from '../../db/redis/config';
 import { Monsters } from '../../db/models';
-import { BattleLoop, CommandRouter, ReturnScript } from '../../interfaces/socket';
+import { CommandRouter, ReturnScript } from '../../interfaces/socket';
 import battle from './battle.Handler'
 import { dungeon } from '../../handler';
 import { socket } from '../../socket.routes'
@@ -26,7 +26,8 @@ class EncounterHandler {
 
     encounter = async (CMD: string | undefined, user: UserSession): Promise<ReturnScript> => {
         // 던전 진행상황 불러오기
-        let dungeonSession = await redis.hGetAll(String(user.characterId));
+        const { characterId } = user;
+        let dungeonSession = await redis.hGetAll(String(characterId));
         const dungeonLevel = Number(dungeonSession!.dungeonLevel);
 
         let tempScript: string = '';
@@ -34,17 +35,17 @@ class EncounterHandler {
             '=======================================================================\n';
 
         // 적 생성
-        const newMonster = await MonsterService.createNewMonster(dungeonLevel, user.characterId);
+        const newMonster = await MonsterService.createNewMonster(dungeonLevel, characterId);
         tempScript += `너머에 ${newMonster.name}의 그림자가 보인다\n\n`;
         tempScript += `[공격] 하기\n`;
         tempScript += `[도망] 가기\n`;
 
         // 던전 진행상황 업데이트
         dungeonSession = {
-            dungeonLevel: String(dungeonLevel),
-            monsterId: String(newMonster.monsterId),
+            dungeonLevel: dungeonLevel.toString(),
+            monsterId: newMonster.monsterId.toString(),
         };
-        await redis.hSet(String(user.characterId), dungeonSession);
+        await redis.hSet(String(characterId), dungeonSession);
 
         const script = tempLine + tempScript;
         const field = 'encounter';
@@ -53,28 +54,31 @@ class EncounterHandler {
     }
 
     attack = async(CMD: string | undefined, user: UserSession) => {
-        const newScript: CommandRouter = {
+        const whoIsDead: CommandRouter = {
+            // back to dungeon list when player died
             player: dungeon.getDungeonList,
+            // back to encounter phase when monster died
             monster: this.reEncounter,
         }
-        let result;
-        const basicFight = setInterval(async () => {
-            result = await battle.manualLogic(CMD, user);
-            socket.emit('printBattle', result);
-            const { dead } = result;
-            if (typeof dead === 'string') {
-                // dead ... player / monster
+        const { characterId } = user;
 
-                result = await newScript[dead]('', user);
+        const autoAttckId = setInterval(async () => {
+            const { script, field, user: newUser, dead } = await battle.autoAttack(CMD, user);
+            socket.emit('printBattle', { script, field, user: newUser });
+
+            // dead = 'moster'|'player'|undefined
+            if (dead) {
+                const result = await whoIsDead[dead]('', newUser);
                 socket.emit('print', result);
                 console.log('DEAD PRINT WILL CLOSE INTERVAL')
-                clearInterval(battleLoops[user.characterId]);
+                clearInterval(battleLoops.get(characterId));
+                battleLoops.delete(characterId);
                 console.log('INTERVAL CLOSED')
                 return;
             }
         }, 1500);
 
-        battleLoops[user.characterId] = basicFight;
+        battleLoops.set(characterId, autoAttckId);
 
         return { script: '', user, field: 'action', cooldown: Date.now()-2000 }
     }
@@ -143,7 +147,7 @@ class EncounterHandler {
     }
 };
 
-export const battleLoops: BattleLoop = {};
+export const battleLoops: Map<string|number, NodeJS.Timer> = new Map();
 
 
 export default new EncounterHandler();

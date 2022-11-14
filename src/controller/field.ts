@@ -1,5 +1,5 @@
 import { socket } from "../socket.routes";
-import { dungeon } from "../handler";
+import { dungeon, front } from "../handler";
 import { LineInput, CommandRouter } from "../interfaces/socket";
 
 
@@ -15,13 +15,14 @@ export default {
             목록: dungeon.getDungeonList,
             도움말: dungeon.help,
             입장: dungeon.getDungeonInfo,
+            OUT: front.signout,
         };
         if (!commandRouter[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
             const result = dungeon.wrongCommand(CMD1, user);
             return socket.emit('print', result);
         }
-        const result = await commandRouter[CMD1](CMD2, user);
+        const result = await commandRouter[CMD1](CMD2, user, socket.id);
         if (result.chat) socket.emit('enterChat', result.field);
         socket.emit('print', result);
     },
