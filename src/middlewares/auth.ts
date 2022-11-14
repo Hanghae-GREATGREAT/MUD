@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import redis from '../db/redis/config';
+import { redis } from '../db/cache';
 import { HttpException, HttpStatus } from '../common';
 
 

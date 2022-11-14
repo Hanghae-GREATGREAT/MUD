@@ -55,8 +55,19 @@ class RedisCache {
         await this.client.hDel(key, field);
     }
 
-    async hDelAll(key: string, data: KeyPair) {
-        const fields = Object.keys(data);
+    async hDelBattleCache(key: string) {
+        // const fields = Object.keys(data);
+        const fields = [
+            'characterId', 'dungeonLevel', 'monsterId', 'autoAttackId', 'quit', 'dead'
+        ];
+        await this.client.hDel(key, [...fields]);
+    }
+
+    async hDelResetCache(key: string) {
+        // const fields = Object.keys(data);
+        const fields = [
+            'characterId', 'monsterId', 'autoAttackId', 'quit', 'dead'
+        ];
         await this.client.hDel(key, [...fields]);
     }
 

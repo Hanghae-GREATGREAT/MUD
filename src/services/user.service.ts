@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import { Users } from '../db/models';
-import redis from '../db/redis/config'
+import { redis } from '../db/cache';
 import { HttpException, HttpStatus } from '../common';
 
 

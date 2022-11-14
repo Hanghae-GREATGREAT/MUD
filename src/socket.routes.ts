@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io';
-import redis from './db/redis/config';
+import { redis } from './db/cache';
 import { battle, chat, field, home } from './controller';
 
 

@@ -3,21 +3,22 @@ import { Router } from 'express';
 
 const router = Router();
 
-import redis from './db/redis/config';
+import { battleCache, redis } from './db/cache';
 router.get('/', async (req, res, next) => {
 
-    const dungeonSession = {
-        dungeonLevel: 999,
-        monsterId: 789
-    }
-    // await redis.hSet('222', dungeonSession);
-    const result = await redis.hGetAll('222');
-    console.log(result);
-    console.log(typeof result.dungeonLevel)
-    console.log(typeof result.monsterId)
+    const data = {
+        dungeonLevel: 1,
+        monsterId: 10,
+        loopId: 'loopId',
+        quit: '1',
+        characterId: 1
+    }    
+    // await redis.hSet('111', data)
+    const { monsterId } = await redis.hGetAll('222');
 
     res.status(200).json({
         message: 'API INDEX',
+        monsterId
     });
 });
 

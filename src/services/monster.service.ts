@@ -1,5 +1,5 @@
-import { Monsters, Fields } from '../db/models'
-import redis from '../db/redis/config'
+import { Monsters, Fields } from '../db/models';
+import { redis } from '../db/cache';
 
 class MonsterService {
 

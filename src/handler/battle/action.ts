@@ -1,7 +1,7 @@
 import { Monsters } from "../../db/models";
 import { UserSession } from "../../interfaces/user";
 import { BattleService, CharacterService, MonsterService } from "../../services";
-import redis from '../../db/redis/config';
+import { battleCache, redis } from '../../db/cache';
 import { battleLoops } from './encounter.Handler';
 import battle from '../battle'
 import { ReturnScript } from "../../interfaces/socket";
@@ -10,12 +10,11 @@ import { ReturnScript } from "../../interfaces/socket";
 class BattleAction {
     actionSkill = async(CMD: string, user: UserSession): Promise<ReturnScript> => {
         let tempScript = '';
-        let dead = undefined;
         let field = 'action';
-        const { characterId } = user;
+        const characterId = user.characterId.toString();
 
         // 스킬 정보 가져오기
-        const { attack, mp, skill } = await CharacterService.findByPk(characterId);
+        const { attack, mp, skill } = await CharacterService.findByPk(+characterId);
         if (skill[Number(CMD)-1] === undefined) {
             const result = battle.battleHelp(CMD, user);
             return {
@@ -28,7 +27,8 @@ class BattleAction {
         const { name: skillName, cost, multiple } = skill[Number(CMD)-1];
         
         // 몬스터 정보 가져오기
-        const { monsterId } = await redis.hGetAll(String(characterId));
+        const { monsterId } = await redis.hGetAll(characterId);
+        // const { monsterId } = battleCache.get(characterId);
         const monster = await Monsters.findByPk(monsterId);
         if (!monster) throw new Error('몬스터 정보가 없습니다.');
         /**
@@ -51,24 +51,24 @@ class BattleAction {
         const realDamage: number = BattleService.hitStrength(playerSkillDamage);
 
         // 스킬 Cost 적용
-        user = await CharacterService.refreshStatus(characterId, 0, cost, +monsterId);
+        user = await CharacterService.refreshStatus(+characterId, 0, cost, +monsterId);
 
         tempScript += `\n당신의 ${skillName} 스킬이 ${monsterName}에게 적중! => ${realDamage}의 데미지!\n`;
 
         // 몬스터에게 스킬 데미지 적용 
-        const isDead = await MonsterService.refreshStatus(+monsterId, realDamage, characterId);
+        const isDead = await MonsterService.refreshStatus(+monsterId, realDamage, +characterId);
         if (!isDead) throw new Error('몬스터 정보를 찾을 수 없습니다');
 
         if (isDead === 'dead') {
             console.log('몬스터 사망');
-
-            console.log('LOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOP CLEARED');
-
+            // battleCache.set(characterId, { dead: 'monster' });
+            await redis.hSet(characterId, { dead: 'monster' });
             return await battle.resultMonsterDead(monster, tempScript);
         }
 
+        // isDead === 'alive'
         const script = tempScript;
-        return { script, user, field, dead };
+        return { script, user, field };
 
     }
 }
