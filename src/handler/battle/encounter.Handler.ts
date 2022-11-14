@@ -76,7 +76,7 @@ class EncounterHandler {
 
         battleLoops[user.characterId] = basicFight;
 
-        return { script: '', user, field: 'action' }
+        return { script: '', user, field: 'action', cooldown: Date.now()-2000 }
     }
 
     reEncounter = async (CMD: string, user: UserSession): Promise<ReturnScript> => {

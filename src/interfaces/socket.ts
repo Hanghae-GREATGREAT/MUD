@@ -11,6 +11,9 @@ interface ReturnScript {
     user: UserSession;
     field: string;
     chat?: boolean;
+    cooldown?: number;
+    error?: boolean | Error;
+    dead?: string;
 }
 
 type commandHandler = (

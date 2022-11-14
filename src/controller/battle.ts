@@ -43,17 +43,25 @@ export default {
         }
 
         let result = await commandRouter[CMD1](CMD2, user);
-        socket.emit('print', result);
+        const target = result.field === 'action' ? 'printBattle' : 'print';
+        socket.emit(target, result);
     },
 
-    actionController: async({ line, user }: LineInput) => {
+    actionController: async({ line, user, option }: LineInput) => {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
+        /**
+         * action:time
+         * 타임스탬프를 함께 전달하고 이를 바탕으로 스킬 재사용 가능여부 판별
+         */
 
         const result = await battle.actionSkill(CMD1, user);
         if (Object.hasOwn(result, 'error')) {
             return socket.emit('print', result);
         }  
-        if (!result.dead) return socket.emit('print', result);
+        if (!result.dead) {
+            result.cooldown = Date.now();            
+            return socket.emit('printBattle', result);
+        }
 
         const deadResult = await battle.reEncounter('', result.user);
         deadResult.script = result.script + deadResult.script;

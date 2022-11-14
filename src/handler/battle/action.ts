@@ -4,10 +4,11 @@ import { BattleService, CharacterService, MonsterService } from "../../services"
 import redis from '../../db/redis/config';
 import { battleLoops } from './encounter.Handler';
 import battle from '../battle'
+import { ReturnScript } from "../../interfaces/socket";
 
 
 class BattleAction {
-    actionSkill = async(CMD: string, user: UserSession) => {
+    actionSkill = async(CMD: string, user: UserSession): Promise<ReturnScript> => {
         let tempScript = '';
         let dead = undefined;
         let field = 'action';
@@ -30,6 +31,10 @@ class BattleAction {
         const { monsterId } = await redis.hGetAll(String(characterId));
         const monster = await Monsters.findByPk(monsterId);
         if (!monster) throw new Error('몬스터 정보가 없습니다.');
+        /**
+         * 몬스터 정보 없을시 에러가 아닌 일반 공격에 의한 사망으로 간주
+         * 혹은 버그/사망 판별 가능?
+         */
         const { name: monsterName, hp: monsterHp, exp: monsterExp } = monster;
 
         // 마나 잔여량 확인

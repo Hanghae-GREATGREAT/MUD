@@ -39,7 +39,7 @@ class RedisCache {
         await this.client.del(key);
     }
 
-    async hSet(key: string, data: any) {
+    async hSet(key: string, data: KeyPair) {
         await this.client.hSet(key, data);
     }
 
@@ -55,7 +55,7 @@ class RedisCache {
         await this.client.hDel(key, field);
     }
 
-    async hDelAll(key: string, data: any) {
+    async hDelAll(key: string, data: KeyPair) {
         const fields = Object.keys(data);
         await this.client.hDel(key, [...fields]);
     }
