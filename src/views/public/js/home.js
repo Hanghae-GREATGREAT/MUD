@@ -24,7 +24,7 @@ function checkStorage() {
     let field = localStorage.getItem('field');
     let user = localStorage.getItem('user');
 
-    if (!field || !user || user==='{}') {
+    if (!field.match(/dungeon|village/) || !user || user==='{}') {
         field = 'none';
         user = '{}';
     }
@@ -42,7 +42,7 @@ function checkValidation(user) {
 ******************************************************************************/
 
 function loadScript(field, user) {
-    if (field === 'undefined' || user === 'undefined' || !field || !user) {
+    if (field.match === 'none' || user === '{}') {
         return server.emit('none', { line: 'LOAD', user: {} });
     }
     server.emit('dungeon', { line: 'LOAD', user: JSON.parse(user) });

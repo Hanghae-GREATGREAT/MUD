@@ -37,7 +37,7 @@ const onConnection = (server: Socket) => {
 
     server.on('action', battle.actionController);
 
-    server.on('fight', battle.fightController);
+    server.on('autoBattle', battle.autoBattleController);
 
     /************************************************************************
                                    모험 종료                                      
