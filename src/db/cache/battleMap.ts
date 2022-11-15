@@ -20,22 +20,22 @@ class BattleMap {
     // set = (key: string, data: BattleCache): void => {
     //     this.battleMap.set(key, data);
     // }
-    set = (key: string, data: BattleCache): void => {
+    set = (key: string|number, data: BattleCache): void => {
         const oldCache = this.get(key);
         const newCache = {...oldCache, ...data};
-        this.battleMap.set(key, newCache);
+        this.battleMap.set(key.toString(), newCache);
     }
 
-    get = (key: string): BattleCache => {
-        return this.battleMap.get(key) || this.empty;
+    get = (key: string|number): BattleCache => {
+        return this.battleMap.get(key.toString()) || this.empty;
     }
 
     getAll = () => {
         return Object.fromEntries(this.battleMap);
     }
 
-    delete = (key: string): boolean => {
-        return this.battleMap.delete(key);
+    delete = (key: string|number): boolean => {
+        return this.battleMap.delete(key.toString());
     }
 
 }

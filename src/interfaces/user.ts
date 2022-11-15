@@ -1,5 +1,5 @@
 import { InferAttributes } from "sequelize";
-import { Items, Skills } from "../db/models";
+import { Characters, Fields, Items, Skills, Titles, Users } from "../db/models";
 
 
 interface SignupForm {

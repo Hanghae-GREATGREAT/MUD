@@ -56,6 +56,12 @@ export default {
          * 타임스탬프를 함께 전달하고 이를 바탕으로 스킬 재사용 가능여부 판별
          */
 
+        if (CMD1 === '중단') {
+            const result = await battle.quitAutoBattle('', user);
+            const field = result.field === 'action' ? 'printBattle' : 'print';
+            socket.emit(field, result);
+        }
+        
         const result = await battle.actionSkill(CMD1, user);
         if (Object.hasOwn(result, 'error')) {
             return socket.emit('print', result);
