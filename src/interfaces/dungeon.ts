@@ -10,4 +10,17 @@ interface dungeonInfoForm {
 }
 [];
 
-export { InputForm, dungeonInfoForm };
+interface BattleCache {
+    dungeonLevel?: number;
+    monsterId?: number;
+    autoAttackId?: NodeJS.Timer;
+    quit?: boolean;
+    dead?: string;
+}
+
+
+export { 
+    InputForm, 
+    dungeonInfoForm,
+    BattleCache
+};

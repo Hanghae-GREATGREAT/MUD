@@ -1,5 +1,5 @@
 import { SignupForm, UserSession } from "../../interfaces/user"
-import redis from '../../db/redis/config';
+import { redis } from '../../db/cache';
 import { CharacterService, UserService } from "../../services";
 import { Characters } from "../../db/models";
 import { signupScript } from "../../scripts";

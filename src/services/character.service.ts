@@ -8,9 +8,9 @@ class CharacterService {
     /***************************************************************
         모든 필드 JOIN해서 가져옴
     ****************************************************************/
-    async findByPk(characterId: number): Promise<any> {
+    async findByPk(characterId: number|string): Promise<any> {
         const character: Characters | null = await Characters.findOne({
-            where: { characterId },
+            where: { characterId: Number(characterId) },
             include: [Users, Fields, Titles],
         });
         if (!character) return null;
@@ -23,9 +23,9 @@ class CharacterService {
         };
     }
 
-    async findOneByUserId(userId: number) {
+    async findOneByUserId(userId: number|string) {
         const result =  await Characters.findOne({
-            where: { userId }
+            where: { userId: Number(userId) }
         });
 
         if (!result) {
@@ -71,26 +71,26 @@ class CharacterService {
     /***************************************************************
         스킬 변경
     ****************************************************************/
-    async changeSkill(characterId: number, ...skillId: number[]) {
+    async changeSkill(characterId: number|string, ...skillId: number[]) {
         if ( Array.isArray(skillId) && skillId.length > 3) {
             throw new Error('스킬은 3개까지 등록할 수 있습니다.');
         }
         const skill = skillId.join(':');
         await Characters.update({ skill }, {
-            where: { characterId }
+            where: { characterId: Number(characterId) }
         });
     }
 
     /***************************************************************
         장비 변경
     ****************************************************************/
-    async changeItem(characterId: number, ...itemId: number[]) {
+    async changeItem(characterId: number|string, ...itemId: number[]) {
         if ( Array.isArray(itemId) && itemId.length > 2) {
             throw new Error('장비는 2개까지 등록할 수 있습니다.');
         }
         const item = itemId.join(':');
         await Characters.update({ item }, {
-            where: { characterId }
+            where: { characterId: Number(characterId) }
         });
     }
 
@@ -98,10 +98,10 @@ class CharacterService {
          전투 턴이 종료되고 hp, mp 상태 갱신
     ****************************************************************/
     async refreshStatus(
-        characterId: number, damage: number, cost: number, monsterId: number
+        characterId: number|string, damage: number, cost: number, monsterId: number|string
     ): Promise<UserSession> {
         const result = await Characters.findOne({
-            where: { characterId },
+            where: { characterId: Number(characterId) },
             include: Users,
         });
         // const questId = await QuestCompletes.findOne()
@@ -131,17 +131,18 @@ class CharacterService {
         };
     }
 
+
     /***************************************************************
         전투 종료 경험치&레벨 계산
     ****************************************************************/
-    async addExp(characterId: number, exp: number): Promise<UserSession> {
+    async addExp(characterId: number|string, exp: number): Promise<UserSession> {
         const result = await Characters.findOne({
-            where: { characterId },
+            where: { characterId: Number(characterId) },
             include: Users,
         });
         if (!result) throw new Error('존재하지 않는 캐릭터');
 
-        await result.increment({ exp });
+        await result.increment({ exp, hp: result.maxhp*0.05, mp: result.maxmp*0.33 });
 
         const level = Characters.levelCalc(
             result.get('exp') + exp,

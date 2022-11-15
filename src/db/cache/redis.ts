@@ -27,37 +27,48 @@ class RedisCache {
         await this.client.connect();
     }
 
-    async set(key: string, value: string, option: SetOptions = {}) {
-        await this.client.set(key, value, option);
+    async set(key: string|number, value: string, option: SetOptions = {}) {
+        await this.client.set(key.toString(), value, option);
     }
 
-    async get(key: string) {
-        return await this.client.get(key);
+    async get(key: string|number) {
+        return await this.client.get(key.toString());
     }
 
-    async del(key: string) {
-        await this.client.del(key);
+    async del(key: string|number) {
+        await this.client.del(key.toString());
     }
 
-    async hSet(key: string, data: KeyPair) {
-        await this.client.hSet(key, data);
+    async hSet(key: string|number, data: KeyPair) {
+        await this.client.hSet(key.toString(), data);
     }
 
-    async hGet(key: string, field: string) {
-        return await this.client.hGet(key, field);
+    async hGet(key: string|number, field: string) {
+        return await this.client.hGet(key.toString(), field);
     }
 
-    async hGetAll(key: string) {
-        return await this.client.hGetAll(key);
+    async hGetAll(key: string|number) {
+        return await this.client.hGetAll(key.toString());
     }
 
-    async hDel(key: string, field: string) {
-        await this.client.hDel(key, field);
+    async hDel(key: string|number, field: string) {
+        await this.client.hDel(key.toString(), field);
     }
 
-    async hDelAll(key: string, data: KeyPair) {
-        const fields = Object.keys(data);
-        await this.client.hDel(key, [...fields]);
+    async hDelBattleCache(key: string|number) {
+        // const fields = Object.keys(data);
+        const fields = [
+            'characterId', 'dungeonLevel', 'monsterId', 'autoAttackId', 'quit', 'dead'
+        ];
+        await this.client.hDel(key.toString(), [...fields]);
+    }
+
+    async hDelResetCache(key: string|number) {
+        // const fields = Object.keys(data);
+        const fields = [
+            'characterId', 'monsterId', 'autoAttackId', 'quit', 'dead'
+        ];
+        await this.client.hDel(key.toString(), [...fields]);
     }
 
     async disconnect() {

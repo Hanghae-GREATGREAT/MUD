@@ -1,7 +1,7 @@
 import { UserSession } from '../../interfaces/user';
 import { CharacterService, UserService, DungeonService } from '../../services';
 import { Characters } from '../../db/models';
-import redis from '../../db/redis/config'
+import { redis } from '../../db/cache'
 import { signinScript } from '../../scripts';
 import userService from '../../services/user.service';
 

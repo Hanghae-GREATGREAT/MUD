@@ -1,6 +1,6 @@
 import { UserSession } from '../interfaces/user';
 import DungeonService from '../services/dungeon.service';
-import redis from '../db/redis/config';
+import { battleCache, redis } from '../db/cache';
 import { front } from '../handler';
 import { homeScript } from '../scripts';
 import { ReturnScript } from '../interfaces/socket';
@@ -66,13 +66,15 @@ export default {
             tempScript += `3. [돌]아가기\n`;
 
             // 던전 진행상황 업데이트
-            const dungeonSession = {
-                dungeonLevel: Number(CMD),
-                characterId: Number(user.characterId),
-                monsterId: 0,
-            };
+            // const dungeonSession = {
+            //     dungeonLevel: Number(CMD),
+            //     monsterId: 0,
+            // };
 
-            redis.hSet(String(user.characterId), dungeonSession);
+            const dungeonLevel = CMD!;
+            const characterId = user.characterId.toString();
+            redis.hSet(characterId, { dungeonLevel });
+            // battleCache.set(user.characterId, { dungeonLevel: +CMD! })
             nextField = 'battle';
         }
 
