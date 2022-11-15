@@ -142,7 +142,13 @@ class CharacterService {
         });
         if (!result) throw new Error('존재하지 않는 캐릭터');
 
-        await result.increment({ exp, hp: result.maxhp*0.05, mp: result.maxmp*0.33 });
+        const reHp = result.hp + result.maxhp*0.05;
+        const reMp = result.hp + result.maxmp*0.2;
+        await result.update({ 
+            exp: result.exp + exp, 
+            hp: result.maxhp > reHp ? reHp : result.maxhp, 
+            mp: result.maxmp > reMp ? reMp : result.maxmp, 
+        });
 
         const level = Characters.levelCalc(
             result.get('exp') + exp,
