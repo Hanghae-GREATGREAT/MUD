@@ -54,5 +54,29 @@ export default {
         const field = 'front'
         return { script, user, field };
     },
+
+    deleteAccount: async(CMD: string | undefined, user: UserSession) => {
+        console.log('EMPTY COMMAND');
+
+        const { userId, characterId } = user;
+        const result = await UserService.deleteUser(userId, characterId);
+
+        const script = result===1 ? homeScript.delete + homeScript.loadHome : homeScript.deleteFail;
+        const field = 'front';
+        return { script, user: emptySession, field };
+    },
 }
 
+const emptySession: UserSession = {
+    userId: 0,
+    username: '',
+    characterId: 0,
+    name: '',
+    level: 0,
+    maxhp: 0,
+    maxmp: 0,
+    hp: 0,
+    mp: 0,
+    exp: 0,
+    questId: 0,
+}

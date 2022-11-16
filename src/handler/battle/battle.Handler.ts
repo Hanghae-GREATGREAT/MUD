@@ -32,15 +32,15 @@ export default {
         const { autoAttackId } = battleCache.get(characterId);
         const { monsterId } = await redis.hGetAll(characterId);
 console.log(await redis.hGetAll(characterId))
-        if (!autoAttackId) {
-            return { script: '', field, user, error: true }
-        }
 
         // 유저&몬스터 정보 불러오기
         const { hp: playerHP, attack: playerDamage } = await CharacterService.findByPk(characterId);
         const monster = await Monsters.findByPk(monsterId);
 
-        if (!monster) throw new Error('몬스터 정보 불러오기 실패');
+        if (!autoAttackId || !monster) {
+            return { script: '내부에러', field: 'dungeon', user, error: true }
+        }
+
         const { name: monsterName, hp: monsterHP, attack: monsterDamage, exp: monsterExp } = monster;
 
         // 유저 턴
@@ -103,6 +103,8 @@ console.log(await redis.hGetAll(characterId))
     },
 
     autoBattle: async(CMD: string | undefined, user: UserSession) => {
+        console.timeEnd('AUTOBATTLEEEEEEEEEEEEEEEEEEE')
+
         let tempScript = ''
         let field = 'action';
         const { characterId } = user;
@@ -121,10 +123,12 @@ console.log(await redis.hGetAll(characterId))
 
         // 자동공격 사이클
         const autoAttackId = setInterval(async () => {
+            console.time('AUTOBATTLEEEEEEEEEEEEEEEEEEE');
+
             battleCache.set(characterId, { autoAttackId });
             const {script, user: newUser, error} = await battle.autoAttack(CMD, user);
             // 이미 끝난 전투
-            if (error) return;
+            if (error) return console.timeEnd('AUTOBATTLEEEEEEEEEEEEEEEEEEE');;
 
             // 자동공격 스크립트 계속 출력?
             const field = 'autoBattle';
@@ -152,26 +156,25 @@ console.log(await redis.hGetAll(characterId))
             } else {
                 // 스킬공격 사이클. 50% 확률로 발생
                 const chance = Math.random();
-                if (chance < 0.5) return;
-console.log('스킬 사용ㅇㅇㅇㅇㅇㅇㅇㅇㅇ', await redis.hGetAll(characterId))
+                if (chance < 0.5) return console.timeEnd('AUTOBATTLEEEEEEEEEEEEEEEEEEE');;
+
                 const { script, user, field} = await battle.autoBattleSkill(newUser);
                 const { dead } = await redis.hGetAll(characterId);
                 socket.emit('printBattle', { script, field, user });
 
                 if (dead) {
-                    console.log('스킬로 뒤짐ㅇㅇㅇㅇㅇㅇㅇㅇ', battleCache.get(characterId))
                     const { autoAttackId } = battleCache.get(characterId);
                     clearInterval(autoAttackId);
-                    console.log('스킬에 뒤짐ㅇㅇㅇㅇㅇ', await redis.hGetAll(characterId))
+
                     battleCache.delete(characterId);
                     await redis.hDelResetCache(characterId);
-                    console.log('reset Cache', await redis.hGetAll(characterId))
-    console.log('레디스 리셋ㅇㅇㅇㅇㅇ', await redis.hGetAll(characterId))
+
                     const { script, field, user } = await whoIsDead[dead]('', newUser);
                     socket.emit('printBattle', { script, field, user });
     
                     return;
                 }
+                console.timeEnd('AUTOBATTLEEEEEEEEEEEEEEEEEEE')
             }
         }, 1500);
 

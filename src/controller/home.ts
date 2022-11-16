@@ -27,6 +27,7 @@ export default {
             DUNGEON: front.toDungeon,
             V: front.toVillage,
             VILLAGE: front.toVillage,
+            DELETE: front.deleteAccount,
             EMPTY: front.emptyCommand,
         };
         if (!commandRouter[CMD1]) {
