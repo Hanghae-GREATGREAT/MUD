@@ -1,7 +1,6 @@
 import { Socket } from 'socket.io';
 import redis from './db/redis/config';
-import { battle, chat, field, home } from './controller';
-
+import { battle, chat, field, home, village } from './controller';
 
 export let socket: Socket;
 
@@ -26,6 +25,17 @@ const onConnection = (server: Socket) => {
     server.on('dungeon', field.dungeonController);
 
     server.on('village', field.villageController);
+    /************************************************************************
+                                    마을                                      
+     ************************************************************************/
+
+    server.on('story', village.storyController);
+
+    server.on('heal', village.healController);
+
+    server.on('enhance', village.enhanceController);
+
+    server.on('gamble', village.gambleController);
 
     /************************************************************************
                                     전투                                      

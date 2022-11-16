@@ -2,11 +2,6 @@ import battle from './battle';
 import chat from './chat';
 import field from './field';
 import home from './home';
+import village from './village';
 
-
-export {
-    battle,
-    chat,
-    field,
-    home,
-}
+export { battle, chat, field, home, village };
