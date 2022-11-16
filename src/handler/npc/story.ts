@@ -39,11 +39,11 @@ export default {
             '=======================================================================\n';
 
         // 모험록 스크립트 작성
-
-        tempScript += '유저의 모험록 ... : \n';
-        tempScript += '유저의 모험록 ... : \n';
-        tempScript += '유저의 모험록 ... : \n';
-        tempScript += '유저의 모험록 ... : \n';
+        const storyScript: string = NpcService.story(user.name, user.level);
+        tempScript += storyScript;
+        tempScript += '1 - 프라데이리와 대화합니다.\n';
+        tempScript += '2 - 모험의 서를 통해 지금까지의 모험록을 확인합니다.\n';
+        tempScript += '3 - 이전 단계로 돌아갑니다.\n';
 
         const script = tempLine + tempScript;
         const field = 'story';

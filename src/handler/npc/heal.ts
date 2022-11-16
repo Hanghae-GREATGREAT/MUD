@@ -39,7 +39,7 @@ export default {
 
         // db에서 Character HP/MP 수정
         const actionScript: string = await NpcService.healing(
-            Number(user.userId),
+            Number(user.characterId),
         );
 
         tempScript += actionScript;

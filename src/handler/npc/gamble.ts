@@ -10,7 +10,7 @@ export default {
             '=======================================================================\n';
 
         tempScript += '명령어 : \n';
-        tempScript += '1 - NPC와 대화합니다.\n';
+        tempScript += '1 - 에트나와 대화합니다.\n';
         tempScript += '2 - 에트나와 제비뽑기를 진행합니다.\n';
         tempScript += '3 - 이전 단계로 돌아갑니다.\n';
 
@@ -41,6 +41,9 @@ export default {
             Number(user.characterId),
         );
         tempScript += actionScript;
+        tempScript += '1 - 에트나와 대화합니다.\n';
+        tempScript += '2 - 에트나와 제비뽑기를 진행합니다.\n';
+        tempScript += '3 - 이전 단계로 돌아갑니다.\n';
 
         const script = tempLine + tempScript;
         const field = 'gamble';
