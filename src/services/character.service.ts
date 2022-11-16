@@ -64,6 +64,8 @@ class CharacterService {
             titleId: 1,
             fieldId: 1,
             name,
+            skill: '1',
+            item: '1:2',
         });
     }
 
@@ -177,6 +179,13 @@ class CharacterService {
             questId: 1,
             exp: result.get('exp') + exp,
         };
+    }
+
+    async deleteCharacter(userId: number, characterId: number) {
+        characterId = +characterId;
+        return await Characters.destroy({
+            where: { userId, characterId }
+        });
     }
 }
 

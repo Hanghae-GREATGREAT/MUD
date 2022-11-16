@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 import { Users } from '../db/models';
 import { redis } from '../db/cache';
 import { HttpException, HttpStatus } from '../common';
+import { CharacterService } from '.';
 
 
 class UserService {
@@ -39,6 +40,14 @@ class UserService {
         // redis.hDelAll(id, { userId: 0, characterId: 0 });
         redis.del(id);
     };
+
+    async deleteUser(userId: number|string, characterId: number|string) {
+        const result = await CharacterService.deleteCharacter(+userId, +characterId);
+        if (result === 0) return 0
+        return await Users.destroy({
+            where: { userId }
+        });
+    }
 }
 
 
