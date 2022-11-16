@@ -1,6 +1,6 @@
 import { UserSession } from '../../interfaces/user';
 import { BattleService, MonsterService } from '../../services';
-import redis from '../../db/redis/config';
+import { battleCache, redis } from '../../db/cache';
 import { battleLoops } from './encounter.Handler';
 
 export default {
@@ -39,8 +39,9 @@ export default {
     },
 
     quitBattle: async (CMD: string | undefined, user: UserSession) => {
-        const { characterId } = user;
-        const { monsterId } = await redis.hGetAll(String(characterId));
+        const characterId = user.characterId.toString();
+        const { monsterId } = await redis.hGetAll(characterId);
+        // const { monsterId } = battleCache.get(characterId);
         let tempScript: string = '';
         const tempLine = '========================================\n';
 
@@ -48,7 +49,7 @@ export default {
         tempScript += `??? : 하남자특. 도망감.\n`;
 
         // 몬스터 삭제
-        MonsterService.destroyMonster(+monsterId, characterId);
+        MonsterService.destroyMonster(+monsterId, +characterId);
 
         const script = tempLine + tempScript;
         const field = 'dungeon';
@@ -56,18 +57,19 @@ export default {
     },
 
     quitAutoBattle: async (CMD: string | undefined, user: UserSession) => {
-        const { characterId } = user;
-        const { monsterId } = await redis.hGetAll(String(characterId));
+        const characterId = user.characterId.toString();
+        const { monsterId } = await redis.hGetAll(characterId);
         let tempScript: string = '';
         const tempLine = '========================================\n';
 
         tempScript += `전투를 중단하고 마을로 돌아갑니다. \n\n`;
 
         // 기본공격 중단 & 몬스터 삭제
-        const autoAttackId = battleLoops.get(characterId);
+        const { autoAttackId } = battleCache.get(characterId);
         clearInterval(autoAttackId);
-        battleLoops.delete(characterId);
-        MonsterService.destroyMonster(+monsterId, characterId);
+        battleCache.delete(characterId);
+        redis.hDelBattleCache(characterId);
+        MonsterService.destroyMonster(+monsterId, +characterId);
 
         const script = tempLine + tempScript;
         const field = 'dungeon';

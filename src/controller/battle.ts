@@ -1,6 +1,7 @@
 import { socket } from '../socket.routes';
 import { battle, dungeon } from '../handler';
 import { LineInput, CommandRouter } from '../interfaces/socket';
+import { battleCache, redis } from '../db/cache';
 
 
 export default {
@@ -49,23 +50,40 @@ export default {
 
     actionController: async({ line, user, option }: LineInput) => {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
+        const characterId = user.characterId.toString();
         /**
          * action:time
          * 타임스탬프를 함께 전달하고 이를 바탕으로 스킬 재사용 가능여부 판별
          */
 
+        if (CMD1 === '중단') {
+            const result = await battle.quitAutoBattle('', user);
+            const field = result.field === 'action' ? 'printBattle' : 'print';
+            socket.emit(field, result);
+        }
+        
         const result = await battle.actionSkill(CMD1, user);
         if (Object.hasOwn(result, 'error')) {
             return socket.emit('print', result);
-        }  
-        if (!result.dead) {
-            result.cooldown = Date.now();            
-            return socket.emit('printBattle', result);
         }
+        const { dungeonLevel, dead } = await redis.hGetAll(characterId);
+        if (dead) {
+            const { autoAttackId } = battleCache.get(characterId);
+            clearInterval(autoAttackId);
+            battleCache.delete(characterId);
+            // battleCache.set(characterId, { dungeonLevel });
+            await redis.hDelBattleCache(characterId);
+            await redis.hSet(characterId, { dungeonLevel });
 
-        const deadResult = await battle.reEncounter('', result.user);
-        deadResult.script = result.script + deadResult.script;
-        socket.emit('print', deadResult);
+            const deadResult = await battle.reEncounter('', result.user);
+            deadResult.script = result.script + deadResult.script;
+            socket.emit('print', deadResult);
+            
+            return;
+        }        
+
+        result.cooldown = Date.now();
+        return socket.emit('printBattle', result);
     },
 
     autoBattleController: async ({ line, user }: LineInput) => {

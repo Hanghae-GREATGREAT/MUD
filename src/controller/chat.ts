@@ -1,5 +1,5 @@
 import { socket } from '../socket.routes';
-import redis from '../db/redis/config'
+import { redis } from '../db/cache';
 import { ChatInput } from '../interfaces/socket';
 
 

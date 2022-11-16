@@ -1,6 +1,6 @@
 import { UserSession } from '../../interfaces/user';
 import { BattleService } from '../../services';
-import redis from '../../db/redis/config';
+import { redis } from '../../db/cache';
 import { Monsters } from '../../db/models';
 
 export default {

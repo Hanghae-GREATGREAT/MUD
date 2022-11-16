@@ -3,21 +3,22 @@ import { Router } from 'express';
 
 const router = Router();
 
-import redis from './db/redis/config';
+import { battleCache, redis } from './db/cache';
+import { Skills } from './db/models';
+import { CharacterService } from './services';
+import { battle } from './handler'
+
 router.get('/', async (req, res, next) => {
 
-    const dungeonSession = {
-        dungeonLevel: 999,
-        monsterId: 789
-    }
-    // await redis.hSet('222', dungeonSession);
-    const result = await redis.hGetAll('222');
-    console.log(result);
-    console.log(typeof result.dungeonLevel)
-    console.log(typeof result.monsterId)
+    // 스킬 정보 가져오기 & 사용할 스킬 선택 (cost 반비례 확률)
+    const { attack, skill } = await CharacterService.findByPk(2);
+    
+    const result = battle.skillSelector(skill);
+
 
     res.status(200).json({
         message: 'API INDEX',
+        result,
     });
 });
 
