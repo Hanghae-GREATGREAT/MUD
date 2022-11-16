@@ -24,7 +24,7 @@ export default {
         const tempLine =
             '=======================================================================\n';
 
-        const NpcScript: string = NpcService.gambleTalkScript(user.username);
+        const NpcScript: string = NpcService.gambleTalkScript(user.name);
 
         const script = tempLine + NpcScript;
         const field = 'gamble';

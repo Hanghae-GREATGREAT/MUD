@@ -24,7 +24,7 @@ export default {
         const tempLine =
             '=======================================================================\n';
 
-        const NpcScript: string = NpcService.healTalkScript(user.username);
+        const NpcScript: string = NpcService.healTalkScript(user.name);
 
         const script = tempLine + NpcScript;
         const field = 'heal';

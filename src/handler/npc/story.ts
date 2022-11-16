@@ -24,7 +24,7 @@ export default {
         const tempLine =
             '=======================================================================\n';
 
-        const NpcScript: string = NpcService.storyTalkScript(user.username);
+        const NpcScript: string = NpcService.storyTalkScript(user.name);
 
         const script = tempLine + NpcScript;
         const field = 'story';

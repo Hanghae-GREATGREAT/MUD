@@ -61,7 +61,7 @@ class NpcService {
         }
 
         if (Character.maxhp === Character.hp) {
-            return '아그네스 : 특별히 치료하실만한 상처는 안 보이는데요? 마음의 상처라면 치료보다 상담을..\n\n';
+            return '아그네스 : 특별히 치료하실만한 상처는 안 보이는데요?\n마음의 상처라면 치료보다 상담을 받아보시는 게 어떤가요?\n\n';
         }
 
         await Character.update({
@@ -170,10 +170,10 @@ class NpcService {
         if (victoryPoint > 0) {
             tempScript += `\n결과 : ${Character.name}의 승리!\n\n`;
             tempScript += `에트나 : 오! ${Character.name}... 좀 하는걸?\n`;
-            tempScript += `에트나 : 그치만 아직 보상이 구현되지 않았어 ㅋ\n`;
+            tempScript += `에트나 : 그치만 아직 보상이 구현되지 않았어 ㅋ\n\n`;
         } else {
             tempScript += `\n결과 : ${Character.name}의 패배..\n\n`;
-            tempScript += `에트나 : 푸하하하! ${Character.name}, 아직 패널티가 구현되지 않은걸 다행으로 알아둬~\n`;
+            tempScript += `에트나 : 푸하하하! ${Character.name}, 아직 패널티가 구현되지 않은걸 다행으로 알아둬~\n\n`;
         }
 
         return tempScript;

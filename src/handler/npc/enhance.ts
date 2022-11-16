@@ -24,7 +24,7 @@ export default {
         const tempLine =
             '=======================================================================\n';
 
-        const NpcScript: string = NpcService.enhanceTalkScript(user.username);
+        const NpcScript: string = NpcService.enhanceTalkScript(user.name);
 
         const script = tempLine + NpcScript;
         const field = 'enhance';
