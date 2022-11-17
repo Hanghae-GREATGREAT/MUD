@@ -5,7 +5,8 @@
   "main": "build/server.js",
   "scripts": {
     "build": "tsc",
-    "start": "export NODE_ENV=development && nodemon --exec ts-node server.ts",
+    "start": "node build/server.js",
+    "dev": "export NODE_ENV=development && nodemon --exec ts-node server.ts",
     "test": "export NODE_ENV=test && jest --detectOpenHandles --forceExit",
     "db:create": "ts-node src/db/config/create.ts",
     "db:migrate": "ts-node src/db/config/migrate.ts && ts-node data/user.js",
