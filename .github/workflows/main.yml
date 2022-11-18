@@ -1,0 +1,114 @@
+name: Deploy to EB
+
+on:
+  push:
+      branches: ['dev']
+  pull_request:
+      branches: ['dev']
+
+jobs:
+  build:
+    name: CI Pipeline
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      # Install Node.js
+      - name: Install Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      # Install Node.js dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # Build Typescript
+      - name: Run build
+        run: npm run build
+
+  deploy:
+    name: CD Pipeline
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+    needs: build
+    steps:
+      - uses: actions/checkout@v3
+
+      # Create .env file
+      - name: Create env file
+        run: |
+            touch .env
+            echo PORT=8081 >> .env
+            echo DEV_HOST=${{ secrets.DEV_HOST }} >> .env
+            echo DEV_NAME=${{ secrets.DEV_NAME }} >> .env
+            echo DEV_USER=${{ secrets.DEV_USER }} >> .env
+            echo DEV_PASSWORD=${{ secrets.DEV_PASSWORD }} >> .env
+            echo REDIS_HOST=${{ secrets.REDIS_HOST }} >> .env
+            echo REDIS_USER=${{ secrets.REDIS_USER }} >> .env
+            echo REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }} >> .env
+            cat .env
+
+      # Install Node.js
+      - name: Install Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      # Install Node.js dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # Build Typescript
+      - name: Run build
+        run: npm run build
+
+      # Install AWS CLI 2
+      - name: Install AWS CLI 2
+        run: |
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          which aws
+          sudo ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update
+
+      # Configure AWS credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      # Make to ZIP file with source code
+      # -x에 해당하는 파일은 zip 파일 생성 시 제외
+      - name: Generate deployment Beanstalk
+        run: zip -r deploy.zip . -x '*.git*' './__test__/*' awscliv2.zip
+
+      # Get Current Time
+      - name: Get Current time
+        uses: josStorer/get-current-time@v2
+        id: current-time
+        with:
+          format: YYYYMMDD-HH-mm-ss
+          utcOffset: '+09:00'
+
+      # Deploy to Elastic Beanstalk
+      - name: Deploy to EB
+        uses: einaregilsson/beanstalk-deploy@v21
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: great-app
+          environment_name: Greatapp-env-1
+          region: ap-northeast-2
+          version_label: ${{ steps.current-time.outputs.formattedTime }}
+          deployment_package: deploy.zip
+          wait_for_deployment: false # CD중 배포완료를 기다리지 않는다.
+          wait_for_environment_recovery: 300 # 배포 후 healthy한 상태로 돌아가길 기다리는 시간 설정
