@@ -30,7 +30,8 @@ class EncounterHandler {
         this.encounter = (CMD, user) => __awaiter(this, void 0, void 0, function* () {
             // 던전 진행상황 불러오기
             const { characterId } = user;
-            const { dungeonLevel } = yield cache_1.redis.hGetAll(characterId);
+            // const { dungeonLevel } = await redis.hGetAll(characterId);
+            const { dungeonLevel } = cache_1.battleCache.get(characterId);
             let tempScript = '';
             const tempLine = '=======================================================================\n';
             // 적 생성
@@ -39,7 +40,8 @@ class EncounterHandler {
             tempScript += `[공격] 하기\n`;
             tempScript += `[도망] 가기\n`;
             // 던전 진행상황 업데이트
-            yield cache_1.redis.hSet(characterId, { monsterId });
+            // await redis.hSet(characterId, { monsterId });
+            cache_1.battleCache.set(characterId, { monsterId });
             const script = tempLine + tempScript;
             const field = 'encounter';
             return { script, user, field };
@@ -47,8 +49,8 @@ class EncounterHandler {
         this.reEncounter = (CMD, user) => __awaiter(this, void 0, void 0, function* () {
             // 던전 진행상황 불러오기
             const { characterId } = user;
-            const { dungeonLevel } = yield cache_1.redis.hGetAll(characterId);
-            // const { dungeonLevel } = battleCache.get(characterId);
+            // const { dungeonLevel } = await redis.hGetAll(characterId);
+            const { dungeonLevel } = cache_1.battleCache.get(characterId);
             let tempScript = '';
             const tempLine = '=======================================================================\n';
             // 적 생성
@@ -57,7 +59,7 @@ class EncounterHandler {
             tempScript += `[공격] 하기\n`;
             tempScript += `[도망] 가기\n`;
             // 던전 진행상황 업데이트
-            yield cache_1.redis.hSet(characterId, { monsterId });
+            cache_1.battleCache.set(characterId, { monsterId });
             const script = tempLine + tempScript;
             const field = 'encounter';
             user = yield services_1.CharacterService.addExp(characterId, 0);

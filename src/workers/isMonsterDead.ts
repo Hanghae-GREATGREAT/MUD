@@ -29,7 +29,7 @@ class isMonsterDead {
                 resolve(result);
             });
             // worker.on('online', () => {});
-            worker.on('messageerror', reject);
+            // worker.on('messageerror', reject);
             worker.on('error', reject);
             worker.on('exit', (code) => {
                 console.log(`isMonsterDead ${characterId} exitCode: ${code}`);
@@ -62,7 +62,7 @@ export default new isMonsterDead();
 //             battleCache.delete(characterId);
     
 //             const result = await whoIsDead[dead]('', newUser);
-//             socket.emit('print', result);
+//             socket.to(socket.id).emit('print', result);
     
 //             return;
 //         }

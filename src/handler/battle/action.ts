@@ -26,14 +26,14 @@ class BattleAction {
     //     autoAttack.start(characterId, socket).then((result) => {
     //         console.log('AUTO ATTACK RUNNING', result);
 
-    //         socket.emit('printBattle', result);
+    //         socket.to(socket.id).emit('printBattle', result);
     //     }).catch((error) => console.error(error));
 
     //     // const autoAttackTimer = setInterval(async () => {
     //     //     battleCache.set(characterId, { autoAttackTimer });
     //     //     const { script, field, user: newUser, error } = await battle.autoAttack(CMD, user);
     //     //     if (error) return;
-    //     //     socket.emit('printBattle', { script, field, user: newUser });
+    //     //     socket.to(socket.id).emit('printBattle', { script, field, user: newUser });
 
     //     //     // const { dead } = battleCache.get(characterId);
     //     //     const { dead } = await redis.hGetAll(characterId);
@@ -45,7 +45,7 @@ class BattleAction {
     //     //         battleCache.delete(characterId);
 
     //     //         const result = await whoIsDead[dead]('', newUser);
-    //     //         socket.emit('print', result);
+    //     //         socket.to(socket.id).emit('print', result);
 
     //     //         return;
     //     //     }
@@ -66,7 +66,7 @@ class BattleAction {
             battleCache.set(characterId, { autoAttackTimer });
             const { script, field, user: newUser, error } = await battle.autoAttack(CMD, user);
             if (error) return;
-            socket.emit('printBattle', { script, field, user: newUser });
+            socket.to(socket.id).emit('printBattle', { script, field, user: newUser });
 
             const { dead } = battleCache.get(characterId);
             // const { dead } = await redis.hGetAll(characterId);
@@ -79,7 +79,7 @@ class BattleAction {
                 battleCache.set(characterId, { dungeonLevel });
 
                 const result = await whoIsDead[dead]('', newUser);
-                socket.emit('print', result);
+                socket.to(socket.id).emit('print', result);
 
                 return;
             }
@@ -152,6 +152,7 @@ class BattleAction {
     }
 
     autoBattleSkill = async (user: UserSession) => {
+        console.log('autoBattleSkill')
         const { characterId, mp } = user
         let field = 'autoBattle';
         let tempScript = '';

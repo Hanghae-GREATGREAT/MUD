@@ -41,31 +41,40 @@ exports.default = {
         return { script, user, field };
     },
     quitBattle: (CMD, user) => __awaiter(void 0, void 0, void 0, function* () {
-        const characterId = user.characterId.toString();
-        const { monsterId } = yield cache_1.redis.hGetAll(characterId);
-        // const { monsterId } = battleCache.get(characterId);
+        const { characterId } = user;
+        // const { monsterId } = await redis.hGetAll(characterId);
+        const { monsterId } = cache_1.battleCache.get(characterId);
         let tempScript = '';
         const tempLine = '========================================\n';
         tempScript += `당신은 도망쳤습니다. \n\n`;
         tempScript += `??? : 하남자특. 도망감.\n`;
         // 몬스터 삭제
-        services_1.MonsterService.destroyMonster(+monsterId, +characterId);
+        services_1.MonsterService.destroyMonster(monsterId, +characterId);
         const script = tempLine + tempScript;
         const field = 'dungeon';
         return { script, user, field };
     }),
     quitAutoBattle: (CMD, user) => __awaiter(void 0, void 0, void 0, function* () {
-        const characterId = user.characterId.toString();
-        const { monsterId } = yield cache_1.redis.hGetAll(characterId);
+        const { characterId } = user;
+        const { monsterId } = cache_1.battleCache.get(characterId);
+        // const { monsterId } = await redis.hGetAll(characterId);
         let tempScript = '';
         const tempLine = '========================================\n';
         tempScript += `전투를 중단하고 마을로 돌아갑니다. \n\n`;
         // 기본공격 중단 & 몬스터 삭제
-        const { autoAttackId } = cache_1.battleCache.get(characterId);
-        clearInterval(autoAttackId);
+        // 이벤트 루프에 이미 들어가서 대기중인 타이머가 있을 수 있음
+        const { autoAttackTimer } = cache_1.battleCache.get(characterId);
+        clearInterval(autoAttackTimer);
+        console.log('자동공격 타이머 삭제', autoAttackTimer);
+        if (autoAttackTimer === undefined) {
+            setTimeout(() => {
+                const { autoAttackTimer } = cache_1.battleCache.get(characterId);
+                clearInterval(autoAttackTimer);
+                console.log('자동공격 타이머 삭제', autoAttackTimer);
+            }, 300);
+        }
         cache_1.battleCache.delete(characterId);
-        cache_1.redis.hDelBattleCache(characterId);
-        services_1.MonsterService.destroyMonster(+monsterId, +characterId);
+        services_1.MonsterService.destroyMonster(monsterId, characterId);
         const script = tempLine + tempScript;
         const field = 'dungeon';
         return { script, user, field };

@@ -17,11 +17,11 @@ export default {
         if (!commandRouter[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
             const result = npc.storyWrongCommand(CMD1, user);
-            return socket.emit('print', result);
+            return socket.to(socket.id).emit('print', result);
         }
 
         const result = await commandRouter[CMD1](CMD2, user);
-        socket.emit('print', result);
+        socket.to(socket.id).emit('print', result);
     },
 
     healController: async ({ line, user }: LineInput) => {
@@ -38,11 +38,11 @@ export default {
         if (!commandRouter[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
             const result = npc.healWrongCommand(CMD1, user);
-            return socket.emit('print', result);
+            return socket.to(socket.id).emit('print', result);
         }
 
         const result = await commandRouter[CMD1](CMD2, user);
-        socket.emit('print', result);
+        socket.to(socket.id).emit('print', result);
     },
 
     enhanceController: async ({ line, user }: LineInput) => {
@@ -59,11 +59,11 @@ export default {
         if (!commandRouter[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
             const result = npc.enhanceWrongCommand(CMD1, user);
-            return socket.emit('print', result);
+            return socket.to(socket.id).emit('print', result);
         }
 
         const result = await commandRouter[CMD1](CMD2, user);
-        socket.emit('print', result);
+        socket.to(socket.id).emit('print', result);
     },
 
     gambleController: async ({ line, user }: LineInput) => {
@@ -80,10 +80,10 @@ export default {
         if (!commandRouter[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
             const result = npc.gambleWrongCommand(CMD1, user);
-            return socket.emit('print', result);
+            return socket.to(socket.id).emit('print', result);
         }
 
         const result = await commandRouter[CMD1](CMD2, user);
-        socket.emit('print', result);
+        socket.to(socket.id).emit('print', result);
     },
 };

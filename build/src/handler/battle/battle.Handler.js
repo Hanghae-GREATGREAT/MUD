@@ -8,12 +8,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const socket_routes_1 = require("../../socket.routes");
 const models_1 = require("../../db/models");
 const services_1 = require("../../services");
 const cache_1 = require("../../db/cache");
 const __1 = require("..");
+const isMonsterDead_1 = __importDefault(require("../../workers/isMonsterDead"));
+const worker_threads_1 = require("worker_threads");
+const skillAttack_1 = __importDefault(require("../../workers/skillAttack"));
+const autoAttack_1 = __importDefault(require("../../workers/autoAttack"));
 exports.default = {
     // help: (CMD: string | undefined, user: UserSession) => {}
     help: (CMD, user) => {
@@ -31,13 +38,12 @@ exports.default = {
         let tempScript = '';
         let field = 'action';
         const { characterId } = user;
-        const { autoAttackId } = cache_1.battleCache.get(characterId);
-        const { monsterId } = yield cache_1.redis.hGetAll(characterId);
-        console.log(yield cache_1.redis.hGetAll(characterId));
+        const { autoAttackTimer, monsterId } = cache_1.battleCache.get(characterId);
+        // const { monsterId } = await redis.hGetAll(characterId);
         // 유저&몬스터 정보 불러오기
         const { hp: playerHP, attack: playerDamage } = yield services_1.CharacterService.findByPk(characterId);
         const monster = yield models_1.Monsters.findByPk(monsterId);
-        if (!autoAttackId || !monster) {
+        if (!autoAttackTimer || !monster || !monsterId) {
             return { script: '내부에러', field: 'dungeon', user, error: true };
         }
         const { name: monsterName, hp: monsterHP, attack: monsterDamage, exp: monsterExp } = monster;
@@ -51,8 +57,8 @@ exports.default = {
             throw new Error('몬스터 정보를 찾을 수 없습니다');
         if (isDead === 'dead') {
             console.log('몬스터 사망');
-            // battleCache.set(characterId, { dead: 'monster' });
-            yield cache_1.redis.hSet(characterId, { dead: 'monster' });
+            cache_1.battleCache.set(characterId, { dead: 'monster' });
+            // await redis.hSet(characterId, { dead: 'monster' });
             const { script, field, user } = yield __1.battle.resultMonsterDead(monster, tempScript);
             return { script, field, user };
         }
@@ -67,8 +73,8 @@ exports.default = {
             field = 'adventureResult';
             tempScript += '\n!! 치명상 !!\n';
             tempScript += `당신은 ${monsterName}의 공격을 버티지 못했습니다.. \n`;
-            // battleCache.set(characterId, { dead: 'player' });
-            yield cache_1.redis.hSet(characterId, { dead: 'player' });
+            cache_1.battleCache.set(characterId, { dead: 'player' });
+            // await redis.hSet(characterId, { dead: 'player' });
         }
         const script = tempScript;
         return { script, user, field };
@@ -81,27 +87,36 @@ exports.default = {
         if (user.levelup) {
             script += `\n==!! LEVEL UP !! 레벨이 ${user.level - 1} => ${user.level} 올랐습니다 !! LEVEL UP !!==\n\n`;
         }
+        // const result = { script, user, field };
+        // socket.to(socket.id).emit('print', result);
+        // battleCache.delete(characterId);
         return { script, user, field };
+    }),
+    resultPlayerDead: (refreshUser, script) => __awaiter(void 0, void 0, void 0, function* () {
+        const { script: newScript, field, user, chat } = yield __1.dungeon.getDungeonList('', refreshUser);
+        // field: dungeon , chat: true
+        const result = { script: script + newScript, user, field, chat };
+        socket_routes_1.socket.to(socket_routes_1.socket.id).emit('print', result);
+        cache_1.battleCache.delete(refreshUser.characterId);
+        return;
     }),
     autoBattle: (CMD, user) => __awaiter(void 0, void 0, void 0, function* () {
         console.timeEnd('AUTOBATTLEEEEEEEEEEEEEEEEEEE');
         let tempScript = '';
-        let field = 'action';
+        let field = 'autoBattle';
         const { characterId } = user;
-        console.log('autoBattleeeeeeeeeeeeeeeee', yield cache_1.redis.hGetAll(characterId));
-        const { dungeonLevel } = yield cache_1.redis.hGetAll(characterId);
-        // const { dungeonLevel } = battleCache.get(characterId);
+        // const { dungeonLevel } = await redis.hGetAll(characterId);
+        const { dungeonLevel } = cache_1.battleCache.get(characterId);
         // 몬스터 생성
         const { monsterId, name } = yield services_1.MonsterService.createNewMonster(dungeonLevel, characterId);
         const monsterCreatedScript = `\n${name}이(가) 등장했습니다.\n\n`;
-        yield cache_1.redis.hSet(characterId, { monsterId });
-        // battleCache.set(characterId, dungeonSession);
-        console.log('몬스터 생성', yield cache_1.redis.hGetAll(characterId));
-        socket_routes_1.socket.emit('printBattle', { script: monsterCreatedScript, field, user });
+        // await redis.hSet(characterId, { monsterId });
+        cache_1.battleCache.set(characterId, { monsterId });
+        socket_routes_1.socket.to(socket_routes_1.socket.id).emit('printBattle', { script: monsterCreatedScript, field, user });
         // 자동공격 사이클
-        const autoAttackId = setInterval(() => __awaiter(void 0, void 0, void 0, function* () {
+        const autoAttackTimer = setInterval(() => __awaiter(void 0, void 0, void 0, function* () {
             console.time('AUTOBATTLEEEEEEEEEEEEEEEEEEE');
-            cache_1.battleCache.set(characterId, { autoAttackId });
+            cache_1.battleCache.set(characterId, { autoAttackTimer });
             const { script, user: newUser, error } = yield __1.battle.autoAttack(CMD, user);
             // 이미 끝난 전투
             if (error)
@@ -109,23 +124,23 @@ exports.default = {
             ;
             // 자동공격 스크립트 계속 출력?
             const field = 'autoBattle';
-            socket_routes_1.socket.emit('printBattle', { script, field, user: newUser });
+            socket_routes_1.socket.to(socket_routes_1.socket.id).emit('printBattle', { script, field, user: newUser });
             const whoIsDead = {
                 'player': __1.dungeon.getDungeonList,
                 'monster': __1.battle.autoBattle,
             };
             // dead = 'moster'|'player'|undefined
-            // const { dead } = battleCache.get(characterId);
-            const { dead } = yield cache_1.redis.hGetAll(characterId);
+            const { dead } = cache_1.battleCache.get(characterId);
+            // const { dead } = await redis.hGetAll(characterId);
             if (dead) {
-                const { autoAttackId } = cache_1.battleCache.get(characterId);
-                clearInterval(autoAttackId);
+                const { autoAttackTimer, dungeonLevel } = cache_1.battleCache.get(characterId);
+                clearInterval(autoAttackTimer);
                 cache_1.battleCache.delete(characterId);
-                cache_1.redis.hDelBattleCache(characterId);
+                // redis.hDelBattleCache(characterId)
                 if (dead === 'monster')
-                    yield cache_1.redis.hSet(characterId, { dungeonLevel });
+                    cache_1.battleCache.set(characterId, { dungeonLevel });
                 const { script, field, user } = yield whoIsDead[dead]('', newUser);
-                socket_routes_1.socket.emit('printBattle', { script, field, user });
+                socket_routes_1.socket.to(socket_routes_1.socket.id).emit('printBattle', { script, field, user });
                 return;
             }
             else {
@@ -135,24 +150,91 @@ exports.default = {
                     return console.timeEnd('AUTOBATTLEEEEEEEEEEEEEEEEEEE');
                 ;
                 const { script, user, field } = yield __1.battle.autoBattleSkill(newUser);
-                const { dead } = yield cache_1.redis.hGetAll(characterId);
-                socket_routes_1.socket.emit('printBattle', { script, field, user });
+                const { dead } = cache_1.battleCache.get(characterId);
+                // const { dead } = await redis.hGetAll(characterId);
+                socket_routes_1.socket.to(socket_routes_1.socket.id).emit('printBattle', { script, field, user });
                 if (dead) {
-                    const { autoAttackId } = cache_1.battleCache.get(characterId);
-                    clearInterval(autoAttackId);
+                    const { autoAttackTimer, dungeonLevel } = cache_1.battleCache.get(characterId);
+                    clearInterval(autoAttackTimer);
                     cache_1.battleCache.delete(characterId);
-                    yield cache_1.redis.hDelResetCache(characterId);
+                    // await redis.hDelResetCache(characterId);
+                    if (dead === 'monster')
+                        cache_1.battleCache.set(characterId, { dungeonLevel });
                     const { script, field, user } = yield whoIsDead[dead]('', newUser);
-                    socket_routes_1.socket.emit('printBattle', { script, field, user });
+                    socket_routes_1.socket.to(socket_routes_1.socket.id).emit('printBattle', { script, field, user });
                     return;
                 }
                 console.timeEnd('AUTOBATTLEEEEEEEEEEEEEEEEEEE');
             }
         }), 1500);
-        // battleLoops.set(characterId, autoAttackId);
+        // battleLoops.set(characterId, autoAttackTimer);
         // 스킬공격 사이클을 일반공격 사이클과 분리하는 것이 좋은가? 아니면 같은 사이클에서 돌리는 것이 나은가?
         // 일단 사망 판정 관리 때문에 하나로
         return { script: tempScript, user, field };
+    }),
+    autoBattleW: (CMD, user) => __awaiter(void 0, void 0, void 0, function* () {
+        console.log('battle.handler.ts: 209 >> 자동전투 핸들러 시작');
+        const { characterId } = user;
+        const { dungeonLevel } = cache_1.battleCache.get(characterId);
+        // 몬스터 생성
+        const { monsterId, name } = yield services_1.MonsterService.createNewMonster(dungeonLevel, characterId);
+        const monsterCreatedScript = `\n${name}이(가) 등장했습니다.\n\n`;
+        cache_1.battleCache.set(characterId, { monsterId });
+        socket_routes_1.socket.to(socket_routes_1.socket.id).emit('printBattle', { script: monsterCreatedScript, field: 'autoBattle', user });
+        const cache = cache_1.battleCache.get(characterId);
+        (0, worker_threads_1.setEnvironmentData)(characterId, JSON.stringify(cache));
+        const { port1: autoToDead, port2: autoToDeadReceive } = new worker_threads_1.MessageChannel();
+        const { port1: skillToDead, port2: skillToDeadReceive } = new worker_threads_1.MessageChannel();
+        const receiver = { autoToDeadReceive, skillToDeadReceive };
+        // 사망판정 워커 할당 >> 소켓 송신
+        isMonsterDead_1.default.check(characterId, receiver).then((result) => {
+            console.log('battle.handler.ts: 229 >> 사망 확인 resolved', result);
+            if (result === 'terminate')
+                return;
+            const battleResult = {
+                monster: __1.battle.autoResultMonsterDead,
+                player: __1.battle.autoResultPlayerDead
+            };
+            battleResult[result](user, '');
+        }).catch((error) => console.error(error));
+        // 자동공격 워커 할당
+        autoAttack_1.default.start(characterId, autoToDead).then((result) => {
+            console.log('battle.handler.ts: 234 >> 자동 공격 resolved', result);
+        }).catch(error => console.error(error));
+        // 스킬공격 워커 할당
+        skillAttack_1.default.start(characterId, skillToDead).then((result) => {
+            console.log('battle.handler.ts: 239 >> 스킬 공격 resolved', result);
+        }).catch(error => console.error(error));
+    }),
+    autoResultMonsterDead: (user, script) => __awaiter(void 0, void 0, void 0, function* () {
+        const { characterId } = user;
+        console.log('battleCache, after DEAD', cache_1.battleCache.get(characterId));
+        console.log(characterId);
+        const { monsterId, dungeonLevel } = cache_1.battleCache.get(characterId);
+        const monster = yield services_1.MonsterService.findByPk(monsterId);
+        if (!monster) {
+            throw new Error('battle.handler.ts >> autoResultMonsterDead() >> 몬스터 데이터X');
+        }
+        const { name, exp } = monster;
+        const newUser = yield services_1.CharacterService.addExp(characterId, exp);
+        script += `\n${name} 은(는) 쓰러졌다 ! => Exp + ${exp}\n`;
+        if (user.levelup) {
+            script += `\n==!! LEVEL UP !! 레벨이 ${user.level - 1} => ${user.level} 올랐습니다 !! LEVEL UP !!==\n\n`;
+        }
+        const result = { script, user: newUser, field: 'autoBattle' };
+        socket_routes_1.socket.to(socket_routes_1.socket.id).emit('print', result);
+        cache_1.battleCache.delete(characterId);
+        cache_1.battleCache.set(characterId, { dungeonLevel });
+        __1.battle.autoBattleW('', newUser);
+        return;
+    }),
+    autoResultPlayerDead: (user, script) => __awaiter(void 0, void 0, void 0, function* () {
+        const { script: newScript, field, user: newUser, chat } = yield __1.dungeon.getDungeonList('', user);
+        // field: dungeon , chat: true
+        const result = { script: script + newScript, user: newUser, field, chat };
+        socket_routes_1.socket.to(socket_routes_1.socket.id).emit('print', result);
+        cache_1.battleCache.delete(user.characterId);
+        return;
     }),
     wrongCommand: (CMD, user) => {
         let tempScript = '';

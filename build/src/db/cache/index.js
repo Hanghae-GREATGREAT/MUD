@@ -6,5 +6,5 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.redis = exports.battleCache = void 0;
 const redis_1 = __importDefault(require("./redis"));
 exports.redis = redis_1.default;
-const battleMap_1 = __importDefault(require("./battleMap"));
-exports.battleCache = battleMap_1.default;
+const battleCache_1 = __importDefault(require("./battleCache"));
+exports.battleCache = battleCache_1.default;

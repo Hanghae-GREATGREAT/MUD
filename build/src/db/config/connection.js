@@ -11,6 +11,6 @@ const sequelize = new sequelize_1.Sequelize({
     username: config_env_1.default.DB_USER,
     password: config_env_1.default.DB_PASSWORD,
     dialect: 'mysql',
-    // logging: false,
+    logging: false,
 });
 exports.default = sequelize;

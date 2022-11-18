@@ -66,8 +66,17 @@ export default {
         tempScript += `전투를 중단하고 마을로 돌아갑니다. \n\n`;
 
         // 기본공격 중단 & 몬스터 삭제
+        // 이벤트 루프에 이미 들어가서 대기중인 타이머가 있을 수 있음
         const { autoAttackTimer } = battleCache.get(characterId);
-        clearInterval(autoAttackTimer);
+        clearInterval(autoAttackTimer);       
+        console.log('자동공격 타이머 삭제', autoAttackTimer);
+        if (autoAttackTimer === undefined) {
+            setTimeout(() => {
+                const { autoAttackTimer } = battleCache.get(characterId);
+                clearInterval(autoAttackTimer);
+                console.log('자동공격 타이머 삭제', autoAttackTimer);
+            }, 300);
+        }
         battleCache.delete(characterId);
         MonsterService.destroyMonster(monsterId!, characterId);
 

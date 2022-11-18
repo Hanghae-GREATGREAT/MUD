@@ -11,10 +11,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 const models_1 = require("../db/models");
-const cache_1 = require("../db/cache");
 class MonsterService {
     static createNewMonster(dungeonLevel, characterId) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log('monster.service.ts >> createNewMonster() 몬스터 생성');
             const newMonster = yield models_1.Monsters.createMonster(+dungeonLevel, +characterId);
             return newMonster;
         });
@@ -28,13 +28,17 @@ class MonsterService {
      * 전투 종료 후 몬스터 테이블 삭제
      ***************************************************************/
     static destroyMonster(monsterId, characterId) {
+        console.log(`monster.service.ts: 45 >> 몬스터 삭제, ${monsterId}`);
         models_1.Monsters.destroy({ where: { monsterId: Number(monsterId) } });
-        cache_1.redis.hDel(String(characterId), 'monsterId');
+        // redis.hDel(String(characterId), 'monsterId');
+        // 여기서 지우나?
+        // battleCache.delete(characterId);
     }
 }
 _a = MonsterService;
 /***************************************************************
- * 전투 턴이 종료되고 hp, mp 상태 갱신
+    전투 턴이 종료되고 hp, mp 상태 갱신
+    몬스터 사망
  ***************************************************************/
 MonsterService.refreshStatus = (monsterId, damage, characterId) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield models_1.Monsters.findByPk(Number(monsterId), {
@@ -49,7 +53,7 @@ MonsterService.refreshStatus = (monsterId, damage, characterId) => __awaiter(voi
         return 'alive';
     }
     else {
-        _a.destroyMonster(monsterId, characterId);
+        // this.destroyMonster(monsterId, characterId)
         return 'dead';
     }
 });

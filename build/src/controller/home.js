@@ -18,8 +18,8 @@ exports.default = {
             'LOAD': handler_1.front.loadHome
         };
         const result = commandRouter[CMD1](CMD2, user);
-        socket_routes_1.socket.emit('print', result);
-        socket_routes_1.socket.emit('enterChat', 'none');
+        socket_routes_1.socket.to(socket_routes_1.socket.id).emit('print', result);
+        socket_routes_1.socket.to(socket_routes_1.socket.id).emit('enterChat', 'none');
     },
     frontController: ({ line, user }) => __awaiter(void 0, void 0, void 0, function* () {
         const [CMD1, CMD2] = line.trim().toUpperCase().split(' ');
@@ -37,16 +37,16 @@ exports.default = {
         };
         if (!commandRouter[CMD1]) {
             const result = commandRouter['EMPTY'](line, user);
-            return socket_routes_1.socket.emit('print', result);
+            return socket_routes_1.socket.to(socket_routes_1.socket.id).emit('print', result);
         }
         const result = yield commandRouter[CMD1](CMD2, user, socket_routes_1.socket.id);
         if (result.chat)
-            socket_routes_1.socket.emit('enterChat', result.field);
+            socket_routes_1.socket.to(socket_routes_1.socket.id).emit('enterChat', result.field);
         if (result.field === 'signout') {
-            socket_routes_1.socket.emit('signout', result);
+            socket_routes_1.socket.to(socket_routes_1.socket.id).emit('signout', result);
         }
         else {
-            socket_routes_1.socket.emit('print', result);
+            socket_routes_1.socket.to(socket_routes_1.socket.id).emit('print', result);
         }
     }),
     signController: ({ line, user, option }) => __awaiter(void 0, void 0, void 0, function* () {
@@ -61,11 +61,11 @@ exports.default = {
         };
         if (!CMD1 || !option) {
             const result = commandRouter['EMPTY'](line, user);
-            return socket_routes_1.socket.emit('print', result);
+            return socket_routes_1.socket.to(socket_routes_1.socket.id).emit('print', result);
         }
         const result = yield commandRouter[option](CMD1, user, socket_routes_1.socket.id);
         if (result.chat)
-            socket_routes_1.socket.emit('enterChat', result.field);
-        socket_routes_1.socket.emit('print', result);
+            socket_routes_1.socket.to(socket_routes_1.socket.id).emit('enterChat', result.field);
+        socket_routes_1.socket.to(socket_routes_1.socket.id).emit('print', result);
     })
 };

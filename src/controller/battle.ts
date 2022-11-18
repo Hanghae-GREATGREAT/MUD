@@ -19,7 +19,7 @@ export default {
         // if (!commandRouter[CMD1]) {
         //     console.log(`is wrong command : '${CMD1}'`);
         //     const result = battle.wrongCommand(CMD1, user);
-        //     return socket.emit('print', result);
+        //     return socket.to(socket.id).emit('print', result);
         // }
 
         if (CMD1 === '자동1') {
@@ -28,7 +28,7 @@ export default {
             return;
         }
         const result = await commandRouter[CMD1](CMD2, user);
-        socket.emit('print', result);
+        socket.to(socket.id).emit('print', result);
     },
 
     encounterController: async ({ line, user }: LineInput) => {
@@ -44,12 +44,12 @@ export default {
         if (!commandRouter[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
             const result = battle.wrongCommand(CMD1, user);
-            return socket.emit('print', result);
+            return socket.to(socket.id).emit('print', result);
         }
 
         let result = await commandRouter[CMD1](CMD2, user);
         const target = result!.field === 'action' ? 'printBattle' : 'print';
-        socket.emit(target, result);
+        socket.to(socket.id).emit(target, result);
     },
 
     actionController: async({ line, user, option }: LineInput) => {
@@ -63,12 +63,12 @@ export default {
         if (CMD1 === '중단') {
             const result = await battle.quitAutoBattle('', user);
             const field = result.field === 'action' ? 'printBattle' : 'print';
-            socket.emit(field, result);
+            socket.to(socket.id).emit(field, result);
         }
         
         const result = await battle.actionSkill(CMD1, user);
         if (Object.hasOwn(result, 'error')) {
-            return socket.emit('print', result);
+            return socket.to(socket.id).emit('print', result);
         }
         // const { dungeonLevel, dead } = await redis.hGetAll(characterId);
         const { dungeonLevel, dead } = battleCache.get(characterId);
@@ -82,13 +82,13 @@ export default {
 
             const deadResult = await battle.reEncounter('', result.user);
             deadResult.script = result.script + deadResult.script;
-            socket.emit('print', deadResult);
+            socket.to(socket.id).emit('print', deadResult);
             
             return;
         }        
 
         result.cooldown = Date.now();
-        return socket.emit('printBattle', result);
+        return socket.to(socket.id).emit('printBattle', result);
     },
 
     autoBattleController: async ({ line, user }: LineInput) => {
@@ -102,12 +102,12 @@ export default {
         if (!commandRouter[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
             const result = await commandRouter['도움말'](CMD1, user);
-            return socket.emit('print', result);
+            return socket.to(socket.id).emit('print', result);
         }
 
         let result = await commandRouter[CMD1](CMD2, user);
         const target = result!.field === 'action' ? 'printBattle' : 'print';
-        socket.emit(target, result);
+        socket.to(socket.id).emit(target, result);
     },
 
     resultController: async ({ line, user }: LineInput) => {
@@ -122,11 +122,11 @@ export default {
         if (!commandRouter[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
             const result = battle.adventureWrongCommand(CMD1, user);
-            return socket.emit('print', result);
+            return socket.to(socket.id).emit('print', result);
         }
 
         const result = await commandRouter[CMD1](CMD2, user);
-        socket.emit('print', result);
+        socket.to(socket.id).emit('print', result);
     }
 }
 
@@ -148,11 +148,11 @@ export default {
         // if (CMD1 === '공격') {
         //     const basicFight = setInterval(async () => {
         //         result = await battle.manualLogic(CMD2, user);
-        //         socket.emit('printBattle', result);
+        //         socket.to(socket.id).emit('printBattle', result);
         //         if (result.dead.match(/player|monster/)) {
         //             clearInterval(battleLoops[user.characterId]);
         //             result = await newScript[result.dead](CMD2, user)
-        //             socket.emit('print', result);
+        //             socket.to(socket.id).emit('print', result);
         //         }
         //     }, 1500);
         //     battleLoops[user.characterId] = basicFight;
@@ -160,7 +160,7 @@ export default {
         //     result = await battle.skill(CMD2, user);
 
         //     if (result.dead.match(/player|monster/)) {
-        //         socket.emit('print', result);
+        //         socket.to(socket.id).emit('print', result);
         //         clearInterval(battleLoops[user.characterId]);
         //         result = await newScript[result.dead](CMD2, user);
         //     }
