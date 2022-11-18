@@ -1,9 +1,10 @@
 import { Monsters, Fields } from '../db/models';
-import { redis } from '../db/cache';
+import { battleCache, redis } from '../db/cache';
 
 class MonsterService {
 
     static async createNewMonster(dungeonLevel: number|string, characterId: number|string) {
+        console.log('monster.service.ts >> createNewMonster() 몬스터 생성')
         const newMonster = await Monsters.createMonster(+dungeonLevel, +characterId);
 
         return newMonster;
@@ -14,7 +15,8 @@ class MonsterService {
     }
 
     /***************************************************************
-     * 전투 턴이 종료되고 hp, mp 상태 갱신
+        전투 턴이 종료되고 hp, mp 상태 갱신
+        몬스터 사망
      ***************************************************************/
     static refreshStatus = async(
         monsterId: number|string, damage: number, characterId: number|string
@@ -32,7 +34,7 @@ class MonsterService {
             result.update({ hp: newHp });
             return 'alive'
         } else {
-            this.destroyMonster(monsterId, characterId)
+            // this.destroyMonster(monsterId, characterId)
             return 'dead'
         }
     }
@@ -41,8 +43,11 @@ class MonsterService {
      * 전투 종료 후 몬스터 테이블 삭제
      ***************************************************************/
     static destroyMonster(monsterId: number|string, characterId: number|string) {
+        console.log(`monster.service.ts: 45 >> 몬스터 삭제, ${monsterId}`);
         Monsters.destroy({ where: { monsterId: Number(monsterId) } });
-        redis.hDel(String(characterId), 'monsterId');
+        // redis.hDel(String(characterId), 'monsterId');
+        // 여기서 지우나?
+        // battleCache.delete(characterId);
     }
 }
 

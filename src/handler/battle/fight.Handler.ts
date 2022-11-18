@@ -39,9 +39,9 @@ export default {
     },
 
     quitBattle: async (CMD: string | undefined, user: UserSession) => {
-        const characterId = user.characterId.toString();
-        const { monsterId } = await redis.hGetAll(characterId);
-        // const { monsterId } = battleCache.get(characterId);
+        const { characterId } = user;
+        // const { monsterId } = await redis.hGetAll(characterId);
+        const { monsterId } = battleCache.get(characterId);
         let tempScript: string = '';
         const tempLine = '========================================\n';
 
@@ -49,7 +49,7 @@ export default {
         tempScript += `??? : 하남자특. 도망감.\n`;
 
         // 몬스터 삭제
-        MonsterService.destroyMonster(+monsterId, +characterId);
+        MonsterService.destroyMonster(monsterId!, +characterId);
 
         const script = tempLine + tempScript;
         const field = 'dungeon';
@@ -57,19 +57,19 @@ export default {
     },
 
     quitAutoBattle: async (CMD: string | undefined, user: UserSession) => {
-        const characterId = user.characterId.toString();
-        const { monsterId } = await redis.hGetAll(characterId);
+        const { characterId } = user;
+        const { monsterId } = battleCache.get(characterId);
+        // const { monsterId } = await redis.hGetAll(characterId);
         let tempScript: string = '';
         const tempLine = '========================================\n';
 
         tempScript += `전투를 중단하고 마을로 돌아갑니다. \n\n`;
 
         // 기본공격 중단 & 몬스터 삭제
-        const { autoAttackId } = battleCache.get(characterId);
-        clearInterval(autoAttackId);
+        const { autoAttackTimer } = battleCache.get(characterId);
+        clearInterval(autoAttackTimer);
         battleCache.delete(characterId);
-        redis.hDelBattleCache(characterId);
-        MonsterService.destroyMonster(+monsterId, +characterId);
+        MonsterService.destroyMonster(monsterId!, characterId);
 
         const script = tempLine + tempScript;
         const field = 'dungeon';

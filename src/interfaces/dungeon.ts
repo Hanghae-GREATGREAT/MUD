@@ -10,17 +10,18 @@ interface dungeonInfoForm {
 }
 [];
 
-interface BattleCache {
+interface BattleCacheInterface {
     dungeonLevel?: number;
     monsterId?: number;
-    autoAttackId?: NodeJS.Timer;
+    autoAttackTimer?: NodeJS.Timer;
+    skillAttackTimer?: NodeJS.Timer;
+    isMonsterDeadTimer?: NodeJS.Timer;
     quit?: boolean;
     dead?: string;
 }
 
-
 export { 
     InputForm, 
     dungeonInfoForm,
-    BattleCache
+    BattleCacheInterface
 };

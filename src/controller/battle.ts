@@ -3,7 +3,6 @@ import { battle, dungeon } from '../handler';
 import { LineInput, CommandRouter } from '../interfaces/socket';
 import { battleCache, redis } from '../db/cache';
 
-
 export default {
 
     battleController: async ({ line, user }: LineInput) => {
@@ -17,12 +16,17 @@ export default {
             돌: dungeon.getDungeonList,
         };
 
-        if (!commandRouter[CMD1]) {
-            console.log(`is wrong command : '${CMD1}'`);
-            const result = battle.wrongCommand(CMD1, user);
-            return socket.emit('print', result);
-        }
+        // if (!commandRouter[CMD1]) {
+        //     console.log(`is wrong command : '${CMD1}'`);
+        //     const result = battle.wrongCommand(CMD1, user);
+        //     return socket.emit('print', result);
+        // }
 
+        if (CMD1 === '자동1') {
+            console.log('battle.controller.ts: 26 >> 자동 분기점');
+            battle.autoBattleW(CMD2, user);
+            return;
+        }
         const result = await commandRouter[CMD1](CMD2, user);
         socket.emit('print', result);
     },
@@ -44,13 +48,13 @@ export default {
         }
 
         let result = await commandRouter[CMD1](CMD2, user);
-        const target = result.field === 'action' ? 'printBattle' : 'print';
+        const target = result!.field === 'action' ? 'printBattle' : 'print';
         socket.emit(target, result);
     },
 
     actionController: async({ line, user, option }: LineInput) => {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
-        const characterId = user.characterId.toString();
+        const { characterId } = user;
         /**
          * action:time
          * 타임스탬프를 함께 전달하고 이를 바탕으로 스킬 재사용 가능여부 판별
@@ -66,14 +70,15 @@ export default {
         if (Object.hasOwn(result, 'error')) {
             return socket.emit('print', result);
         }
-        const { dungeonLevel, dead } = await redis.hGetAll(characterId);
+        // const { dungeonLevel, dead } = await redis.hGetAll(characterId);
+        const { dungeonLevel, dead } = battleCache.get(characterId);
         if (dead) {
-            const { autoAttackId } = battleCache.get(characterId);
-            clearInterval(autoAttackId);
+            const { autoAttackTimer, dungeonLevel } = battleCache.get(characterId);
+            clearInterval(autoAttackTimer);
             battleCache.delete(characterId);
-            // battleCache.set(characterId, { dungeonLevel });
-            await redis.hDelBattleCache(characterId);
-            await redis.hSet(characterId, { dungeonLevel });
+            battleCache.set(characterId, { dungeonLevel });
+            // await redis.hDelBattleCache(characterId);
+            // await redis.hSet(characterId, { dungeonLevel });
 
             const deadResult = await battle.reEncounter('', result.user);
             deadResult.script = result.script + deadResult.script;
@@ -101,7 +106,7 @@ export default {
         }
 
         let result = await commandRouter[CMD1](CMD2, user);
-        const target = result.field === 'action' ? 'printBattle' : 'print';
+        const target = result!.field === 'action' ? 'printBattle' : 'print';
         socket.emit(target, result);
     },
 

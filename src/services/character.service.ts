@@ -118,7 +118,7 @@ class CharacterService {
             result.update({ hp: newHp, mp: newMp });
             isDead = 'alive';
         } else {
-            MonsterService.destroyMonster(monsterId, characterId);
+            // MonsterService.destroyMonster(monsterId, characterId);
             isDead = 'dead';
         }
 
