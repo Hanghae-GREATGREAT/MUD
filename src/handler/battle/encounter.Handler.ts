@@ -1,6 +1,6 @@
 import { UserSession } from '../../interfaces/user';
 import { CharacterService, MonsterService } from '../../services';
-import { redis } from '../../db/cache';
+import { battleCache, redis } from '../../db/cache';
 import { ReturnScript } from '../../interfaces/socket';
 
 
@@ -24,20 +24,22 @@ class EncounterHandler {
     encounter = async (CMD: string | undefined, user: UserSession): Promise<ReturnScript> => {
         // 던전 진행상황 불러오기
         const { characterId } = user;
-        const { dungeonLevel } = await redis.hGetAll(characterId);
+        // const { dungeonLevel } = await redis.hGetAll(characterId);
+        const { dungeonLevel } = battleCache.get(characterId);
 
         let tempScript: string = '';
         const tempLine =
             '=======================================================================\n';
 
         // 적 생성
-        const { name, monsterId } = await MonsterService.createNewMonster(dungeonLevel, characterId);
+        const { name, monsterId } = await MonsterService.createNewMonster(dungeonLevel!, characterId);
         tempScript += `너머에 ${name}의 그림자가 보인다\n\n`;
         tempScript += `[공격] 하기\n`;
         tempScript += `[도망] 가기\n`;
 
         // 던전 진행상황 업데이트
-        await redis.hSet(characterId, { monsterId });
+        // await redis.hSet(characterId, { monsterId });
+        battleCache.set(characterId, { monsterId })
 
         const script = tempLine + tempScript;
         const field = 'encounter';
@@ -48,21 +50,21 @@ class EncounterHandler {
     reEncounter = async (CMD: string, user: UserSession): Promise<ReturnScript> => {
         // 던전 진행상황 불러오기
         const { characterId } = user;
-        const { dungeonLevel } = await redis.hGetAll(characterId);
-        // const { dungeonLevel } = battleCache.get(characterId);
+        // const { dungeonLevel } = await redis.hGetAll(characterId);
+        const { dungeonLevel } = battleCache.get(characterId);
 
         let tempScript: string = '';
         const tempLine =
             '=======================================================================\n';
 
         // 적 생성
-        const { name, monsterId } = await MonsterService.createNewMonster(dungeonLevel, characterId);
+        const { name, monsterId } = await MonsterService.createNewMonster(dungeonLevel!, characterId);
         tempScript += `너머에 ${name}의 그림자가 보인다\n\n`;
         tempScript += `[공격] 하기\n`;
         tempScript += `[도망] 가기\n`;
 
         // 던전 진행상황 업데이트
-        await redis.hSet(characterId, { monsterId });
+        battleCache.set(characterId, { monsterId });
 
         const script = tempLine + tempScript;
         const field = 'encounter';

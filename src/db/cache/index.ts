@@ -1,5 +1,5 @@
 import redis from './redis';
-import battleCache from './battleMap'
+import battleCache from './battleCache'
 
 export {
     battleCache,

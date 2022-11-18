@@ -5,9 +5,54 @@ import { Skills } from '../../db/models';
 import { battle, dungeon } from '../../handler'
 import { UserSession } from '../../interfaces/user';
 import { ReturnScript, CommandRouter } from '../../interfaces/socket';
+import { setEnvironmentData } from 'worker_threads';
+import AutoAttack from '../../workers/autoAttack';
 
 
 class BattleAction {
+    // attack = async(CMD: string | undefined, user: UserSession) => {
+    //     const whoIsDead: CommandRouter = {
+    //         // back to dungeon list when player died
+    //         player: dungeon.getDungeonList,
+    //         // back to encounter phase when monster died
+    //         monster: battle.reEncounter,
+    //     }
+    //     const { characterId } = user;
+    //     console.log('ATTAAAAAAAAAAAAAAAAACK', battleCache.get(characterId));
+
+    //     const cache = battleCache.get(characterId);
+    //     setEnvironmentData(characterId, JSON.stringify(cache));
+
+    //     autoAttack.start(characterId, socket).then((result) => {
+    //         console.log('AUTO ATTACK RUNNING', result);
+
+    //         socket.emit('printBattle', result);
+    //     }).catch((error) => console.error(error));
+
+    //     // const autoAttackTimer = setInterval(async () => {
+    //     //     battleCache.set(characterId, { autoAttackTimer });
+    //     //     const { script, field, user: newUser, error } = await battle.autoAttack(CMD, user);
+    //     //     if (error) return;
+    //     //     socket.emit('printBattle', { script, field, user: newUser });
+
+    //     //     // const { dead } = battleCache.get(characterId);
+    //     //     const { dead } = await redis.hGetAll(characterId);
+    //     //     // dead = 'moster'|'player'|undefined
+    //     //     if (dead) {
+    //     //         redis.hDelResetCache(characterId);
+    //     //         const { autoAttackTimer } = battleCache.get(characterId)
+    //     //         clearInterval(autoAttackTimer);
+    //     //         battleCache.delete(characterId);
+
+    //     //         const result = await whoIsDead[dead]('', newUser);
+    //     //         socket.emit('print', result);
+
+    //     //         return;
+    //     //     }
+    //     // }, 1500);
+
+    //     return { script: '일반전투', user, field: 'action', cooldown: Date.now()-2000 }
+    // }
     attack = async(CMD: string | undefined, user: UserSession) => {
         const whoIsDead: CommandRouter = {
             // back to dungeon list when player died
@@ -15,22 +60,23 @@ class BattleAction {
             // back to encounter phase when monster died
             monster: battle.reEncounter,
         }
-        const characterId = user.characterId.toString();
+        const { characterId } = user;
 
-        const autoAttackId = setInterval(async () => {
-            battleCache.set(characterId, { autoAttackId });
+        const autoAttackTimer = setInterval(async () => {
+            battleCache.set(characterId, { autoAttackTimer });
             const { script, field, user: newUser, error } = await battle.autoAttack(CMD, user);
             if (error) return;
             socket.emit('printBattle', { script, field, user: newUser });
 
-            // const { dead } = battleCache.get(characterId);
-            const { dead } = await redis.hGetAll(characterId);
+            const { dead } = battleCache.get(characterId);
+            // const { dead } = await redis.hGetAll(characterId);
             // dead = 'moster'|'player'|undefined
             if (dead) {
-                redis.hDelResetCache(characterId);
-                const { autoAttackId } = battleCache.get(characterId)
-                clearInterval(autoAttackId);
+                // redis.hDelResetCache(characterId);
+                const { autoAttackTimer, dungeonLevel } = battleCache.get(characterId)
+                clearInterval(autoAttackTimer);
                 battleCache.delete(characterId);
+                battleCache.set(characterId, { dungeonLevel });
 
                 const result = await whoIsDead[dead]('', newUser);
                 socket.emit('print', result);
@@ -61,10 +107,10 @@ class BattleAction {
         const { name: skillName, cost, multiple } = skill[Number(CMD)-1];
         
         // 몬스터 정보 가져오기
-        const { monsterId } = await redis.hGetAll(characterId);
-        // const { monsterId } = battleCache.get(characterId);
-        const monster = await MonsterService.findByPk(monsterId);
-        if (!monster) throw new Error('몬스터 정보가 없습니다.');
+        // const { monsterId } = await redis.hGetAll(characterId);
+        const { monsterId } = battleCache.get(characterId);
+        const monster = await MonsterService.findByPk(monsterId!);
+        if (!monster || !monsterId) throw new Error('몬스터 정보가 없습니다.');
         /**
          * 몬스터 정보 없을시 에러가 아닌 일반 공격에 의한 사망으로 간주
          * 혹은 버그/사망 판별 가능?
@@ -95,8 +141,8 @@ class BattleAction {
 
         if (isDead === 'dead') {
             console.log('몬스터 사망');
-            // battleCache.set(characterId, { dead: 'monster' });
-            await redis.hSet(characterId, { dead: 'monster' });
+            battleCache.set(characterId, { dead: 'monster' });
+            // await redis.hSet(characterId, { dead: 'monster' });
             return await battle.resultMonsterDead(monster, tempScript);
         }
 
@@ -116,7 +162,9 @@ class BattleAction {
         const { name: skillName, cost: skillCost, multiple } = selectedSkill;
 
         // 몬스터 정보 가져오기
-        const { monsterId } = await redis.hGetAll(characterId);
+        // const { monsterId } = await redis.hGetAll(characterId);
+        const { monsterId } = battleCache.get(characterId);
+        if (!monsterId) throw new Error('몬스터 정보가 없습니다.');
         const monster = await MonsterService.findByPk(monsterId);
         if (!monster) throw new Error('몬스터 정보가 없습니다.');
         const { name: monsterName, hp: monsterHp, exp: monsterExp } = monster;
@@ -142,8 +190,8 @@ class BattleAction {
 
         if (isDead === 'dead') {
             console.log('몬스터 사망');
-            // battleCache.set(characterId, { dead: 'monster' });
-            await redis.hSet(characterId, { dead: 'monster' });
+            battleCache.set(characterId, { dead: 'monster' });
+            // await redis.hSet(characterId, { dead: 'monster' });
             return await battle.resultMonsterDead(monster, tempScript);
         }
 
