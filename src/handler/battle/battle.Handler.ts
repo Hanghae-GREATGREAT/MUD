@@ -228,6 +228,8 @@ export default {
         isMonsterDead.check(characterId, receiver).then((result) => {
             console.log('battle.handler.ts: 229 >> 사망 확인 resolved', result);
 
+            if (result === 'terminate') return;
+            
             const battleResult: BattleResult = {
                 monster: battle.autoResultMonsterDead,
                 player: battle.autoResultPlayerDead
@@ -251,7 +253,7 @@ export default {
         const { characterId } = user;
         console.log('battleCache, after DEAD', battleCache.get(characterId))
         console.log(characterId)
-        const { monsterId } = battleCache.get(characterId);
+        const { monsterId, dungeonLevel } = battleCache.get(characterId);
         const monster = await MonsterService.findByPk(monsterId!);
         if (!monster) {
             throw new Error('battle.handler.ts >> autoResultMonsterDead() >> 몬스터 데이터X');
@@ -270,6 +272,9 @@ export default {
         const result = { script, user: newUser, field: 'autoBattle' };
         socket.emit('print', result);
         battleCache.delete(characterId);
+        battleCache.set(characterId, { dungeonLevel });
+
+        battle.autoBattleW('', newUser)
         return;
     },
 

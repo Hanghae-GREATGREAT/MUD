@@ -69,7 +69,6 @@ export default {
         const { autoAttackTimer } = battleCache.get(characterId);
         clearInterval(autoAttackTimer);
         battleCache.delete(characterId);
-        // redis.hDelBattleCache(characterId);
         MonsterService.destroyMonster(monsterId!, characterId);
 
         const script = tempLine + tempScript;

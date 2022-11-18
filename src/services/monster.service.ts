@@ -4,6 +4,7 @@ import { battleCache, redis } from '../db/cache';
 class MonsterService {
 
     static async createNewMonster(dungeonLevel: number|string, characterId: number|string) {
+        console.log('monster.service.ts >> createNewMonster() 몬스터 생성')
         const newMonster = await Monsters.createMonster(+dungeonLevel, +characterId);
 
         return newMonster;
