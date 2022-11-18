@@ -28,13 +28,13 @@ class BattleAction {
         //     setEnvironmentData(characterId, JSON.stringify(cache));
         //     autoAttack.start(characterId, socket).then((result) => {
         //         console.log('AUTO ATTACK RUNNING', result);
-        //         socket.to(socket.id).emit('printBattle', result);
+        //         socket.emit('printBattle', result);
         //     }).catch((error) => console.error(error));
         //     // const autoAttackTimer = setInterval(async () => {
         //     //     battleCache.set(characterId, { autoAttackTimer });
         //     //     const { script, field, user: newUser, error } = await battle.autoAttack(CMD, user);
         //     //     if (error) return;
-        //     //     socket.to(socket.id).emit('printBattle', { script, field, user: newUser });
+        //     //     socket.emit('printBattle', { script, field, user: newUser });
         //     //     // const { dead } = battleCache.get(characterId);
         //     //     const { dead } = await redis.hGetAll(characterId);
         //     //     // dead = 'moster'|'player'|undefined
@@ -44,7 +44,7 @@ class BattleAction {
         //     //         clearInterval(autoAttackTimer);
         //     //         battleCache.delete(characterId);
         //     //         const result = await whoIsDead[dead]('', newUser);
-        //     //         socket.to(socket.id).emit('print', result);
+        //     //         socket.emit('print', result);
         //     //         return;
         //     //     }
         //     // }, 1500);
@@ -63,7 +63,7 @@ class BattleAction {
                 const { script, field, user: newUser, error } = yield handler_1.battle.autoAttack(CMD, user);
                 if (error)
                     return;
-                socket_routes_1.socket.to(socket_routes_1.socket.id).emit('printBattle', { script, field, user: newUser });
+                socket_routes_1.socket.emit('printBattle', { script, field, user: newUser });
                 const { dead } = cache_1.battleCache.get(characterId);
                 // const { dead } = await redis.hGetAll(characterId);
                 // dead = 'moster'|'player'|undefined
@@ -74,7 +74,7 @@ class BattleAction {
                     cache_1.battleCache.delete(characterId);
                     cache_1.battleCache.set(characterId, { dungeonLevel });
                     const result = yield whoIsDead[dead]('', newUser);
-                    socket_routes_1.socket.to(socket_routes_1.socket.id).emit('print', result);
+                    socket_routes_1.socket.emit('print', result);
                     return;
                 }
             }), 1500);

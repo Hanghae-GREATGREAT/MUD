@@ -11,8 +11,8 @@ export default {
             'LOAD': front.loadHome
         }
         const result = commandRouter[CMD1](CMD2, user);
-        socket.to(socket.id).emit('print', result);
-        socket.to(socket.id).emit('enterChat', 'none');
+        socket.emit('print', result);
+        socket.emit('enterChat', 'none');
     },
     
     frontController: async ({ line, user }: LineInput) => {
@@ -32,15 +32,15 @@ export default {
         };
         if (!commandRouter[CMD1]) {
             const result = commandRouter['EMPTY'](line, user);
-            return socket.to(socket.id).emit('print', result);
+            return socket.emit('print', result);
         }
     
         const result = await commandRouter[CMD1](CMD2, user, socket.id);
-        if (result.chat) socket.to(socket.id).emit('enterChat', result.field);
+        if (result.chat) socket.emit('enterChat', result.field);
         if (result.field === 'signout') {
-            socket.to(socket.id).emit('signout', result);
+            socket.emit('signout', result);
         } else {
-            socket.to(socket.id).emit('print', result);
+            socket.emit('print', result);
         }
     },
     
@@ -58,12 +58,12 @@ export default {
         };
         if (!CMD1 || !option) {
             const result = commandRouter['EMPTY'](line, user);
-            return socket.to(socket.id).emit('print', result);
+            return socket.emit('print', result);
         }
     
         const result = await commandRouter[option](CMD1, user, socket.id);
-        if (result.chat) socket.to(socket.id).emit('enterChat', result.field);
-        socket.to(socket.id).emit('print', result);
+        if (result.chat) socket.emit('enterChat', result.field);
+        socket.emit('print', result);
     }
 
 }

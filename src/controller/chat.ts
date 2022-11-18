@@ -9,7 +9,7 @@ export default {
 
         const script = `${name}: ${message}\n`;
         socket.broadcast.emit('chat', { script, field });
-        socket.to(socket.id).emit('chat', { script, field });
+        socket.emit('chat', { script, field });
     }
 }
 
@@ -20,7 +20,7 @@ export default {
 //         if (character === null) throw new Error();
 
 //         const script = `${character.Field.name} 채팅방에 입장하였습니다.\n`
-//         socket.to(socket.id).emit('print', { script });
+//         socket.emit('print', { script });
 //     });
 //     redis.set(socket.id, name, { EX: 60*5 });
 // });

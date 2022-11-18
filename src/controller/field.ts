@@ -18,12 +18,12 @@ export default {
         if (!commandRouter[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
             const result = dungeon.wrongCommand(CMD1, user);
-            return socket.to(socket.id).emit('print', result);
+            return socket.emit('print', result);
         }
         const result = await commandRouter[CMD1](CMD2, user, socket.id);
-        if (result.chat) socket.to(socket.id).emit('enterChat', result.field);
+        if (result.chat) socket.emit('enterChat', result.field);
 
-        socket.to(socket.id).emit('print', result);
+        socket.emit('print', result);
     },
 
     villageController: async ({ line, user }: LineInput) => {
@@ -43,11 +43,11 @@ export default {
         if (!commandRouter[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
             const result = village.villageWrongCommand(CMD1, user);
-            return socket.to(socket.id).emit('print', result);
+            return socket.emit('print', result);
         }
 
-        const result = await commandRouter[CMD1](CMD2, user);
-        if (result.chat) socket.to(socket.id).emit('enterChat', result.field);
-        socket.to(socket.id).emit('print', result);
+        const result = await commandRouter[CMD1](CMD2, user, socket.id);
+        if (result.chat) socket.emit('enterChat', result.field);
+        socket.emit('print', result);
     },
 };

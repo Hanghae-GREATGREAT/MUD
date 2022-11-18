@@ -88,7 +88,7 @@ exports.default = {
             script += `\n==!! LEVEL UP !! 레벨이 ${user.level - 1} => ${user.level} 올랐습니다 !! LEVEL UP !!==\n\n`;
         }
         // const result = { script, user, field };
-        // socket.to(socket.id).emit('print', result);
+        // socket.emit('print', result);
         // battleCache.delete(characterId);
         return { script, user, field };
     }),
@@ -96,7 +96,7 @@ exports.default = {
         const { script: newScript, field, user, chat } = yield __1.dungeon.getDungeonList('', refreshUser);
         // field: dungeon , chat: true
         const result = { script: script + newScript, user, field, chat };
-        socket_routes_1.socket.to(socket_routes_1.socket.id).emit('print', result);
+        socket_routes_1.socket.emit('print', result);
         cache_1.battleCache.delete(refreshUser.characterId);
         return;
     }),
@@ -112,7 +112,7 @@ exports.default = {
         const monsterCreatedScript = `\n${name}이(가) 등장했습니다.\n\n`;
         // await redis.hSet(characterId, { monsterId });
         cache_1.battleCache.set(characterId, { monsterId });
-        socket_routes_1.socket.to(socket_routes_1.socket.id).emit('printBattle', { script: monsterCreatedScript, field, user });
+        socket_routes_1.socket.emit('printBattle', { script: monsterCreatedScript, field, user });
         // 자동공격 사이클
         const autoAttackTimer = setInterval(() => __awaiter(void 0, void 0, void 0, function* () {
             console.time('AUTOBATTLEEEEEEEEEEEEEEEEEEE');
@@ -124,7 +124,7 @@ exports.default = {
             ;
             // 자동공격 스크립트 계속 출력?
             const field = 'autoBattle';
-            socket_routes_1.socket.to(socket_routes_1.socket.id).emit('printBattle', { script, field, user: newUser });
+            socket_routes_1.socket.emit('printBattle', { script, field, user: newUser });
             const whoIsDead = {
                 'player': __1.dungeon.getDungeonList,
                 'monster': __1.battle.autoBattle,
@@ -140,7 +140,7 @@ exports.default = {
                 if (dead === 'monster')
                     cache_1.battleCache.set(characterId, { dungeonLevel });
                 const { script, field, user } = yield whoIsDead[dead]('', newUser);
-                socket_routes_1.socket.to(socket_routes_1.socket.id).emit('printBattle', { script, field, user });
+                socket_routes_1.socket.emit('printBattle', { script, field, user });
                 return;
             }
             else {
@@ -152,7 +152,7 @@ exports.default = {
                 const { script, user, field } = yield __1.battle.autoBattleSkill(newUser);
                 const { dead } = cache_1.battleCache.get(characterId);
                 // const { dead } = await redis.hGetAll(characterId);
-                socket_routes_1.socket.to(socket_routes_1.socket.id).emit('printBattle', { script, field, user });
+                socket_routes_1.socket.emit('printBattle', { script, field, user });
                 if (dead) {
                     const { autoAttackTimer, dungeonLevel } = cache_1.battleCache.get(characterId);
                     clearInterval(autoAttackTimer);
@@ -161,7 +161,7 @@ exports.default = {
                     if (dead === 'monster')
                         cache_1.battleCache.set(characterId, { dungeonLevel });
                     const { script, field, user } = yield whoIsDead[dead]('', newUser);
-                    socket_routes_1.socket.to(socket_routes_1.socket.id).emit('printBattle', { script, field, user });
+                    socket_routes_1.socket.emit('printBattle', { script, field, user });
                     return;
                 }
                 console.timeEnd('AUTOBATTLEEEEEEEEEEEEEEEEEEE');
@@ -180,7 +180,7 @@ exports.default = {
         const { monsterId, name } = yield services_1.MonsterService.createNewMonster(dungeonLevel, characterId);
         const monsterCreatedScript = `\n${name}이(가) 등장했습니다.\n\n`;
         cache_1.battleCache.set(characterId, { monsterId });
-        socket_routes_1.socket.to(socket_routes_1.socket.id).emit('printBattle', { script: monsterCreatedScript, field: 'autoBattle', user });
+        socket_routes_1.socket.emit('printBattle', { script: monsterCreatedScript, field: 'autoBattle', user });
         const cache = cache_1.battleCache.get(characterId);
         (0, worker_threads_1.setEnvironmentData)(characterId, JSON.stringify(cache));
         const { port1: autoToDead, port2: autoToDeadReceive } = new worker_threads_1.MessageChannel();
@@ -222,7 +222,7 @@ exports.default = {
             script += `\n==!! LEVEL UP !! 레벨이 ${user.level - 1} => ${user.level} 올랐습니다 !! LEVEL UP !!==\n\n`;
         }
         const result = { script, user: newUser, field: 'autoBattle' };
-        socket_routes_1.socket.to(socket_routes_1.socket.id).emit('print', result);
+        socket_routes_1.socket.emit('print', result);
         cache_1.battleCache.delete(characterId);
         cache_1.battleCache.set(characterId, { dungeonLevel });
         __1.battle.autoBattleW('', newUser);
@@ -232,7 +232,7 @@ exports.default = {
         const { script: newScript, field, user: newUser, chat } = yield __1.dungeon.getDungeonList('', user);
         // field: dungeon , chat: true
         const result = { script: script + newScript, user: newUser, field, chat };
-        socket_routes_1.socket.to(socket_routes_1.socket.id).emit('print', result);
+        socket_routes_1.socket.emit('print', result);
         cache_1.battleCache.delete(user.characterId);
         return;
     }),

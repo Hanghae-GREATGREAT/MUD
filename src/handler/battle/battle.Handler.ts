@@ -103,7 +103,7 @@ export default {
         }
 
         // const result = { script, user, field };
-        // socket.to(socket.id).emit('print', result);
+        // socket.emit('print', result);
 
         // battleCache.delete(characterId);
         return { script, user, field }
@@ -115,7 +115,7 @@ export default {
         // field: dungeon , chat: true
 
         const result = { script: script + newScript, user, field, chat };
-        socket.to(socket.id).emit('print', result);
+        socket.emit('print', result);
 
         battleCache.delete(refreshUser.characterId);
         return;
@@ -136,7 +136,7 @@ export default {
         // await redis.hSet(characterId, { monsterId });
         battleCache.set(characterId, { monsterId });
 
-        socket.to(socket.id).emit('printBattle', { script: monsterCreatedScript, field, user })
+        socket.emit('printBattle', { script: monsterCreatedScript, field, user })
 
         // 자동공격 사이클
         const autoAttackTimer = setInterval(async () => {
@@ -149,7 +149,7 @@ export default {
 
             // 자동공격 스크립트 계속 출력?
             const field = 'autoBattle';
-            socket.to(socket.id).emit('printBattle', { script, field, user: newUser });
+            socket.emit('printBattle', { script, field, user: newUser });
 
             const whoIsDead: CommandRouter = {
                 'player': dungeon.getDungeonList,
@@ -167,7 +167,7 @@ export default {
                 if (dead === 'monster') battleCache.set(characterId, { dungeonLevel });
 
                 const { script, field, user } = await whoIsDead[dead]('', newUser);
-                socket.to(socket.id).emit('printBattle', { script, field, user });
+                socket.emit('printBattle', { script, field, user });
 
                 return;
             } else {
@@ -178,7 +178,7 @@ export default {
                 const { script, user, field} = await battle.autoBattleSkill(newUser);
                 const { dead } = battleCache.get(characterId);
                 // const { dead } = await redis.hGetAll(characterId);
-                socket.to(socket.id).emit('printBattle', { script, field, user });
+                socket.emit('printBattle', { script, field, user });
 
                 if (dead) {
                     const { autoAttackTimer, dungeonLevel } = battleCache.get(characterId);
@@ -189,7 +189,7 @@ export default {
                     if (dead === 'monster') battleCache.set(characterId, { dungeonLevel });
 
                     const { script, field, user } = await whoIsDead[dead]('', newUser);
-                    socket.to(socket.id).emit('printBattle', { script, field, user });
+                    socket.emit('printBattle', { script, field, user });
     
                     return;
                 }
@@ -215,7 +215,7 @@ export default {
         const monsterCreatedScript = `\n${name}이(가) 등장했습니다.\n\n`;
         battleCache.set(characterId, { monsterId });
 
-        socket.to(socket.id).emit('printBattle', { script: monsterCreatedScript, field: 'autoBattle', user });
+        socket.emit('printBattle', { script: monsterCreatedScript, field: 'autoBattle', user });
 
         const cache = battleCache.get(characterId);
         setEnvironmentData(characterId, JSON.stringify(cache));
@@ -270,7 +270,7 @@ export default {
         }
 
         const result = { script, user: newUser, field: 'autoBattle' };
-        socket.to(socket.id).emit('print', result);
+        socket.emit('print', result);
         battleCache.delete(characterId);
         battleCache.set(characterId, { dungeonLevel });
 
@@ -284,7 +284,7 @@ export default {
         // field: dungeon , chat: true
 
         const result = { script: script + newScript, user: newUser, field, chat };
-        socket.to(socket.id).emit('print', result);
+        socket.emit('print', result);
 
         battleCache.delete(user.characterId);
         return;

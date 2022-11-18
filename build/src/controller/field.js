@@ -26,12 +26,12 @@ exports.default = {
         if (!commandRouter[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
             const result = handler_1.dungeon.wrongCommand(CMD1, user);
-            return socket_routes_1.socket.to(socket_routes_1.socket.id).emit('print', result);
+            return socket_routes_1.socket.emit('print', result);
         }
         const result = yield commandRouter[CMD1](CMD2, user, socket_routes_1.socket.id);
         if (result.chat)
-            socket_routes_1.socket.to(socket_routes_1.socket.id).emit('enterChat', result.field);
-        socket_routes_1.socket.to(socket_routes_1.socket.id).emit('print', result);
+            socket_routes_1.socket.emit('enterChat', result.field);
+        socket_routes_1.socket.emit('print', result);
     }),
     villageController: ({ line, user }) => __awaiter(void 0, void 0, void 0, function* () {
         const [CMD1, CMD2] = line.trim().toUpperCase().split(' ');
@@ -49,11 +49,11 @@ exports.default = {
         if (!commandRouter[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
             const result = handler_1.village.villageWrongCommand(CMD1, user);
-            return socket_routes_1.socket.to(socket_routes_1.socket.id).emit('print', result);
+            return socket_routes_1.socket.emit('print', result);
         }
-        const result = yield commandRouter[CMD1](CMD2, user);
+        const result = yield commandRouter[CMD1](CMD2, user, socket_routes_1.socket.id);
         if (result.chat)
-            socket_routes_1.socket.to(socket_routes_1.socket.id).emit('enterChat', result.field);
-        socket_routes_1.socket.to(socket_routes_1.socket.id).emit('print', result);
+            socket_routes_1.socket.emit('enterChat', result.field);
+        socket_routes_1.socket.emit('print', result);
     }),
 };

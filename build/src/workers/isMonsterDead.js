@@ -51,6 +51,6 @@ exports.default = new isMonsterDead();
 //             clearInterval(autoAttackId);
 //             battleCache.delete(characterId);
 //             const result = await whoIsDead[dead]('', newUser);
-//             socket.to(socket.id).emit('print', result);
+//             socket.emit('print', result);
 //             return;
 //         }

@@ -115,7 +115,7 @@ async function autoAttack(characterId: number, autoToDead: MessagePort) {
 
     const result = { script: tempScript, field: 'action', user: refreshUser };
     console.log('autoAttack.worker.ts: 118', result.script);
-    // socket.to(socket.id).emit('printBattle', result);
+    // socket.emit('printBattle', result);
     return 'continue';
 }
 
