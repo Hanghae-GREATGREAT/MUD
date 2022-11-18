@@ -1,7 +1,6 @@
 const server = io('/');
 
 
-
 const commandLine = $('.commendLine');
 const commendInput = $('#commendInput');
 const commendForm = $('.commendInput');
@@ -24,8 +23,7 @@ function checkStorage() {
     let field = localStorage.getItem('field');
     let user = localStorage.getItem('user');
 
-    // if (field !== 'dungeon' || field !== 'village' || !user || user==='{}') {
-    if (field!== 'none' || !user || user==='{}') {
+    if (!field || !field.match(/dungeon|village/) || !user || user==='{}') {
         field = 'none';
         user = '{}';
     }
@@ -86,7 +84,6 @@ function checkSkillCD(cooldown) {
 server.on('print', printHandler);
 
 function printHandler({ script, user, field }) {
-    console.log(script, user, field);
     localStorage.setItem('user', JSON.stringify(user));
     localStorage.setItem('field', field);
 
@@ -116,6 +113,7 @@ async function signoutHandler({ script }) {
     commandLine.scrollTop(Number.MAX_SAFE_INTEGER);
 
     const { field, user } = await checkStorage();
+    console.log(field, user);
     loadScript(field, user);
 }
 

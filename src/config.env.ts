@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 
-interface DBI {
+interface DBInterface {
     [key: string]: string;
 }
 
@@ -19,7 +19,7 @@ class dBConnection {
         this.NODE_ENV = process.env.NODE_ENV ? 
             ( process.env.NODE_ENV ).trim().toLowerCase() : 'development';
 
-        const DB: DBI = {
+        const DB: DBInterface = {
             test: 'TEST',
             development: 'DEV',
             production: 'PRD',
@@ -37,6 +37,7 @@ class Env extends dBConnection {
 
     PORT: number;
     ROOT_PATH: string;
+    SRC_PATH: string;
     REDIS_HOST: string;
     REDIS_USER: string;
     REDIS_PASSWORD: string;
@@ -45,7 +46,8 @@ class Env extends dBConnection {
         super();
 
         this.PORT = Number(process.env.PORT) || 8080;
-        this.ROOT_PATH = path.resolve('../');
+        this.ROOT_PATH = path.resolve('./');
+        this.SRC_PATH = path.resolve(__dirname);
 
         this.REDIS_HOST = process.env.REDIS_HOST!;
         this.REDIS_USER = process.env.REDIS_USER!;

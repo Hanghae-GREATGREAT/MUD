@@ -1,3 +1,4 @@
+import { Monsters } from '../db/models';
 import { UserSession } from './user';
 
 interface LineInput {
@@ -35,6 +36,13 @@ interface CommandRouterP {
     [key: string]: commandHandlerP;
 }
 
+
+type BattleReport = (user: UserSession, script: string) => Promise<void>
+
+interface BattleResult {
+    [key: string]: BattleReport;
+}
+
 interface ChatInput {
     name: string;
     message: string;
@@ -50,6 +58,7 @@ export {
     ReturnScript,
     CommandRouter,
     CommandRouterP,
+    BattleResult,
     ChatInput,
     ChatOutput,
 };

@@ -22,7 +22,7 @@ export default {
 
     getDungeonList: async(CMD: string | undefined, user: UserSession): Promise<ReturnScript> => {
         console.log('dungeon list.');
-        console.timeEnd('AUTOBATTLEEEEEEEEEEEEEEEEEEE')
+        // console.timeEnd('AUTOBATTLEEEEEEEEEEEEEEEEEEE')
 
         const result = await front.checkUser(user)
         if (result) {
@@ -73,10 +73,10 @@ export default {
             //     monsterId: 0,
             // };
 
-            const dungeonLevel = CMD!;
-            const characterId = user.characterId.toString();
-            redis.hSet(characterId, { dungeonLevel });
-            // battleCache.set(user.characterId, { dungeonLevel: +CMD! })
+            const dungeonLevel = +CMD!;
+            const { characterId } = user;
+            // redis.hSet(characterId, { dungeonLevel });
+            battleCache.set(characterId, { dungeonLevel })
             nextField = 'battle';
         }
 
