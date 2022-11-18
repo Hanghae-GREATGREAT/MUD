@@ -28,11 +28,13 @@ class MonsterService {
      * 전투 종료 후 몬스터 테이블 삭제
      ***************************************************************/
     static destroyMonster(monsterId, characterId) {
-        console.log(`monster.service.ts: 45 >> 몬스터 삭제, ${monsterId}`);
-        models_1.Monsters.destroy({ where: { monsterId: Number(monsterId) } });
-        // redis.hDel(String(characterId), 'monsterId');
-        // 여기서 지우나?
-        // battleCache.delete(characterId);
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log(`monster.service.ts: 45 >> 몬스터 삭제, ${monsterId}`);
+            yield models_1.Monsters.destroy({ where: { monsterId: Number(monsterId) } });
+            // redis.hDel(String(characterId), 'monsterId');
+            // 여기서 지우나?
+            // battleCache.delete(characterId);
+        });
     }
 }
 _a = MonsterService;

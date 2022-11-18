@@ -30,7 +30,6 @@ exports.default = {
     },
     getDungeonList: (CMD, user) => __awaiter(void 0, void 0, void 0, function* () {
         console.log('dungeon list.');
-        // console.timeEnd('AUTOBATTLEEEEEEEEEEEEEEEEEEE')
         const result = yield handler_1.front.checkUser(user);
         if (result) {
             const script = scripts_1.homeScript.loadHome;

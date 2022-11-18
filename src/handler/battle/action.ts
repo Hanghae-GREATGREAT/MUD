@@ -110,7 +110,7 @@ class BattleAction {
         // const { monsterId } = await redis.hGetAll(characterId);
         const { monsterId } = battleCache.get(characterId);
         const monster = await MonsterService.findByPk(monsterId!);
-        if (!monster || !monsterId) throw new Error('몬스터 정보가 없습니다.');
+        if (!monster || !monsterId) throw new Error(`몬스터 정보가 없습니다. ${characterId}`);
         /**
          * 몬스터 정보 없을시 에러가 아닌 일반 공격에 의한 사망으로 간주
          * 혹은 버그/사망 판별 가능?

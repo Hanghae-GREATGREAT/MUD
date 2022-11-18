@@ -42,9 +42,9 @@ class MonsterService {
     /***************************************************************
      * 전투 종료 후 몬스터 테이블 삭제
      ***************************************************************/
-    static destroyMonster(monsterId: number|string, characterId: number|string) {
+    static async destroyMonster(monsterId: number|string, characterId: number|string) {
         console.log(`monster.service.ts: 45 >> 몬스터 삭제, ${monsterId}`);
-        Monsters.destroy({ where: { monsterId: Number(monsterId) } });
+        await Monsters.destroy({ where: { monsterId: Number(monsterId) } });
         // redis.hDel(String(characterId), 'monsterId');
         // 여기서 지우나?
         // battleCache.delete(characterId);

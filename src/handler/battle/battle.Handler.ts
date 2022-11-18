@@ -122,7 +122,6 @@ export default {
     },
 
     autoBattle: async(CMD: string | undefined, user: UserSession) => {
-        console.timeEnd('AUTOBATTLEEEEEEEEEEEEEEEEEEE')
 
         let tempScript = ''
         let field = 'autoBattle';
@@ -140,12 +139,11 @@ export default {
 
         // 자동공격 사이클
         const autoAttackTimer = setInterval(async () => {
-            console.time('AUTOBATTLEEEEEEEEEEEEEEEEEEE');
 
             battleCache.set(characterId, { autoAttackTimer });
             const {script, user: newUser, error} = await battle.autoAttack(CMD, user);
             // 이미 끝난 전투
-            if (error) return console.timeEnd('AUTOBATTLEEEEEEEEEEEEEEEEEEE');;
+            if (error) return;
 
             // 자동공격 스크립트 계속 출력?
             const field = 'autoBattle';
@@ -163,6 +161,7 @@ export default {
                 clearInterval(autoAttackTimer);
                 
                 battleCache.delete(characterId);
+                await MonsterService.destroyMonster(monsterId, characterId);
                 // redis.hDelBattleCache(characterId)
                 if (dead === 'monster') battleCache.set(characterId, { dungeonLevel });
 
@@ -173,7 +172,7 @@ export default {
             } else {
                 // 스킬공격 사이클. 50% 확률로 발생
                 const chance = Math.random();
-                if (chance < 0.5) return console.timeEnd('AUTOBATTLEEEEEEEEEEEEEEEEEEE');;
+                if (chance < 0.5) return;
 
                 const { script, user, field} = await battle.autoBattleSkill(newUser);
                 const { dead } = battleCache.get(characterId);
@@ -185,6 +184,7 @@ export default {
                     clearInterval(autoAttackTimer);
 
                     battleCache.delete(characterId);
+                    await MonsterService.destroyMonster(monsterId, characterId);
                     // await redis.hDelResetCache(characterId);
                     if (dead === 'monster') battleCache.set(characterId, { dungeonLevel });
 
@@ -193,7 +193,6 @@ export default {
     
                     return;
                 }
-                console.timeEnd('AUTOBATTLEEEEEEEEEEEEEEEEEEE')
             }
         }, 1500);
 
@@ -272,6 +271,7 @@ export default {
         const result = { script, user: newUser, field: 'autoBattle' };
         socket.emit('print', result);
         battleCache.delete(characterId);
+        await MonsterService.destroyMonster(monsterId!, characterId);
         battleCache.set(characterId, { dungeonLevel });
 
         battle.autoBattleW('', newUser)
@@ -286,7 +286,10 @@ export default {
         const result = { script: script + newScript, user: newUser, field, chat };
         socket.emit('print', result);
 
-        battleCache.delete(user.characterId);
+        const { characterId } = user;
+        const { monsterId } = battleCache.get(characterId);
+        battleCache.delete(characterId);
+        await MonsterService.destroyMonster(monsterId!, characterId);
         return;
     },
 

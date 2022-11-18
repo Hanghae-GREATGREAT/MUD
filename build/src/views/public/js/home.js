@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-const server = io('/');
+const server = io.connect('/', { transports: ['websocket'] });
 const commandLine = $('.commendLine');
 const commendInput = $('#commendInput');
 const commendForm = $('.commendInput');

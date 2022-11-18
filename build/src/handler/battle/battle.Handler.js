@@ -101,7 +101,6 @@ exports.default = {
         return;
     }),
     autoBattle: (CMD, user) => __awaiter(void 0, void 0, void 0, function* () {
-        console.timeEnd('AUTOBATTLEEEEEEEEEEEEEEEEEEE');
         let tempScript = '';
         let field = 'autoBattle';
         const { characterId } = user;
@@ -115,13 +114,11 @@ exports.default = {
         socket_routes_1.socket.emit('printBattle', { script: monsterCreatedScript, field, user });
         // 자동공격 사이클
         const autoAttackTimer = setInterval(() => __awaiter(void 0, void 0, void 0, function* () {
-            console.time('AUTOBATTLEEEEEEEEEEEEEEEEEEE');
             cache_1.battleCache.set(characterId, { autoAttackTimer });
             const { script, user: newUser, error } = yield __1.battle.autoAttack(CMD, user);
             // 이미 끝난 전투
             if (error)
-                return console.timeEnd('AUTOBATTLEEEEEEEEEEEEEEEEEEE');
-            ;
+                return;
             // 자동공격 스크립트 계속 출력?
             const field = 'autoBattle';
             socket_routes_1.socket.emit('printBattle', { script, field, user: newUser });
@@ -136,6 +133,7 @@ exports.default = {
                 const { autoAttackTimer, dungeonLevel } = cache_1.battleCache.get(characterId);
                 clearInterval(autoAttackTimer);
                 cache_1.battleCache.delete(characterId);
+                yield services_1.MonsterService.destroyMonster(monsterId, characterId);
                 // redis.hDelBattleCache(characterId)
                 if (dead === 'monster')
                     cache_1.battleCache.set(characterId, { dungeonLevel });
@@ -147,8 +145,7 @@ exports.default = {
                 // 스킬공격 사이클. 50% 확률로 발생
                 const chance = Math.random();
                 if (chance < 0.5)
-                    return console.timeEnd('AUTOBATTLEEEEEEEEEEEEEEEEEEE');
-                ;
+                    return;
                 const { script, user, field } = yield __1.battle.autoBattleSkill(newUser);
                 const { dead } = cache_1.battleCache.get(characterId);
                 // const { dead } = await redis.hGetAll(characterId);
@@ -157,6 +154,7 @@ exports.default = {
                     const { autoAttackTimer, dungeonLevel } = cache_1.battleCache.get(characterId);
                     clearInterval(autoAttackTimer);
                     cache_1.battleCache.delete(characterId);
+                    yield services_1.MonsterService.destroyMonster(monsterId, characterId);
                     // await redis.hDelResetCache(characterId);
                     if (dead === 'monster')
                         cache_1.battleCache.set(characterId, { dungeonLevel });
@@ -164,7 +162,6 @@ exports.default = {
                     socket_routes_1.socket.emit('printBattle', { script, field, user });
                     return;
                 }
-                console.timeEnd('AUTOBATTLEEEEEEEEEEEEEEEEEEE');
             }
         }), 1500);
         // battleLoops.set(characterId, autoAttackTimer);
@@ -224,6 +221,7 @@ exports.default = {
         const result = { script, user: newUser, field: 'autoBattle' };
         socket_routes_1.socket.emit('print', result);
         cache_1.battleCache.delete(characterId);
+        yield services_1.MonsterService.destroyMonster(monsterId, characterId);
         cache_1.battleCache.set(characterId, { dungeonLevel });
         __1.battle.autoBattleW('', newUser);
         return;
@@ -233,7 +231,10 @@ exports.default = {
         // field: dungeon , chat: true
         const result = { script: script + newScript, user: newUser, field, chat };
         socket_routes_1.socket.emit('print', result);
-        cache_1.battleCache.delete(user.characterId);
+        const { characterId } = user;
+        const { monsterId } = cache_1.battleCache.get(characterId);
+        cache_1.battleCache.delete(characterId);
+        yield services_1.MonsterService.destroyMonster(monsterId, characterId);
         return;
     }),
     wrongCommand: (CMD, user) => {

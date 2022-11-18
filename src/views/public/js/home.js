@@ -1,4 +1,4 @@
-const server = io('/');
+const server = io.connect('/', { transports: ['websocket'] });
 
 
 const commandLine = $('.commendLine');
