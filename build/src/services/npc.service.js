@@ -93,7 +93,6 @@ class NpcService {
             }
             // 능력치 강화(임시)
             const successRate = Math.floor(Math.random() * 100);
-            console.time('enhance');
             if (successRate < 30) {
                 Character.update({
                     attack: Character.attack + 10,
@@ -112,7 +111,6 @@ class NpcService {
                 tempScript +=
                     '퍼거스 : 자, 자, 이미 이렇게 된거, 새로하나 장만... 응? 응?\n\n';
             }
-            console.timeEnd('enhance');
             return tempScript;
         });
     }
@@ -136,7 +134,6 @@ class NpcService {
             }
             let tempScript = '다섯 번의 주사위 게임을 통해 랜덤한 성장 효과를 받을 수 있습니다.\n\n';
             let victoryPoint = 0;
-            console.time('겜블');
             for (let i = 0; i < 5; i++) {
                 tempScript += `=== ${i + 1} 번째 게임 ===\n`;
                 const dealerDice = Math.floor(Math.random() * 6) + 1;
@@ -151,7 +148,6 @@ class NpcService {
                     tempScript += `패배..\n`;
                 }
             }
-            console.timeEnd('겜블');
             if (victoryPoint > 0) {
                 tempScript += `\n결과 : ${Character.name}의 승리!\n\n`;
                 tempScript += `에트나 : 오! ${Character.name}... 좀 하는걸?\n`;

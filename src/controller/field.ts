@@ -46,7 +46,7 @@ export default {
             return socket.emit('print', result);
         }
 
-        const result = await commandRouter[CMD1](CMD2, user);
+        const result = await commandRouter[CMD1](CMD2, user, socket.id);
         if (result.chat) socket.emit('enterChat', result.field);
         socket.emit('print', result);
     },

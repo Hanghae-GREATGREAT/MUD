@@ -49,7 +49,7 @@ class UserService {
     }
     signout(userId, id) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('SIGNOUT');
+            console.log('SIGNOUT', id);
             // redis.hDelAll(id, { userId: 0, characterId: 0 });
             cache_1.redis.del(id);
         });

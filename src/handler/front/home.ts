@@ -30,8 +30,8 @@ export default {
         console.log('SIGN OUT');
 
         UserService.signout(user.userId, id);
-        const script = homeScript.signout;
-        const field = 'signout';
+        const script = homeScript.signout + homeScript.loadHome;
+        const field = 'front';
         return { script, user, field };
     },
 

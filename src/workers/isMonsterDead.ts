@@ -29,7 +29,7 @@ class isMonsterDead {
                 resolve(result);
             });
             // worker.on('online', () => {});
-            worker.on('messageerror', reject);
+            // worker.on('messageerror', reject);
             worker.on('error', reject);
             worker.on('exit', (code) => {
                 console.log(`isMonsterDead ${characterId} exitCode: ${code}`);

@@ -10,7 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const models_1 = require("../db/models");
-const services_1 = require("../services");
 class CharacterService {
     /***************************************************************
         모든 필드 JOIN해서 가져옴
@@ -118,7 +117,7 @@ class CharacterService {
                 isDead = 'alive';
             }
             else {
-                services_1.MonsterService.destroyMonster(monsterId, characterId);
+                // MonsterService.destroyMonster(monsterId, characterId);
                 isDead = 'dead';
             }
             return Object.assign(Object.assign({}, result.get()), { userId: result.User.getDataValue('userId'), username: result.User.getDataValue('username'), questId: 1, hp: newHp, mp: newMp, isDead });

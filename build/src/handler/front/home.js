@@ -32,8 +32,8 @@ exports.default = {
     signout: (CMD, user, id) => {
         console.log('SIGN OUT');
         services_1.UserService.signout(user.userId, id);
-        const script = scripts_1.homeScript.signout;
-        const field = 'signout';
+        const script = scripts_1.homeScript.signout + scripts_1.homeScript.loadHome;
+        const field = 'front';
         return { script, user, field };
     },
     toVillage: (CMD, user) => {

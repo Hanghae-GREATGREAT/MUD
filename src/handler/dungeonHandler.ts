@@ -22,7 +22,6 @@ export default {
 
     getDungeonList: async(CMD: string | undefined, user: UserSession): Promise<ReturnScript> => {
         console.log('dungeon list.');
-        // console.timeEnd('AUTOBATTLEEEEEEEEEEEEEEEEEEE')
 
         const result = await front.checkUser(user)
         if (result) {

@@ -30,7 +30,6 @@ exports.default = {
     },
     getDungeonList: (CMD, user) => __awaiter(void 0, void 0, void 0, function* () {
         console.log('dungeon list.');
-        console.timeEnd('AUTOBATTLEEEEEEEEEEEEEEEEEEE');
         const result = yield handler_1.front.checkUser(user);
         if (result) {
             const script = scripts_1.homeScript.loadHome;
@@ -72,10 +71,10 @@ exports.default = {
             //     dungeonLevel: Number(CMD),
             //     monsterId: 0,
             // };
-            const dungeonLevel = CMD;
-            const characterId = user.characterId.toString();
-            cache_1.redis.hSet(characterId, { dungeonLevel });
-            // battleCache.set(user.characterId, { dungeonLevel: +CMD! })
+            const dungeonLevel = +CMD;
+            const { characterId } = user;
+            // redis.hSet(characterId, { dungeonLevel });
+            cache_1.battleCache.set(characterId, { dungeonLevel });
             nextField = 'battle';
         }
         const script = tempLine + tempScript;

@@ -51,7 +51,7 @@ exports.default = {
             const result = handler_1.village.villageWrongCommand(CMD1, user);
             return socket_routes_1.socket.emit('print', result);
         }
-        const result = yield commandRouter[CMD1](CMD2, user);
+        const result = yield commandRouter[CMD1](CMD2, user, socket_routes_1.socket.id);
         if (result.chat)
             socket_routes_1.socket.emit('enterChat', result.field);
         socket_routes_1.socket.emit('print', result);
