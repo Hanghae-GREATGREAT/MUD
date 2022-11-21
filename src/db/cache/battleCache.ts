@@ -17,9 +17,6 @@ class BattleCache {
         dead: '',
     }
 
-    // set = (key: string, data: BattleCache): void => {
-    //     this.battleMap.set(key, data);
-    // }
     set = (key: string|number, data: BattleCacheInterface): void => {
         const oldCache = this.getOld(+key) || {};
         const newCache = {...oldCache, ...data};
@@ -27,7 +24,6 @@ class BattleCache {
     }
 
     get = (key: string|number): BattleCacheInterface => {
-        // return this.battleMap.get(+key)!;
         return this.battleMap.get(+key) || this.empty;
     }
 

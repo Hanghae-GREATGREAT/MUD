@@ -1,7 +1,7 @@
 import { UserCache } from '../interfaces/user';
-import DungeonService from '../services/dungeon.service';
+import { DungeonService } from '../services';
 import { battleCache } from '../db/cache';
-import { front } from '../handler';
+import { front } from '.';
 import { homeScript } from '../scripts';
 import { ReturnScript } from '../interfaces/socket';
 

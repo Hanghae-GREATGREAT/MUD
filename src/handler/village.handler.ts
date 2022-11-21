@@ -2,6 +2,7 @@ import { UserCache } from '../interfaces/user';
 import { front } from '../handler';
 import { homeScript } from '../scripts';
 
+
 export default {
     villagehelp: (CMD: string | undefined, userCache: UserCache) => {
         let tempScript = '';
