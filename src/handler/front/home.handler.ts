@@ -1,8 +1,8 @@
 import { UserCache } from '../../interfaces/user';
 import { UserService, CharacterService } from '../../services';
-import { dungeonList } from '../../handler';
+import { dungeonList } from '..';
 import { homeScript } from '../../scripts';
-import { NpcList } from '../villageHandler';
+import { NpcList } from '../village.handler';
 
 export default {
     loadHome: (CMD: string | undefined, userCache: UserCache) => {

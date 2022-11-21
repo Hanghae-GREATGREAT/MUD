@@ -1,7 +1,7 @@
-import battle from './battle';
-import chat from './chat';
-import field from './field';
-import home from './home';
-import village from './village';
+import battle from './battle.controller';
+import chat from './chat.controller';
+import field from './field.controller';
+import home from './home.controller';
+import village from './village.controller';
 
 export { battle, chat, field, home, village };
