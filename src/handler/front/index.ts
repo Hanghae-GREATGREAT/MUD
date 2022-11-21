@@ -1,6 +1,6 @@
-import home from "./home";
-import signinHandler from "./signinHandler";
-import signupHandler from "./signupHandler";
+import home from "./home.handler";
+import signinHandler from "./signin.handler";
+import signupHandler from "./signup.handler";
 
 
 export default {

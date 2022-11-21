@@ -4,9 +4,8 @@ import { battleCache } from '../../db/cache';
 import { ReturnScript } from '../../interfaces/socket';
 
 
-class EncounterHandler {
-    // help: (CMD: string | undefined, user: UserSession) => {}
-    ehelp = (CMD: string | undefined, userCache: UserCache) => {
+export default {
+    ehelp: (CMD: string | undefined, userCache: UserCache) => {
         let tempScript: string = '';
 
         tempScript += '명령어 : \n';
@@ -19,12 +18,11 @@ class EncounterHandler {
         const script = tempScript;
         const field = 'encounter';
         return { script, userCache, field };
-    }
+    },
 
-    encounter = async (CMD: string | undefined, userCache: UserCache): Promise<ReturnScript> => {
+    encounter: async (CMD: string | undefined, userCache: UserCache): Promise<ReturnScript> => {
         // 던전 진행상황 불러오기
         const { characterId } = userCache;
-        // const { dungeonLevel } = await redis.hGetAll(characterId);
         const { dungeonLevel } = battleCache.get(characterId);
 
         let tempScript: string = '';
@@ -38,19 +36,17 @@ class EncounterHandler {
         tempScript += `[도망] 가기\n`;
 
         // 던전 진행상황 업데이트
-        // await redis.hSet(characterId, { monsterId });
         battleCache.set(characterId, { monsterId })
 
         const script = tempLine + tempScript;
         const field = 'encounter';
 
         return { script, userCache, field };
-    }
+    },
 
-    reEncounter = async (CMD: string, userCache: UserCache): Promise<ReturnScript> => {
+    reEncounter: async (CMD: string, userCache: UserCache): Promise<ReturnScript> => {
         // 던전 진행상황 불러오기
         const { characterId } = userCache;
-        // const { dungeonLevel } = await redis.hGetAll(characterId);
         const { dungeonLevel } = battleCache.get(characterId);
 
         let tempScript: string = '';
@@ -70,9 +66,9 @@ class EncounterHandler {
         const field = 'encounter';
         userCache = await CharacterService.addExp(characterId, 0);
         return { script, userCache, field };
-    }
+    },
 
-    ewrongCommand = (CMD: string | undefined, userCache: UserCache) => {
+    ewrongCommand: (CMD: string | undefined, userCache: UserCache) => {
         let tempScript: string = '';
 
         tempScript += `입력값을 확인해주세요.\n`;
@@ -82,8 +78,6 @@ class EncounterHandler {
         const script = 'Error : \n' + tempScript;
         const field = 'encounter';
         return { script, userCache, field };
-    }
+    },
+
 };
-
-
-export default new EncounterHandler();

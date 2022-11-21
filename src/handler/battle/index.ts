@@ -1,13 +1,11 @@
-import battleAction from './action';
-import battleHandler from './battle.Handler';
-import encounterHandler from './encounter.Handler';
-import fightHandler from './fight.Handler';
-import adventureResult from './adventureResult.handler';
+import adventureResult from './result.handler';
+import autoBattle from './auto.handler';
+import battleHandler from './battle.handler';
+import encounterHandler from './encounter.handler';
 
 export default {
-    ...battleAction,
+    ...adventureResult,
+    ...autoBattle,
     ...battleHandler,
     ...encounterHandler,
-    ...fightHandler,
-    ...adventureResult,
 };

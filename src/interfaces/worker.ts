@@ -15,9 +15,3 @@ export interface AutoWorkerResult {
 export interface IsDeadReceiver {
     [key: string]: MessagePort;
 }
-
-export interface IsDeadResult {
-    isDead: 'monster'|'player'|'terminate';
-    script: string;
-}
-

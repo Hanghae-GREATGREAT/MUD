@@ -1,7 +1,7 @@
-import storyHandler from './story';
-import healHandler from './heal';
-import enhanceHandler from './enhance';
-import gambleHandler from './gamble';
+import storyHandler from './story.handler';
+import healHandler from './heal.handler';
+import enhanceHandler from './enhance.handler';
+import gambleHandler from './gamble.handler';
 
 export default {
     ...storyHandler,
