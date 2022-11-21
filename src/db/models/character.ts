@@ -9,7 +9,7 @@ import {
     NonAttribute,
 } from 'sequelize';
 import { Users, Titles, Fields, Items, Skills, Monsters } from '../models';
-import { UserSession } from '../../interfaces/user';
+import { UserCache } from '../../interfaces/user';
 import { MonsterService } from '../../services';
 
 /***************************************************************
@@ -68,7 +68,7 @@ class Characters extends Model<
     declare addExp: (
         characterId: number,
         exp: number,
-    ) => Promise<UserSession | null>;
+    ) => Promise<UserCache | null>;
 
     static associate() {
         this.hasMany(Monsters, {

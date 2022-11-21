@@ -1,5 +1,4 @@
 import { Monsters, Fields } from '../db/models';
-import { battleCache, redis } from '../db/cache';
 
 class MonsterService {
 

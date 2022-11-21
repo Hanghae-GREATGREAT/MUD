@@ -1,10 +1,9 @@
-import { UserSession } from '../interfaces/user';
+import { UserCache } from '../interfaces/user';
 import { front } from '../handler';
 import { homeScript } from '../scripts';
-import { ReturnScript } from '../interfaces/socket';
 
 export default {
-    villagehelp: (CMD: string | undefined, user: UserSession) => {
+    villagehelp: (CMD: string | undefined, userCache: UserCache) => {
         let tempScript = '';
 
         tempScript += '명령어 : \n';
@@ -14,17 +13,17 @@ export default {
 
         const script = tempScript;
         const field = 'village';
-        return { script, user, field };
+        return { script, userCache, field };
     },
 
-    NpcList: async (CMD: string | undefined, user: UserSession) => {
+    NpcList: async (CMD: string | undefined, userCache: UserCache) => {
         console.log('NPC list.');
         // 유저 인증정보 확인
-        const result = await front.checkUser(user);
+        const result = await front.checkUser(userCache);
         if (result) {
             const script = homeScript.loadHome;
             const field = 'front';
-            return { script, user, field };
+            return { script, userCache, field };
         }
         // 임시 스크립트 선언
         const tempLine =
@@ -38,10 +37,10 @@ export default {
 
         const script = tempLine + tempScript;
         const field = 'village';
-        return { script, user, field, chat: true };
+        return { script, userCache, field, chat: true };
     },
 
-    storyInfo: (CMD: string | undefined, user: UserSession) => {
+    storyInfo: (CMD: string | undefined, userCache: UserCache) => {
         // 임시 스크립트 선언
         const tempLine =
             '=======================================================================\n';
@@ -55,10 +54,10 @@ export default {
 
         const script = tempLine + tempScript;
         const field = 'story';
-        return { script, user, field };
+        return { script, userCache, field };
     },
 
-    healInfo: (CMD: string | undefined, user: UserSession) => {
+    healInfo: (CMD: string | undefined, userCache: UserCache) => {
         // 임시 스크립트 선언
         const tempLine =
             '=======================================================================\n';
@@ -72,10 +71,10 @@ export default {
 
         const script = tempLine + tempScript;
         const field = 'heal';
-        return { script, user, field };
+        return { script, userCache, field };
     },
 
-    enhanceInfo: (CMD: string | undefined, user: UserSession) => {
+    enhanceInfo: (CMD: string | undefined, userCache: UserCache) => {
         // 임시 스크립트 선언
         const tempLine =
             '=======================================================================\n';
@@ -89,10 +88,10 @@ export default {
 
         const script = tempLine + tempScript;
         const field = 'enhance';
-        return { script, user, field };
+        return { script, userCache, field };
     },
 
-    gambleInfo: (CMD: string | undefined, user: UserSession) => {
+    gambleInfo: (CMD: string | undefined, userCache: UserCache) => {
         // 임시 스크립트 선언
         const tempLine =
             '=======================================================================\n';
@@ -106,10 +105,10 @@ export default {
 
         const script = tempLine + tempScript;
         const field = 'gamble';
-        return { script, user, field };
+        return { script, userCache, field };
     },
 
-    villageWrongCommand: (CMD: string | undefined, user: UserSession) => {
+    villageWrongCommand: (CMD: string | undefined, userCache: UserCache) => {
         let tempScript: string = '';
 
         tempScript += `입력값을 확인해주세요.\n`;
@@ -118,7 +117,7 @@ export default {
 
         const script = 'Error : \n' + tempScript;
         const field = 'village';
-        return { script, user, field };
+        return { script, userCache, field };
     },
 };
 

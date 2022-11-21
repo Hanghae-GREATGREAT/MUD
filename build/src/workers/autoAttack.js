@@ -9,17 +9,18 @@ const config_env_1 = __importDefault(require("../config.env"));
 class AutoAttackWorker {
     constructor() {
         this.threads = new Map();
-        this.start = (characterId, autoToDead) => {
-            console.log('autoAttack.ts: 12 >> 기본공격반복 start() 시작');
+        this.start = (userCache, autoToDead) => {
+            const { characterId } = userCache;
+            console.log('autoAttack.ts: 기본공격반복 start() 시작, ', characterId);
             const workerData = {
-                characterId,
+                userCache,
                 path: './autoAttack.worker.ts',
             };
             return new Promise((resolve, reject) => {
                 const worker = new worker_threads_1.Worker((0, path_1.join)(config_env_1.default.SRC_PATH, 'workers', 'autoAttack.worker.js'), { workerData });
                 worker.postMessage({ autoToDead }, [autoToDead]);
                 this.threads.set(characterId, worker);
-                console.log('autoAttack.ts: 25 >> start() Promise', worker.threadId);
+                console.log('autoAttack.ts: start() Promise', worker.threadId, characterId);
                 worker.on('message', (result) => {
                     worker.terminate();
                     resolve(result);
@@ -28,7 +29,7 @@ class AutoAttackWorker {
                 worker.on('messageerror', reject);
                 worker.on('error', reject);
                 worker.on('exit', (code) => {
-                    console.log(`autoAttack ${characterId} exitCode: ${code}`);
+                    console.log(`autoAttack ${characterId} exitCode: ${code}`, characterId);
                     this.threads.delete(characterId);
                 });
             });

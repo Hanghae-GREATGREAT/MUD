@@ -3,68 +3,26 @@ import { BattleService, CharacterService, MonsterService } from '../../services'
 import { battleCache, redis } from '../../db/cache';
 import { Skills } from '../../db/models';
 import { battle, dungeon } from '../../handler'
-import { UserSession } from '../../interfaces/user';
+import { UserCache } from '../../interfaces/user';
 import { ReturnScript, CommandRouter } from '../../interfaces/socket';
 import { setEnvironmentData } from 'worker_threads';
 import AutoAttack from '../../workers/autoAttack';
 
 
 class BattleAction {
-    // attack = async(CMD: string | undefined, user: UserSession) => {
-    //     const whoIsDead: CommandRouter = {
-    //         // back to dungeon list when player died
-    //         player: dungeon.getDungeonList,
-    //         // back to encounter phase when monster died
-    //         monster: battle.reEncounter,
-    //     }
-    //     const { characterId } = user;
-    //     console.log('ATTAAAAAAAAAAAAAAAAACK', battleCache.get(characterId));
 
-    //     const cache = battleCache.get(characterId);
-    //     setEnvironmentData(characterId, JSON.stringify(cache));
-
-    //     autoAttack.start(characterId, socket).then((result) => {
-    //         console.log('AUTO ATTACK RUNNING', result);
-
-    //         socket.emit('printBattle', result);
-    //     }).catch((error) => console.error(error));
-
-    //     // const autoAttackTimer = setInterval(async () => {
-    //     //     battleCache.set(characterId, { autoAttackTimer });
-    //     //     const { script, field, user: newUser, error } = await battle.autoAttack(CMD, user);
-    //     //     if (error) return;
-    //     //     socket.emit('printBattle', { script, field, user: newUser });
-
-    //     //     // const { dead } = battleCache.get(characterId);
-    //     //     const { dead } = await redis.hGetAll(characterId);
-    //     //     // dead = 'moster'|'player'|undefined
-    //     //     if (dead) {
-    //     //         redis.hDelResetCache(characterId);
-    //     //         const { autoAttackTimer } = battleCache.get(characterId)
-    //     //         clearInterval(autoAttackTimer);
-    //     //         battleCache.delete(characterId);
-
-    //     //         const result = await whoIsDead[dead]('', newUser);
-    //     //         socket.emit('print', result);
-
-    //     //         return;
-    //     //     }
-    //     // }, 1500);
-
-    //     return { script: '일반전투', user, field: 'action', cooldown: Date.now()-2000 }
-    // }
-    attack = async(CMD: string | undefined, user: UserSession) => {
+    attack = async(CMD: string | undefined, userCache: UserCache) => {
         const whoIsDead: CommandRouter = {
             // back to dungeon list when player died
             player: dungeon.getDungeonList,
             // back to encounter phase when monster died
             monster: battle.reEncounter,
         }
-        const { characterId } = user;
+        const { characterId } = userCache;
 
         const autoAttackTimer = setInterval(async () => {
             battleCache.set(characterId, { autoAttackTimer });
-            const { script, field, user: newUser, error } = await battle.autoAttack(CMD, user);
+            const { script, field, userCache: newUser, error } = await battle.autoAttack(CMD, userCache);
             if (error) return;
             socket.emit('printBattle', { script, field, user: newUser });
 
@@ -85,21 +43,21 @@ class BattleAction {
             }
         }, 1500);
 
-        return { script: '', user, field: 'action', cooldown: Date.now()-2000 }
+        return { script: '', userCache, field: 'action', cooldown: Date.now()-2000 }
     }
 
-    actionSkill = async(CMD: string, user: UserSession): Promise<ReturnScript> => {
+    actionSkill = async(CMD: string, userCache: UserCache): Promise<ReturnScript> => {
         let tempScript = '';
         let field = 'action';
-        const { characterId } = user;
+        const { characterId } = userCache;
 
         // 스킬 정보 가져오기
         const { attack, mp, skill } = await CharacterService.findByPk(characterId);
         if (skill[Number(CMD)-1] === undefined) {
-            const result = battle.battleHelp(CMD, user);
+            const result = battle.battleHelp(CMD, userCache);
             return {
                 script: result.script,
-                user: result.user,
+                userCache: result.userCache,
                 field: result.field,
                 error: true
             }
@@ -121,7 +79,7 @@ class BattleAction {
         if (mp - cost < 0) {
             tempScript += `??? : 비전력이 부조카당.\n`;
             const script = tempScript;
-            return { script, user, field };
+            return { script, userCache, field };
         }
 
         // 스킬 데미지 계산
@@ -131,7 +89,7 @@ class BattleAction {
         const realDamage: number = BattleService.hitStrength(playerSkillDamage);
 
         // 스킬 Cost 적용
-        user = await CharacterService.refreshStatus(characterId, 0, cost, monsterId);
+        userCache = await CharacterService.refreshStatus(characterId, 0, cost, monsterId);
 
         tempScript += `\n당신의 ${skillName} 스킬이 ${monsterName}에게 적중! => ${realDamage}의 데미지!\n`;
 
@@ -148,17 +106,17 @@ class BattleAction {
 
         // isDead === 'alive'
         const script = tempScript;
-        return { script, user, field };
+        return { script, userCache, field };
     }
 
-    autoBattleSkill = async (user: UserSession) => {
+    autoBattleSkill = async (userCache: UserCache) => {
         console.log('autoBattleSkill')
-        const { characterId, mp } = user
+        const { characterId, mp, attack } = userCache
         let field = 'autoBattle';
         let tempScript = '';
 
         // 스킬 정보 가져오기 & 사용할 스킬 선택 (cost 반비례 확률)
-        const { attack, skill } = await CharacterService.findByPk(characterId);
+        const { skill } = await CharacterService.findByPk(characterId);
         const selectedSkill = battle.skillSelector(skill);
         const { name: skillName, cost: skillCost, multiple } = selectedSkill;
 
@@ -174,7 +132,7 @@ class BattleAction {
         if (mp - skillCost < 0) {
             tempScript += `??? : 비전력이 부조카당.\n`;
             const script = tempScript;
-            return { script, user, field };
+            return { script, userCache, field };
         }
 
         // 스킬 데미지 계산 & 마나 cost 소모
@@ -182,7 +140,7 @@ class BattleAction {
             (attack * multiple) / 100,
         );
         const realDamage: number = BattleService.hitStrength(playerSkillDamage);
-        user = await CharacterService.refreshStatus(characterId, 0, skillCost, monsterId);
+        userCache = await CharacterService.refreshStatus(characterId, 0, skillCost, monsterId);
 
         // 몬스터에게 스킬 데미지 적중
         const isDead = await MonsterService.refreshStatus(monsterId, realDamage, characterId);
@@ -198,7 +156,7 @@ class BattleAction {
 
         // isDead === 'alive'
         const script = tempScript;
-        return { script, user, field };
+        return { script, userCache, field };
     }
 
     skillSelector = (skill: Skills[]) => {
@@ -225,9 +183,9 @@ class BattleAction {
         return skill[skillIndex];
     }
 
-    run = async (CMD: string | undefined, user: UserSession) => {
+    run = async (CMD: string | undefined, userCache: UserCache) => {
         console.log('도망 실행');
-        const characterId = user.characterId.toString();
+        const characterId = userCache.characterId.toString();
         let tempScript: string = '';
         const tempLine =
             '=======================================================================\n';
@@ -245,7 +203,7 @@ class BattleAction {
 
         const script = tempLine + tempScript;
         const field = 'dungeon';
-        return { script, user, field };
+        return { script, userCache, field };
     }
 }
 

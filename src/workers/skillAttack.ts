@@ -1,6 +1,7 @@
 import { Worker, MessagePort } from 'node:worker_threads';
 import { join } from 'path';
 import env from '../config.env';
+import { UserCache } from '../interfaces/user';
 import { AutoWorkerData } from '../interfaces/worker';
 
 
@@ -8,11 +9,13 @@ class SkillAttackWorker {
 
     private threads: Map<number, Worker> = new Map();
 
-    start = (characterId: number, skillToDead: MessagePort): Promise<void> => {
-        console.log('skillAttack.ts: 12 >> 스킬반복 start() 시작');
+    start = (userCache: UserCache, skillToDead: MessagePort): Promise<void> => {
+        const { characterId } = userCache;
+        console.log('skillAttack.ts: 스킬반복 start() 시작, ', characterId);
         const workerData: AutoWorkerData = {
-            characterId,
+            userCache,
             path: './skillAttack.worker.ts',
+            
         }
 
         return new Promise((resolve, reject) => {
@@ -22,7 +25,7 @@ class SkillAttackWorker {
             );
             worker.postMessage({ skillToDead }, [ skillToDead ]);
             this.threads.set(characterId, worker);
-            console.log('skillAttack.ts: 25 >> start() Promise', worker.threadId);
+            console.log('skillAttack.ts: start() Promise', worker.threadId, characterId);
 
             worker.on('message', (result) => {
                 worker.terminate();
@@ -32,7 +35,7 @@ class SkillAttackWorker {
             worker.on('messageerror', reject);
             worker.on('error', reject);
             worker.on('exit', (code) => {
-                console.log(`skillAttack ${characterId} exitCode: ${code}`);
+                console.log(`skillAttack ${characterId} exitCode: ${code}, `, characterId);
                 this.threads.delete(characterId);
             });
         });

@@ -14,55 +14,55 @@ const handler_1 = require("../../handler");
 const scripts_1 = require("../../scripts");
 const villageHandler_1 = require("../villageHandler");
 exports.default = {
-    loadHome: (CMD, user) => {
+    loadHome: (CMD, userCache) => {
         console.log('LOAD HOME');
         const script = scripts_1.homeScript.loadHome;
         const field = 'front';
-        return { script, user, field };
+        return { script, userCache, field };
     },
-    checkUser: (user) => __awaiter(void 0, void 0, void 0, function* () {
+    checkUser: (userCache) => __awaiter(void 0, void 0, void 0, function* () {
         console.log('CHECK USER');
-        const { userId, characterId, name } = user;
+        const { userId, characterId, name } = userCache;
         const character = yield services_1.CharacterService.findOneByUserId(userId);
         // userSession으로 들어온 정보와 일치하는 캐릭터가 없을 때
         return (!character ||
             character.characterId !== characterId ||
             character.name !== name);
     }),
-    signout: (CMD, user, id) => {
+    signout: (CMD, userCache, id) => {
         console.log('SIGN OUT');
-        services_1.UserService.signout(user.userId, id);
+        services_1.UserService.signout(userCache.userId, id);
         const script = scripts_1.homeScript.signout + scripts_1.homeScript.loadHome;
         const field = 'front';
-        return { script, user, field };
+        return { script, userCache, field };
     },
-    toVillage: (CMD, user) => {
+    toVillage: (CMD, userCache) => {
         console.log('TO VILLAGE');
-        const script = (0, villageHandler_1.NpcList)(user.name); // 마을 스크립트
+        const script = (0, villageHandler_1.NpcList)(userCache.name); // 마을 스크립트
         const field = 'village';
-        return { script, user, field, chat: true };
+        return { script, userCache, field, chat: true };
     },
-    toDungeon: (CMD, user) => {
+    toDungeon: (CMD, userCache) => {
         console.log('TO DUNGEON');
-        const script = (0, handler_1.dungeonList)(user.name);
+        const script = (0, handler_1.dungeonList)(userCache.name);
         const field = 'dungeon';
-        return { script, user, field, chat: true };
+        return { script, userCache, field, chat: true };
     },
-    emptyCommand: (CMD, user) => {
+    emptyCommand: (CMD, userCache) => {
         console.log('EMPTY COMMAND');
         const script = scripts_1.homeScript.wrongCommand;
         const field = 'front';
-        return { script, user, field };
+        return { script, userCache, field };
     },
-    deleteAccount: (CMD, user) => __awaiter(void 0, void 0, void 0, function* () {
+    deleteAccount: (CMD, userCache) => __awaiter(void 0, void 0, void 0, function* () {
         console.log('EMPTY COMMAND');
-        const { userId, characterId } = user;
+        const { userId, characterId } = userCache;
         const result = yield services_1.UserService.deleteUser(userId, characterId);
         const script = result === 1
             ? scripts_1.homeScript.delete + scripts_1.homeScript.loadHome
             : scripts_1.homeScript.deleteFail;
         const field = 'front';
-        return { script, user: emptySession, field };
+        return { script, userCache: emptySession, field };
     }),
 };
 const emptySession = {
@@ -71,6 +71,8 @@ const emptySession = {
     characterId: 0,
     name: '',
     level: 0,
+    attack: 0,
+    defense: 0,
     maxhp: 0,
     maxmp: 0,
     hp: 0,

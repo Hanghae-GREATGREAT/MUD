@@ -13,29 +13,29 @@ const socket_routes_1 = require("../socket.routes");
 const handler_1 = require("../handler");
 const cache_1 = require("../db/cache");
 exports.default = {
-    battleController: ({ line, user }) => __awaiter(void 0, void 0, void 0, function* () {
+    battleController: ({ line, userCache }) => __awaiter(void 0, void 0, void 0, function* () {
         const [CMD1, CMD2] = line.trim().split(' ');
         console.log('socketon battle');
+        if (CMD1 === '자동1') {
+            console.log('battle.controller.ts: 26 >> 자동 분기점');
+            handler_1.battle.autoBattleW(CMD2, userCache);
+            return;
+        }
         const commandRouter = {
             도움말: handler_1.battle.help,
             수동: handler_1.battle.encounter,
             자동: handler_1.battle.autoBattle,
             돌: handler_1.dungeon.getDungeonList,
         };
-        // if (!commandRouter[CMD1]) {
-        //     console.log(`is wrong command : '${CMD1}'`);
-        //     const result = battle.wrongCommand(CMD1, user);
-        //     return socket.emit('print', result);
-        // }
-        if (CMD1 === '자동1') {
-            console.log('battle.controller.ts: 26 >> 자동 분기점');
-            handler_1.battle.autoBattleW(CMD2, user);
-            return;
+        if (!commandRouter[CMD1]) {
+            console.log(`is wrong command : '${CMD1}'`);
+            const result = handler_1.battle.wrongCommand(CMD1, userCache);
+            return socket_routes_1.socket.emit('print', result);
         }
-        const result = yield commandRouter[CMD1](CMD2, user);
+        const result = yield commandRouter[CMD1](CMD2, userCache);
         socket_routes_1.socket.emit('print', result);
     }),
-    encounterController: ({ line, user }) => __awaiter(void 0, void 0, void 0, function* () {
+    encounterController: ({ line, userCache }) => __awaiter(void 0, void 0, void 0, function* () {
         const [CMD1, CMD2] = line.trim().split(' ');
         console.log('socketon enccounter');
         const commandRouter = {
@@ -46,26 +46,26 @@ exports.default = {
         };
         if (!commandRouter[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
-            const result = handler_1.battle.wrongCommand(CMD1, user);
+            const result = handler_1.battle.wrongCommand(CMD1, userCache);
             return socket_routes_1.socket.emit('print', result);
         }
-        let result = yield commandRouter[CMD1](CMD2, user);
+        let result = yield commandRouter[CMD1](CMD2, userCache);
         const target = result.field === 'action' ? 'printBattle' : 'print';
         socket_routes_1.socket.emit(target, result);
     }),
-    actionController: ({ line, user, option }) => __awaiter(void 0, void 0, void 0, function* () {
+    actionController: ({ line, userCache, option }) => __awaiter(void 0, void 0, void 0, function* () {
         const [CMD1, CMD2] = line.trim().split(' ');
-        const { characterId } = user;
+        const { characterId } = userCache;
         /**
          * action:time
          * 타임스탬프를 함께 전달하고 이를 바탕으로 스킬 재사용 가능여부 판별
          */
         if (CMD1 === '중단') {
-            const result = yield handler_1.battle.quitAutoBattle('', user);
+            const result = yield handler_1.battle.quitAutoBattle('', userCache);
             const field = result.field === 'action' ? 'printBattle' : 'print';
             socket_routes_1.socket.emit(field, result);
         }
-        const result = yield handler_1.battle.actionSkill(CMD1, user);
+        const result = yield handler_1.battle.actionSkill(CMD1, userCache);
         if (Object.hasOwn(result, 'error')) {
             return socket_routes_1.socket.emit('print', result);
         }
@@ -78,7 +78,7 @@ exports.default = {
             cache_1.battleCache.set(characterId, { dungeonLevel });
             // await redis.hDelBattleCache(characterId);
             // await redis.hSet(characterId, { dungeonLevel });
-            const deadResult = yield handler_1.battle.reEncounter('', result.user);
+            const deadResult = yield handler_1.battle.reEncounter('', result.userCache);
             deadResult.script = result.script + deadResult.script;
             socket_routes_1.socket.emit('print', deadResult);
             return;
@@ -86,7 +86,7 @@ exports.default = {
         result.cooldown = Date.now();
         return socket_routes_1.socket.emit('printBattle', result);
     }),
-    autoBattleController: ({ line, user }) => __awaiter(void 0, void 0, void 0, function* () {
+    autoBattleController: ({ line, userCache }) => __awaiter(void 0, void 0, void 0, function* () {
         const [CMD1, CMD2] = line.trim().split(' ');
         console.log('socketon enccounter');
         const commandRouter = {
@@ -95,14 +95,14 @@ exports.default = {
         };
         if (!commandRouter[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
-            const result = yield commandRouter['도움말'](CMD1, user);
+            const result = yield commandRouter['도움말'](CMD1, userCache);
             return socket_routes_1.socket.emit('print', result);
         }
-        let result = yield commandRouter[CMD1](CMD2, user);
+        let result = yield commandRouter[CMD1](CMD2, userCache);
         const target = result.field === 'action' ? 'printBattle' : 'print';
         socket_routes_1.socket.emit(target, result);
     }),
-    resultController: ({ line, user }) => __awaiter(void 0, void 0, void 0, function* () {
+    resultController: ({ line, userCache }) => __awaiter(void 0, void 0, void 0, function* () {
         const [CMD1, CMD2] = line.trim().split(' ');
         const commandRouter = {
             load: handler_1.battle.adventureload,
@@ -111,10 +111,10 @@ exports.default = {
         };
         if (!commandRouter[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
-            const result = handler_1.battle.adventureWrongCommand(CMD1, user);
+            const result = handler_1.battle.adventureWrongCommand(CMD1, userCache);
             return socket_routes_1.socket.emit('print', result);
         }
-        const result = yield commandRouter[CMD1](CMD2, user);
+        const result = yield commandRouter[CMD1](CMD2, userCache);
         socket_routes_1.socket.emit('print', result);
     })
 };

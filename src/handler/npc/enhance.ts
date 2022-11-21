@@ -1,10 +1,10 @@
 import { socket } from '../../socket.routes';
-import { UserSession } from '../../interfaces/user';
+import { UserCache } from '../../interfaces/user';
 import { NpcService } from '../../services';
 import { CommandRouter, ReturnScript } from '../../interfaces/socket';
 
 export default {
-    enhanceHelp: (CMD: string | undefined, user: UserSession) => {
+    enhanceHelp: (CMD: string | undefined, userCache: UserCache) => {
         let tempScript: string = '';
         const tempLine =
             '=======================================================================\n';
@@ -17,28 +17,28 @@ export default {
         const script = tempLine + tempScript;
         const field = 'enhance';
 
-        return { script, user, field };
+        return { script, userCache, field };
     },
 
-    enhanceTalk: async (CMD: string | undefined, user: UserSession) => {
+    enhanceTalk: async (CMD: string | undefined, userCache: UserCache) => {
         const tempLine =
             '=======================================================================\n';
 
-        const NpcScript: string = NpcService.enhanceTalkScript(user.name);
+        const NpcScript: string = NpcService.enhanceTalkScript(userCache.name);
 
         const script = tempLine + NpcScript;
         const field = 'enhance';
 
-        return { script, user, field };
+        return { script, userCache, field };
     },
 
-    enhance: async (CMD: string | undefined, user: UserSession) => {
+    enhance: async (CMD: string | undefined, userCache: UserCache) => {
         let tempScript: string = '';
         const tempLine =
             '=======================================================================\n';
 
         const actionScript: string = await NpcService.enhance(
-            Number(user.characterId),
+            Number(userCache.characterId),
         );
 
         tempScript += actionScript;
@@ -49,10 +49,10 @@ export default {
         const script = tempLine + tempScript;
         const field = 'enhance';
 
-        return { script, user, field };
+        return { script, userCache, field };
     },
 
-    enhanceWrongCommand: (CMD: string | undefined, user: UserSession) => {
+    enhanceWrongCommand: (CMD: string | undefined, userCache: UserCache) => {
         let tempScript: string = '';
 
         tempScript += `입력값을 확인해주세요.\n`;
@@ -61,6 +61,6 @@ export default {
 
         const script = 'Error : \n' + tempScript;
         const field = 'enhance';
-        return { script, user, field };
+        return { script, userCache, field };
     },
 };

@@ -1,13 +1,13 @@
-import { UserSession } from '../interfaces/user';
+import { UserCache } from '../interfaces/user';
 import DungeonService from '../services/dungeon.service';
-import { battleCache, redis } from '../db/cache';
+import { battleCache } from '../db/cache';
 import { front } from '../handler';
 import { homeScript } from '../scripts';
 import { ReturnScript } from '../interfaces/socket';
 
 
 export default {
-    help: (CMD: string | undefined, user: UserSession) => {
+    help: (CMD: string | undefined, userCache: UserCache) => {
         let tempScript = '';
 
         tempScript += '명령어 : \n';
@@ -17,17 +17,17 @@ export default {
 
         const script = tempScript;
         const field = 'dungeon';
-        return { script, user, field };
+        return { script, userCache, field };
     },
 
-    getDungeonList: async(CMD: string | undefined, user: UserSession): Promise<ReturnScript> => {
+    getDungeonList: async(CMD: string | undefined, userCache: UserCache): Promise<ReturnScript> => {
         console.log('dungeon list.');
 
-        const result = await front.checkUser(user)
+        const result = await front.checkUser(userCache)
         if (result) {
             const script = homeScript.loadHome;
             const field = 'front'
-            return { script, user, field };
+            return { script, userCache, field };
         }
         // 던전 목록 불러오기
         const dungeonList = DungeonService.getDungeonList();
@@ -36,15 +36,15 @@ export default {
             '=======================================================================\n';
         let tempScript: string = '';
 
-        tempScript += `${user.name}은(는) 깊은 심연으로 발걸음을 내딛습니다.\n\n`;
+        tempScript += `${userCache.name}은(는) 깊은 심연으로 발걸음을 내딛습니다.\n\n`;
         tempScript += `${dungeonList}`;
 
         const script = tempLine + tempScript;
         const field = 'dungeon';
-        return { script, user, field, chat: true };
+        return { script, userCache, field, chat: true };
     },
 
-    getDungeonInfo: (CMD: string | undefined, user: UserSession) => {
+    getDungeonInfo: (CMD: string | undefined, userCache: UserCache) => {
         console.log('dungeonInfo.');
 
         // 임시 스크립트 선언
@@ -73,7 +73,7 @@ export default {
             // };
 
             const dungeonLevel = +CMD!;
-            const { characterId } = user;
+            const { characterId } = userCache;
             // redis.hSet(characterId, { dungeonLevel });
             battleCache.set(characterId, { dungeonLevel })
             nextField = 'battle';
@@ -81,10 +81,10 @@ export default {
 
         const script = tempLine + tempScript;
         const field = nextField;
-        return { script, user, field };
+        return { script, userCache, field };
     },
 
-    wrongCommand: (CMD: string | undefined, user: UserSession) => {
+    wrongCommand: (CMD: string | undefined, userCache: UserCache) => {
         let tempScript: string = '';
 
         tempScript += `입력값을 확인해주세요.\n`;
@@ -93,7 +93,7 @@ export default {
 
         const script = 'Error : \n' + tempScript;
         const field = 'dungeon';
-        return { script, user, field };
+        return { script, userCache, field };
     },
 };
 

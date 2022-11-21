@@ -1,17 +1,19 @@
 import { Worker, MessagePort } from 'worker_threads';
 import { join } from 'path';
 import env from '../config.env'
-import { AutoWorkerData, IsDeadReceiver } from '../interfaces/worker';
+import { AutoWorkerData, AutoWorkerResult, IsDeadReceiver } from '../interfaces/worker';
+import { UserCache } from '../interfaces/user';
 
 
 class isMonsterDead {
 
     private threads: Map<number, Worker> = new Map();
 
-    check = (characterId: number, { autoToDeadReceive, skillToDeadReceive }: IsDeadReceiver): Promise<string> => {
-        console.log('isMonsterDead.ts: 12 >> 사망확인 check() 시작');
+    check = (userCache: UserCache, { autoToDeadReceive, skillToDeadReceive }: IsDeadReceiver): Promise<AutoWorkerResult> => {
+        const { characterId } = userCache;
+        console.log('isMonsterDead.ts: 사망확인 check() 시작, ', characterId);
         const workerData: AutoWorkerData = { 
-            characterId,
+            userCache,
             path: './isMonsterDead.worker.ts',
         };
 
@@ -22,9 +24,9 @@ class isMonsterDead {
             );
             worker.postMessage({ autoToDeadReceive, skillToDeadReceive }, [ autoToDeadReceive, skillToDeadReceive ]);
             this.threads.set(characterId, worker);
-            console.log('isMonsterDead.ts: 25 >> check() Promise', worker.threadId);
+            console.log('isMonsterDead.ts: check() Promise', worker.threadId, characterId);
 
-            worker.on('message', (result) => {
+            worker.on('message', (result: AutoWorkerResult) => {
                 worker.terminate();
                 resolve(result);
             });
@@ -32,7 +34,7 @@ class isMonsterDead {
             // worker.on('messageerror', reject);
             worker.on('error', reject);
             worker.on('exit', (code) => {
-                console.log(`isMonsterDead ${characterId} exitCode: ${code}`);
+                console.log(`isMonsterDead ${characterId} exitCode: ${code}`, characterId);
                 this.threads.delete(characterId);
             });
         });
@@ -51,20 +53,4 @@ class isMonsterDead {
 
 
 export default new isMonsterDead();
-
-
-// const { dead } = await redis.hGetAll(characterId);
-//         // dead = 'moster'|'player'|undefined
-//         if (dead) {
-//             redis.hDelResetCache(characterId);
-//             const { autoAttackId } = battleCache.get(characterId)
-//             clearInterval(autoAttackId);
-//             battleCache.delete(characterId);
-    
-//             const result = await whoIsDead[dead]('', newUser);
-//             socket.emit('print', result);
-    
-//             return;
-//         }
-
 
