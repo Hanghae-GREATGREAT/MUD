@@ -1,21 +1,21 @@
-import { UserSession } from '../../interfaces/user';
+import { UserCache } from '../../interfaces/user';
 import { UserService, CharacterService } from '../../services';
 import { dungeonList } from '../../handler';
 import { homeScript } from '../../scripts';
 import { NpcList } from '../villageHandler';
 
 export default {
-    loadHome: (CMD: string | undefined, user: UserSession) => {
+    loadHome: (CMD: string | undefined, userCache: UserCache) => {
         console.log('LOAD HOME');
 
         const script = homeScript.loadHome;
         const field = 'front';
-        return { script, user, field };
+        return { script, userCache, field };
     },
 
-    checkUser: async (user: UserSession) => {
+    checkUser: async (userCache: UserCache) => {
         console.log('CHECK USER');
-        const { userId, characterId, name } = user;
+        const { userId, characterId, name } = userCache;
         const character = await CharacterService.findOneByUserId(userId);
 
         // userSession으로 들어온 정보와 일치하는 캐릭터가 없을 때
@@ -26,43 +26,43 @@ export default {
         );
     },
 
-    signout: (CMD: string | undefined, user: UserSession, id: string) => {
+    signout: (CMD: string | undefined, userCache: UserCache, id: string) => {
         console.log('SIGN OUT');
 
-        UserService.signout(user.userId, id);
+        UserService.signout(userCache.userId, id);
         const script = homeScript.signout + homeScript.loadHome;
         const field = 'front';
-        return { script, user, field };
+        return { script, userCache, field };
     },
 
-    toVillage: (CMD: string | undefined, user: UserSession) => {
+    toVillage: (CMD: string | undefined, userCache: UserCache) => {
         console.log('TO VILLAGE');
 
-        const script = NpcList(user.name); // 마을 스크립트
+        const script = NpcList(userCache.name); // 마을 스크립트
         const field = 'village';
-        return { script, user, field, chat: true };
+        return { script, userCache, field, chat: true };
     },
 
-    toDungeon: (CMD: string | undefined, user: UserSession) => {
+    toDungeon: (CMD: string | undefined, userCache: UserCache) => {
         console.log('TO DUNGEON');
 
-        const script = dungeonList(user.name);
+        const script = dungeonList(userCache.name);
         const field = 'dungeon';
-        return { script, user, field, chat: true };
+        return { script, userCache, field, chat: true };
     },
 
-    emptyCommand: (CMD: string | undefined, user: UserSession) => {
+    emptyCommand: (CMD: string | undefined, userCache: UserCache) => {
         console.log('EMPTY COMMAND');
 
         const script = homeScript.wrongCommand;
         const field = 'front';
-        return { script, user, field };
+        return { script, userCache, field };
     },
 
-    deleteAccount: async (CMD: string | undefined, user: UserSession) => {
+    deleteAccount: async (CMD: string | undefined, userCache: UserCache) => {
         console.log('EMPTY COMMAND');
 
-        const { userId, characterId } = user;
+        const { userId, characterId } = userCache;
         const result = await UserService.deleteUser(userId, characterId);
 
         const script =
@@ -70,16 +70,18 @@ export default {
                 ? homeScript.delete + homeScript.loadHome
                 : homeScript.deleteFail;
         const field = 'front';
-        return { script, user: emptySession, field };
+        return { script, userCache: emptySession, field };
     },
 };
 
-const emptySession: UserSession = {
+const emptySession: UserCache = {
     userId: 0,
     username: '',
     characterId: 0,
     name: '',
     level: 0,
+    attack: 0,
+    defense: 0,
     maxhp: 0,
     maxmp: 0,
     hp: 0,

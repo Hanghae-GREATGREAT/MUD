@@ -9,13 +9,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.battleLoops = void 0;
 const services_1 = require("../../services");
 const cache_1 = require("../../db/cache");
 class EncounterHandler {
     constructor() {
         // help: (CMD: string | undefined, user: UserSession) => {}
-        this.ehelp = (CMD, user) => {
+        this.ehelp = (CMD, userCache) => {
             let tempScript = '';
             tempScript += '명령어 : \n';
             tempScript += '[공격] 하기 - 전투를 진행합니다.\n';
@@ -25,11 +24,11 @@ class EncounterHandler {
                 '[스킬] [num] 사용 - 1번 슬롯에 장착된 스킬을 사용합니다.\n';
             const script = tempScript;
             const field = 'encounter';
-            return { script, user, field };
+            return { script, userCache, field };
         };
-        this.encounter = (CMD, user) => __awaiter(this, void 0, void 0, function* () {
+        this.encounter = (CMD, userCache) => __awaiter(this, void 0, void 0, function* () {
             // 던전 진행상황 불러오기
-            const { characterId } = user;
+            const { characterId } = userCache;
             // const { dungeonLevel } = await redis.hGetAll(characterId);
             const { dungeonLevel } = cache_1.battleCache.get(characterId);
             let tempScript = '';
@@ -44,11 +43,11 @@ class EncounterHandler {
             cache_1.battleCache.set(characterId, { monsterId });
             const script = tempLine + tempScript;
             const field = 'encounter';
-            return { script, user, field };
+            return { script, userCache, field };
         });
-        this.reEncounter = (CMD, user) => __awaiter(this, void 0, void 0, function* () {
+        this.reEncounter = (CMD, userCache) => __awaiter(this, void 0, void 0, function* () {
             // 던전 진행상황 불러오기
-            const { characterId } = user;
+            const { characterId } = userCache;
             // const { dungeonLevel } = await redis.hGetAll(characterId);
             const { dungeonLevel } = cache_1.battleCache.get(characterId);
             let tempScript = '';
@@ -62,20 +61,19 @@ class EncounterHandler {
             cache_1.battleCache.set(characterId, { monsterId });
             const script = tempLine + tempScript;
             const field = 'encounter';
-            user = yield services_1.CharacterService.addExp(characterId, 0);
-            return { script, user, field };
+            userCache = yield services_1.CharacterService.addExp(characterId, 0);
+            return { script, userCache, field };
         });
-        this.ewrongCommand = (CMD, user) => {
+        this.ewrongCommand = (CMD, userCache) => {
             let tempScript = '';
             tempScript += `입력값을 확인해주세요.\n`;
             tempScript += `현재 입력 : '${CMD}'\n`;
             tempScript += `사용가능한 명령어가 궁금하시다면 '도움말'을 입력해보세요.\n`;
             const script = 'Error : \n' + tempScript;
             const field = 'encounter';
-            return { script, user, field };
+            return { script, userCache, field };
         };
     }
 }
 ;
-exports.battleLoops = new Map();
 exports.default = new EncounterHandler();

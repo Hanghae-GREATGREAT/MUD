@@ -3,7 +3,7 @@ import { village, npc } from '../handler';
 import { LineInput, CommandRouter } from '../interfaces/socket';
 
 export default {
-    storyController: async ({ line, user }: LineInput) => {
+    storyController: async ({ line, userCache }: LineInput) => {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
         console.log('socketon battle');
 
@@ -16,15 +16,15 @@ export default {
 
         if (!commandRouter[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
-            const result = npc.storyWrongCommand(CMD1, user);
+            const result = npc.storyWrongCommand(CMD1, userCache);
             return socket.emit('print', result);
         }
 
-        const result = await commandRouter[CMD1](CMD2, user);
+        const result = await commandRouter[CMD1](CMD2, userCache);
         socket.emit('print', result);
     },
 
-    healController: async ({ line, user }: LineInput) => {
+    healController: async ({ line, userCache }: LineInput) => {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
         console.log('socketon battle');
 
@@ -37,15 +37,15 @@ export default {
 
         if (!commandRouter[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
-            const result = npc.healWrongCommand(CMD1, user);
+            const result = npc.healWrongCommand(CMD1, userCache);
             return socket.emit('print', result);
         }
 
-        const result = await commandRouter[CMD1](CMD2, user);
+        const result = await commandRouter[CMD1](CMD2, userCache);
         socket.emit('print', result);
     },
 
-    enhanceController: async ({ line, user }: LineInput) => {
+    enhanceController: async ({ line, userCache }: LineInput) => {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
         console.log('socketon battle');
 
@@ -58,15 +58,15 @@ export default {
 
         if (!commandRouter[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
-            const result = npc.enhanceWrongCommand(CMD1, user);
+            const result = npc.enhanceWrongCommand(CMD1, userCache);
             return socket.emit('print', result);
         }
 
-        const result = await commandRouter[CMD1](CMD2, user);
+        const result = await commandRouter[CMD1](CMD2, userCache);
         socket.emit('print', result);
     },
 
-    gambleController: async ({ line, user }: LineInput) => {
+    gambleController: async ({ line, userCache }: LineInput) => {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
         console.log('socketon battle');
 
@@ -79,11 +79,11 @@ export default {
 
         if (!commandRouter[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
-            const result = npc.gambleWrongCommand(CMD1, user);
+            const result = npc.gambleWrongCommand(CMD1, userCache);
             return socket.emit('print', result);
         }
 
-        const result = await commandRouter[CMD1](CMD2, user);
+        const result = await commandRouter[CMD1](CMD2, userCache);
         socket.emit('print', result);
     },
 };

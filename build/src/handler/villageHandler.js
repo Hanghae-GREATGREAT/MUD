@@ -13,7 +13,7 @@ exports.NpcList = void 0;
 const handler_1 = require("../handler");
 const scripts_1 = require("../scripts");
 exports.default = {
-    villagehelp: (CMD, user) => {
+    villagehelp: (CMD, userCache) => {
         let tempScript = '';
         tempScript += '명령어 : \n';
         tempScript += '목록 - NPC 목록을 불러옵니다.\n';
@@ -21,16 +21,16 @@ exports.default = {
         tempScript += 'OUT - 로그아웃 합니다.\n';
         const script = tempScript;
         const field = 'village';
-        return { script, user, field };
+        return { script, userCache, field };
     },
-    NpcList: (CMD, user) => __awaiter(void 0, void 0, void 0, function* () {
+    NpcList: (CMD, userCache) => __awaiter(void 0, void 0, void 0, function* () {
         console.log('NPC list.');
         // 유저 인증정보 확인
-        const result = yield handler_1.front.checkUser(user);
+        const result = yield handler_1.front.checkUser(userCache);
         if (result) {
             const script = scripts_1.homeScript.loadHome;
             const field = 'front';
-            return { script, user, field };
+            return { script, userCache, field };
         }
         // 임시 스크립트 선언
         const tempLine = '=======================================================================\n';
@@ -41,9 +41,9 @@ exports.default = {
         tempScript += `4. 에트나 - 제비뽑기\n\n`;
         const script = tempLine + tempScript;
         const field = 'village';
-        return { script, user, field, chat: true };
+        return { script, userCache, field, chat: true };
     }),
-    storyInfo: (CMD, user) => {
+    storyInfo: (CMD, userCache) => {
         // 임시 스크립트 선언
         const tempLine = '=======================================================================\n';
         let tempScript = '';
@@ -54,9 +54,9 @@ exports.default = {
         tempScript += `3 - 돌아가기\n`;
         const script = tempLine + tempScript;
         const field = 'story';
-        return { script, user, field };
+        return { script, userCache, field };
     },
-    healInfo: (CMD, user) => {
+    healInfo: (CMD, userCache) => {
         // 임시 스크립트 선언
         const tempLine = '=======================================================================\n';
         let tempScript = '';
@@ -67,9 +67,9 @@ exports.default = {
         tempScript += `3 - 돌아가기\n`;
         const script = tempLine + tempScript;
         const field = 'heal';
-        return { script, user, field };
+        return { script, userCache, field };
     },
-    enhanceInfo: (CMD, user) => {
+    enhanceInfo: (CMD, userCache) => {
         // 임시 스크립트 선언
         const tempLine = '=======================================================================\n';
         let tempScript = '';
@@ -80,9 +80,9 @@ exports.default = {
         tempScript += `3 - 돌아가기\n`;
         const script = tempLine + tempScript;
         const field = 'enhance';
-        return { script, user, field };
+        return { script, userCache, field };
     },
-    gambleInfo: (CMD, user) => {
+    gambleInfo: (CMD, userCache) => {
         // 임시 스크립트 선언
         const tempLine = '=======================================================================\n';
         let tempScript = '';
@@ -93,16 +93,16 @@ exports.default = {
         tempScript += `3 - 돌아가기\n`;
         const script = tempLine + tempScript;
         const field = 'gamble';
-        return { script, user, field };
+        return { script, userCache, field };
     },
-    villageWrongCommand: (CMD, user) => {
+    villageWrongCommand: (CMD, userCache) => {
         let tempScript = '';
         tempScript += `입력값을 확인해주세요.\n`;
         tempScript += `현재 입력 : '${CMD}'\n`;
         tempScript += `사용가능한 명령어가 궁금하시다면 '도움말'을 입력해보세요.\n`;
         const script = 'Error : \n' + tempScript;
         const field = 'village';
-        return { script, user, field };
+        return { script, userCache, field };
     },
 };
 function NpcList(name) {

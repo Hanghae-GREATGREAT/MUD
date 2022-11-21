@@ -1,6 +1,6 @@
 import { Characters, Fields, Titles, Users } from '../db/models';
 import { MonsterService } from '../services'
-import { UserSession } from '../interfaces/user';
+import { UserCache } from '../interfaces/user';
 
 
 class CharacterService {
@@ -101,7 +101,7 @@ class CharacterService {
     ****************************************************************/
     async refreshStatus(
         characterId: number|string, damage: number, cost: number, monsterId: number|string
-    ): Promise<UserSession> {
+    ): Promise<UserCache> {
         const result = await Characters.findOne({
             where: { characterId: Number(characterId) },
             include: Users,
@@ -137,7 +137,7 @@ class CharacterService {
     /***************************************************************
         전투 종료 경험치&레벨 계산
     ****************************************************************/
-    async addExp(characterId: number|string, exp: number): Promise<UserSession> {
+    async addExp(characterId: number|string, exp: number): Promise<UserCache> {
         const result = await Characters.findOne({
             where: { characterId: Number(characterId) },
             include: Users,

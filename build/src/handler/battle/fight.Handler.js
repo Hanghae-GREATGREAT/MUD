@@ -13,7 +13,7 @@ const services_1 = require("../../services");
 const cache_1 = require("../../db/cache");
 exports.default = {
     // help: (CMD: string | undefined, user: UserSession) => {}
-    battleHelp: (CMD, user) => {
+    battleHelp: (CMD, userCache) => {
         let tempScript = '';
         // tempScript += '\n명령어 : \n';
         // tempScript += '[공격] 하기 - 전투를 진행합니다.\n';
@@ -26,9 +26,9 @@ exports.default = {
         tempScript += '스킬[3] 사용 - 3번 슬롯에 장착된 스킬을 사용합니다.\n';
         const script = tempScript;
         const field = 'action';
-        return { script, user, field };
+        return { script, userCache, field };
     },
-    autoBattleHelp: (CMD, user) => {
+    autoBattleHelp: (CMD, userCache) => {
         let tempScript = '';
         // tempScript += '\n명령어 : \n';
         // tempScript += '[공격] 하기 - 전투를 진행합니다.\n';
@@ -38,10 +38,10 @@ exports.default = {
         tempScript += '[중단] 하기 - 전투를 중단하고 마을로 돌아갑니다.\n';
         const script = tempScript;
         const field = 'action';
-        return { script, user, field };
+        return { script, userCache, field };
     },
-    quitBattle: (CMD, user) => __awaiter(void 0, void 0, void 0, function* () {
-        const { characterId } = user;
+    quitBattle: (CMD, userCache) => __awaiter(void 0, void 0, void 0, function* () {
+        const { characterId } = userCache;
         // const { monsterId } = await redis.hGetAll(characterId);
         const { monsterId } = cache_1.battleCache.get(characterId);
         let tempScript = '';
@@ -52,10 +52,10 @@ exports.default = {
         services_1.MonsterService.destroyMonster(monsterId, +characterId);
         const script = tempLine + tempScript;
         const field = 'dungeon';
-        return { script, user, field };
+        return { script, userCache, field };
     }),
-    quitAutoBattle: (CMD, user) => __awaiter(void 0, void 0, void 0, function* () {
-        const { characterId } = user;
+    quitAutoBattle: (CMD, userCache) => __awaiter(void 0, void 0, void 0, function* () {
+        const { characterId } = userCache;
         const { monsterId } = cache_1.battleCache.get(characterId);
         // const { monsterId } = await redis.hGetAll(characterId);
         let tempScript = '';
@@ -77,15 +77,15 @@ exports.default = {
         services_1.MonsterService.destroyMonster(monsterId, characterId);
         const script = tempLine + tempScript;
         const field = 'dungeon';
-        return { script, user, field };
+        return { script, userCache, field };
     }),
-    fwrongCommand: (CMD, user) => {
+    fwrongCommand: (CMD, userCache) => {
         let tempScript = '';
         tempScript += `입력값을 확인해주세요.\n`;
         tempScript += `현재 입력 : '${CMD}'\n`;
         tempScript += `사용가능한 명령어가 궁금하시다면 '도움말'을 입력해보세요.\n`;
         const script = 'Error : \n' + tempScript;
         const field = 'encounter';
-        return { script, user, field };
+        return { script, userCache, field };
     },
 };

@@ -1,12 +1,12 @@
-import { UserSession } from '../../interfaces/user';
+import { UserCache } from '../../interfaces/user';
 import { CharacterService, MonsterService } from '../../services';
-import { battleCache, redis } from '../../db/cache';
+import { battleCache } from '../../db/cache';
 import { ReturnScript } from '../../interfaces/socket';
 
 
 class EncounterHandler {
     // help: (CMD: string | undefined, user: UserSession) => {}
-    ehelp = (CMD: string | undefined, user: UserSession) => {
+    ehelp = (CMD: string | undefined, userCache: UserCache) => {
         let tempScript: string = '';
 
         tempScript += '명령어 : \n';
@@ -18,12 +18,12 @@ class EncounterHandler {
 
         const script = tempScript;
         const field = 'encounter';
-        return { script, user, field };
+        return { script, userCache, field };
     }
 
-    encounter = async (CMD: string | undefined, user: UserSession): Promise<ReturnScript> => {
+    encounter = async (CMD: string | undefined, userCache: UserCache): Promise<ReturnScript> => {
         // 던전 진행상황 불러오기
-        const { characterId } = user;
+        const { characterId } = userCache;
         // const { dungeonLevel } = await redis.hGetAll(characterId);
         const { dungeonLevel } = battleCache.get(characterId);
 
@@ -44,12 +44,12 @@ class EncounterHandler {
         const script = tempLine + tempScript;
         const field = 'encounter';
 
-        return { script, user, field };
+        return { script, userCache, field };
     }
 
-    reEncounter = async (CMD: string, user: UserSession): Promise<ReturnScript> => {
+    reEncounter = async (CMD: string, userCache: UserCache): Promise<ReturnScript> => {
         // 던전 진행상황 불러오기
-        const { characterId } = user;
+        const { characterId } = userCache;
         // const { dungeonLevel } = await redis.hGetAll(characterId);
         const { dungeonLevel } = battleCache.get(characterId);
 
@@ -68,11 +68,11 @@ class EncounterHandler {
 
         const script = tempLine + tempScript;
         const field = 'encounter';
-        user = await CharacterService.addExp(characterId, 0);
-        return { script, user, field };
+        userCache = await CharacterService.addExp(characterId, 0);
+        return { script, userCache, field };
     }
 
-    ewrongCommand = (CMD: string | undefined, user: UserSession) => {
+    ewrongCommand = (CMD: string | undefined, userCache: UserCache) => {
         let tempScript: string = '';
 
         tempScript += `입력값을 확인해주세요.\n`;
@@ -81,11 +81,9 @@ class EncounterHandler {
 
         const script = 'Error : \n' + tempScript;
         const field = 'encounter';
-        return { script, user, field };
+        return { script, userCache, field };
     }
 };
-
-export const battleLoops: Map<string|number, NodeJS.Timer> = new Map();
 
 
 export default new EncounterHandler();

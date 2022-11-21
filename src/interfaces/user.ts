@@ -8,12 +8,14 @@ interface SignupForm {
     confirm?: string;
 }
 
-interface UserSession {
+interface UserCache {
     userId: number;
     username: string;
     characterId: number;
     name: string;
     level: number;
+    attack: number;
+    defense: number;
     maxhp: number;
     maxmp: number;
     hp: number;
@@ -29,5 +31,5 @@ interface UserSession {
 
 export {
     SignupForm,
-    UserSession,
+    UserCache,
 }

@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const socket_routes_1 = require("../socket.routes");
 const handler_1 = require("../handler");
 exports.default = {
-    storyController: ({ line, user }) => __awaiter(void 0, void 0, void 0, function* () {
+    storyController: ({ line, userCache }) => __awaiter(void 0, void 0, void 0, function* () {
         const [CMD1, CMD2] = line.trim().split(' ');
         console.log('socketon battle');
         const commandRouter = {
@@ -23,13 +23,13 @@ exports.default = {
         };
         if (!commandRouter[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
-            const result = handler_1.npc.storyWrongCommand(CMD1, user);
+            const result = handler_1.npc.storyWrongCommand(CMD1, userCache);
             return socket_routes_1.socket.emit('print', result);
         }
-        const result = yield commandRouter[CMD1](CMD2, user);
+        const result = yield commandRouter[CMD1](CMD2, userCache);
         socket_routes_1.socket.emit('print', result);
     }),
-    healController: ({ line, user }) => __awaiter(void 0, void 0, void 0, function* () {
+    healController: ({ line, userCache }) => __awaiter(void 0, void 0, void 0, function* () {
         const [CMD1, CMD2] = line.trim().split(' ');
         console.log('socketon battle');
         const commandRouter = {
@@ -40,13 +40,13 @@ exports.default = {
         };
         if (!commandRouter[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
-            const result = handler_1.npc.healWrongCommand(CMD1, user);
+            const result = handler_1.npc.healWrongCommand(CMD1, userCache);
             return socket_routes_1.socket.emit('print', result);
         }
-        const result = yield commandRouter[CMD1](CMD2, user);
+        const result = yield commandRouter[CMD1](CMD2, userCache);
         socket_routes_1.socket.emit('print', result);
     }),
-    enhanceController: ({ line, user }) => __awaiter(void 0, void 0, void 0, function* () {
+    enhanceController: ({ line, userCache }) => __awaiter(void 0, void 0, void 0, function* () {
         const [CMD1, CMD2] = line.trim().split(' ');
         console.log('socketon battle');
         const commandRouter = {
@@ -57,13 +57,13 @@ exports.default = {
         };
         if (!commandRouter[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
-            const result = handler_1.npc.enhanceWrongCommand(CMD1, user);
+            const result = handler_1.npc.enhanceWrongCommand(CMD1, userCache);
             return socket_routes_1.socket.emit('print', result);
         }
-        const result = yield commandRouter[CMD1](CMD2, user);
+        const result = yield commandRouter[CMD1](CMD2, userCache);
         socket_routes_1.socket.emit('print', result);
     }),
-    gambleController: ({ line, user }) => __awaiter(void 0, void 0, void 0, function* () {
+    gambleController: ({ line, userCache }) => __awaiter(void 0, void 0, void 0, function* () {
         const [CMD1, CMD2] = line.trim().split(' ');
         console.log('socketon battle');
         const commandRouter = {
@@ -74,10 +74,10 @@ exports.default = {
         };
         if (!commandRouter[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
-            const result = handler_1.npc.gambleWrongCommand(CMD1, user);
+            const result = handler_1.npc.gambleWrongCommand(CMD1, userCache);
             return socket_routes_1.socket.emit('print', result);
         }
-        const result = yield commandRouter[CMD1](CMD2, user);
+        const result = yield commandRouter[CMD1](CMD2, userCache);
         socket_routes_1.socket.emit('print', result);
     }),
 };

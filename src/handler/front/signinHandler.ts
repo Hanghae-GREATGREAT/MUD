@@ -1,30 +1,29 @@
-import { UserSession } from '../../interfaces/user';
-import { CharacterService, UserService, DungeonService } from '../../services';
+import { UserCache } from '../../interfaces/user';
+import { CharacterService, UserService } from '../../services';
 import { Characters } from '../../db/models';
 import { redis } from '../../db/cache'
 import { signinScript } from '../../scripts';
-import userService from '../../services/user.service';
 
 
 export default {
 
-    signinUsername: (CMD: string | undefined, user: UserSession) => {
+    signinUsername: (CMD: string | undefined, userCache: UserCache) => {
         const script = signinScript.username;
         const field = 'sign:20';
         
-        return { script, user, field };
+        return { script, userCache, field };
     },
 
-    signinPassword: async(CMD: string | undefined, user: UserSession) => {
-        user.username = CMD!;
+    signinPassword: async(CMD: string | undefined, userCache: UserCache) => {
+        userCache.username = CMD!;
         const script = signinScript.password;
         const field = 'sign:21'
 
-        return { script, user, field };
+        return { script, userCache, field };
     },
 
-    signinCheck: async(CMD: string | undefined, user: UserSession, id: string) => {
-        const username = user.username;
+    signinCheck: async(CMD: string | undefined, userCache: UserCache, id: string) => {
+        const username = userCache.username;
         const password = CMD;
         const result = await UserService.signin({ username, password });
 
@@ -41,11 +40,11 @@ export default {
 
         if (character) {
             const characterSession = await Characters.getSessionData(character)
-            user = Object.assign(user, characterSession);
+            userCache = Object.assign(userCache, characterSession);
         }
         const script = result ? signinScript.title: signinScript.incorrect;
         const field = result ? 'front' : 'sign:21';
 
-        return { script, user, field };
+        return { script, userCache, field };
     },
 }
