@@ -12,16 +12,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const socket_routes_1 = require("../socket.routes");
 const handler_1 = require("../handler");
 exports.default = {
-    noneController: ({ line, user }) => {
+    noneController: ({ line, userCache }) => {
         const [CMD1, CMD2] = line.trim().toUpperCase().split(' ');
         const commandRouter = {
             'LOAD': handler_1.front.loadHome
         };
-        const result = commandRouter[CMD1](CMD2, user);
+        const result = commandRouter[CMD1](CMD2, userCache);
         socket_routes_1.socket.emit('print', result);
         socket_routes_1.socket.emit('enterChat', 'none');
     },
-    frontController: ({ line, user }) => __awaiter(void 0, void 0, void 0, function* () {
+    frontController: ({ line, userCache }) => __awaiter(void 0, void 0, void 0, function* () {
         const [CMD1, CMD2] = line.trim().toUpperCase().split(' ');
         console.log('front', CMD1, CMD2);
         const commandRouter = {
@@ -36,10 +36,10 @@ exports.default = {
             EMPTY: handler_1.front.emptyCommand,
         };
         if (!commandRouter[CMD1]) {
-            const result = commandRouter['EMPTY'](line, user);
+            const result = commandRouter['EMPTY'](line, userCache);
             return socket_routes_1.socket.emit('print', result);
         }
-        const result = yield commandRouter[CMD1](CMD2, user, socket_routes_1.socket.id);
+        const result = yield commandRouter[CMD1](CMD2, userCache, socket_routes_1.socket.id);
         if (result.chat)
             socket_routes_1.socket.emit('enterChat', result.field);
         if (result.field === 'signout') {
@@ -49,7 +49,7 @@ exports.default = {
             socket_routes_1.socket.emit('print', result);
         }
     }),
-    signController: ({ line, user, option }) => __awaiter(void 0, void 0, void 0, function* () {
+    signController: ({ line, userCache, option }) => __awaiter(void 0, void 0, void 0, function* () {
         const [CMD1, CMD2] = line.trim().split(' ');
         const commandRouter = {
             10: handler_1.front.signupPassword,
@@ -60,10 +60,10 @@ exports.default = {
             EMPTY: handler_1.front.emptyCommand,
         };
         if (!CMD1 || !option) {
-            const result = commandRouter['EMPTY'](line, user);
+            const result = commandRouter['EMPTY'](line, userCache);
             return socket_routes_1.socket.emit('print', result);
         }
-        const result = yield commandRouter[option](CMD1, user, socket_routes_1.socket.id);
+        const result = yield commandRouter[option](CMD1, userCache, socket_routes_1.socket.id);
         if (result.chat)
             socket_routes_1.socket.emit('enterChat', result.field);
         socket_routes_1.socket.emit('print', result);

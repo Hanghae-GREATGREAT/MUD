@@ -9,17 +9,18 @@ const config_env_1 = __importDefault(require("../config.env"));
 class SkillAttackWorker {
     constructor() {
         this.threads = new Map();
-        this.start = (characterId, skillToDead) => {
-            console.log('skillAttack.ts: 12 >> 스킬반복 start() 시작');
+        this.start = (userCache, skillToDead) => {
+            const { characterId } = userCache;
+            console.log('skillAttack.ts: 스킬반복 start() 시작, ', characterId);
             const workerData = {
-                characterId,
+                userCache,
                 path: './skillAttack.worker.ts',
             };
             return new Promise((resolve, reject) => {
                 const worker = new node_worker_threads_1.Worker((0, path_1.join)(config_env_1.default.SRC_PATH, 'workers', 'skillAttack.worker.js'), { workerData });
                 worker.postMessage({ skillToDead }, [skillToDead]);
                 this.threads.set(characterId, worker);
-                console.log('skillAttack.ts: 25 >> start() Promise', worker.threadId);
+                console.log('skillAttack.ts: start() Promise', worker.threadId, characterId);
                 worker.on('message', (result) => {
                     worker.terminate();
                     resolve(result);
@@ -28,7 +29,7 @@ class SkillAttackWorker {
                 worker.on('messageerror', reject);
                 worker.on('error', reject);
                 worker.on('exit', (code) => {
-                    console.log(`skillAttack ${characterId} exitCode: ${code}`);
+                    console.log(`skillAttack ${characterId} exitCode: ${code}, `, characterId);
                     this.threads.delete(characterId);
                 });
             });

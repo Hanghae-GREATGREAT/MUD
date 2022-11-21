@@ -1,15 +1,15 @@
 import { Monsters } from '../db/models';
-import { UserSession } from './user';
+import { UserCache } from './user';
 
 interface LineInput {
     line: string;
-    user: UserSession;
+    userCache: UserCache;
     option: string | undefined;
 }
 
 interface ReturnScript {
     script: string;
-    user: UserSession;
+    userCache: UserCache;
     field: string;
     chat?: boolean;
     cooldown?: number;
@@ -18,7 +18,7 @@ interface ReturnScript {
 
 type commandHandler = (
     CMD: string,
-    user: UserSession,
+    userCache: UserCache,
     ...args: any[]
 ) => ReturnScript | Promise<ReturnScript>;
 
@@ -28,7 +28,7 @@ interface CommandRouter {
 
 type commandHandlerP = (
     CMD: string,
-    user: UserSession,
+    userCache: UserCache,
     ...args: any[]
 ) => Promise<ReturnScript>;
 
@@ -37,7 +37,7 @@ interface CommandRouterP {
 }
 
 
-type BattleReport = (user: UserSession, script: string) => Promise<void>
+type BattleReport = (user: UserCache, script: string) => Promise<void>
 
 interface BattleResult {
     [key: string]: BattleReport;

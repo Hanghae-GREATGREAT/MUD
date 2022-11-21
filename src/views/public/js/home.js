@@ -14,25 +14,24 @@ $(async() => {
     userInfo.empty();
     commandLine.empty();
 
-    const { field, user } = await checkStorage();
-    loadScript(field, user);
-    statusLoader(JSON.parse(user));
+    const { field, userCache } = await checkStorage();
+    loadScript(field, userCache);
+    statusLoader(JSON.parse(userCache));
 });
 
 function checkStorage() {
     let field = localStorage.getItem('field');
-    let user = localStorage.getItem('user');
-
-    if (!field || !field.match(/dungeon|village/) || !user || user==='{}') {
+    let userCache = localStorage.getItem('user');
+    if (!field || !field.match(/dungeon|village/) || !userCache || userCache==='{}') {
         field = 'none';
-        user = '{}';
+        userCache = '{}';
     }
 
-    return new Promise((resolve, reject) => resolve({ field, user }));
+    return new Promise((resolve, reject) => resolve({ field, userCache }));
 }
 
-function checkValidation(user) {
-    server.emit('none', { line: 'CHECK', user });
+function checkValidation(userCache) {
+    server.emit('none', { line: 'CHECK', userCache });
 }
 
 
@@ -40,11 +39,11 @@ function checkValidation(user) {
                                 커맨드 스크립트
 ******************************************************************************/
 
-function loadScript(field, user) {
-    if (field === 'none' || user === '{}') {
-        return server.emit('none', { line: 'LOAD', user: {} });
+function loadScript(field, userCache) {
+    if (field === 'none' || userCache === '{}') {
+        return server.emit('none', { line: 'LOAD', userCache: {} });
     }
-    server.emit('dungeon', { line: 'LOAD', user: JSON.parse(user) });
+    server.emit('dungeon', { line: 'LOAD', userCache: JSON.parse(userCache) });
 }
 
 commendForm.submit((e) => {
@@ -56,7 +55,7 @@ commendForm.submit((e) => {
      * field = front | home | village | dungeon | battle | ...
      */
     const [field, option] = localStorage.getItem('field').split(':');
-    const user = localStorage.getItem('user');
+    const userCache = localStorage.getItem('user');
     // field = line ? 'field' : 'global'    글로벌 명령어 판별
 
     switch (field) {
@@ -68,12 +67,12 @@ commendForm.submit((e) => {
                 commandLine.scrollTop(Number.MAX_SAFE_INTEGER);
                 return;
             }
-            server.emit(field, { line, user: JSON.parse(user), option });
+            server.emit(field, { line, userCache: JSON.parse(userCache), option });
             break;
         case 'global':
             break;
         default:
-            server.emit(field, { line, user: JSON.parse(user), option });
+            server.emit(field, { line, userCache: JSON.parse(userCache), option });
     }
 });
 
@@ -83,25 +82,25 @@ function checkSkillCD(cooldown) {
 
 server.on('print', printHandler);
 
-function printHandler({ script, user, field }) {
-    localStorage.setItem('user', JSON.stringify(user));
+function printHandler({ script, userCache, field }) {
+    localStorage.setItem('user', JSON.stringify(userCache));
     localStorage.setItem('field', field);
 
     commandLine.append(script);
     commandLine.scrollTop(Number.MAX_SAFE_INTEGER);
-    statusLoader(user);
+    statusLoader(userCache);
 }
 
 server.on('printBattle', printBattleHandler);
 
-function printBattleHandler({ script, user, field, cooldown }) {
-    localStorage.setItem('user', JSON.stringify(user));
+function printBattleHandler({ script, userCache, field, cooldown }) {
+    localStorage.setItem('user', JSON.stringify(userCache));
     localStorage.setItem('field', field);
     if (cooldown) localStorage.setItem('cooldown', cooldown);
 
     commandLine.append(script);
     commandLine.scrollTop(Number.MAX_SAFE_INTEGER);
-    statusLoader(user);
+    statusLoader(userCache);
 }
 
 server.on('signout', signoutHandler);
@@ -112,9 +111,9 @@ async function signoutHandler({ script }) {
     commandLine.append(script);
     commandLine.scrollTop(Number.MAX_SAFE_INTEGER);
 
-    const { field, user } = await checkStorage();
-    console.log(field, user);
-    loadScript(field, user);
+    const { field, userCache } = await checkStorage();
+    console.log(field, userCache);
+    loadScript(field, userCache);
 }
 
 const statusLoader = ({ username, name, level, maxhp, maxmp, hp, mp, exp }) => {
@@ -178,8 +177,8 @@ chatForm.submit((e) => {
     const field = localStorage.getItem('field').split(':')[0];
     if (!field.match(/dungeon|village/)) return chatInput.val('');
     
-    const user = localStorage.getItem('user');
-    const { name } = JSON.parse(user);
+    const userCache = localStorage.getItem('user');
+    const { name } = JSON.parse(userCache);
     const data = {
         name,
         message: chatInput.val(),

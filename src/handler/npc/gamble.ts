@@ -1,10 +1,10 @@
 import { socket } from '../../socket.routes';
-import { UserSession } from '../../interfaces/user';
+import { UserCache } from '../../interfaces/user';
 import { NpcService } from '../../services';
 import { CommandRouter, ReturnScript } from '../../interfaces/socket';
 
 export default {
-    gambleHelp: (CMD: string | undefined, user: UserSession) => {
+    gambleHelp: (CMD: string | undefined, userCache: UserCache) => {
         let tempScript: string = '';
         const tempLine =
             '=======================================================================\n';
@@ -17,28 +17,28 @@ export default {
         const script = tempLine + tempScript;
         const field = 'gamble';
 
-        return { script, user, field };
+        return { script, userCache, field };
     },
 
-    gambleTalk: async (CMD: string | undefined, user: UserSession) => {
+    gambleTalk: async (CMD: string | undefined, userCache: UserCache) => {
         const tempLine =
             '=======================================================================\n';
 
-        const NpcScript: string = NpcService.gambleTalkScript(user.name);
+        const NpcScript: string = NpcService.gambleTalkScript(userCache.name);
 
         const script = tempLine + NpcScript;
         const field = 'gamble';
 
-        return { script, user, field };
+        return { script, userCache, field };
     },
 
-    gamble: async (CMD: string | undefined, user: UserSession) => {
+    gamble: async (CMD: string | undefined, userCache: UserCache) => {
         let tempScript: string = '';
         const tempLine =
             '=======================================================================\n';
 
         const actionScript: string = await NpcService.gamble(
-            Number(user.characterId),
+            Number(userCache.characterId),
         );
         tempScript += actionScript;
         tempScript += '1 - 에트나와 대화합니다.\n';
@@ -48,10 +48,10 @@ export default {
         const script = tempLine + tempScript;
         const field = 'gamble';
 
-        return { script, user, field };
+        return { script, userCache, field };
     },
 
-    gambleWrongCommand: (CMD: string | undefined, user: UserSession) => {
+    gambleWrongCommand: (CMD: string | undefined, userCache: UserCache) => {
         let tempScript: string = '';
 
         tempScript += `입력값을 확인해주세요.\n`;
@@ -60,6 +60,6 @@ export default {
 
         const script = 'Error : \n' + tempScript;
         const field = 'gamble';
-        return { script, user, field };
+        return { script, userCache, field };
     },
 };

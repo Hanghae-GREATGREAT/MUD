@@ -1,11 +1,10 @@
-import { UserSession } from '../../interfaces/user';
-import { BattleService, MonsterService } from '../../services';
-import { battleCache, redis } from '../../db/cache';
-import { battleLoops } from './encounter.Handler';
+import { UserCache } from '../../interfaces/user';
+import { MonsterService } from '../../services';
+import { battleCache } from '../../db/cache';
 
 export default {
     // help: (CMD: string | undefined, user: UserSession) => {}
-    battleHelp: (CMD: string | undefined, user: UserSession) => {
+    battleHelp: (CMD: string | undefined, userCache: UserCache) => {
         let tempScript: string = '';
 
         // tempScript += '\n명령어 : \n';
@@ -20,10 +19,10 @@ export default {
 
         const script = tempScript;
         const field = 'action';
-        return { script, user, field };
+        return { script, userCache, field };
     },
 
-    autoBattleHelp: (CMD: string | undefined, user: UserSession) => {
+    autoBattleHelp: (CMD: string | undefined, userCache: UserCache) => {
         let tempScript: string = '';
 
         // tempScript += '\n명령어 : \n';
@@ -35,11 +34,11 @@ export default {
 
         const script = tempScript;
         const field = 'action';
-        return { script, user, field };
+        return { script, userCache, field };
     },
 
-    quitBattle: async (CMD: string | undefined, user: UserSession) => {
-        const { characterId } = user;
+    quitBattle: async (CMD: string | undefined, userCache: UserCache) => {
+        const { characterId } = userCache;
         // const { monsterId } = await redis.hGetAll(characterId);
         const { monsterId } = battleCache.get(characterId);
         let tempScript: string = '';
@@ -53,11 +52,11 @@ export default {
 
         const script = tempLine + tempScript;
         const field = 'dungeon';
-        return { script, user, field };
+        return { script, userCache, field };
     },
 
-    quitAutoBattle: async (CMD: string | undefined, user: UserSession) => {
-        const { characterId } = user;
+    quitAutoBattle: async (CMD: string | undefined, userCache: UserCache) => {
+        const { characterId } = userCache;
         const { monsterId } = battleCache.get(characterId);
         // const { monsterId } = await redis.hGetAll(characterId);
         let tempScript: string = '';
@@ -82,10 +81,10 @@ export default {
 
         const script = tempLine + tempScript;
         const field = 'dungeon';
-        return { script, user, field };
+        return { script, userCache, field };
     },
 
-    fwrongCommand: (CMD: string | undefined, user: UserSession) => {
+    fwrongCommand: (CMD: string | undefined, userCache: UserCache) => {
         let tempScript: string = '';
 
         tempScript += `입력값을 확인해주세요.\n`;
@@ -94,6 +93,6 @@ export default {
 
         const script = 'Error : \n' + tempScript;
         const field = 'encounter';
-        return { script, user, field };
+        return { script, userCache, field };
     },
 };

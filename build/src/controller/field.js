@@ -13,7 +13,7 @@ const socket_routes_1 = require("../socket.routes");
 const handler_1 = require("../handler");
 // dungeon, village
 exports.default = {
-    dungeonController: ({ line, user }) => __awaiter(void 0, void 0, void 0, function* () {
+    dungeonController: ({ line, userCache }) => __awaiter(void 0, void 0, void 0, function* () {
         const [CMD1, CMD2] = line.trim().toUpperCase().split(' ');
         console.log('inputCommand : ', CMD1, CMD2);
         const commandRouter = {
@@ -25,15 +25,15 @@ exports.default = {
         };
         if (!commandRouter[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
-            const result = handler_1.dungeon.wrongCommand(CMD1, user);
+            const result = handler_1.dungeon.wrongCommand(CMD1, userCache);
             return socket_routes_1.socket.emit('print', result);
         }
-        const result = yield commandRouter[CMD1](CMD2, user, socket_routes_1.socket.id);
+        const result = yield commandRouter[CMD1](CMD2, userCache, socket_routes_1.socket.id);
         if (result.chat)
             socket_routes_1.socket.emit('enterChat', result.field);
         socket_routes_1.socket.emit('print', result);
     }),
-    villageController: ({ line, user }) => __awaiter(void 0, void 0, void 0, function* () {
+    villageController: ({ line, userCache }) => __awaiter(void 0, void 0, void 0, function* () {
         const [CMD1, CMD2] = line.trim().toUpperCase().split(' ');
         console.log('inputCommand : ', CMD1, CMD2);
         const commandRouter = {
@@ -48,10 +48,10 @@ exports.default = {
         };
         if (!commandRouter[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
-            const result = handler_1.village.villageWrongCommand(CMD1, user);
+            const result = handler_1.village.villageWrongCommand(CMD1, userCache);
             return socket_routes_1.socket.emit('print', result);
         }
-        const result = yield commandRouter[CMD1](CMD2, user, socket_routes_1.socket.id);
+        const result = yield commandRouter[CMD1](CMD2, userCache, socket_routes_1.socket.id);
         if (result.chat)
             socket_routes_1.socket.emit('enterChat', result.field);
         socket_routes_1.socket.emit('print', result);

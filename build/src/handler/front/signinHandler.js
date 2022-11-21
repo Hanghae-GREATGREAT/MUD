@@ -14,19 +14,19 @@ const models_1 = require("../../db/models");
 const cache_1 = require("../../db/cache");
 const scripts_1 = require("../../scripts");
 exports.default = {
-    signinUsername: (CMD, user) => {
+    signinUsername: (CMD, userCache) => {
         const script = scripts_1.signinScript.username;
         const field = 'sign:20';
-        return { script, user, field };
+        return { script, userCache, field };
     },
-    signinPassword: (CMD, user) => __awaiter(void 0, void 0, void 0, function* () {
-        user.username = CMD;
+    signinPassword: (CMD, userCache) => __awaiter(void 0, void 0, void 0, function* () {
+        userCache.username = CMD;
         const script = scripts_1.signinScript.password;
         const field = 'sign:21';
-        return { script, user, field };
+        return { script, userCache, field };
     }),
-    signinCheck: (CMD, user, id) => __awaiter(void 0, void 0, void 0, function* () {
-        const username = user.username;
+    signinCheck: (CMD, userCache, id) => __awaiter(void 0, void 0, void 0, function* () {
+        const username = userCache.username;
         const password = CMD;
         const result = yield services_1.UserService.signin({ username, password });
         const userId = (result === null || result === void 0 ? void 0 : result.userId) || 0;
@@ -40,10 +40,10 @@ exports.default = {
         yield cache_1.redis.set(id, data, { EX: 60 * 5 });
         if (character) {
             const characterSession = yield models_1.Characters.getSessionData(character);
-            user = Object.assign(user, characterSession);
+            userCache = Object.assign(userCache, characterSession);
         }
         const script = result ? scripts_1.signinScript.title : scripts_1.signinScript.incorrect;
         const field = result ? 'front' : 'sign:21';
-        return { script, user, field };
+        return { script, userCache, field };
     }),
 };

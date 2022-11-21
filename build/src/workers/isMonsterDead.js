@@ -9,17 +9,18 @@ const config_env_1 = __importDefault(require("../config.env"));
 class isMonsterDead {
     constructor() {
         this.threads = new Map();
-        this.check = (characterId, { autoToDeadReceive, skillToDeadReceive }) => {
-            console.log('isMonsterDead.ts: 12 >> 사망확인 check() 시작');
+        this.check = (userCache, { autoToDeadReceive, skillToDeadReceive }) => {
+            const { characterId } = userCache;
+            console.log('isMonsterDead.ts: 사망확인 check() 시작, ', characterId);
             const workerData = {
-                characterId,
+                userCache,
                 path: './isMonsterDead.worker.ts',
             };
             return new Promise((resolve, reject) => {
                 const worker = new worker_threads_1.Worker((0, path_1.join)(config_env_1.default.ROOT_PATH, 'src', 'workers', 'isMonsterDead.worker.js'), { workerData });
                 worker.postMessage({ autoToDeadReceive, skillToDeadReceive }, [autoToDeadReceive, skillToDeadReceive]);
                 this.threads.set(characterId, worker);
-                console.log('isMonsterDead.ts: 25 >> check() Promise', worker.threadId);
+                console.log('isMonsterDead.ts: check() Promise', worker.threadId, characterId);
                 worker.on('message', (result) => {
                     worker.terminate();
                     resolve(result);
@@ -28,7 +29,7 @@ class isMonsterDead {
                 // worker.on('messageerror', reject);
                 worker.on('error', reject);
                 worker.on('exit', (code) => {
-                    console.log(`isMonsterDead ${characterId} exitCode: ${code}`);
+                    console.log(`isMonsterDead ${characterId} exitCode: ${code}`, characterId);
                     this.threads.delete(characterId);
                 });
             });
@@ -43,14 +44,3 @@ class isMonsterDead {
     }
 }
 exports.default = new isMonsterDead();
-// const { dead } = await redis.hGetAll(characterId);
-//         // dead = 'moster'|'player'|undefined
-//         if (dead) {
-//             redis.hDelResetCache(characterId);
-//             const { autoAttackId } = battleCache.get(characterId)
-//             clearInterval(autoAttackId);
-//             battleCache.delete(characterId);
-//             const result = await whoIsDead[dead]('', newUser);
-//             socket.emit('print', result);
-//             return;
-//         }

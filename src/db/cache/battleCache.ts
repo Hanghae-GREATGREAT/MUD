@@ -15,7 +15,7 @@ class BattleCache {
         loopId: '',
         quit: false,
         dead: '',
-    }    
+    }
 
     // set = (key: string, data: BattleCache): void => {
     //     this.battleMap.set(key, data);
