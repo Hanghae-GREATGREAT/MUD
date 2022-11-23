@@ -1,12 +1,12 @@
-import { UserCache } from '../../interfaces/user';
-import { CharacterService, MonsterService } from '../../services';
-import { battleCache } from '../../db/cache';
 import { socket } from '../../socket.routes';
-import { battle, dungeon, village } from '..';
+import { battleCache } from '../../db/cache';
 import { Monsters } from '../../db/models';
+import { CharacterService, MonsterService } from '../../services';
+import { battle, dungeon, village } from '..';
+import { UserInfo, UserStatus } from '../../interfaces/user';
 
 export default {
-    adventureload: (CMD: string | undefined, userCache: UserCache) => {
+    adventureload: (CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript: string = '';
         const tempLine =
             '=======================================================================\n';
@@ -17,10 +17,11 @@ export default {
 
         const script = tempLine + tempScript;
         const field = 'adventureResult';
-        return { script, userCache, field };
+
+        socket.emit('print', { field, script, userInfo });
     },
 
-    adventureHelp: (CMD: string | undefined, userCache: UserCache) => {
+    adventureHelp: (CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript: string = '';
 
         tempScript += '명령어 : \n';
@@ -29,11 +30,12 @@ export default {
 
         const script = tempScript;
         const field = 'adventureResult';
-        return { script, userCache, field };
+        
+        socket.emit('print', { field, script, userInfo });
     },
     
-    autoResultMonsterDead: async(userCache: UserCache, script: string) => {
-        const { characterId } = userCache;
+    autoResultMonsterDead: async(userStatus: UserStatus, script: string) => {
+        const { characterId } = userStatus;
         console.log('battleCache, after DEAD', battleCache.get(characterId), characterId)
         const { monsterId, dungeonLevel } = battleCache.get(characterId);
         const monster = await MonsterService.findByPk(monsterId!);
@@ -42,36 +44,34 @@ export default {
         }
 
         const { name, exp } = monster;
-        const newUser = await CharacterService.addExp(characterId, exp);
+        const newStatus = await CharacterService.addExp(characterId, exp);
         script += `\n${name} 은(는) 쓰러졌다 ! => Exp + ${exp}\n`;
 
-        if (userCache.levelup) {
+        if (newStatus.levelup) {
             console.log('result.handler.ts: autoResultMonsterDead() >> levelup!!', characterId);
-            script += `\n==!! LEVEL UP !! 레벨이 ${userCache.level - 1} => ${
-                userCache.level
+            script += `\n==!! LEVEL UP !! 레벨이 ${newStatus.level - 1} => ${
+                newStatus.level
             } 올랐습니다 !! LEVEL UP !!==\n\n`;
         }
 
-        const result = { script, userCache: newUser, field: 'autoBattle' };
-        socket.emit('print', result);
+        const result = { script, userStatus: newStatus, field: 'autoBattle' };
+        socket.emit('printBattle', result);
 
         battleCache.delete(characterId);
         await MonsterService.destroyMonster(monsterId!, characterId);
         battleCache.set(characterId, { dungeonLevel });
 
-        battle.autoBattle('', newUser)
+        battle.autoBattle('', newStatus)
         return;
     },
 
-    autoResultPlayerDead: async(userCache: UserCache, script: string) => {
+    autoResultPlayerDead: async(userStatus: UserStatus, script: string) => {
 
-        const { script: newScript, field, userCache: newUser } = village.healInfo('', userCache);
+        socket.emit('printBattle', { field: 'dungeon', script, userStatus });
+        village.healInfo('');
         // field: dungeon , chat: true
 
-        const result = { script: script + newScript, userCache: newUser, field };
-        socket.emit('print', result);
-
-        const { characterId } = userCache;
+        const { characterId } = userStatus;
         const { monsterId } = battleCache.get(characterId);
         battleCache.delete(characterId);
         await MonsterService.destroyMonster(monsterId!, characterId);
@@ -80,46 +80,41 @@ export default {
 
     resultMonsterDead: async(monster: Monsters, script: string) => {
         const { characterId, name: monsterName, exp: monsterExp } = monster;
-        const userCache = await CharacterService.addExp(characterId, monsterExp!);
+        const userStatus = await CharacterService.addExp(characterId, monsterExp!);
         const field = 'encounter';
         script += `\n${monsterName} 은(는) 쓰러졌다 ! => Exp + ${monsterExp}\n`;
 
-        if (userCache.levelup) {
-            script += `\n==!! LEVEL UP !! 레벨이 ${userCache.level - 1} => ${
-                userCache.level
+        if (userStatus.levelup) {
+            script += `\n==!! LEVEL UP !! 레벨이 ${userStatus.level - 1} => ${
+                userStatus.level
             } 올랐습니다 !! LEVEL UP !!==\n\n`;
         }
 
-        // const result = { script, user, field };
-        // socket.emit('print', result);
-
-        // battleCache.delete(characterId);
-        return { script, userCache, field }
+        return { field, script, userStatus};
     },
 
-    resultPlayerDead: async(userCache: UserCache, script: string) => {
+    resultPlayerDead: async(userInfo: UserInfo, script: string) => {
 
-        const { script: newScript, field, userCache: newUser, chat } = await dungeon.getDungeonList('', userCache);
+        socket.emit('print', { field: 'dungeon', script, userInfo });
+        dungeon.getDungeonList('', userInfo);
         // field: dungeon , chat: true
 
-        const result = { script: script + newScript, userCache: newUser, field, chat };
-        socket.emit('print', result);
-
-        battleCache.delete(userCache.characterId);
+        battleCache.delete(userInfo.characterId);
         return;
     },
 
-    getDetail: async (CMD: string | undefined, userCache: UserCache) => {
+    getDetail: async (CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript: string = '';
         const tempLine =
             '=======================================================================\n';
 
         const script = tempLine + tempScript;
         const field = 'adventureResult';
-        return { script, userCache, field };
+        
+        socket.emit('print', { field, script, userInfo });
     },
 
-    returnVillage: async (CMD: string | undefined, userCache: UserCache) => {
+    returnVillage: async (CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript: string = '';
         const tempLine =
             '=======================================================================\n';
@@ -129,10 +124,11 @@ export default {
 
         const script = tempLine + tempScript;
         const field = 'dungeon';
-        return { script, userCache, field };
+        
+        socket.emit('print', { field, script, userInfo });
     },
 
-    adventureWrongCommand: (CMD: string | undefined, userCache: UserCache) => {
+    adventureWrongCommand: (CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript: string = '';
 
         tempScript += `입력값을 확인해주세요.\n`;
@@ -141,6 +137,6 @@ export default {
 
         const script = 'Error : \n' + tempScript;
         const field = 'encounter';
-        return { script, userCache, field };
+        socket.emit('print', { script, userInfo, field });
     },
 };

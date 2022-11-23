@@ -1,21 +1,23 @@
-import { UserCache } from '../../interfaces/user';
+import { socket } from '../../socket.routes';
 import { UserService, CharacterService } from '../../services';
 import { dungeonList } from '..';
-import { homeScript } from '../../scripts';
 import { NpcList } from '../village.handler';
+import { homeScript } from '../../scripts';
+import { UserInfo } from '../../interfaces/user';
 
 export default {
-    loadHome: (CMD: string | undefined, userCache: UserCache) => {
+    loadHome: (userInfo: UserInfo) => {
         console.log('LOAD HOME');
 
         const script = homeScript.loadHome;
         const field = 'front';
-        return { script, userCache, field };
+
+        socket.emit('print', { field, script, userInfo });
     },
 
-    checkUser: async (userCache: UserCache) => {
+    checkUser: async (userInfo: UserInfo) => {
         console.log('CHECK USER');
-        const { userId, characterId, name } = userCache;
+        const { userId, characterId, name } = userInfo;
         const character = await CharacterService.findOneByUserId(userId);
 
         // userSession으로 들어온 정보와 일치하는 캐릭터가 없을 때
@@ -26,43 +28,47 @@ export default {
         );
     },
 
-    signout: (CMD: string | undefined, userCache: UserCache, id: string) => {
+    signout: (CMD: string|undefined, userInfo: UserInfo, id: string) => {
         console.log('SIGN OUT');
 
-        UserService.signout(userCache.userId, id);
+        UserService.signout(userInfo.userId, id);
         const script = homeScript.signout + homeScript.loadHome;
         const field = 'front';
-        return { script, userCache, field };
+
+        socket.emit('print', { script, userInfo: {}, field });
     },
 
-    toVillage: (CMD: string | undefined, userCache: UserCache) => {
+    toVillage: (CMD: string|undefined, userInfo: UserInfo) => {
         console.log('TO VILLAGE');
 
-        const script = NpcList(userCache.name); // 마을 스크립트
+        const script = NpcList(userInfo.name); // 마을 스크립트
         const field = 'village';
-        return { script, userCache, field, chat: true };
+
+        socket.emit('print', { script, userInfo, field, chat: true });
     },
 
-    toDungeon: (CMD: string | undefined, userCache: UserCache) => {
+    toDungeon: (CMD: string|undefined, userInfo: UserInfo) => {
         console.log('TO DUNGEON');
 
-        const script = dungeonList(userCache.name);
+        const script = dungeonList(userInfo.name);
         const field = 'dungeon';
-        return { script, userCache, field, chat: true };
+
+        socket.emit('print', { script, userInfo, field, chat: true });
     },
 
-    emptyCommand: (CMD: string | undefined, userCache: UserCache) => {
+    emptyCommand: (CMD: string|undefined, userInfo: UserInfo) => {
         console.log('EMPTY COMMAND');
 
         const script = homeScript.wrongCommand;
         const field = 'front';
-        return { script, userCache, field };
+
+        socket.emit('print', { script, userInfo, field });
     },
 
-    deleteAccount: async (CMD: string | undefined, userCache: UserCache) => {
+    deleteAccount: async (CMD: string|undefined, userInfo: UserInfo) => {
         console.log('EMPTY COMMAND');
 
-        const { userId, characterId } = userCache;
+        const { userId, characterId } = userInfo;
         const result = await UserService.deleteUser(userId, characterId);
 
         const script =
@@ -70,22 +76,7 @@ export default {
                 ? homeScript.delete + homeScript.loadHome
                 : homeScript.deleteFail;
         const field = 'front';
-        return { script, userCache: emptySession, field };
+        
+        socket.emit('print', { script, userInfo: {}, field });
     },
-};
-
-const emptySession: UserCache = {
-    userId: 0,
-    username: '',
-    characterId: 0,
-    name: '',
-    level: 0,
-    attack: 0,
-    defense: 0,
-    maxhp: 0,
-    maxmp: 0,
-    hp: 0,
-    mp: 0,
-    exp: 0,
-    questId: 0,
 };

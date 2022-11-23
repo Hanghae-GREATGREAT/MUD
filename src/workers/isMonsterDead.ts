@@ -2,18 +2,18 @@ import { Worker, MessagePort } from 'worker_threads';
 import { join } from 'path';
 import env from '../config.env'
 import { AutoWorkerData, AutoWorkerResult, IsDeadReceiver } from '../interfaces/worker';
-import { UserCache } from '../interfaces/user';
+import { UserStatus } from '../interfaces/user';
 
 
 class isMonsterDead {
 
     private threads: Map<number, Worker> = new Map();
 
-    check = (userCache: UserCache, { autoToDeadReceive, skillToDeadReceive }: IsDeadReceiver): Promise<AutoWorkerResult> => {
-        const { characterId } = userCache;
+    check = (userStatus: UserStatus, { autoToDeadReceive, skillToDeadReceive }: IsDeadReceiver): Promise<AutoWorkerResult> => {
+        const { characterId } = userStatus;
         console.log('isMonsterDead.ts: 사망확인 check() 시작, ', characterId);
         const workerData: AutoWorkerData = { 
-            userCache,
+            userStatus,
             path: './isMonsterDead.worker.ts',
         };
 

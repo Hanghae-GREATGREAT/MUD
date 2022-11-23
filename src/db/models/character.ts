@@ -110,6 +110,17 @@ class Characters extends Model<
                 itemId: character.item!.split(':'),
             },
         });
+        const item = getItems.map((item: Items) => {
+            return { 
+                itemId: item.itemId,
+                npcId: item.npcId,
+                monsterId: item.monsterId,
+                name: item.name,
+                attack: item.attack,
+                defense: item.defense,
+                type: item.type,
+             }
+        })
         const getSkills = await Skills.findAll({
             where: {
                 skillId: character.skill!.split(':'),
@@ -126,8 +137,8 @@ class Characters extends Model<
             hp: Number(character.hp),
             mp: Number(character.mp),
             exp: Number(character.exp),
-            item: getItems.map((item) => item.get()),
-            skill: getSkills.map((skill) => skill.get()),
+            item: getItems.map((item: Items) => item.get()),
+            skill: getSkills.map((skill: Skills) => skill.get()),
         };
     }
 

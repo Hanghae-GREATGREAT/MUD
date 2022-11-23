@@ -2,18 +2,18 @@ import { Worker, MessagePort } from 'worker_threads';
 import { join } from 'path';
 import env from '../config.env'
 import { AutoWorkerData } from '../interfaces/worker';
-import { UserCache } from '../interfaces/user';
+import { UserStatus } from '../interfaces/user';
 
 
 class AutoAttackWorker {
 
     private threads: Map<number, Worker> = new Map();
 
-    start = (userCache: UserCache, autoToDead: MessagePort): Promise<void> => {
-        const { characterId } = userCache;
+    start = (userStatus: UserStatus, autoToDead: MessagePort): Promise<void> => {
+        const { characterId } = userStatus;
         console.log('autoAttack.ts: 기본공격반복 start() 시작, ', characterId);
         const workerData: AutoWorkerData = {
-            userCache,
+            userStatus,
             path: './autoAttack.worker.ts',
         }
 

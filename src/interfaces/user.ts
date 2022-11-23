@@ -1,3 +1,5 @@
+import { InferAttributes } from 'sequelize';
+import { Items, Skills } from '../db/models';
 
 
 interface SignupForm {
@@ -26,8 +28,40 @@ interface UserCache {
     isDead?: string;
 }
 
+interface UserStatus {
+    characterId: number;
+    username: string;
+    name: string;
+    job: string;
+    level: number;
+    attack: number;
+    defense: number;
+    maxhp: number;
+    maxmp: number;
+    hp: number;
+    mp: number;
+    exp: number;
+    item: InferAttributes<Items, { omit: never; }>[] // | string;
+    skill: InferAttributes<Skills, { omit: never; }>[] // | string;
+    // item: Items[];
+    // skill: Skills[];
+
+    cooldown?: number;
+    isDead?: string;
+    levelup?: boolean;
+}
+
+interface UserInfo {
+    userId: number;
+    username: string;
+    characterId: number;
+    name: string;
+}
+
 
 export {
     SignupForm,
     UserCache,
+    UserStatus,
+    UserInfo
 }

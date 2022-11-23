@@ -1,9 +1,9 @@
 import { MessagePort } from 'worker_threads'
-import { UserCache } from './user';
+import { UserStatus } from './user';
 
 export interface AutoWorkerData {
-    [key: string]: MessagePort|number|string|UserCache;
-    userCache: UserCache;
+    [key: string]: MessagePort|number|string|UserStatus;
+    userStatus: UserStatus;
     path: string;
 }
 

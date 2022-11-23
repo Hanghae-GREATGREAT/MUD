@@ -1,7 +1,7 @@
 import { Worker, MessagePort } from 'node:worker_threads';
 import { join } from 'path';
 import env from '../config.env';
-import { UserCache } from '../interfaces/user';
+import { UserStatus } from '../interfaces/user';
 import { AutoWorkerData } from '../interfaces/worker';
 
 
@@ -9,11 +9,11 @@ class SkillAttackWorker {
 
     private threads: Map<number, Worker> = new Map();
 
-    start = (userCache: UserCache, skillToDead: MessagePort): Promise<void> => {
-        const { characterId } = userCache;
+    start = (userStatus: UserStatus, skillToDead: MessagePort): Promise<void> => {
+        const { characterId } = userStatus;
         console.log('skillAttack.ts: 스킬반복 start() 시작, ', characterId);
         const workerData: AutoWorkerData = {
-            userCache,
+            userStatus,
             path: './skillAttack.worker.ts',
             
         }

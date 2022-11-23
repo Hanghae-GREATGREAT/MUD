@@ -1,9 +1,10 @@
-import { UserCache } from '../../interfaces/user';
+import { socket } from '../../socket.routes';
 import { NpcService } from '../../services';
+import { UserInfo, UserStatus } from '../../interfaces/user';
 
 
 export default {
-    healHelp: (CMD: string | undefined, userCache: UserCache) => {
+    healHelp: (CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript: string = '';
         const tempLine =
             '=======================================================================\n';
@@ -16,29 +17,29 @@ export default {
         const script = tempLine + tempScript;
         const field = 'heal';
 
-        return { script, userCache, field };
+        socket.emit('print', { script, userInfo, field });
     },
 
-    healTalk: async (CMD: string | undefined, userCache: UserCache) => {
+    healTalk: async (CMD: string | undefined, userInfo: UserInfo) => {
         const tempLine =
             '=======================================================================\n';
 
-        const NpcScript: string = NpcService.healTalkScript(userCache.name);
+        const NpcScript: string = NpcService.healTalkScript(userInfo.name);
 
         const script = tempLine + NpcScript;
         const field = 'heal';
 
-        return { script, userCache, field };
+        socket.emit('print', { script, userInfo, field });
     },
 
-    heal: async (CMD: string | undefined, userCache: UserCache) => {
+    heal: async (CMD: string | undefined, userInfo: UserInfo, userStatus: UserStatus) => {
         let tempScript: string = '';
         const tempLine =
             '=======================================================================\n\n';
 
         // db에서 Character HP/MP 수정
         const actionScript: string = await NpcService.healing(
-            Number(userCache.characterId),
+            Number(userInfo.characterId),
         );
 
         tempScript += actionScript;
@@ -47,16 +48,16 @@ export default {
         tempScript += '3 - 이전 단계로 돌아갑니다.\n';
 
         // 유저 스테이터스 업데이트
-        userCache.hp = userCache.maxhp;
-        userCache.mp = userCache.maxmp;
+        userStatus.hp = userStatus.maxhp;
+        userStatus.mp = userStatus.maxmp;
 
         const script = tempLine + tempScript;
         const field = 'heal';
 
-        return { script, userCache, field };
+        socket.emit('printBattle', { script, userInfo, userStatus, field });
     },
 
-    healWrongCommand: (CMD: string | undefined, userCache: UserCache) => {
+    healWrongCommand: (CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript: string = '';
 
         tempScript += `입력값을 확인해주세요.\n`;
@@ -65,6 +66,7 @@ export default {
 
         const script = 'Error : \n' + tempScript;
         const field = 'heal';
-        return { script, userCache, field };
+        
+        socket.emit('print', { script, userInfo, field });
     },
 };

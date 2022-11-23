@@ -1,6 +1,6 @@
 import { Characters, Fields, Titles, Users } from '../db/models';
 import { MonsterService } from '../services'
-import { UserCache } from '../interfaces/user';
+import { UserCache, UserStatus } from '../interfaces/user';
 
 
 class CharacterService {
@@ -23,14 +23,41 @@ class CharacterService {
         };
     }
 
+    /***************************************************************
+        UserStatus
+    ****************************************************************/
+    async getUserStatus(characterId: number|string): Promise<UserStatus|null> {
+        const character: Characters | null = await Characters.findOne({
+            where: { characterId: Number(characterId) },
+            include: [Users, Fields, Titles],
+        });
+        if (!character) return null;
+
+        const session = await Characters.getSessionData(character!);
+
+        return {
+            characterId: character.characterId,
+            username: character.User.username,
+            name: character.name,
+            job: character.job,
+            level: character.level,
+            attack: character.attack,
+            defense: character.defense,
+            maxhp: character.maxhp,
+            maxmp: character.maxmp,
+            hp: character.hp,
+            mp: character.mp,
+            exp: character.exp,
+            item: session!.item,
+            skill: session!.skill,
+        }
+    }
+
     async findOneByUserId(userId: number|string) {
         const result =  await Characters.findOne({
             where: { userId: Number(userId) }
         });
 
-        if (!result) {
-            return null;
-        }
         return result;
     }
 
@@ -101,21 +128,20 @@ class CharacterService {
     ****************************************************************/
     async refreshStatus(
         characterId: number|string, damage: number, cost: number, monsterId: number|string
-    ): Promise<UserCache> {
-        const result = await Characters.findOne({
-            where: { characterId: Number(characterId) },
-            include: Users,
-        });
+    ): Promise<UserStatus> {
+        const result = await this.getUserStatus(characterId);
         // const questId = await QuestCompletes.findOne()
         if (!result) throw new Error('존재하지 않는 캐릭터');
 
-        const { hp, mp } = result.get();
+        const { hp, mp } = result;
         const newHp = hp - damage;
         const newMp = mp - cost > 0 ? mp - cost : 0;
         
         let isDead = '';
         if (newHp > 0) {
-            result.update({ hp: newHp, mp: newMp });
+            Characters.update({ hp: newHp, mp: newMp }, {
+                where: { characterId }
+            });
             isDead = 'alive';
         } else {
             // MonsterService.destroyMonster(monsterId, characterId);
@@ -123,10 +149,7 @@ class CharacterService {
         }
 
         return {
-            ...result.get()!,
-            userId: result.User.getDataValue('userId'),
-            username: result.User.getDataValue('username'),
-            questId: 1,
+            ...result,
             hp: newHp,
             mp: newMp,
             isDead,
@@ -137,29 +160,28 @@ class CharacterService {
     /***************************************************************
         전투 종료 경험치&레벨 계산
     ****************************************************************/
-    async addExp(characterId: number|string, exp: number): Promise<UserCache> {
-        const result = await Characters.findOne({
-            where: { characterId: Number(characterId) },
-            include: Users,
-        });
-        if (!result) throw new Error('존재하지 않는 캐릭터');
+    async addExp(characterId: number|string, exp: number): Promise<UserStatus> {
+        const status = await this.getUserStatus(characterId);
+        if (!status) throw new Error('존재하지 않는 캐릭터');
 
-        const reHp = result.hp + result.maxhp*0.05;
-        const reMp = result.hp + result.maxmp*0.2;
-        await result.update({ 
-            exp: result.exp + exp, 
-            hp: result.maxhp > reHp ? reHp : result.maxhp, 
-            mp: result.maxmp > reMp ? reMp : result.maxmp, 
+        const reHp = status.hp + status.maxhp*0.05;
+        const reMp = status.hp + status.maxmp*0.2;
+        Characters.update({ 
+            exp: status.exp + exp, 
+            hp: status.maxhp > reHp ? reHp : status.maxhp, 
+            mp: status.maxmp > reMp ? reMp : status.maxmp, 
+        }, {
+            where: { characterId }
         });
 
         const level = Characters.levelCalc(
-            result.get('exp') + exp,
-            result.get('level'),
+            status.exp + exp,
+            status.level,
         );
         let levelup = false;
-        if (level > result.get('level')) {
+        if (level > status.level) {
             levelup = true;
-            await result.update({
+            Characters.update({
                 level,
                 maxhp: 100 * level,
                 maxmp: 100 * level,
@@ -167,17 +189,15 @@ class CharacterService {
                 mp: 100 * level,
                 attack: 10 + level,
                 defense: 10 + level,
+            }, {
+                where: { characterId }
             });
         }
 
-        // const character = await Characters.getSessionData(result);
         return {
-            ...result.get()!,
-            userId: result.User.getDataValue('userId')!,
-            username: result.User.getDataValue('username')!,
+            ...status,
             levelup,
-            questId: 1,
-            exp: result.get('exp') + exp,
+            exp: status.exp + exp,
         };
     }
 

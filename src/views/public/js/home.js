@@ -1,37 +1,61 @@
+
+
 const server = io.connect('/', { transports: ['websocket'] });
+const BE_URL = 'http://127.0.0.1:8080'
 
 
 const commandLine = $('.commendLine');
 const commendInput = $('#commendInput');
 const commendForm = $('.commendInput');
-const userInfo = $('#userInfo');
 const chatInput = $('#chatInput');
 const chatBoxId = $('#chatBox');
 const chatForm = $('.chatForm')
 
+
+const status = new State();
+
 $(async() => {
     chatBoxId.empty();
-    userInfo.empty();
     commandLine.empty();
 
-    const { field, userCache } = await checkStorage();
-    loadScript(field, userCache);
-    statusLoader(JSON.parse(userCache));
+    const { field, userInfo } = await checkSession();
+    console.log(field, userInfo);
+    loadScript(field, userInfo);
 });
 
-function checkStorage() {
+async function checkSession() {
+    console.log('refreshed...checking session')
     let field = localStorage.getItem('field');
-    let userCache = localStorage.getItem('user');
-    if (!field || !field.match(/dungeon|village/) || !userCache || userCache==='{}') {
-        field = 'none';
-        userCache = '{}';
-    }
+    let userInfo = localStorage.getItem('user');
 
-    return new Promise((resolve, reject) => resolve({ field, userCache }));
+    if (!field || !field.match(/dungeon|village/) || !userInfo || userInfo==='{}') {
+        console.log('invalid session');
+        status.set({});
+        field = 'none';
+        userInfo = '{}';
+
+        return { field, userInfo };
+    }
+    console.log('valid session found');
+    const { characterId } = JSON.parse(userInfo);
+    const res = await fetch(`/api/userStatus/${characterId}`);
+    const { userStatus } = await res.json();
+    status.set(userStatus);
+
+    console.log('status loaded: ', userStatus);
+
+    return { field, userInfo };
 }
 
-function checkValidation(userCache) {
-    server.emit('none', { line: 'CHECK', userCache });
+function loadScript(field, userInfo) {
+    if (field === 'none' || userInfo === '{}') {
+        return server.emit('none', { line: 'LOAD', userInfo: {} });
+    }
+    server.emit('dungeon', { line: 'LOAD', userInfo: JSON.parse(userInfo) });
+}
+
+function checkValidation(userInfo) {
+    server.emit('none', { line: 'CHECK', userInfo });
 }
 
 
@@ -39,41 +63,13 @@ function checkValidation(userCache) {
                                 커맨드 스크립트
 ******************************************************************************/
 
-function loadScript(field, userCache) {
-    if (field === 'none' || userCache === '{}') {
-        return server.emit('none', { line: 'LOAD', userCache: {} });
-    }
-    server.emit('dungeon', { line: 'LOAD', userCache: JSON.parse(userCache) });
-}
-
 commendForm.submit((e) => {
     e.preventDefault();
-    const line = commendInput.val();
-    commendInput.val('');
-
-    /**
-     * field = front | home | village | dungeon | battle | ...
-     */
     const [field, option] = localStorage.getItem('field').split(':');
-    const userCache = localStorage.getItem('user');
     // field = line ? 'field' : 'global'    글로벌 명령어 판별
 
-    switch (field) {
-        case 'action':
-            const cooldown = localStorage.getItem('cooldown');
-            if (checkSkillCD(+cooldown)) {
-                const script = '아직 스킬이 준비되지 않았습니다.\n'
-                commandLine.append(script);
-                commandLine.scrollTop(Number.MAX_SAFE_INTEGER);
-                return;
-            }
-            server.emit(field, { line, userCache: JSON.parse(userCache), option });
-            break;
-        case 'global':
-            break;
-        default:
-            server.emit(field, { line, userCache: JSON.parse(userCache), option });
-    }
+    if (!Object.hasOwn(commandRouter, field)) gerneralSend(field, option);
+    commandRouter[field](field, option);
 });
 
 function checkSkillCD(cooldown) {
@@ -82,66 +78,40 @@ function checkSkillCD(cooldown) {
 
 server.on('print', printHandler);
 
-function printHandler({ script, userCache, field }) {
-    localStorage.setItem('user', JSON.stringify(userCache));
+function printHandler({ field, script, userInfo }) {
     localStorage.setItem('field', field);
+    if (userInfo) localStorage.setItem('user', JSON.stringify(userInfo));
 
     commandLine.append(script);
     commandLine.scrollTop(Number.MAX_SAFE_INTEGER);
-    statusLoader(userCache);
 }
 
 server.on('printBattle', printBattleHandler);
 
-function printBattleHandler({ script, userCache, field, cooldown }) {
-    localStorage.setItem('user', JSON.stringify(userCache));
+function printBattleHandler({ field, script, userInfo, userStatus }) {
+    console.log('printBattle', field, userInfo)
     localStorage.setItem('field', field);
-    if (cooldown) localStorage.setItem('cooldown', cooldown);
+    if (userInfo) localStorage.setItem('user', JSON.stringify(userInfo));    
+    if (userStatus) {
+        console.log('printBattle received status ', userStatus);
+        status.set(userStatus);
+    }
 
     commandLine.append(script);
     commandLine.scrollTop(Number.MAX_SAFE_INTEGER);
-    statusLoader(userCache);
 }
 
 server.on('signout', signoutHandler);
 
-async function signoutHandler({ script }) {
-    localStorage.clear();
+async function signoutHandler({ field, script, userInfo }) {
+    localStorage.setItem('user', JSON.stringify(userInfo));
+    localStorage.setItem('field', field);
 
     commandLine.append(script);
     commandLine.scrollTop(Number.MAX_SAFE_INTEGER);
 
-    const { field, userCache } = await checkStorage();
-    console.log(field, userCache);
-    loadScript(field, userCache);
+    loadScript(field, userInfo);
 }
-
-const statusLoader = ({ username, name, level, maxhp, maxmp, hp, mp, exp }) => {
-    userInfo.empty();
-
-    if (localStorage.getItem('field') === 'none' || username === undefined || name === undefined) {
-            const status = `
-        <div class="infoName">
-            <span>로그인을 해주세요</span>
-        </div>
-        `;
-        return userInfo.append(status);;
-    }
-    const status = `
-    <div class="infoName">
-        <span>${name} / Lv. ${level}</span><span class="exp">경험치: ${exp}</span>
-    </div>
-    <div class="infoSub">
-        <div class="infoUser"><span>${username}</span></div>
-        <div class="infoStatus">
-            <span>체력: ${maxhp}/${hp}</span>
-            <span>마나: ${maxmp}/${mp}</span>    
-        </div>
-    </div>
-    `;
-    userInfo.append(status);
-};
-
 
 
 
@@ -177,8 +147,8 @@ chatForm.submit((e) => {
     const field = localStorage.getItem('field').split(':')[0];
     if (!field.match(/dungeon|village/)) return chatInput.val('');
     
-    const userCache = localStorage.getItem('user');
-    const { name } = JSON.parse(userCache);
+    const userInfo = localStorage.getItem('user');
+    const { name } = JSON.parse(userInfo);
     const data = {
         name,
         message: chatInput.val(),

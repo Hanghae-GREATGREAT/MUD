@@ -4,7 +4,7 @@ import { CharacterService, MonsterService, BattleService } from '../services'
 import { battleCache } from '../db/cache';
 import { Skills } from '../db/models';
 import { AutoWorkerData, AutoWorkerResult } from '../interfaces/worker';
-import { UserCache } from '../interfaces/user';
+import { UserStatus } from '../interfaces/user';
 
 
 console.log('skillAttack.worker.ts: 11 >> 스킬공격 워커 모듈 동작')
@@ -14,9 +14,9 @@ parentPort?.once('message', ({ skillToDead }) => {
 });
 
 
-function skillAttackWorker({ userCache }: AutoWorkerData, skillToDead: MessagePort) {
+function skillAttackWorker({ userStatus }: AutoWorkerData, skillToDead: MessagePort) {
     
-    const { characterId } = userCache;
+    const { characterId } = userStatus;
     console.log('skillAttack.worker.ts: 20 >> skillAttackWorker start', characterId);
 
     const cache = getEnvironmentData(characterId);
@@ -30,7 +30,7 @@ function skillAttackWorker({ userCache }: AutoWorkerData, skillToDead: MessagePo
         if (chance < 0.5) return console.log('STOP');
         console.log('GO')
 
-        autoBattleSkill(userCache).then(({ status, script }: AutoWorkerResult) => {
+        autoBattleSkill(userStatus).then(({ status, script }: AutoWorkerResult) => {
             console.log('skillAttack.worker.ts: autoBattleSkill resolved', status);
 
             const statusHandler = {
@@ -48,14 +48,13 @@ function skillAttackWorker({ userCache }: AutoWorkerData, skillToDead: MessagePo
 }
 
 
-async function autoBattleSkill(userCache: UserCache): Promise<AutoWorkerResult> {
+async function autoBattleSkill(userStatus: UserStatus): Promise<AutoWorkerResult> {
     console.log('skillAttack.worker.ts >> autoBattleSkill(): 시작')
-    const { characterId, mp, attack } = userCache
+    const { characterId, mp, attack, skill } = userStatus
     let field = 'autoBattle';
     let tempScript = '';
 
     // 스킬 정보 가져오기 & 사용할 스킬 선택 (cost 반비례 확률)
-    const { skill } = await CharacterService.findByPk(characterId);
     const selectedSkill = skillSelector(skill);
     const { name: skillName, cost: skillCost, multiple } = selectedSkill;
 
@@ -80,7 +79,7 @@ async function autoBattleSkill(userCache: UserCache): Promise<AutoWorkerResult> 
         (attack * multiple) / 100,
     );
     const realDamage: number = BattleService.hitStrength(playerSkillDamage);
-    userCache = await CharacterService.refreshStatus(characterId, 0, skillCost, monsterId);
+    userStatus = await CharacterService.refreshStatus(characterId, 0, skillCost, monsterId);
 
     // 몬스터에게 스킬 데미지 적중
     const isDead = await MonsterService.refreshStatus(monsterId, realDamage, characterId);

@@ -1,11 +1,11 @@
-import { UserCache } from '../../interfaces/user';
-import { CharacterService, MonsterService } from '../../services';
+import { socket } from '../../socket.routes';
 import { battleCache } from '../../db/cache';
-import { ReturnScript } from '../../interfaces/socket';
+import { CharacterService, MonsterService } from '../../services';
+import { UserInfo } from '../../interfaces/user';
 
 
 export default {
-    ehelp: (CMD: string | undefined, userCache: UserCache) => {
+    ehelp: (CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript: string = '';
 
         tempScript += '명령어 : \n';
@@ -17,12 +17,12 @@ export default {
 
         const script = tempScript;
         const field = 'encounter';
-        return { script, userCache, field };
+        socket.emit('print', { script, userInfo, field });
     },
 
-    encounter: async (CMD: string | undefined, userCache: UserCache): Promise<ReturnScript> => {
+    encounter: async (CMD: string | undefined, userInfo: UserInfo) => {
         // 던전 진행상황 불러오기
-        const { characterId } = userCache;
+        const { characterId } = userInfo;
         const { dungeonLevel } = battleCache.get(characterId);
 
         let tempScript: string = '';
@@ -41,12 +41,12 @@ export default {
         const script = tempLine + tempScript;
         const field = 'encounter';
 
-        return { script, userCache, field };
+        socket.emit('printBattle', { script, userInfo, field });
     },
 
-    reEncounter: async (CMD: string, userCache: UserCache): Promise<ReturnScript> => {
+    reEncounter: async (CMD: string, userInfo: UserInfo) => {
         // 던전 진행상황 불러오기
-        const { characterId } = userCache;
+        const { characterId } = userInfo;
         const { dungeonLevel } = battleCache.get(characterId);
 
         let tempScript: string = '';
@@ -64,11 +64,12 @@ export default {
 
         const script = tempLine + tempScript;
         const field = 'encounter';
-        userCache = await CharacterService.addExp(characterId, 0);
-        return { script, userCache, field };
+        const userStatus = await CharacterService.addExp(characterId, 0);
+
+        socket.emit('printBattle', { field, script, userInfo, userStatus });
     },
 
-    ewrongCommand: (CMD: string | undefined, userCache: UserCache) => {
+    ewrongCommand: (CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript: string = '';
 
         tempScript += `입력값을 확인해주세요.\n`;
@@ -77,7 +78,7 @@ export default {
 
         const script = 'Error : \n' + tempScript;
         const field = 'encounter';
-        return { script, userCache, field };
+        socket.emit('print', { script, userInfo, field });
     },
 
 };

@@ -4,9 +4,9 @@ import autoAttack from './autoAttack';
 import skillAttack from './skillAttack';
 
 
-const { userCache } = workerData;
+const { userStatus } = workerData;
 parentPort?.once('message', (receiver: IsDeadReceiver) => {
-    const { characterId } = userCache;
+    const { characterId } = userStatus;
     console.log('isMonsterDead.worker.ts: 사망 확인 모듈 동작, ', characterId);
     isMonsterDead(characterId, receiver);
 });

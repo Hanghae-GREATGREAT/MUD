@@ -1,71 +1,60 @@
 import { socket } from '../socket.routes';
 import { battle, dungeon } from '../handler';
-import { LineInput, CommandRouter } from '../interfaces/socket';
+import { SocketInput, CommandHandler } from '../interfaces/socket';
 import { battleCache } from '../db/cache';
 
 export default {
 
-    battleController: async ({ line, userCache }: LineInput) => {
+    battleController: async ({ line, userInfo, userStatus }: SocketInput) => {
+        console.log('battle.controller.ts: battleController', userStatus);
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
-        console.log('socketon battle');
 
         if (CMD1 === '자동1') {
-            console.log('battle.controller.ts: 26 >> 자동 분기점');
-            battle.autoBattle(CMD2, userCache);
+            console.log('battle.controller.ts: 자동 분기점');
+            battle.autoBattle(CMD2, userStatus);
             return;
         }
-        const commandRouter: CommandRouter = {
-            도움말: battle.help,
-            수동: battle.encounter,
-            자동: battle.autoBattleOld,
-            돌: dungeon.getDungeonList,
+        const commandHandler: CommandHandler = {
+            '도움말': battle.help,
+            '수동': battle.encounter,
+            '자동': battle.autoBattleOld,
+            '돌': dungeon.getDungeonList,
         };
 
-        if (!commandRouter[CMD1]) {
+        if (!commandHandler[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
-            const result = battle.wrongCommand(CMD1, userCache);
+            const result = battle.wrongCommand(CMD1, userInfo);
             return socket.emit('print', result);
         }
 
-        const result = await commandRouter[CMD1](CMD2, userCache);
-        socket.emit('print', result);
+        commandHandler[CMD1](CMD2, userInfo, userStatus);
     },
 
-    encounterController: async ({ line, userCache }: LineInput) => {
-        const [CMD1, CMD2]: string[] = line.trim().split(' ');
-        console.log('socketon enccounter');
+    encounterController: async ({ line, userInfo, userStatus }: SocketInput) => {
+        const [CMD1, CMD2]: string[] = line.trim().toUpperCase().split(' ');
 
-        const commandRouter: CommandRouter = {
-            load: battle.encounter,
-            도움말: battle.ehelp,
-            공격: battle.attack,
-            도망: battle.quitBattle,
+        const commandHandler: CommandHandler = {
+            'LOAD': battle.encounter,
+            '도움말': battle.ehelp,
+            '공격': battle.attack,
+            '도망': battle.quitBattle,
         };
-        if (!commandRouter[CMD1]) {
+        if (!commandHandler[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
-            const result = battle.wrongCommand(CMD1, userCache);
+            const result = battle.wrongCommand(CMD1, userInfo);
             return socket.emit('print', result);
         }
 
-        let result = await commandRouter[CMD1](CMD2, userCache);
-        const target = result!.field === 'action' ? 'printBattle' : 'print';
-        socket.emit(target, result);
+        commandHandler[CMD1](CMD2, userInfo, userStatus);
     },
 
-    actionController: async({ line, userCache, option }: LineInput) => {
+    actionController: async({ line, userInfo, userStatus, option }: SocketInput) => {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
-        const { characterId } = userCache;
+        const { characterId } = userInfo;
 
-        if (CMD1 === '중단') {
-            const result = await battle.quitAutoBattle('', userCache);
-            const field = result.field === 'action' ? 'printBattle' : 'print';
-            socket.emit(field, result);
-        }
+        if (CMD1 === '중단') battle.quitAutoBattle('', userInfo);
         
-        const result = await battle.actionSkill(CMD1, userCache);
-        if (Object.hasOwn(result, 'error')) {
-            return socket.emit('print', result);
-        }
+        await battle.actionSkill(CMD1, userInfo, userStatus);
 
         const {  autoAttackTimer, dungeonLevel, dead } = battleCache.get(characterId);
         if (dead) {
@@ -73,52 +62,41 @@ export default {
             battleCache.delete(characterId);
             battleCache.set(characterId, { dungeonLevel });
 
-            const deadResult = await battle.reEncounter('', result.userCache);
-            deadResult.script = result.script + deadResult.script;
-            socket.emit('print', deadResult);
-            
+            battle.reEncounter('', userInfo);
             return;
         }        
-
-        result.cooldown = Date.now();
-        return socket.emit('printBattle', result);
     },
 
-    autoBattleController: async ({ line, userCache }: LineInput) => {
+    autoBattleController: async ({ line, userInfo }: SocketInput) => {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
         console.log('socketon enccounter');
 
-        const commandRouter: CommandRouter = {
-            도움말: battle.autoBattleHelp,
-            중단: battle.quitAutoBattle,
+        const commandHandler: CommandHandler = {
+            '도움말': battle.autoBattleHelp,
+            '중단': battle.quitAutoBattle,
         };
-        if (!commandRouter[CMD1]) {
+        if (!commandHandler[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
-            const result = await commandRouter['도움말'](CMD1, userCache);
+            const result = await commandHandler['도움말'](CMD1, userInfo);
             return socket.emit('print', result);
         }
 
-        let result = await commandRouter[CMD1](CMD2, userCache);
-        const target = result!.field === 'action' ? 'printBattle' : 'print';
-        socket.emit(target, result);
+        let result = await commandHandler[CMD1](CMD2, userInfo);
     },
 
-    resultController: async ({ line, userCache }: LineInput) => {
-        const [CMD1, CMD2]: string[] = line.trim().split(' ');
+    resultController: async ({ line, userInfo }: SocketInput) => {
+        const [CMD1, CMD2]: string[] = line.trim().toUpperCase().split(' ');
 
-        const commandRouter: CommandRouter = {
-            load: battle.adventureload,
-            확인: battle.getDetail,
-            마을: battle.returnVillage,
+        const commandHandler: CommandHandler = {
+            'LOAD': battle.adventureload,
+            '확인': battle.getDetail,
+            '마을': battle.returnVillage,
         };
 
-        if (!commandRouter[CMD1]) {
+        if (!commandHandler[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
-            const result = battle.adventureWrongCommand(CMD1, userCache);
-            return socket.emit('print', result);
+            battle.adventureWrongCommand(CMD1, userInfo);
         }
-
-        const result = await commandRouter[CMD1](CMD2, userCache);
-        socket.emit('print', result);
+        commandHandler[CMD1](CMD2, userInfo);
     }
 }

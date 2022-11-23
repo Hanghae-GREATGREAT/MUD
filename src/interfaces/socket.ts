@@ -1,4 +1,4 @@
-import { UserCache } from './user';
+import { UserCache, UserInfo, UserStatus } from './user';
 
 interface LineInput {
     line: string;
@@ -8,21 +8,21 @@ interface LineInput {
 
 interface ReturnScript {
     script: string;
-    userCache: UserCache;
     field: string;
+    userCache: UserCache;
     chat?: boolean;
     cooldown?: number;
     error?: boolean | Error;
 }
 
-type commandHandler = (
+type commandHandlerOld = (
     CMD: string,
     userCache: UserCache,
     ...args: any[]
 ) => ReturnScript | Promise<ReturnScript>;
 
 interface CommandRouter {
-    [key: string]: commandHandler;
+    [key: string]: commandHandlerOld;
 }
 
 type commandHandlerP = (
@@ -36,7 +36,7 @@ interface CommandRouterP {
 }
 
 
-type BattleReport = (user: UserCache, script: string) => Promise<void>
+type BattleReport = (user: UserStatus, script: string) => Promise<void>
 
 interface BattleResult {
     [key: string]: BattleReport;
@@ -52,6 +52,25 @@ interface ChatOutput {
     output: string;
 }
 
+
+interface SocketInput {
+    line: string;
+    userInfo: UserInfo;
+    userStatus: UserStatus;
+    option: string | undefined;
+}
+
+type commandHandler = (
+    CMD: string,
+    // userInfo?: UserInfo,
+    // UserStatus?: UserStatus,
+    ...args: any[]
+) => void | Promise<void>;
+
+interface CommandHandler {
+    [key: string]: commandHandler;
+}
+
 export {
     LineInput,
     ReturnScript,
@@ -60,4 +79,6 @@ export {
     BattleResult,
     ChatInput,
     ChatOutput,
+    CommandHandler,
+    SocketInput,
 };

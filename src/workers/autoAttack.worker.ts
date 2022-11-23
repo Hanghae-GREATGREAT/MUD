@@ -3,19 +3,19 @@ import associate from '../db/config/associate';
 import { CharacterService, MonsterService, BattleService } from '../services'
 import { battleCache } from '../db/cache';
 import { AutoWorkerData, AutoWorkerResult } from '../interfaces/worker';
-import { UserCache } from '../interfaces/user';
+import { UserStatus } from '../interfaces/user';
 
 
-console.log('autoAttack.worker.ts: 9 >> 자동공격 워커 모듈 동작, ', workerData.userCache.characterId)
+console.log('autoAttack.worker.ts: 9 >> 자동공격 워커 모듈 동작, ', workerData.userStatus.characterId)
 associate();
 parentPort?.once('message', ({ autoToDead }) => {
     autoAttackWorker(workerData, autoToDead);
 });
 
 
-function autoAttackWorker({ userCache }: AutoWorkerData, autoToDead: MessagePort) {    
+function autoAttackWorker({ userStatus }: AutoWorkerData, autoToDead: MessagePort) {    
 
-    const { characterId } = userCache;
+    const { characterId } = userStatus;
     console.log('autoAttack.worker.ts: 18 >> autoAttackWorker() 시작', characterId);
 
     const cache = getEnvironmentData(characterId);
@@ -27,7 +27,7 @@ function autoAttackWorker({ userCache }: AutoWorkerData, autoToDead: MessagePort
         console.log('autoAttack.worker.ts: START INTERVAL', Date.now(), characterId)
         battleCache.set(characterId, { autoAttackTimer });
 
-        autoAttack(userCache).then(({ status, script }: AutoWorkerResult) => {
+        autoAttack(userStatus).then(({ status, script }: AutoWorkerResult) => {
             console.log('autoAttack.worker.ts: 38 >> autoAttack result: ', status, characterId);
 
             const statusHandler = {
@@ -47,8 +47,8 @@ function autoAttackWorker({ userCache }: AutoWorkerData, autoToDead: MessagePort
 }
 
 
-async function autoAttack(userCache: UserCache): Promise<AutoWorkerResult> {
-    const { characterId, attack } = userCache;
+async function autoAttack(userStatus: UserStatus): Promise<AutoWorkerResult> {
+    const { characterId, attack } = userStatus;
     console.log('autoAttack.worker.ts: 50 >> autoAttack() 시작', characterId);
     let tempScript: string = '';
     const { autoAttackTimer, monsterId } = battleCache.get(characterId);

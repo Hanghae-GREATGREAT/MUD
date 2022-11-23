@@ -1,10 +1,11 @@
-import { UserCache } from '../interfaces/user';
+import { socket } from '../socket.routes';
 import { front } from '../handler';
 import { homeScript } from '../scripts';
+import { UserInfo } from '../interfaces/user';
 
 
 export default {
-    villagehelp: (CMD: string | undefined, userCache: UserCache) => {
+    villagehelp: (CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript = '';
 
         tempScript += '명령어 : \n';
@@ -14,17 +15,18 @@ export default {
 
         const script = tempScript;
         const field = 'village';
-        return { script, userCache, field };
+
+        socket.emit('print', { script, userInfo, field });
     },
 
-    NpcList: async (CMD: string | undefined, userCache: UserCache) => {
+    NpcList: async (CMD: string | undefined, userInfo: UserInfo) => {
         console.log('NPC list.');
         // 유저 인증정보 확인
-        const result = await front.checkUser(userCache);
+        const result = await front.checkUser(userInfo);
         if (result) {
             const script = homeScript.loadHome;
             const field = 'front';
-            return { script, userCache, field };
+            socket.emit('print', { field, script, userInfo });
         }
         // 임시 스크립트 선언
         const tempLine =
@@ -38,10 +40,11 @@ export default {
 
         const script = tempLine + tempScript;
         const field = 'village';
-        return { script, userCache, field, chat: true };
+        
+        socket.emit('print', { field, script, userInfo, chat: true });
     },
 
-    storyInfo: (CMD: string | undefined, userCache: UserCache) => {
+    storyInfo: (CMD: string | undefined, userInfo: UserInfo) => {
         // 임시 스크립트 선언
         const tempLine =
             '=======================================================================\n';
@@ -55,10 +58,11 @@ export default {
 
         const script = tempLine + tempScript;
         const field = 'story';
-        return { script, userCache, field };
+        
+        socket.emit('print', { script, userInfo, field });
     },
 
-    healInfo: (CMD: string | undefined, userCache: UserCache) => {
+    healInfo: (CMD: string | undefined) => {
         // 임시 스크립트 선언
         const tempLine =
             '=======================================================================\n';
@@ -72,10 +76,11 @@ export default {
 
         const script = tempLine + tempScript;
         const field = 'heal';
-        return { script, userCache, field };
+        
+        socket.emit('print', { script, field });
     },
 
-    enhanceInfo: (CMD: string | undefined, userCache: UserCache) => {
+    enhanceInfo: (CMD: string | undefined, userInfo: UserInfo) => {
         // 임시 스크립트 선언
         const tempLine =
             '=======================================================================\n';
@@ -89,10 +94,11 @@ export default {
 
         const script = tempLine + tempScript;
         const field = 'enhance';
-        return { script, userCache, field };
+        
+        socket.emit('print', { script, userInfo, field });
     },
 
-    gambleInfo: (CMD: string | undefined, userCache: UserCache) => {
+    gambleInfo: (CMD: string | undefined, userInfo: UserInfo) => {
         // 임시 스크립트 선언
         const tempLine =
             '=======================================================================\n';
@@ -106,10 +112,11 @@ export default {
 
         const script = tempLine + tempScript;
         const field = 'gamble';
-        return { script, userCache, field };
+        
+        socket.emit('print', { script, userInfo, field });
     },
 
-    villageWrongCommand: (CMD: string | undefined, userCache: UserCache) => {
+    villageWrongCommand: (CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript: string = '';
 
         tempScript += `입력값을 확인해주세요.\n`;
@@ -118,7 +125,8 @@ export default {
 
         const script = 'Error : \n' + tempScript;
         const field = 'village';
-        return { script, userCache, field };
+        
+        socket.emit('print', { script, userInfo, field });
     },
 };
 

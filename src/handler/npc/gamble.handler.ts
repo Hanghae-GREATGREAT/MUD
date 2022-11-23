@@ -1,9 +1,10 @@
-import { UserCache } from '../../interfaces/user';
+import { socket } from '../../socket.routes';
 import { NpcService } from '../../services';
+import { UserInfo } from '../../interfaces/user';
 
 
 export default {
-    gambleHelp: (CMD: string | undefined, userCache: UserCache) => {
+    gambleHelp: (CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript: string = '';
         const tempLine =
             '=======================================================================\n';
@@ -16,28 +17,28 @@ export default {
         const script = tempLine + tempScript;
         const field = 'gamble';
 
-        return { script, userCache, field };
+        socket.emit('print', { script, userInfo, field });
     },
 
-    gambleTalk: async (CMD: string | undefined, userCache: UserCache) => {
+    gambleTalk: async (CMD: string | undefined, userInfo: UserInfo) => {
         const tempLine =
             '=======================================================================\n';
 
-        const NpcScript: string = NpcService.gambleTalkScript(userCache.name);
+        const NpcScript: string = NpcService.gambleTalkScript(userInfo.name);
 
         const script = tempLine + NpcScript;
         const field = 'gamble';
 
-        return { script, userCache, field };
+        socket.emit('print', { script, userInfo, field });
     },
 
-    gamble: async (CMD: string | undefined, userCache: UserCache) => {
+    gamble: async (CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript: string = '';
         const tempLine =
             '=======================================================================\n';
 
         const actionScript: string = await NpcService.gamble(
-            Number(userCache.characterId),
+            Number(userInfo.characterId),
         );
         tempScript += actionScript;
         tempScript += '1 - 에트나와 대화합니다.\n';
@@ -47,10 +48,10 @@ export default {
         const script = tempLine + tempScript;
         const field = 'gamble';
 
-        return { script, userCache, field };
+        socket.emit('print', { script, userInfo, field });
     },
 
-    gambleWrongCommand: (CMD: string | undefined, userCache: UserCache) => {
+    gambleWrongCommand: (CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript: string = '';
 
         tempScript += `입력값을 확인해주세요.\n`;
@@ -59,6 +60,6 @@ export default {
 
         const script = 'Error : \n' + tempScript;
         const field = 'gamble';
-        return { script, userCache, field };
+        socket.emit('print', { script, userInfo, field });
     },
 };
