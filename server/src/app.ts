@@ -4,13 +4,10 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import onConnection from './socket.routes';
 
-import path from 'path';
-import ejs from 'ejs';
 import sequelize from './db/config/connection';
 import associate from './db/config/associate';
 
 import apiRouter from './api.routes';
-import pageRouter from './page.routes';
 import error from './middlewares/errorhandlers';
 
 
@@ -41,15 +38,17 @@ if (env.NODE_ENV !== 'test') {
 }
 
 
-app.set('views', path.join(__dirname, 'views'));
-app.engine('html', ejs.renderFile);
-app.set('view engine', 'ejs');
-app.use(express.static('public'));
-
-app.use(express.static(path.join(__dirname, 'views' , 'public')));
 app.use(express.json());
 
-app.use('/', pageRouter);
+app.use((req, res, next) => {
+    res.set({
+        'Access-Control-Allow-Origin': req.headers.origin,
+        'Access-Control-Allow-Methods': 'GET, POST',
+        'Access-Control-Allow-Headers': '',
+    });
+    next();
+});
+
 app.use('/api', apiRouter);
 
 app.use(error.logger, error.handler);

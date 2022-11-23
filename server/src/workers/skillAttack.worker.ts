@@ -5,6 +5,7 @@ import { battleCache } from '../db/cache';
 import { Skills } from '../db/models';
 import { AutoWorkerData, AutoWorkerResult } from '../interfaces/worker';
 import { UserStatus } from '../interfaces/user';
+import { InferAttributes } from 'sequelize';
 
 
 console.log('skillAttack.worker.ts: 11 >> 스킬공격 워커 모듈 동작')
@@ -44,7 +45,7 @@ function skillAttackWorker({ userStatus }: AutoWorkerData, skillToDead: MessageP
             return;
         });
 
-    }, 1500);
+    }, 800);
 }
 
 
@@ -102,9 +103,9 @@ async function autoBattleSkill(userStatus: UserStatus): Promise<AutoWorkerResult
     return { status: 'continue', script: '' };
 }
 
-function skillSelector(skill: Skills[]) {
+function skillSelector(skill: InferAttributes<Skills, { omit: never; }>[]) {
     const skillCounts = skill.length;
-    const skillCosts = skill.map((s: Skills)=>s.cost);        
+    const skillCosts = skill.map((s)=>s.cost);        
     const costSum = skillCosts.reduce((a: number, b: number)=>a+b, 0);
     const chanceSum = skillCosts.reduce((a: number, b: number) => {
         return a + costSum/b

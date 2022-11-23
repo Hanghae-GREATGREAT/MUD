@@ -36,6 +36,7 @@ class dBConnection {
 class Env extends dBConnection {
 
     PORT: number;
+    HOST: string;
     ROOT_PATH: string;
     SRC_PATH: string;
     REDIS_HOST: string;
@@ -46,6 +47,7 @@ class Env extends dBConnection {
         super();
 
         this.PORT = Number(process.env.PORT) || 8080;
+        this.HOST = process.env.HOST || 'localhost';
         this.ROOT_PATH = path.resolve('./');
         this.SRC_PATH = path.resolve(__dirname);
 

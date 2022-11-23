@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import { battleCache } from './db/cache';
-import { UserStatus } from './interfaces/user';
 import { CharacterService } from './services';
 
 

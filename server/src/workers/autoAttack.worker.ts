@@ -41,7 +41,7 @@ function autoAttackWorker({ userStatus }: AutoWorkerData, autoToDead: MessagePor
             return;
         });
     
-    }, 1000);
+    }, 500);
 
     return;
 }

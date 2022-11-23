@@ -22,8 +22,6 @@ interface UserCache {
     mp: number;
     exp: number;
     questId: number;
-    // item: InferAttributes<Items, { omit: never; }>[] | string;
-    // skill: InferAttributes<Skills, { omit: never; }>[] | string;
     levelup?: boolean;
     isDead?: string;
 }
