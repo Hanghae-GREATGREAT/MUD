@@ -88,7 +88,7 @@ class NpcService {
         return '퍼거스 : \n' + scripts[randomIndex];
     }
 
-    /** (임시) Attack 스탯 랜덤 강화 현재 30% */
+    /** (임시) 무기 강화 */
     async enhance(characterId: number): Promise<string> {
         const Character = await Characters.findByPk(characterId);
         // 임시 스크립트 선언
@@ -97,15 +97,34 @@ class NpcService {
             throw new Error('Enhance Error : Character not found');
         }
 
-        // 능력치 강화(임시)
-        const successRate = Math.floor(Math.random() * 100);
+        // 강화 단계 확인
+        const weaponRate = Number(Character.item.split(':')[0]);
+        let successRate = 0; // 성공 확률
 
-        if (successRate < 30) {
+        if (weaponRate < 10) {
+            successRate = 100 - 2 * weaponRate;
+        } else if (weaponRate < 15) {
+            successRate = 30;
+        } else if (weaponRate < 23) {
+            successRate = 3;
+        } else if (weaponRate < 24) {
+            successRate = 2;
+        } else if (weaponRate < 25) {
+            successRate = 1;
+        } else {
+            return '퍼거스 : 자네 무기는 더 이상 강화할 수 없어.\n\n';
+        }
+
+        // 무기 강화(임시)
+        const randomInt = Math.floor(Math.random() * 100);
+
+        if (randomInt < successRate) {
             Character.update({
-                attack: Character.attack + 10,
-                exp: Character.exp - 10,
+                attack:
+                    Character.attack - weaponRate * 10 + (weaponRate + 1) * 10,
+                item: `${weaponRate + 1}:1`,
             });
-            tempScript += '강화에 성공했습니다!! => Attack + 10\n\n';
+            tempScript += '강화에 성공했습니다!! => 무기레벨 + 1\n\n';
             tempScript += '퍼거스 : 크하하! 이몸도 아직 죽지 않았다구!\n\n';
         } else {
             Character.update({
