@@ -24,12 +24,11 @@ function autoAttackWorker({ userStatus }: AutoWorkerData, autoToDead: MessagePor
     console.log(battleCache.getAll());
 
     const autoAttackTimer = setInterval(async () => {
-        console.log('autoAttack.worker.ts: START INTERVAL', Date.now(), characterId)
+        console.log('autoAttack.worker.ts: START INTERVAL', Date.now(), characterId);
         battleCache.set(characterId, { autoAttackTimer });
 
         autoAttack(userStatus).then(({ status, script }: AutoWorkerResult) => {
             console.log('autoAttack.worker.ts: 38 >> autoAttack result: ', status, characterId);
-
             const statusHandler = {
                 continue: continueWorker,
                 monster: resultWorker,
@@ -50,6 +49,7 @@ function autoAttackWorker({ userStatus }: AutoWorkerData, autoToDead: MessagePor
 async function autoAttack(userStatus: UserStatus): Promise<AutoWorkerResult> {
     const { characterId, attack } = userStatus;
     console.log('autoAttack.worker.ts: 50 >> autoAttack() 시작', characterId);
+
     let tempScript: string = '';
     const { autoAttackTimer, monsterId } = battleCache.get(characterId);
     if (!autoAttackTimer! || !monsterId) {
@@ -78,9 +78,9 @@ async function autoAttack(userStatus: UserStatus): Promise<AutoWorkerResult> {
     if (!isDead) return { status: 'terminate', script: '몬스터 정보 에러' };
     
     if (isDead === 'dead') {
-        console.log('autoAttack.worker.ts: 몬스터 사망, ', characterId);
         battleCache.set(characterId, { dead: 'monster' });
         const script = `\n당신의 ${playerAdjective} 공격에 ${monsterName}이 쓰러졌다. => ${playerHit}의 데미지!`;
+        console.log('autoAttack.worker.ts: ', script, characterId);
         return { status: 'monster', script };
     }
 
@@ -97,18 +97,17 @@ async function autoAttack(userStatus: UserStatus): Promise<AutoWorkerResult> {
     
     const refreshUser = await CharacterService.refreshStatus(characterId, monsterHit, 0, monsterId);
     if (refreshUser.isDead === 'dead') {
-        console.log('autoAttack.worker.ts: 플레이어 사망, ', characterId);
         
         tempScript += '\n!! 치명상 !!\n';
         tempScript += `당신은 ${monsterName}의 공격을 버티지 못했습니다.. \n`;
         
         const script = `${monsterName} 의 ${monsterAdjective} 공격이 치명상으로 적중! => ${monsterHit}의 데미지!
         마을로 돌아갑니다...!!\n`;
+        console.log('autoAttack.worker.ts: ', script, characterId);
         return { status: 'player', script };
     }
-
     const result = { script: tempScript, field: 'action', user: refreshUser };
-    console.log('autoAttack.worker.ts: ', result.script, characterId);
+    console.log('autoAttack.worker.ts: end of autoAttack turn', characterId);
 
     return { status: 'continue', script: '' };
 }

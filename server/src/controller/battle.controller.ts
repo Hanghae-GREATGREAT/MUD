@@ -22,9 +22,8 @@ export default {
         };
 
         if (!commandHandler[CMD1]) {
-            console.log(`is wrong command : '${CMD1}'`);
-            const result = battle.wrongCommand(CMD1, userInfo);
-            return socket.emit('print', result);
+            battle.wrongCommand(CMD1, userInfo);
+            return;
         }
 
         commandHandler[CMD1](CMD2, userInfo, userStatus);
@@ -40,9 +39,8 @@ export default {
             '도망': battle.quitBattle,
         };
         if (!commandHandler[CMD1]) {
-            console.log(`is wrong command : '${CMD1}'`);
-            const result = battle.wrongCommand(CMD1, userInfo);
-            return socket.emit('print', result);
+            battle.wrongCommand(CMD1, userInfo);
+            return;
         }
 
         commandHandler[CMD1](CMD2, userInfo, userStatus);
@@ -52,8 +50,11 @@ export default {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
         const { characterId } = userInfo;
 
-        if (CMD1 === '중단') battle.quitAutoBattle('', userInfo);
-        
+        if (CMD1 === '중단') {
+            battle.quitAutoBattle('', userInfo);
+            return;
+        }
+
         await battle.actionSkill(CMD1, userInfo, userStatus);
 
         const {  autoAttackTimer, dungeonLevel, dead } = battleCache.get(characterId);
@@ -76,9 +77,8 @@ export default {
             '중단': battle.quitAutoBattle,
         };
         if (!commandHandler[CMD1]) {
-            console.log(`is wrong command : '${CMD1}'`);
-            const result = await commandHandler['도움말'](CMD1, userInfo);
-            return socket.emit('print', result);
+            commandHandler['도움말'](CMD1, userInfo);
+            return;
         }
 
         let result = await commandHandler[CMD1](CMD2, userInfo);
@@ -94,8 +94,8 @@ export default {
         };
 
         if (!commandHandler[CMD1]) {
-            console.log(`is wrong command : '${CMD1}'`);
             battle.adventureWrongCommand(CMD1, userInfo);
+            return;
         }
         commandHandler[CMD1](CMD2, userInfo);
     }

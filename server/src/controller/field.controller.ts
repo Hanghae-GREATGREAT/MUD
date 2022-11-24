@@ -16,9 +16,8 @@ export default {
             'OUT': front.signout
         }
         if (!commandHandler[CMD1]) {
-            console.log(`is wrong command : '${CMD1}'`);
-            const result = dungeon.wrongCommand(CMD1, userInfo);
-            return socket.emit('print', result);
+            dungeon.wrongCommand(CMD1, userInfo);
+            return;
         }
         commandHandler[CMD1](CMD2, userInfo, socket.id);
     },
@@ -38,9 +37,8 @@ export default {
             'OUT': front.signout
         }
         if (!commandHandler[CMD1]) {
-            console.log(`is wrong command : '${CMD1}'`);
-            const result = village.villageWrongCommand(CMD1, userInfo);
-            return socket.emit('print', result);
+            village.villageWrongCommand(CMD1, userInfo);
+            return;
         }
 
         commandHandler[CMD1](CMD2, userInfo, socket.id);

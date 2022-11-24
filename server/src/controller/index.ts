@@ -3,5 +3,18 @@ import chat from './chat.controller';
 import field from './field.controller';
 import home from './home.controller';
 import village from './village.controller';
+import TEST from './TEST.controller';
+import common from './common.controller';
 
-export { battle, chat, field, home, village };
+
+
+export { 
+    battle, 
+    chat, 
+    field, 
+    home, 
+    village, 
+    
+    TEST,
+    common,
+};

@@ -5,7 +5,6 @@ import { SocketInput, CommandHandler } from '../interfaces/socket';
 export default {
     storyController: async ({ line, userInfo }: SocketInput) => {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
-        console.log('socketon battle');
 
         const commandHandler: CommandHandler = {
             '도움말': npc.storyHelp,
@@ -15,9 +14,8 @@ export default {
         };
 
         if (!commandHandler[CMD1]) {
-            console.log(`is wrong command : '${CMD1}'`);
-            const result = npc.storyWrongCommand(CMD1, userInfo);
-            return socket.emit('print', result);
+            npc.storyWrongCommand(CMD1, userInfo);
+            return;
         }
 
         const result = await commandHandler[CMD1](CMD2, userInfo);
@@ -26,7 +24,6 @@ export default {
 
     healController: async ({ line, userInfo, userStatus }: SocketInput) => {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
-        console.log('socketon battle');
 
         const commandHandler: CommandHandler = {
             '도움말': npc.healHelp,
@@ -36,9 +33,8 @@ export default {
         };
 
         if (!commandHandler[CMD1]) {
-            console.log(`is wrong command : '${CMD1}'`);
-            const result = npc.healWrongCommand(CMD1, userInfo);
-            return socket.emit('print', result);
+            npc.healWrongCommand(CMD1, userInfo);
+            return;
         }
 
         commandHandler[CMD1](CMD2, userInfo, userStatus);
@@ -56,9 +52,8 @@ export default {
         };
 
         if (!commandHandler[CMD1]) {
-            console.log(`is wrong command : '${CMD1}'`);
-            const result = npc.enhanceWrongCommand(CMD1, userInfo);
-            return socket.emit('print', result);
+            npc.enhanceWrongCommand(CMD1, userInfo);
+            return;
         }
 
         commandHandler[CMD1](CMD2, userInfo, userStatus);
@@ -76,9 +71,8 @@ export default {
         };
 
         if (!commandHandler[CMD1]) {
-            console.log(`is wrong command : '${CMD1}'`);
-            const result = npc.gambleWrongCommand(CMD1, userInfo);
-            return socket.emit('print', result);
+            npc.gambleWrongCommand(CMD1, userInfo);
+            return;
         }
 
         commandHandler[CMD1](CMD2, userInfo);

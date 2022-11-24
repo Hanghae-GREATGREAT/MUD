@@ -62,7 +62,7 @@ export default {
         socket.emit('print', { script, userInfo, field });
     },
 
-    healInfo: (CMD: string | undefined) => {
+    healInfo: () => {
         // 임시 스크립트 선언
         const tempLine =
             '=======================================================================\n';

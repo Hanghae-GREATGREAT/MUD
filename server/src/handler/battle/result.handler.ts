@@ -68,7 +68,7 @@ export default {
     autoResultPlayerDead: async(userStatus: UserStatus, script: string) => {
 
         socket.emit('printBattle', { field: 'dungeon', script, userStatus });
-        village.healInfo('');
+        village.healInfo();
         // field: dungeon , chat: true
 
         const { characterId } = userStatus;

@@ -128,7 +128,6 @@ export default {
 
         // 자동공격 사이클
         const autoAttackTimer = setInterval(async () => {
-
             battleCache.set(characterId, { autoAttackTimer });
             const {script, userStatus: newStatus, error} = await battle.autoAttack('', userStatus);
             // 이미 끝난 전투
@@ -153,7 +152,7 @@ export default {
                         dungeon.getDungeonList('', userInfo);
                         return;
                     case 'monster':
-                        battle.autoBattleOld('', userInfo, userStatus)
+                        battle.autoBattleOld('', userInfo, userStatus);
                         return;
                 }
             } else {
@@ -178,7 +177,7 @@ export default {
                             dungeon.getDungeonList('', userInfo);
                             return;
                         case 'monster':
-                            battle.autoBattleOld('', userInfo, userStatus)
+                            battle.autoBattleOld('', userInfo, userStatus);
                             return;
                     }
                 }
@@ -189,7 +188,6 @@ export default {
 
         // 스킬공격 사이클을 일반공격 사이클과 분리하는 것이 좋은가? 아니면 같은 사이클에서 돌리는 것이 나은가?
         // 일단 사망 판정 관리 때문에 하나로
-
         socket.emit('print', { script: tempScript, userInfo, field });
         return;
     },

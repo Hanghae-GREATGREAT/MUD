@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io';
 import { redis } from './db/cache';
-import { battle, chat, field, home, village } from './controller';
+import { battle, chat, common, field, home, TEST, village } from './controller';
 
 export let socket: Socket;
 
@@ -60,6 +60,14 @@ const onConnection = (server: Socket) => {
      ************************************************************************/
 
     server.on('submit', chat.chatController);
+
+    /************************************************************************
+                                    기타                                      
+     ************************************************************************/
+
+    server.on('request user status', common.requestStatus);
+
+    server.on('load test', TEST.practice);
 
     server.on('disconnect', () => {
         redis.del(server.id);
