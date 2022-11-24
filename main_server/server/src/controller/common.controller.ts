@@ -15,6 +15,6 @@ export default {
 
     disconnect: (socket: Socket) => {
         redis.del(socket.id);
-        console.log(socket.id, 'SOCKET DISCONNECTED');
+        // console.log(socket.id, 'SOCKET DISCONNECTED');
     }
 }

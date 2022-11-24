@@ -36,7 +36,7 @@ class UserService {
     }
 
     async signout(userId: number, id: string) {
-        console.log('SIGNOUT', id);
+        // console.log('SIGNOUT', id);
         // redis.hDelAll(id, { userId: 0, characterId: 0 });
         redis.del(id);
     };

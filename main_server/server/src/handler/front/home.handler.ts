@@ -9,8 +9,6 @@ import { UserInfo } from '../../interfaces/user';
 export default {
     
     loadHome: (socket: Socket, userInfo: UserInfo) => {
-        console.log('LOAD HOME');
-
         const script = homeScript.loadHome;
         const field = 'front';
 
@@ -18,7 +16,6 @@ export default {
     },
 
     checkUser: async (userInfo: UserInfo) => {
-        console.log('CHECK USER');
         const { userId, characterId, name } = userInfo;
         const character = await CharacterService.findOneByUserId(userId);
 
@@ -31,8 +28,6 @@ export default {
     },
 
     signout: (socket: Socket, CMD: string|undefined, userInfo: UserInfo, id: string) => {
-        console.log('SIGN OUT');
-
         UserService.signout(userInfo.userId, id);
         const script = homeScript.signout;
         const field = 'front';
@@ -41,8 +36,6 @@ export default {
     },
 
     toVillage: (socket: Socket, CMD: string|undefined, userInfo: UserInfo) => {
-        console.log('TO VILLAGE');
-
         const script = NpcList(userInfo.name); // 마을 스크립트
         const field = 'village';
 
@@ -50,8 +43,6 @@ export default {
     },
 
     toDungeon: (socket: Socket, CMD: string|undefined, userInfo: UserInfo) => {
-        console.log('TO DUNGEON');
-
         const script = dungeonList(userInfo.name);
         const field = 'dungeon';
 
@@ -59,8 +50,6 @@ export default {
     },
 
     emptyCommand: (socket: Socket, CMD: string|undefined, userInfo: UserInfo) => {
-        console.log('EMPTY COMMAND');
-
         const script = homeScript.wrongCommand;
         const field = 'front';
 
@@ -68,8 +57,6 @@ export default {
     },
 
     deleteAccount: async (socket: Socket, CMD: string|undefined, userInfo: UserInfo) => {
-        console.log('EMPTY COMMAND');
-
         const { userId, characterId } = userInfo;
         const result = await UserService.deleteUser(userId, characterId);
 

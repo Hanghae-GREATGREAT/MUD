@@ -21,8 +21,7 @@ export default {
 
     frontController: async (socket: Socket, { line, userInfo }: SocketInput) => {
         const [CMD1, CMD2]: string[] = line.trim().toUpperCase().split(' ');
-        console.log('front', CMD1, CMD2);
-        console.log(socket.id);
+        
         const commandHandler: CommandHandler = {
             'IN': front.signinUsername,
             'UP': front.signupUsername,
