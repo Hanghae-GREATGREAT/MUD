@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { io } from './app';
 import { battleCache } from './db/cache';
 import { CharacterService } from './services';
 
@@ -13,13 +14,6 @@ router.get('/', async (req, res, next) => {
     });
 });
 
-router.get('/userStatus/:characterId', async(req, res) => {
-    const { characterId } = req.params;
-
-    const userStatus = await CharacterService.getUserStatus(characterId);
-    
-    res.status(200).json({ userStatus });
-});
 
 router.get('/battleCache', (req, res) => {
     const cache = battleCache.getAll();

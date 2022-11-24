@@ -1,12 +1,14 @@
-import { socket } from '../../socket.routes';
+import { Socket } from 'socket.io';
 import { UserService, CharacterService } from '../../services';
 import { dungeonList } from '..';
 import { NpcList } from '../village.handler';
 import { homeScript } from '../../scripts';
 import { UserInfo } from '../../interfaces/user';
 
+
 export default {
-    loadHome: (userInfo: UserInfo) => {
+    
+    loadHome: (socket: Socket, userInfo: UserInfo) => {
         console.log('LOAD HOME');
 
         const script = homeScript.loadHome;
@@ -28,17 +30,17 @@ export default {
         );
     },
 
-    signout: (CMD: string|undefined, userInfo: UserInfo, id: string) => {
+    signout: (socket: Socket, CMD: string|undefined, userInfo: UserInfo, id: string) => {
         console.log('SIGN OUT');
 
         UserService.signout(userInfo.userId, id);
-        const script = homeScript.signout + homeScript.loadHome;
+        const script = homeScript.signout;
         const field = 'front';
 
-        socket.emit('print', { script, userInfo: {}, field });
+        socket.emit('signout', { script, userInfo: {}, field });
     },
 
-    toVillage: (CMD: string|undefined, userInfo: UserInfo) => {
+    toVillage: (socket: Socket, CMD: string|undefined, userInfo: UserInfo) => {
         console.log('TO VILLAGE');
 
         const script = NpcList(userInfo.name); // 마을 스크립트
@@ -47,7 +49,7 @@ export default {
         socket.emit('print', { script, userInfo, field, chat: true });
     },
 
-    toDungeon: (CMD: string|undefined, userInfo: UserInfo) => {
+    toDungeon: (socket: Socket, CMD: string|undefined, userInfo: UserInfo) => {
         console.log('TO DUNGEON');
 
         const script = dungeonList(userInfo.name);
@@ -56,7 +58,7 @@ export default {
         socket.emit('print', { script, userInfo, field, chat: true });
     },
 
-    emptyCommand: (CMD: string|undefined, userInfo: UserInfo) => {
+    emptyCommand: (socket: Socket, CMD: string|undefined, userInfo: UserInfo) => {
         console.log('EMPTY COMMAND');
 
         const script = homeScript.wrongCommand;
@@ -65,7 +67,7 @@ export default {
         socket.emit('print', { script, userInfo, field });
     },
 
-    deleteAccount: async (CMD: string|undefined, userInfo: UserInfo) => {
+    deleteAccount: async (socket: Socket, CMD: string|undefined, userInfo: UserInfo) => {
         console.log('EMPTY COMMAND');
 
         const { userId, characterId } = userInfo;

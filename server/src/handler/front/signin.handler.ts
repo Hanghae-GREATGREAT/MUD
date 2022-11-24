@@ -1,4 +1,4 @@
-import { socket } from '../../socket.routes';
+import { Socket } from 'socket.io';
 import { CharacterService, UserService } from '../../services';
 import { redis } from '../../db/cache'
 import { signinScript } from '../../scripts';
@@ -7,14 +7,14 @@ import { UserInfo } from '../../interfaces/user';
 
 export default {
 
-    signinUsername: (CMD: string|undefined, userInfo: UserInfo) => {
+    signinUsername: (socket: Socket, CMD: string|undefined, userInfo: UserInfo) => {
         const script = signinScript.username;
         const field = 'sign:20';
 
         socket.emit('print', { script, userInfo, field });
     },
 
-    signinPassword: async(CMD: string | undefined, userInfo: UserInfo) => {
+    signinPassword: async(socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         userInfo.username = CMD!;
         const script = signinScript.password;
         const field = 'sign:21'
@@ -22,7 +22,11 @@ export default {
         socket.emit('print', { script, userInfo, field });
     },
 
-    signinCheck: async(CMD: string | undefined, userInfo: UserInfo, id: string) => {
+    signinCheck: async(
+        socket: Socket, CMD: string | undefined, 
+        userInfo: UserInfo, id: string
+    ) => {
+        
         const username = userInfo.username;
         const password = CMD;
         const result = await UserService.signin({ username, password });
@@ -48,7 +52,7 @@ export default {
 
             const script = result ? signinScript.title: signinScript.incorrect;
             const field = result ? 'front' : 'sign:21';
-    
+
             socket.emit('printBattle', { field, script, userInfo, userStatus });
         }
     },

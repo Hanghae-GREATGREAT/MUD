@@ -1,10 +1,11 @@
-import { socket } from '../../socket.routes';
+import { Socket } from 'socket.io';
 import { NpcService } from '../../services';
 import { UserInfo, UserStatus } from '../../interfaces/user';
 
 
 export default {
-    healHelp: (CMD: string | undefined, userInfo: UserInfo) => {
+    
+    healHelp: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript: string = '';
         const tempLine =
             '=======================================================================\n';
@@ -20,7 +21,7 @@ export default {
         socket.emit('print', { script, userInfo, field });
     },
 
-    healTalk: async (CMD: string | undefined, userInfo: UserInfo) => {
+    healTalk: async (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         const tempLine =
             '=======================================================================\n';
 
@@ -32,7 +33,7 @@ export default {
         socket.emit('print', { script, userInfo, field });
     },
 
-    heal: async (CMD: string | undefined, userInfo: UserInfo, userStatus: UserStatus) => {
+    heal: async (socket: Socket, CMD: string | undefined, userInfo: UserInfo, userStatus: UserStatus) => {
         let tempScript: string = '';
         const tempLine =
             '=======================================================================\n\n';
@@ -57,7 +58,7 @@ export default {
         socket.emit('printBattle', { script, userInfo, userStatus, field });
     },
 
-    healWrongCommand: (CMD: string | undefined, userInfo: UserInfo) => {
+    healWrongCommand: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript: string = '';
 
         tempScript += `입력값을 확인해주세요.\n`;

@@ -1,9 +1,9 @@
-import { socket } from '../socket.routes';
+import { Socket } from 'socket.io';
 import { village, npc } from '../handler';
 import { SocketInput, CommandHandler } from '../interfaces/socket';
 
 export default {
-    storyController: async ({ line, userInfo }: SocketInput) => {
+    storyController: async (socket: Socket, { line, userInfo }: SocketInput) => {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
 
         const commandHandler: CommandHandler = {
@@ -14,15 +14,14 @@ export default {
         };
 
         if (!commandHandler[CMD1]) {
-            npc.storyWrongCommand(CMD1, userInfo);
+            npc.storyWrongCommand(socket, CMD1, userInfo);
             return;
         }
 
-        const result = await commandHandler[CMD1](CMD2, userInfo);
-        socket.emit('print', result);
+        commandHandler[CMD1](socket, CMD2, userInfo);
     },
 
-    healController: async ({ line, userInfo, userStatus }: SocketInput) => {
+    healController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
 
         const commandHandler: CommandHandler = {
@@ -33,14 +32,14 @@ export default {
         };
 
         if (!commandHandler[CMD1]) {
-            npc.healWrongCommand(CMD1, userInfo);
+            npc.healWrongCommand(socket, CMD1, userInfo);
             return;
         }
 
-        commandHandler[CMD1](CMD2, userInfo, userStatus);
+        commandHandler[CMD1](socket, CMD2, userInfo, userStatus);
     },
 
-    enhanceController: async ({ line, userInfo, userStatus }: SocketInput) => {
+    enhanceController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
         console.log('socketon battle');
 
@@ -52,14 +51,14 @@ export default {
         };
 
         if (!commandHandler[CMD1]) {
-            npc.enhanceWrongCommand(CMD1, userInfo);
+            npc.enhanceWrongCommand(socket, CMD1, userInfo);
             return;
         }
 
-        commandHandler[CMD1](CMD2, userInfo, userStatus);
+        commandHandler[CMD1](socket, CMD2, userInfo, userStatus);
     },
 
-    gambleController: async ({ line, userInfo }: SocketInput) => {
+    gambleController: async (socket: Socket, { line, userInfo }: SocketInput) => {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
         console.log('socketon battle');
 
@@ -71,10 +70,10 @@ export default {
         };
 
         if (!commandHandler[CMD1]) {
-            npc.gambleWrongCommand(CMD1, userInfo);
+            npc.gambleWrongCommand(socket, CMD1, userInfo);
             return;
         }
 
-        commandHandler[CMD1](CMD2, userInfo);
+        commandHandler[CMD1](socket, CMD2, userInfo);
     },
 };

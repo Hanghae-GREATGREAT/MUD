@@ -1,17 +1,17 @@
-import { socket } from '../socket.routes';
+import { Socket } from 'socket.io';
 import { battle, dungeon } from '../handler';
 import { SocketInput, CommandHandler } from '../interfaces/socket';
 import { battleCache } from '../db/cache';
 
 export default {
 
-    battleController: async ({ line, userInfo, userStatus }: SocketInput) => {
+    battleController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
         console.log('battle.controller.ts: battleController', userStatus);
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
 
         if (CMD1 === '자동1') {
             console.log('battle.controller.ts: 자동 분기점');
-            battle.autoBattle(CMD2, userStatus);
+            battle.autoBattle(socket, CMD2, userStatus);
             return;
         }
         const commandHandler: CommandHandler = {
@@ -22,14 +22,14 @@ export default {
         };
 
         if (!commandHandler[CMD1]) {
-            battle.wrongCommand(CMD1, userInfo);
+            battle.wrongCommand(socket, CMD1, userInfo);
             return;
         }
 
-        commandHandler[CMD1](CMD2, userInfo, userStatus);
+        commandHandler[CMD1](socket, CMD2, userInfo, userStatus);
     },
 
-    encounterController: async ({ line, userInfo, userStatus }: SocketInput) => {
+    encounterController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
         const [CMD1, CMD2]: string[] = line.trim().toUpperCase().split(' ');
 
         const commandHandler: CommandHandler = {
@@ -39,23 +39,23 @@ export default {
             '도망': battle.quitBattle,
         };
         if (!commandHandler[CMD1]) {
-            battle.wrongCommand(CMD1, userInfo);
+            battle.wrongCommand(socket, CMD1, userInfo);
             return;
         }
 
-        commandHandler[CMD1](CMD2, userInfo, userStatus);
+        commandHandler[CMD1](socket, CMD2, userInfo, userStatus);
     },
 
-    actionController: async({ line, userInfo, userStatus, option }: SocketInput) => {
+    actionController: async(socket: Socket, { line, userInfo, userStatus, option }: SocketInput) => {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
         const { characterId } = userInfo;
 
         if (CMD1 === '중단') {
-            battle.quitAutoBattle('', userInfo);
+            battle.quitAutoBattle(socket, '', userInfo);
             return;
         }
 
-        await battle.actionSkill(CMD1, userInfo, userStatus);
+        await battle.actionSkill(socket, CMD1, userInfo, userStatus);
 
         const {  autoAttackTimer, dungeonLevel, dead } = battleCache.get(characterId);
         if (dead) {
@@ -63,12 +63,12 @@ export default {
             battleCache.delete(characterId);
             battleCache.set(characterId, { dungeonLevel });
 
-            battle.reEncounter('', userInfo);
+            battle.reEncounter(socket, '', userInfo);
             return;
         }        
     },
 
-    autoBattleController: async ({ line, userInfo }: SocketInput) => {
+    autoBattleController: async (socket: Socket, { line, userInfo }: SocketInput) => {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
         console.log('socketon enccounter');
 
@@ -77,14 +77,14 @@ export default {
             '중단': battle.quitAutoBattle,
         };
         if (!commandHandler[CMD1]) {
-            commandHandler['도움말'](CMD1, userInfo);
+            commandHandler['도움말'](socket, CMD1, userInfo);
             return;
         }
 
-        let result = await commandHandler[CMD1](CMD2, userInfo);
+        commandHandler[CMD1](socket, CMD2, userInfo);
     },
 
-    resultController: async ({ line, userInfo }: SocketInput) => {
+    resultController: async (socket: Socket, { line, userInfo }: SocketInput) => {
         const [CMD1, CMD2]: string[] = line.trim().toUpperCase().split(' ');
 
         const commandHandler: CommandHandler = {
@@ -94,9 +94,9 @@ export default {
         };
 
         if (!commandHandler[CMD1]) {
-            battle.adventureWrongCommand(CMD1, userInfo);
+            battle.adventureWrongCommand(socket, CMD1, userInfo);
             return;
         }
-        commandHandler[CMD1](CMD2, userInfo);
+        commandHandler[CMD1](socket, CMD2, userInfo);
     }
 }

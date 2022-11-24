@@ -1,4 +1,4 @@
-import { socket } from "../../socket.routes";
+import { Socket } from 'socket.io';
 import { redis } from '../../db/cache';
 import { CharacterService, UserService } from "../../services";
 import { signupScript } from "../../scripts";
@@ -7,14 +7,14 @@ import { UserInfo } from "../../interfaces/user"
 
 export default {
 
-    signupUsername: (CMD: string|undefined, userInfo: UserInfo) => {
+    signupUsername: (socket: Socket, CMD: string|undefined, userInfo: UserInfo) => {
         const script = signupScript.username;
         const field = 'sign:10';
 
         socket.emit('print', { script, userInfo, field });
     },
 
-    signupPassword: async(CMD: string | undefined, userInfo: UserInfo, id: string) => {
+    signupPassword: async(socket: Socket, CMD: string | undefined, userInfo: UserInfo, id: string) => {
         const username = CMD!;
         const result = await UserService.dupCheck(username);
 
@@ -25,10 +25,10 @@ export default {
         socket.emit('print', { script, userInfo, field });
     },
 
-    createUser: async (CMD: string | undefined, userInfo: UserInfo, id: string) => {
+    createUser: async (socket: Socket, CMD: string | undefined, userInfo: UserInfo, id: string) => {
         console.log('CREATE USER');
         const userCreated = await UserService.signup({ username: userInfo.username, password: CMD });
-        
+
         userInfo.userId = userCreated.getDataValue('userId');    
         const script = signupScript.create;
         const field = 'sign:12';
@@ -36,7 +36,11 @@ export default {
         socket.emit('print', { script, userInfo, field });
     },
 
-    createCharacter: async (CMD: string | undefined, userInfo: UserInfo, id: string) => {
+    createCharacter: async (
+        socket: Socket, CMD: string | undefined, 
+        userInfo: UserInfo, id: string
+    ) => {
+        
         console.log('CREATE CHARACTER');
         const name = CMD!;
         const userId = userInfo.userId;

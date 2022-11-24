@@ -1,10 +1,6 @@
+import { Socket } from 'socket.io';
 import { UserCache, UserInfo, UserStatus } from './user';
 
-interface LineInput {
-    line: string;
-    userCache: UserCache;
-    option: string | undefined;
-}
 
 interface ReturnScript {
     script: string;
@@ -15,28 +11,8 @@ interface ReturnScript {
     error?: boolean | Error;
 }
 
-type commandHandlerOld = (
-    CMD: string,
-    userCache: UserCache,
-    ...args: any[]
-) => ReturnScript | Promise<ReturnScript>;
 
-interface CommandRouter {
-    [key: string]: commandHandlerOld;
-}
-
-type commandHandlerP = (
-    CMD: string,
-    userCache: UserCache,
-    ...args: any[]
-) => Promise<ReturnScript>;
-
-interface CommandRouterP {
-    [key: string]: commandHandlerP;
-}
-
-
-type BattleReport = (user: UserStatus, script: string) => Promise<void>
+type BattleReport = (socket: Socket, user: UserStatus, script: string) => Promise<void>
 
 interface BattleResult {
     [key: string]: BattleReport;
@@ -61,6 +37,7 @@ interface SocketInput {
 }
 
 type commandHandler = (
+    socket: Socket,
     CMD: string,
     // userInfo?: UserInfo,
     // UserStatus?: UserStatus,
@@ -72,10 +49,7 @@ interface CommandHandler {
 }
 
 export {
-    LineInput,
     ReturnScript,
-    CommandRouter,
-    CommandRouterP,
     BattleResult,
     ChatInput,
     ChatOutput,

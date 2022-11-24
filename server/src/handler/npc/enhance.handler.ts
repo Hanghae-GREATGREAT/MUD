@@ -1,10 +1,11 @@
-import { socket } from '../../socket.routes';
+import { Socket } from 'socket.io';
 import { NpcService } from '../../services';
 import { UserInfo } from '../../interfaces/user';
 
 
 export default {
-    enhanceHelp: (CMD: string | undefined, userInfo: UserInfo) => {
+    
+    enhanceHelp: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript: string = '';
         const tempLine =
             '=======================================================================\n';
@@ -20,7 +21,7 @@ export default {
         socket.emit('print', { script, userInfo, field });
     },
 
-    enhanceTalk: async (CMD: string | undefined, userInfo: UserInfo) => {
+    enhanceTalk: async (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         const tempLine =
             '=======================================================================\n';
 
@@ -32,7 +33,7 @@ export default {
         socket.emit('print', { script, userInfo, field });
     },
 
-    enhance: async (CMD: string | undefined, userInfo: UserInfo) => {
+    enhance: async (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript: string = '';
         const tempLine =
             '=======================================================================\n';
@@ -52,7 +53,7 @@ export default {
         socket.emit('print', { script, userInfo, field });
     },
 
-    enhanceWrongCommand: (CMD: string | undefined, userInfo: UserInfo) => {
+    enhanceWrongCommand: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript: string = '';
 
         tempScript += `입력값을 확인해주세요.\n`;

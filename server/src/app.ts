@@ -14,12 +14,13 @@ import error from './middlewares/errorhandlers';
 const app = express();
 const httpServer = createServer(app);
 
-const io = new Server(httpServer, {
+export const io = new Server(httpServer, {
     cors: {
-        origin: '*',
-        methods: '*',
+        origin: env.CLIENT_URL,
+        methods: 'POST, GET',
     }
 });
+
 io.use((socket, next)=>{next()})
 // io.use(SocketMiddleware)
 io.on('connection', onConnection);
@@ -39,16 +40,6 @@ if (env.NODE_ENV !== 'test') {
 
 
 app.use(express.json());
-
-app.use((req, res, next) => {
-    res.set({
-        'Access-Control-Allow-Origin': req.headers.origin,
-        'Access-Control-Allow-Methods': 'GET, POST',
-        'Access-Control-Allow-Headers': '',
-    });
-    next();
-});
-
 app.use('/api', apiRouter);
 
 app.use(error.logger, error.handler);

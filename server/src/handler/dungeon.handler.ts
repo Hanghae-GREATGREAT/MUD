@@ -1,4 +1,4 @@
-import { socket } from '../socket.routes';
+import { Socket } from 'socket.io';
 import { DungeonService } from '../services';
 import { battleCache } from '../db/cache';
 import { front } from '.';
@@ -7,7 +7,8 @@ import { UserInfo } from '../interfaces/user';
 
 
 export default {
-    help: (CMD: string | undefined, userInfo: UserInfo) => {
+    
+    help: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript = '';
 
         tempScript += '명령어 : \n';
@@ -21,7 +22,7 @@ export default {
         socket.emit('print', { script, userInfo, field });
     },
 
-    getDungeonList: async(CMD: string | undefined, userInfo: UserInfo) => {
+    getDungeonList: async(socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         console.log('dungeon list.');
 
         const result = await front.checkUser(userInfo)
@@ -46,7 +47,7 @@ export default {
         socket.emit('print', { script, userInfo, field, chat: true });
     },
 
-    getDungeonInfo: (CMD: string | undefined, userInfo: UserInfo) => {
+    getDungeonInfo: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         console.log('dungeon.handler.ts: dungeonInfo()');
 
         // 임시 스크립트 선언
@@ -86,7 +87,7 @@ export default {
         socket.emit('print', { script, userInfo, field });
     },
 
-    wrongCommand: (CMD: string | undefined, userInfo: UserInfo) => {
+    wrongCommand: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript: string = '';
 
         tempScript += `입력값을 확인해주세요.\n`;

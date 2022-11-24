@@ -1,11 +1,11 @@
-import { socket } from '../socket.routes';
+import { Socket } from 'socket.io';
 import { front } from '../handler';
 import { homeScript } from '../scripts';
 import { UserInfo } from '../interfaces/user';
 
 
 export default {
-    villagehelp: (CMD: string | undefined, userInfo: UserInfo) => {
+    villagehelp: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript = '';
 
         tempScript += '명령어 : \n';
@@ -19,7 +19,7 @@ export default {
         socket.emit('print', { script, userInfo, field });
     },
 
-    NpcList: async (CMD: string | undefined, userInfo: UserInfo) => {
+    NpcList: async (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         console.log('NPC list.');
         // 유저 인증정보 확인
         const result = await front.checkUser(userInfo);
@@ -44,7 +44,7 @@ export default {
         socket.emit('print', { field, script, userInfo, chat: true });
     },
 
-    storyInfo: (CMD: string | undefined, userInfo: UserInfo) => {
+    storyInfo: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         // 임시 스크립트 선언
         const tempLine =
             '=======================================================================\n';
@@ -62,7 +62,7 @@ export default {
         socket.emit('print', { script, userInfo, field });
     },
 
-    healInfo: () => {
+    healInfo: (socket: Socket) => {
         // 임시 스크립트 선언
         const tempLine =
             '=======================================================================\n';
@@ -80,7 +80,7 @@ export default {
         socket.emit('print', { script, field });
     },
 
-    enhanceInfo: (CMD: string | undefined, userInfo: UserInfo) => {
+    enhanceInfo: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         // 임시 스크립트 선언
         const tempLine =
             '=======================================================================\n';
@@ -98,7 +98,7 @@ export default {
         socket.emit('print', { script, userInfo, field });
     },
 
-    gambleInfo: (CMD: string | undefined, userInfo: UserInfo) => {
+    gambleInfo: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         // 임시 스크립트 선언
         const tempLine =
             '=======================================================================\n';
@@ -116,7 +116,7 @@ export default {
         socket.emit('print', { script, userInfo, field });
     },
 
-    villageWrongCommand: (CMD: string | undefined, userInfo: UserInfo) => {
+    villageWrongCommand: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript: string = '';
 
         tempScript += `입력값을 확인해주세요.\n`;

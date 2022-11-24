@@ -1,6 +1,6 @@
 import { CharacterService } from '../services'
-import {  } from 'socket.io'
-
+import { Socket } from 'socket.io'
+import { redis } from '../db/cache';
 
 
 export default {
@@ -11,5 +11,10 @@ export default {
             status: 200,
             userStatus
         });
+    },
+
+    disconnect: (socket: Socket) => {
+        redis.del(socket.id);
+        console.log(socket.id, 'SOCKET DISCONNECTED');
     }
 }

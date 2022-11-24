@@ -1,10 +1,10 @@
-import { socket } from '../socket.routes';
+import { Socket } from 'socket.io';
 import { dungeon, front, village } from '../handler';
-import { SocketInput, CommandRouter, CommandHandler } from '../interfaces/socket';
+import { SocketInput, CommandHandler } from '../interfaces/socket';
 
 // dungeon, village
 export default {
-    dungeonController: async ({ line, userInfo }: SocketInput) => {
+    dungeonController: async (socket: Socket, { line, userInfo }: SocketInput) => {
         const [CMD1, CMD2]: string[] = line.trim().toUpperCase().split(' ');
         console.log('inputCommand : ', CMD1, CMD2);
 
@@ -16,13 +16,13 @@ export default {
             'OUT': front.signout
         }
         if (!commandHandler[CMD1]) {
-            dungeon.wrongCommand(CMD1, userInfo);
+            dungeon.wrongCommand(socket, CMD1, userInfo);
             return;
         }
-        commandHandler[CMD1](CMD2, userInfo, socket.id);
+        commandHandler[CMD1](socket, CMD2, userInfo, socket.id);
     },
 
-    villageController: async ({ line, userInfo }: SocketInput) => {
+    villageController: async (socket: Socket, { line, userInfo }: SocketInput) => {
         const [CMD1, CMD2]: string[] = line.trim().toUpperCase().split(' ');
         console.log('inputCommand : ', CMD1, CMD2);
 
@@ -37,10 +37,10 @@ export default {
             'OUT': front.signout
         }
         if (!commandHandler[CMD1]) {
-            village.villageWrongCommand(CMD1, userInfo);
+            village.villageWrongCommand(socket, CMD1, userInfo);
             return;
         }
 
-        commandHandler[CMD1](CMD2, userInfo, socket.id);
+        commandHandler[CMD1](socket, CMD2, userInfo, socket.id);
     },
 };

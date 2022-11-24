@@ -1,10 +1,11 @@
-import { socket } from '../../socket.routes';
+import { Socket } from 'socket.io';
 import { NpcService } from '../../services';
 import { UserInfo } from '../../interfaces/user';
 
 
 export default {
-    gambleHelp: (CMD: string | undefined, userInfo: UserInfo) => {
+    
+    gambleHelp: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript: string = '';
         const tempLine =
             '=======================================================================\n';
@@ -20,7 +21,7 @@ export default {
         socket.emit('print', { script, userInfo, field });
     },
 
-    gambleTalk: async (CMD: string | undefined, userInfo: UserInfo) => {
+    gambleTalk: async (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         const tempLine =
             '=======================================================================\n';
 
@@ -32,7 +33,7 @@ export default {
         socket.emit('print', { script, userInfo, field });
     },
 
-    gamble: async (CMD: string | undefined, userInfo: UserInfo) => {
+    gamble: async (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript: string = '';
         const tempLine =
             '=======================================================================\n';
@@ -51,7 +52,7 @@ export default {
         socket.emit('print', { script, userInfo, field });
     },
 
-    gambleWrongCommand: (CMD: string | undefined, userInfo: UserInfo) => {
+    gambleWrongCommand: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript: string = '';
 
         tempScript += `입력값을 확인해주세요.\n`;

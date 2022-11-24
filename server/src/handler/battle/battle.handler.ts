@@ -1,4 +1,4 @@
-import { socket } from '../../socket.routes';
+import { Socket } from 'socket.io';
 import { battleCache } from '../../db/cache';
 import { Monsters} from '../../db/models';
 import { BattleService, CharacterService, MonsterService } from '../../services';
@@ -6,9 +6,14 @@ import { battle, dungeon } from '..';
 import { UserInfo, UserStatus } from '../../interfaces/user';
 import { CommandHandler } from '../../interfaces/socket';
 
+
 export default {
-    // help: (CMD: string | undefined, user: UserSession) => {}
-    help: (CMD: string | undefined, userInfo: UserInfo, userStatus: UserStatus) => {
+    
+    help: (
+        socket: Socket, CMD: string | undefined, 
+        userInfo: UserInfo, userStatus: UserStatus
+    ) => {
+        
         let tempScript: string = '';
         const tempLine =
             '=======================================================================\n';
@@ -24,7 +29,7 @@ export default {
         socket.emit('printBattle', { field, script, userInfo, userStatus });
     },
 
-    battleHelp: (CMD: string | undefined, userInfo: UserInfo) => {
+    battleHelp: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript: string = '';
 
         // tempScript += '\n명령어 : \n';
@@ -44,7 +49,11 @@ export default {
     },
 
     // 일반전투 '공격'
-    attack: async(CMD: string | undefined, userInfo: UserInfo, userStatus: UserStatus) => {
+    attack: async(
+        socket: Socket, CMD: string | undefined, 
+        userInfo: UserInfo, userStatus: UserStatus
+    ) => {
+
         const whoIsDead: CommandHandler = {
             // back to dungeon list when player died
             player: dungeon.getDungeonList,
@@ -68,7 +77,7 @@ export default {
                 battleCache.set(characterId, { dungeonLevel });
 
                 socket.emit('printBattle', { field, script, userInfo, userStatus: newStatus });
-                whoIsDead[dead]('', userInfo);
+                whoIsDead[dead](socket, '', userInfo);
 
                 return;
             }
@@ -79,7 +88,11 @@ export default {
     },
 
     // 일반전투 스킬 사용
-    actionSkill: async(CMD: string, userInfo: UserInfo, userStatus: UserStatus) => {
+    actionSkill: async(
+        socket: Socket, CMD: string, 
+        userInfo: UserInfo, userStatus: UserStatus
+    ) => {
+
         console.log('battle.handler.ts: actionSkill()');
         let tempScript = '';
         let field = 'action';
@@ -87,7 +100,7 @@ export default {
 
         // 스킬 정보 가져오기
         if (skill[Number(CMD)-1] === undefined) {
-            battle.battleHelp(CMD, userInfo);
+            battle.battleHelp(socket, CMD, userInfo);
         }
         const { name: skillName, cost, multiple } = skill[Number(CMD)-1];
         console.log('battle.handler.ts: skill use', skillName);
@@ -200,7 +213,7 @@ export default {
         return { field, script, userStatus };
     },
 
-    quitBattle: async (CMD: string | undefined, userInfo: UserInfo) => {
+    quitBattle: async (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         const { characterId } = userInfo;
         const { monsterId } = battleCache.get(characterId);
         let tempScript: string = '';
@@ -220,7 +233,7 @@ export default {
         socket.emit('print', { script, userInfo, field });
     },
 
-    wrongCommand: (CMD: string | undefined, userInfo: UserInfo) => {
+    wrongCommand: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript: string = '';
 
         tempScript += `입력값을 확인해주세요.\n`;

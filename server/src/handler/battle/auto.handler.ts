@@ -1,7 +1,7 @@
+import { Socket } from 'socket.io';
 import { InferAttributes } from 'sequelize';
 import { setEnvironmentData } from 'worker_threads'
 import { autoAttack, isMonsterDead, skillAttack } from '../../workers';
-import { socket } from '../../socket.routes';
 import { battleCache } from '../../db/cache';
 import { Skills } from '../../db/models';
 import { BattleService, CharacterService, MonsterService } from '../../services';
@@ -10,10 +10,9 @@ import { BattleResult } from '../../interfaces/socket';
 import { UserInfo, UserStatus } from '../../interfaces/user';
 
 
-
 export default {
 
-    autoBattleHelp: (CMD: string | undefined, userInfo: UserInfo) => {
+    autoBattleHelp: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript: string = '';
 
         // tempScript += '\n명령어 : \n';
@@ -29,7 +28,7 @@ export default {
         socket.emit('print', { script, userInfo, field });
     },
 
-    autoBattle: async(CMD: string | undefined, userStatus: UserStatus) => {
+    autoBattle: async(socket: Socket, CMD: string | undefined, userStatus: UserStatus) => {
         const { characterId } = userStatus;
         console.log('battle.handler.ts: 자동전투 핸들러 시작, ', characterId);
         const { dungeonLevel } = battleCache.get(characterId);
@@ -63,7 +62,7 @@ export default {
                 monster: battle.autoResultMonsterDead,
                 player: battle.autoResultPlayerDead
             }
-            battleResult[status](userStatus, script);
+            battleResult[status](socket, userStatus, script);
         }).catch((error) => console.error(error));
 
         // 자동공격 워커 할당
@@ -78,7 +77,7 @@ export default {
 
     },
 
-    quitAutoBattle: async (CMD: string | undefined, userInfo: UserInfo) => {
+    quitAutoBattle: async (socket: Socket, CMD: string|undefined, userInfo: UserInfo) => {
         const { characterId } = userInfo;
         const { monsterId } = battleCache.get(characterId);
         // const { monsterId } = await redis.hGetAll(characterId);
@@ -110,7 +109,11 @@ export default {
 
     // DEPRECATED
     // (구)자동전투용으로 완전 대체 이후 삭제
-    autoBattleOld: async(CMD: string | undefined, userInfo: UserInfo, userStatus: UserStatus) => {
+    autoBattleOld: async(
+        socket: Socket, CMD: string | undefined, 
+        userInfo: UserInfo, userStatus: UserStatus
+    ) => {
+
         console.log('auto.handler.ts: autoBattleOld()');
 
         let tempScript = ''
@@ -149,10 +152,10 @@ export default {
 
                 switch (dead) {
                     case 'player':
-                        dungeon.getDungeonList('', userInfo);
+                        dungeon.getDungeonList(socket, '', userInfo);
                         return;
                     case 'monster':
-                        battle.autoBattleOld('', userInfo, userStatus);
+                        battle.autoBattleOld(socket, '', userInfo, userStatus);
                         return;
                 }
             } else {
@@ -174,10 +177,10 @@ export default {
 
                     switch (dead) {
                         case 'player':
-                            dungeon.getDungeonList('', userInfo);
+                            dungeon.getDungeonList(socket, '', userInfo);
                             return;
                         case 'monster':
-                            battle.autoBattleOld('', userInfo, userStatus);
+                            battle.autoBattleOld(socket, '', userInfo, userStatus);
                             return;
                     }
                 }

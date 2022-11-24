@@ -1,11 +1,11 @@
-import { socket } from '../../socket.routes';
+import { Socket } from 'socket.io';
 import { battleCache } from '../../db/cache';
 import { CharacterService, MonsterService } from '../../services';
 import { UserInfo } from '../../interfaces/user';
 
 
 export default {
-    ehelp: (CMD: string | undefined, userInfo: UserInfo) => {
+    ehelp: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript: string = '';
 
         tempScript += '명령어 : \n';
@@ -20,7 +20,7 @@ export default {
         socket.emit('print', { script, userInfo, field });
     },
 
-    encounter: async (CMD: string | undefined, userInfo: UserInfo) => {
+    encounter: async (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         // 던전 진행상황 불러오기
         const { characterId } = userInfo;
         const { dungeonLevel } = battleCache.get(characterId);
@@ -44,7 +44,7 @@ export default {
         socket.emit('printBattle', { script, userInfo, field });
     },
 
-    reEncounter: async (CMD: string, userInfo: UserInfo) => {
+    reEncounter: async (socket: Socket, CMD: string, userInfo: UserInfo) => {
         // 던전 진행상황 불러오기
         const { characterId } = userInfo;
         const { dungeonLevel } = battleCache.get(characterId);
@@ -69,7 +69,7 @@ export default {
         socket.emit('printBattle', { field, script, userInfo, userStatus });
     },
 
-    ewrongCommand: (CMD: string | undefined, userInfo: UserInfo) => {
+    ewrongCommand: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript: string = '';
 
         tempScript += `입력값을 확인해주세요.\n`;

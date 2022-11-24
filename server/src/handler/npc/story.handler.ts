@@ -1,11 +1,11 @@
-import { socket } from '../../socket.routes';
+import { Socket } from 'socket.io';
 import { CharacterService, NpcService } from '../../services';
 import { UserInfo } from '../../interfaces/user';
 
 
 export default {
-    // help: (CMD: string | undefined, user: UserSession) => {}
-    storyHelp: (CMD: string | undefined, userInfo: UserInfo) => {
+
+    storyHelp: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript: string = '';
         const tempLine =
             '=======================================================================\n';
@@ -20,7 +20,7 @@ export default {
 
         socket.emit('print', { field, script, userInfo });
     },
-    storyTalk: async (CMD: string | undefined, userInfo: UserInfo) => {
+    storyTalk: async (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         const tempLine =
             '=======================================================================\n';
 
@@ -32,7 +32,7 @@ export default {
         socket.emit('print', { field, script, userInfo });
     },
 
-    diary: async (CMD: string | undefined, userInfo: UserInfo) => {
+    diary: async (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         // 임시 스크립트 선언
         let tempScript: string = '';
         const tempLine =
@@ -52,7 +52,7 @@ export default {
         socket.emit('print', { field, script, userInfo });
     },
 
-    storyWrongCommand: (CMD: string | undefined, userInfo: UserInfo) => {
+    storyWrongCommand: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript: string = '';
 
         tempScript += `입력값을 확인해주세요.\n`;

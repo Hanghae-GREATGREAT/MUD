@@ -1,78 +1,73 @@
 import { Socket } from 'socket.io';
-import { redis } from './db/cache';
 import { battle, chat, common, field, home, TEST, village } from './controller';
+import { ChatInput, SocketInput } from './interfaces/socket';
 
-export let socket: Socket;
 
-const onConnection = (server: Socket) => {
-    console.log('SOCKET CONNECTED');
-    socket = server;
+const onConnection = (socket: Socket) => {
+    console.log('SOCKET CONNECTED', socket.id);
 
     /************************************************************************
                                     홈                                      
      ************************************************************************/
 
-    server.on('none', home.noneController);
+    socket.on('none', (input: SocketInput) => home.noneController(socket, input));
 
-    server.on('front', home.frontController);
+    socket.on('front', (input: SocketInput) => home.frontController(socket, input));
 
-    server.on('sign', home.signController);
+    socket.on('sign', (input: SocketInput) => home.signController(socket, input));
 
     /************************************************************************
                                     필드                                      
      ************************************************************************/
 
-    server.on('dungeon', field.dungeonController);
+    socket.on('dungeon', (input: SocketInput) => field.dungeonController(socket, input));
 
-    server.on('village', field.villageController);
+    socket.on('village', (input: SocketInput) => field.villageController(socket, input));
     /************************************************************************
                                     마을                                      
      ************************************************************************/
 
-    server.on('story', village.storyController);
+    socket.on('story', (input: SocketInput) => village.storyController(socket, input));
 
-    server.on('heal', village.healController);
+    socket.on('heal', (input: SocketInput) => village.healController(socket, input));
 
-    server.on('enhance', village.enhanceController);
+    socket.on('enhance', (input: SocketInput) => village.enhanceController(socket, input));
 
-    server.on('gamble', village.gambleController);
+    socket.on('gamble', (input: SocketInput) => village.gambleController(socket, input));
 
     /************************************************************************
                                     전투                                      
      ************************************************************************/
 
-    server.on('battle', battle.battleController);
+    socket.on('battle', (input: SocketInput) => battle.battleController(socket, input));
 
-    server.on('encounter', battle.encounterController);
+    socket.on('encounter', (input: SocketInput) => battle.encounterController(socket, input));
 
-    server.on('action', battle.actionController);
+    socket.on('action', (input: SocketInput) => battle.actionController(socket, input));
 
-    server.on('autoBattle', battle.autoBattleController);
+    socket.on('autoBattle', (input: SocketInput) => battle.autoBattleController(socket, input));
 
     /************************************************************************
                                    모험 종료                                      
      ************************************************************************/
 
-    server.on('adventureResult', battle.resultController);
+    socket.on('adventureResult', (input: SocketInput) => battle.resultController(socket, input));
 
     /************************************************************************
                                     채팅박스                                      
      ************************************************************************/
 
-    server.on('submit', chat.chatController);
+    socket.on('submit', (input: ChatInput) => chat.chatController(socket, input));
 
     /************************************************************************
                                     기타                                      
      ************************************************************************/
 
-    server.on('request user status', common.requestStatus);
+    socket.on('request user status', common.requestStatus);
 
-    server.on('load test', TEST.practice);
+    socket.on('load test', TEST.practice);
 
-    server.on('disconnect', () => {
-        redis.del(server.id);
-        console.log(server.id, 'SOCKET DISCONNECTED');
-    });
+    socket.on('disconnect', () => common.disconnect(socket));
 };
 
 export default onConnection;

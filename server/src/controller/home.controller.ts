@@ -1,12 +1,13 @@
-import { socket } from "../socket.routes";
-import { CommandHandler, SocketInput } from "../interfaces/socket";
+import { Socket } from "socket.io";
 import { front } from "../handler";
+import { CommandHandler, SocketInput } from "../interfaces/socket";
 
 
 export default {
-    noneController: ({ line, userInfo }: SocketInput) => {
+
+    noneController: (socket: Socket, { line, userInfo }: SocketInput) => {
         const [ CMD1, CMD2 ]: string[] = line.trim().toUpperCase().split(' ');
-    
+
         if (!line || !userInfo || CMD1 !== 'LOAD') {
             const result = { field: 'none', script: 'ERROR', userInfo: {} }
             socket.emit('print', result);
@@ -15,13 +16,13 @@ export default {
         const commandHandler = {
             'LOAD': front.loadHome
         }
-        commandHandler[CMD1](userInfo);
+        commandHandler[CMD1](socket, userInfo);
     },
 
-    frontController: async ({ line, userInfo }: SocketInput) => {
+    frontController: async (socket: Socket, { line, userInfo }: SocketInput) => {
         const [CMD1, CMD2]: string[] = line.trim().toUpperCase().split(' ');
         console.log('front', CMD1, CMD2);
-    
+        console.log(socket.id);
         const commandHandler: CommandHandler = {
             'IN': front.signinUsername,
             'UP': front.signupUsername,
@@ -34,16 +35,16 @@ export default {
             'EMPTY': front.emptyCommand,
         }
         if (!commandHandler[CMD1]) {
-            commandHandler['EMPTY'](line, userInfo);
+            commandHandler['EMPTY'](socket, line, userInfo);
             return;
         }
 
-        commandHandler[CMD1](CMD2, userInfo);
+        commandHandler[CMD1](socket, CMD2, userInfo, socket.id);
     },
 
-    signController: async ({ line, userInfo, option }: SocketInput) => {
+    signController: async (socket: Socket, { line, userInfo, option }: SocketInput) => {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
-    
+
         const commandHandler: CommandHandler = {
             '10': front.signupPassword,
             '11': front.createUser,
@@ -53,11 +54,12 @@ export default {
             'EMPTY': front.emptyCommand
         }
         if (!CMD1 || !option) {
-            commandHandler['EMPTY'](line, userInfo);
+            commandHandler['EMPTY'](socket, line, userInfo);
             return;
         }
     
-        commandHandler[option](CMD1, userInfo, socket.id);
-    }
+        commandHandler[option](socket, CMD1, userInfo, socket.id);
+    },
+
 
 }
