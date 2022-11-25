@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io';
 import { redis } from './db/cache';
-import { battle, chat, field, home, village } from './controller';
+import { battle, chat, field, home, village, pvpBattle } from './controller';
 
 export let socket: Socket;
 
@@ -37,6 +37,8 @@ const onConnection = (server: Socket) => {
 
     server.on('gamble', village.gambleController);
 
+    server.on('pvp', village.pvpController);
+
     /************************************************************************
                                     전투                                      
      ************************************************************************/
@@ -54,6 +56,25 @@ const onConnection = (server: Socket) => {
      ************************************************************************/
 
     server.on('adventureResult', battle.resultController);
+
+    /************************************************************************
+                                   시련의 장                                      
+     ************************************************************************/
+
+    server.on('pvpBattle', pvpBattle.pvpBattleController);
+
+    server.on('enemyChoice', pvpBattle.enemyChoiceController);
+
+    server.on('attackChoice', pvpBattle.attackChoiceController);
+
+    server.on('anemyAttack', pvpBattle.anemyAttackController);
+
+    /************************************************************************
+                                     시련의 장 종료                                    
+    ************************************************************************/
+
+    server.on('pvpResult', pvpBattle.pvpResultController);
+                               
 
     /************************************************************************
                                     채팅박스                                      

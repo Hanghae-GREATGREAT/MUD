@@ -4,6 +4,7 @@ import BattleService from './battle.service';
 import DungeonService from './dungeon.service';
 import MonsterService from './monster.service';
 import NpcService from './npc.service';
+import pvpBattleService from './pvpBattle.service'
 
 export {
     UserService,
@@ -12,4 +13,5 @@ export {
     BattleService,
     MonsterService,
     NpcService,
+    pvpBattleService,
 };

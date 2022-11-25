@@ -1,6 +1,6 @@
 import { socket } from '../../socket.routes';
 import { UserService, CharacterService } from '../../services';
-import { dungeonList } from '..';
+import { dungeonList, /*pvpBattleList*/ } from '..';
 import { NpcList } from '../village.handler';
 import { homeScript } from '../../scripts';
 import { UserInfo } from '../../interfaces/user';
@@ -8,10 +8,10 @@ import { UserInfo } from '../../interfaces/user';
 export default {
     loadHome: (userInfo: UserInfo) => {
         console.log('LOAD HOME');
+        console.log('none@@@@@@@@@@@@@@@@@@',socket.id)
 
         const script = homeScript.loadHome;
         const field = 'front';
-
         socket.emit('print', { field, script, userInfo });
     },
 
@@ -55,6 +55,15 @@ export default {
 
         socket.emit('print', { script, userInfo, field, chat: true });
     },
+
+    // toPvpBattle: (CMD: string | undefined, userInfo: UserInfo) => {
+    //     console.log('TO PVPBATTLE');
+
+    //     const script = pvpBattleList(userInfo.name);
+    //     const field = 'pvpBattle';
+    //     return { script, userInfo, field, chat: true };
+    // },
+
 
     emptyCommand: (CMD: string|undefined, userInfo: UserInfo) => {
         console.log('EMPTY COMMAND');

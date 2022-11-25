@@ -174,6 +174,37 @@ class NpcService {
 
         return tempScript;
     }
+
+     /** 샤크스 경 스크립트 랜덤 반환 */
+     pvpTalkScript(userName: string): string {
+        const scripts: string[] = [
+            `어서오시게 ${userName}, 만약 상대가 전쟁을 원하면 기꺼이 응해주게\n\n`,
+            `내 경기장에서 워리어가 자네 앞길을 막아선다면, 그놈을 때려눕혀. \n위저드가 입을 열면 그 말을 입에 쳐 넣어 줘. \n승리를 향한 길은 오직 하나뿐이지, 수호자. 전장에서 보세.\n\n`,
+            `자기가 죽으면 남을 죽일 수도 읍지! 으하하하!\n\n`,
+        ];
+
+        const randomIndex = Math.floor(Math.random() * scripts.length);
+
+        return '샤크스 경 : \n' + scripts[randomIndex];
+    }
+
+    /** 샤크스 경 시련의장 입장 */
+    async pvp(characterId: number): Promise<string> {
+        // 추후 pvp룸 목록 보여주는 역할하면 될듯
+
+        // 캐릭터 정보 불러오기
+        const Character = await Characters.findByPk(characterId);
+
+        if (!Character) {
+            throw new Error('PVP Error : Character not found');
+        }
+
+        let tempScript: string =
+            '!!!!!!!!!!!!!미구현 !!!!!!!!!!\n\n 테스트용으로 1번만 입장 가능합니다. \n\n';
+        
+
+        return tempScript;
+    }
 }
 
 export default new NpcService();

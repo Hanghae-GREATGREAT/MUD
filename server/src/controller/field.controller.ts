@@ -35,6 +35,7 @@ export default {
             '2': village.healInfo,
             '3': village.enhanceInfo,
             '4': village.gambleInfo,
+            '5': village.pvpInfo,
             'OUT': front.signout
         }
         if (!commandHandler[CMD1]) {

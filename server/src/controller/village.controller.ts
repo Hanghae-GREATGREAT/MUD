@@ -1,5 +1,5 @@
 import { socket } from '../socket.routes';
-import { village, npc } from '../handler';
+import { village, npc, pvpBattle } from '../handler';
 import { SocketInput, CommandHandler } from '../interfaces/socket';
 
 export default {
@@ -82,5 +82,26 @@ export default {
         }
 
         commandHandler[CMD1](CMD2, userInfo);
+    },
+
+    pvpController: async ({ line, userInfo }: SocketInput) => {
+        const [CMD1, CMD2]: string[] = line.trim().split(' ');
+        console.log('socketon pvp');
+
+        const commandRouter: CommandHandler = {
+            '도움말': npc.pvpHelp,
+            '1': npc.pvpTalk,
+            '2': pvpBattle.welcomeUsers,
+            '3': village.NpcList,
+        };
+
+        if (!commandRouter[CMD1]) {
+            console.log(`is wrong command : '${CMD1}'`);
+            const result = npc.pvpWrongCommand(CMD1, userInfo);
+            return socket.emit('print', result);
+        }
+
+        const result = await commandRouter[CMD1](CMD2, userInfo);
+        socket.emit('print', result);
     },
 };

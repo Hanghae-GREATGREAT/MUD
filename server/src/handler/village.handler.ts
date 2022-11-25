@@ -37,6 +37,7 @@ export default {
         tempScript += `2. 아그네스 - 힐러의 집\n\n`;
         tempScript += `3. 퍼거스 - 대장장이\n\n`;
         tempScript += `4. 에트나 - 제비뽑기\n\n`;
+        tempScript += `5. 샤크스 경 - 시련의 장 관리인\n\n`;
 
         const script = tempLine + tempScript;
         const field = 'village';
@@ -116,6 +117,24 @@ export default {
         socket.emit('print', { script, userInfo, field });
     },
 
+    pvpInfo: (CMD: string | undefined, userInfo: UserInfo) => {
+        const tempLine = 
+            '=======================================================================\n';
+        let tempScript: string = '';
+
+        tempScript += `샤크스 경\n\n`
+        tempScript += `한쪽 뿔이 부러진 얼굴이 보이지 않는 가면을 쓰고 있는 미스터리한 사람이 보인다. \n그의 맨얼굴을 본사람은 거의 없다고 알려져 있으며, 이따금 커피도 마시고 간식도 즐기지만, \n그럼에도 그의 맨얼굴을 본 사람을 찾기 힘들다.\n\n`
+        tempScript += `1. 대화하기\n`
+        tempScript += `2. 입장하기\n`
+        tempScript += `3. 돌아가기\n`
+
+        const script = tempLine + tempScript;
+        const field = 'pvp';
+        
+        socket.emit('print', { script, userInfo, field });
+    },
+
+
     villageWrongCommand: (CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript: string = '';
 
@@ -142,6 +161,7 @@ export function NpcList(name: string) {
     tempScript += `2. 아그네스 - 힐러의 집\n\n`;
     tempScript += `3. 퍼거스 - 대장장이\n\n`;
     tempScript += `4. 에트나 - ???\n\n`;
+    tempScript += `5. 샤크스 경 - 시련의 장 관리인\n\n`
 
     return tempLine + tempScript;
 }

@@ -34,7 +34,8 @@ export default {
             'EMPTY': front.emptyCommand,
         }
         if (!commandHandler[CMD1]) {
-            commandHandler['EMPTY'](line, userInfo);
+            const result = commandHandler['EMPTY'](line, userInfo);
+            return socket.emit('print', result);
         }
 
         commandHandler[CMD1](CMD2, userInfo);
