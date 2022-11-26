@@ -59,6 +59,8 @@ const onConnection = (socket: Socket) => {
                                    시련의 장                                      
      ************************************************************************/
 
+    socket.on('pvpList', (input: SocketInput) => pvpBattle.pvpListController(socket, input))
+
     socket.on('pvpBattle', (input: SocketInput) => pvpBattle.pvpBattleController(socket, input));
 
     socket.on('enemyChoice', (input: SocketInput) => pvpBattle.enemyChoiceController(socket, input));

@@ -84,7 +84,7 @@ export default {
         const commandHandler: CommandHandler = {
             '도움말': npc.pvpHelp,
             '1': npc.pvpTalk,
-            '2': pvpBattle.welcomeUsers,
+            '2': npc.pvp,
             '3': village.NpcList,
         };
 

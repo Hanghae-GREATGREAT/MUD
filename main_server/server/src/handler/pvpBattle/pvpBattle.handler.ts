@@ -3,11 +3,11 @@ import { CommandHandler } from '../../interfaces/socket';
 import { pvpBattleService, CharacterService } from '../../services';
 import { pvpBattle } from '..';
 import { UserInfo, UserStatus } from '../../interfaces/user';
-
-export const pvpUsers = new Set();
+import { io } from '../../app';
+import { roomName, pvpUsers } from './pvpList.handler';
 
 export default {
-    help: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
+    pvpBattleHelp: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript: string = '';
         const tempLine =
             '=======================================================================\n';
@@ -23,11 +23,6 @@ export default {
     },
 
     welcomeUsers: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
-        pvpUsers.add(userInfo.username)
-
-        if (pvpUsers.size === 2) {
-           return pvpBattle.pvpStart(socket, CMD, userInfo)
-        }
         let tempScript: string = '';
         const tempLine =
             '=======================================================================\n\n';
@@ -73,7 +68,7 @@ export default {
         const script = tempLine + tempScript;
         const field = 'enemyChoice'
 
-        socket.emit('print', { script, userInfo, field });
+        io.to(roomName!).emit('fieldScriptPrint', { script, field });
     },
 
     // 마을로 보내는 로직 구현필요.

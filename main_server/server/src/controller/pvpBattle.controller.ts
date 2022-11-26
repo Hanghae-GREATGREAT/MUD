@@ -4,24 +4,42 @@ import { SocketInput, CommandHandler } from '../interfaces/socket';
 // import { pvpBattleCache } from '../db/cache';
 
 // 이렇게 임시보관하는것을 따로 저장해둘 DB나 cache가 있다면 어떨까
-import { pvpUsers } from '../handler/pvpBattle/pvpBattle.handler';
+import { pvpUsers } from '../handler/pvpBattle/pvpList.handler';
 export const enemyChoice = new Map();
 
 export default {
 
+    // 
+    pvpListController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
+        const [CMD1, CMD2]: string[] = line.trim().split(' ');
+        const commandHandler: CommandHandler = {
+            '도움말': pvpBattle.pvpListHelp,
+            '돌': pvpBattle.userLeave,
+            '1': pvpBattle.createRoom,
+            '2': pvpBattle.joinRoom
+        };
+
+        if (!commandHandler[CMD1]) {
+            return pvpBattle.pvpListWrongCommand(socket, CMD1, userInfo);
+        }
+
+        commandHandler[CMD1](socket, CMD2, userInfo, userStatus);
+
+        // 6명이 채워지면 자동으로 시작
+    },
     // pvp룸 입장 후 6명이 되기까지 기다리는중
     pvpBattleController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
 
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
         const commandHandler: CommandHandler = {
-            '도움말': pvpBattle.help,
+            '도움말': pvpBattle.pvpBattleHelp,
             '현': pvpBattle.getUsers,
             '돌': pvpBattle.userLeave
         };
 
         if (!commandHandler[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
-            pvpBattle.wrongCommand(socket, CMD1, userInfo);
+            pvpBattle.pvpBattleWrongCommand(socket, CMD1, userInfo);
             return;
         }
 
@@ -33,7 +51,10 @@ export default {
     // 전투가 시작된 후 공격 상대를 고른다.
     enemyChoiceController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
+
         const selectUser = [...pvpUsers];
+
+        if (userInfo.username===selectUser[Number(CMD1)-1]) return pvpBattle.selectWrong(socket, CMD1, userInfo, userStatus)
 
         // 2가지로 나뉘어한다. 1,2,3번 유저는 4,5,6번 유저를 선택할 수 있고,
         // 4,5,6번 유저는 1,2,3번 유저를 선택할 수 있다.
@@ -43,7 +64,7 @@ export default {
         // 선택하고 대기하는 필드로 넘기는 로직 필요할듯
         // 키는 선택한 유저, 벨류는 선택된 유저 식으로 저장해두고싶은데...
         const commandHandler: CommandHandler = {
-            '도움말': pvpBattle.help,
+            '도움말': pvpBattle.enemyChoiceHelp,
             1: pvpBattle.selecting,
             2: pvpBattle.selecting,
             // 3: pvpBattle.selecting,
@@ -57,7 +78,7 @@ export default {
 
         if (!commandHandler[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
-            const result = pvpBattle.wrongCommand(socket, CMD1, userInfo);
+            pvpBattle.enemyChoiceWrongCommand(socket, CMD1, userInfo);
             return;
         }
 
@@ -67,18 +88,22 @@ export default {
     // 공격할 수단을 선택
     attackChoiceController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
-
+        if (CMD1 === '도움말') return pvpBattle.attackChoiceHelp(socket, CMD1, userInfo, userStatus)
+        if (!CMD2) return pvpBattle.attackChoiceWrongCommand(socket, CMD1, userInfo)
         // 2가지로 나뉘어한다. 1,2,3번 유저는 4,5,6번 유저를 선택할 수 있고,
         // 4,5,6번 유저는 1,2,3번 유저를 선택할 수 있다.
         // 공격 대상을 지정한 값을 가지고 있을 것이 필요함.
+        if (CMD2 === '기본공격') {
+            pvpBattle.selectSkills(socket, CMD2, userInfo, userStatus);
+        } else if (CMD1==='1' && CMD2 !== '기본공격') return pvpBattle.attackChoiceWrongCommand(socket, CMD1, userInfo)
+        if (!userStatus.skill[Number(CMD1)-2].name || userStatus.skill[Number(CMD1)-2].name !== CMD2) return pvpBattle.isSkills(socket, CMD1, userInfo, userStatus)
 
         // 선택하고 대기하는 필드로 넘기는 로직 필요할듯
         // 키는 선택한 유저, 벨류는 선택된 스킬 식으로 저장해두고싶은데...
         const commandHandler: CommandHandler = {
-            '도움말': pvpBattle.help,
-            // 1: pvpBattle.selecting,
-            // 2: pvpBattle.selecting,
-            // 3: pvpBattle.selecting,
+            1: pvpBattle.selectSkills,
+            2: pvpBattle.selectSkills,
+            3: pvpBattle.selectSkills,
             // 4: pvpBattle.selecting,
             // 5: pvpBattle.selecting,
             // 6: pvpBattle.selecting,
@@ -89,7 +114,7 @@ export default {
 
         if (!commandHandler[CMD1]) {
             console.log(`is wrong command : '${CMD1}'`);
-            const result = pvpBattle.wrongCommand(socket, CMD1, userInfo);
+            pvpBattle.attackChoiceWrongCommand(socket, CMD1, userInfo);
             return;
         }
 
@@ -122,3 +147,23 @@ export default {
 //     2:['test0005','test0002'],
 //     3:['test0006','test0003']
 // }
+
+// const rooms = {
+//     roomName1:[{
+//         socketId:Socket.id,
+//         userStatus
+//     },{
+//         socketId:Socket.id,
+//         userStatus
+//     },{
+//         socketId:Socket.id,
+//         userStatus
+//     }],
+// roomName2:[{
+// socketId:Socket.id,
+// userStatus
+// }],
+// roomName3:[{
+// socketId:Socket.id,
+// userStatus
+// }]}

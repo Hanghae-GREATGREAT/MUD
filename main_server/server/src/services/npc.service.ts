@@ -206,25 +206,6 @@ class NpcService {
 
         return '샤크스 경 : \n' + scripts[randomIndex];
     }
-
-    /** 샤크스 경 시련의장 입장 */
-    async pvp(characterId: number): Promise<string> {
-        // 추후 pvp룸 목록 보여주는 역할하면 될듯
-
-        // 캐릭터 정보 불러오기
-        const Character = await Characters.findByPk(characterId);
-
-        if (!Character) {
-            throw new Error('PVP Error : Character not found');
-        }
-
-        let tempScript: string =
-            '!!!!!!!!!!!!!미구현 !!!!!!!!!!\n\n 테스트용으로 1번만 입장 가능합니다. \n\n';
-        
-
-        return tempScript;
-    }
-
 }
 
 export default new NpcService();

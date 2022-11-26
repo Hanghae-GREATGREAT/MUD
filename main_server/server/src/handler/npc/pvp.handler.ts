@@ -1,7 +1,7 @@
 import { Socket } from 'socket.io';
 import { UserInfo } from '../../interfaces/user';
 import { NpcService } from '../../services';
-
+import { io } from '../../app';
 
 export default {
     pvpHelp: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
@@ -35,17 +35,31 @@ export default {
     pvp: async (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         // 여기서 pvp 입장하는 코드
         let tempScript: string = '';
-        const tempLine =
-            '=======================================================================\n';
 
-        const actionScript: string = await NpcService.pvp(
-            Number(userInfo.characterId),
-        );
-        tempScript += actionScript;
-        tempScript += '1 - pvp룸 테스트.\n';
+        const tempLine =
+            '=======================================================================\n\n';
+
+        tempScript += '샤크스 경 : \n\n';
+        tempScript += '3 : 3 전투가 이루어지는 전장에 어서오시게 ! \n\n';
+
+        // pvpRoom 목록을 보여준다.
+        const { sids, rooms } = io.sockets.adapter;
+        const publicRooms:string[] = [];
+        rooms.forEach((_, key) => {
+            if (sids.get(key) === undefined) publicRooms.push(key);
+        });
+
+        if (!publicRooms[0]) tempScript += '생성된 방이 존재하지 않습니다.'
+
+        publicRooms.map((roomName)=>{
+            tempScript += `${roomName}, `
+        })
+
+        tempScript += '\n\n1. 방생성 - >1 방이름< 으로 입력하게나 ! \n';
+        tempScript += '2. 방입장 - >2 방이름< 으로 입력하게나 !\n';
 
         const script = tempLine + tempScript;
-        const field = 'pvpBattle';
+        const field = 'pvpList';
 
         socket.emit('print', { script, userInfo, field });
     },
