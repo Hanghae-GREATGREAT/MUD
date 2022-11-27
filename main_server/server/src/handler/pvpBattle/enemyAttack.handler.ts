@@ -49,20 +49,35 @@ export default {
 
         for (let i = 0; i < userNames.length; i++) await Characters.increment({hp:-realDamage[i]},{where:{name:enemyChoice.get(userNames[i]!)}})
         
+        // 임시 로직 - 1:1 적용
         // 1. 사망한 유저 처리
-        // for (let i = 0; i < userNames.length; i++) {
-        //     if (rooms.get(roomName)[i].userStatus.hp <= 0) {
-        //         let tempScript: string = '';
-        //         const tempLine =
-        //             '=======================================================================\n\n';
-        //         const script = tempLine + tempScript;
-        //         const field = 'enemyChoice';
-        //         io.to(roomName!).emit('fieldScriptPrint', { field, script });
-        //         return pvpBattle.userLeave(socket, '', userInfo)
-        //     }
-        // }
+        for (let i = 0; i < userNames.length; i++) {
+            const characters = await Characters.findOne({where:{name:userNames[i]!}})
+            if (characters!.hp <= 0) {
+                let tempScript: string = '';
+                const tempLine =
+                    '=======================================================================\n\n';
+                    tempScript += 'A팀 승리 !\n';
+                    tempScript += '=======================================================================\n\n';
+                    tempScript += `방문할 NPC의 번호를 입력해주세요.\n\n`;
+                    tempScript += `1. 프라데이리 - 모험의 서\n\n`;
+                    tempScript += `2. 아그네스 - 힐러의 집\n\n`;
+                    tempScript += `3. 퍼거스 - 대장장이\n\n`;
+                    tempScript += `4. 에트나 - ???\n\n`;
+                    tempScript += `5. 샤크스 경 - 시련의 장 관리인\n\n`
 
+                const script = tempLine + tempScript;
+                const field = 'village';
+                io.to(roomName!).emit('fieldScriptPrint', { field, script });
         // 2. 종료 후 모든유저 maxHp까지 회복
+                for (let y = 0; y < userNames.length; y++){
+                    const characterHp = await Characters.findOne({where:{name:userNames[y]!}})
+                    characterHp!.update({hp: characterHp!.maxhp},{where:{name:userNames[y]!}})
+                }
+                return;
+            }
+        }
+
 
         let tempScript: string = '';
         const tempLine =
