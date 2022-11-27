@@ -1,17 +1,9 @@
 import { Socket } from 'socket.io';
-import { CommandHandler } from '../../interfaces/socket';
-import { pvpBattleService, CharacterService } from '../../services';
 import { pvpBattle } from '..';
 import { UserInfo, UserStatus } from '../../interfaces/user';
-import { pvpUsers, roomName } from './pvpList.handler'; 
-
 import { enemyChoice } from '../../controller/pvpBattle.controller';
-import { io } from '../../app';
-
-import { rooms } from './pvpList.handler';
 
 export const selectSkills = new Map();
-
 export default {
     attackChoiceHelp: (socket: Socket, CMD: string | undefined, userInfo: UserInfo, userStatus: UserStatus) => {
         let tempScript: string = '';
@@ -32,9 +24,8 @@ export default {
     selectSkills: (socket: Socket, CMD: string | undefined, userInfo: UserInfo, userStatus: UserStatus) => {
         // 유저가 고른 스킬을 이름으로 받아오고 스킬을 선택한 유저가 타겟팅한 상대 유저와 함께 .set 해준다.
         selectSkills.set(enemyChoice.get(userInfo.username), CMD!.trim())
-
         if (selectSkills.size === 2) {
-            pvpBattle.enemyAttack(socket, CMD, userInfo, userStatus)
+            return pvpBattle.enemyAttack(socket, CMD, userInfo, userStatus)
         }
 
         let tempScript: string = '';
@@ -55,10 +46,25 @@ export default {
             '=======================================================================\n\n';
 
         tempScript += '사용 가능한 스킬이 아닙니다.\n';
+        tempScript += `입력한 스킬명 : ${CMD}\n`;
 
         const script = tempLine + tempScript;
         const field = 'attackChoice';
 
         socket.emit('printBattle', { field, script, userInfo, userStatus });
-    }
+    },
+
+    attackChoiceWrongCommand: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
+        if (!CMD) CMD = '입력하지 않으셨습니다.'
+
+        let tempScript: string = '';
+
+        tempScript += `입력값을 확인해주세요.\n`;
+        tempScript += `현재 입력 : '${CMD}'\n`;
+        tempScript += `사용가능한 명령어가 궁금하시다면 '도움말'을 입력해보세요.\n`;
+
+        const script = 'Error : \n' + tempScript;
+        const field = 'attackChoice';
+        socket.emit('print', { script, userInfo, field });
+    },
 }

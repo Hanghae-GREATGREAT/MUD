@@ -12,6 +12,9 @@ export default {
     // 
     pvpListController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
+
+        if (!CMD2) return pvpBattle.pvpListWrongCommand(socket, '방이름을 입력해주세요', userInfo)
+
         const commandHandler: CommandHandler = {
             '도움말': pvpBattle.pvpListHelp,
             '돌': pvpBattle.userLeave,
@@ -86,27 +89,29 @@ export default {
     },
 
     // 공격할 수단을 선택
-    attackChoiceController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
-        const [CMD1, CMD2]: string[] = line.trim().split(' ');
-        if (CMD1 === '도움말') return pvpBattle.attackChoiceHelp(socket, CMD1, userInfo, userStatus)
-        if (!CMD2) return pvpBattle.attackChoiceWrongCommand(socket, CMD1, userInfo)
         // 2가지로 나뉘어한다. 1,2,3번 유저는 4,5,6번 유저를 선택할 수 있고,
         // 4,5,6번 유저는 1,2,3번 유저를 선택할 수 있다.
         // 공격 대상을 지정한 값을 가지고 있을 것이 필요함.
-        if (CMD2 === '기본공격') {
-            pvpBattle.selectSkills(socket, CMD2, userInfo, userStatus);
-        } else if (CMD1==='1' && CMD2 !== '기본공격') return pvpBattle.attackChoiceWrongCommand(socket, CMD1, userInfo)
-        if (!userStatus.skill[Number(CMD1)-2].name || userStatus.skill[Number(CMD1)-2].name !== CMD2) return pvpBattle.isSkills(socket, CMD1, userInfo, userStatus)
+    attackChoiceController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
+        const [CMD1, CMD2]: string[] = line.trim().split(' ');
+        if (CMD1 === '도움말') return pvpBattle.attackChoiceHelp(socket, CMD1, userInfo, userStatus)
+        else if (!CMD2) return pvpBattle.attackChoiceWrongCommand(socket, CMD2, userInfo)
+        else if (CMD1==='1' && CMD2 === '기본공격') return pvpBattle.selectSkills(socket, CMD2, userInfo, userStatus);
+        else if (CMD1==='1' && CMD2 !== '기본공격') return pvpBattle.attackChoiceWrongCommand(socket, CMD2, userInfo)
+        else if (!userStatus.skill[Number(CMD1)-2]) return pvpBattle.isSkills(socket, CMD2, userInfo, userStatus)
+        else if (userStatus.skill[Number(CMD1)-2].name !== CMD2) return pvpBattle.isSkills(socket, CMD2, userInfo, userStatus)
+        /**
+         * 1. 도움말
+         * 2. 기본공격 입력 확인
+         * 3. 가지고 있는 스킬인지 확인
+         */
 
         // 선택하고 대기하는 필드로 넘기는 로직 필요할듯
         // 키는 선택한 유저, 벨류는 선택된 스킬 식으로 저장해두고싶은데...
         const commandHandler: CommandHandler = {
-            1: pvpBattle.selectSkills,
             2: pvpBattle.selectSkills,
             3: pvpBattle.selectSkills,
-            // 4: pvpBattle.selecting,
-            // 5: pvpBattle.selecting,
-            // 6: pvpBattle.selecting,
+            4: pvpBattle.selectSkills,
         };
 
         // 모든 유저가 선택이 끝났는지 확인하는 절차 필요
@@ -133,37 +138,3 @@ export default {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
     }
 }
-
-// 이런식으로 추가되게 하고 중복선택 혹은 본인 또는 본인이 속한팀 선택 못하게 구성.
-
-// export const selectTeamA = {
-//     1:['test0001','test0004'],
-//     2:['test0002','test0005'],
-//     3:['test0003','test0006']
-// }
-
-// export const selectTeamB = {
-//     1:['test0004','test0001'],
-//     2:['test0005','test0002'],
-//     3:['test0006','test0003']
-// }
-
-// const rooms = {
-//     roomName1:[{
-//         socketId:Socket.id,
-//         userStatus
-//     },{
-//         socketId:Socket.id,
-//         userStatus
-//     },{
-//         socketId:Socket.id,
-//         userStatus
-//     }],
-// roomName2:[{
-// socketId:Socket.id,
-// userStatus
-// }],
-// roomName3:[{
-// socketId:Socket.id,
-// userStatus
-// }]}

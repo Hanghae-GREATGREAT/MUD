@@ -1,10 +1,8 @@
 import { Socket } from 'socket.io';
-import { CommandHandler } from '../../interfaces/socket';
-import { pvpBattleService, CharacterService } from '../../services';
-import { pvpBattle } from '..';
 import { UserInfo, UserStatus } from '../../interfaces/user';
 import { io } from '../../app';
 import { roomName, pvpUsers } from './pvpList.handler';
+import { Characters } from '../../db/models';
 
 export default {
     pvpBattleHelp: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
@@ -22,20 +20,19 @@ export default {
         socket.emit('print', { script, userInfo, field });
     },
 
-    welcomeUsers: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
-        let tempScript: string = '';
-        const tempLine =
-            '=======================================================================\n\n';
+    // welcomeUsers: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
+    //     let tempScript: string = '';
+    //     const tempLine =
+    //         '=======================================================================\n\n';
 
-        tempScript += `${userInfo.username}님이 입장하셨습니다.\n\n`
+    //     tempScript += `${userInfo.username}님이 입장하셨습니다.\n\n`
 
-        const script = tempLine + tempScript;
-        let field = 'pvpBattle';
+    //     const script = tempLine + tempScript;
+    //     let field = 'pvpBattle';
 
-        socket.emit('print', { script, userInfo, field });
-    },
+    //     socket.emit('print', { script, userInfo, field });
+    // },
 
-    // 이건 프론트단에서 하는게 나을려나 ?
     getUsers:(socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
 
         let tempScript: string = '';
@@ -51,18 +48,24 @@ export default {
     },
 
     // 6명이 되면 게임시작
-    pvpStart:(socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
+    pvpStart: async (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
 
         let tempScript: string = '';
         const tempLine =
             '=======================================================================\n\n';
 
-        const selectUser = [...pvpUsers]
-        tempScript += `샤크스 경 : 게임은 시작되었다네 !\n`;
-        tempScript += `공격할 유저를 선택하게나.\n\n`;
+        const names = [...pvpUsers]
+        const userInfos = [];
 
-        for (let i = 0; i < selectUser.length; i++) {
-            tempScript += `${i+1}. ${selectUser[i]}\n`;
+        for (let i = 0; i< names.length; i++) {
+           userInfos.push(await Characters.findOne({where:{name:names[i]!}}))
+        }
+
+        tempScript += `샤크스 경 : \n`;
+        tempScript += `공격할 유저를 선택하게나 !\n\n`;
+
+        for (let i = 0; i < names.length; i++) {
+            tempScript += `${i+1}. Lv${userInfos[i]?.level} ${names[i]} - hp: ${userInfos[i]?.hp}/${userInfos[i]?.maxhp}, attack: ${userInfos[i]?.attack}, defense: ${userInfos[i]?.defense}\n`;
         }
 
         const script = tempLine + tempScript;
@@ -93,7 +96,7 @@ export default {
         socket.emit('print', { script, userInfo, field });
     },
 
-    wrongCommand: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
+    pvpBattleWrongCommand: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript: string = '';
 
         tempScript += `입력값을 확인해주세요.\n`;
@@ -105,19 +108,3 @@ export default {
         socket.emit('print', { script, userInfo, field });
     },
 }
-
-// export function pvpBattleList(name: string) {
-//     // 던전 목록 불러오기
-//     const pvpBattleList = pvpBattleService.getPvpList();
-//     console.log(pvpBattleList);
-
-//     // 임시 스크립트 선언
-//     const tempLine =
-//         '=======================================================================\n';
-//     let tempScript: string = '';
-
-//     tempScript += `${name}은(는) 깊은 심연으로 발걸음을 내딛습니다.\n\n`;
-//     tempScript += `${pvpBattleList}`;
-
-//     return tempLine + tempScript;
-// }

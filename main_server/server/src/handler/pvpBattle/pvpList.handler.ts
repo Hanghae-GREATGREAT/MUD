@@ -3,7 +3,7 @@ import { UserInfo } from '../../interfaces/user';
 import { pvpBattle } from '..';
 import { io } from '../../app';
 
-export const pvpUsers = new Set();
+export let pvpUsers = new Set();
 
 export let roomName:string | undefined;
 

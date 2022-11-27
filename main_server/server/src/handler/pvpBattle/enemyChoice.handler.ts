@@ -1,6 +1,4 @@
 import { Socket } from 'socket.io';
-import { CommandHandler } from '../../interfaces/socket';
-import { pvpBattleService, CharacterService } from '../../services';
 import { pvpBattle } from '..';
 import { UserInfo, UserStatus } from '../../interfaces/user';
 import { pvpUsers, roomName } from './pvpList.handler'; 
@@ -107,30 +105,6 @@ export default {
         socket.emit('print', { script, userInfo, field });
     },
 
-    pvpListWrongCommand: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
-        let tempScript: string = '';
-
-        tempScript += `입력값을 확인해주세요.\n`;
-        tempScript += `현재 입력 : '${CMD}'\n`;
-        tempScript += `사용가능한 명령어가 궁금하시다면 '도움말'을 입력해보세요.\n`;
-
-        const script = 'Error : \n' + tempScript;
-        const field = 'pvpList';
-        socket.emit('print', { script, userInfo, field });
-    },
-
-    pvpBattleWrongCommand: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
-        let tempScript: string = '';
-
-        tempScript += `입력값을 확인해주세요.\n`;
-        tempScript += `현재 입력 : '${CMD}'\n`;
-        tempScript += `사용가능한 명령어가 궁금하시다면 '도움말'을 입력해보세요.\n`;
-
-        const script = 'Error : \n' + tempScript;
-        const field = 'pvpBattle';
-        socket.emit('print', { script, userInfo, field });
-    },
-
     enemyChoiceWrongCommand: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript: string = '';
 
@@ -140,30 +114,6 @@ export default {
 
         const script = 'Error : \n' + tempScript;
         const field = 'enemyChoice';
-        socket.emit('print', { script, userInfo, field });
-    },
-
-    attackChoiceWrongCommand: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
-        let tempScript: string = '';
-
-        tempScript += `입력값을 확인해주세요.\n`;
-        tempScript += `현재 입력 : '${CMD}'\n`;
-        tempScript += `사용가능한 명령어가 궁금하시다면 '도움말'을 입력해보세요.\n`;
-
-        const script = 'Error : \n' + tempScript;
-        const field = 'attackChoice';
-        socket.emit('print', { script, userInfo, field });
-    },
-
-    anemyAttackWrongCommand: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
-        let tempScript: string = '';
-
-        tempScript += `입력값을 확인해주세요.\n`;
-        tempScript += `현재 입력 : '${CMD}'\n`;
-        tempScript += `사용가능한 명령어가 궁금하시다면 '도움말'을 입력해보세요.\n`;
-
-        const script = 'Error : \n' + tempScript;
-        const field = 'anemyAttack';
         socket.emit('print', { script, userInfo, field });
     },
 }
