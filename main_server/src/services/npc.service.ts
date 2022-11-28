@@ -120,7 +120,8 @@ class NpcService {
 
         if (randomInt < successRate) {
             Character.update({
-                attack: Character.level + 10 + (weaponRate + 1) * 10,
+                attack:
+                    Character.attack - weaponRate * 10 + (weaponRate + 1) * 10,
                 item: `${weaponRate + 1}:1`,
             });
             tempScript += '강화에 성공했습니다!! => 무기레벨 + 1\n\n';
@@ -132,7 +133,8 @@ class NpcService {
             tempScript += '강화에 실패했습니다..\n\n';
             tempScript += '퍼거스 : 어이쿠.. 손이 미끄러졌네.. 헐..\n';
             tempScript += '퍼거스 : ...\n';
-            tempScript += '퍼거스 : 자, 자, 이미 이렇게 된거, 새로하나 장만... 응? 응?\n\n';
+            tempScript +=
+                '퍼거스 : 자, 자, 이미 이렇게 된거, 새로하나 장만... 응? 응?\n\n';
         }
 
         return tempScript;
@@ -160,7 +162,8 @@ class NpcService {
             throw new Error('Gamble Error : Character not found');
         }
 
-        let tempScript: string = '다섯 번의 주사위 게임을 통해 랜덤한 성장 효과를 받을 수 있습니다.\n\n';
+        let tempScript: string =
+            '다섯 번의 주사위 게임을 통해 랜덤한 성장 효과를 받을 수 있습니다.\n\n';
         let victoryPoint: number = 0;
 
         for (let i = 0; i < 5; i++) {

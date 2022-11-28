@@ -1,6 +1,7 @@
 import { Socket } from 'socket.io';
 import { UserCache, UserInfo, UserStatus } from './user';
 
+
 interface ReturnScript {
     script: string;
     field: string;
@@ -10,7 +11,7 @@ interface ReturnScript {
     error?: boolean | Error;
 }
 
-type BattleReport = (socket: Socket, user: UserStatus, script: string) => Promise<void>;
+type BattleReport = (socket: Socket, user: UserStatus, script: string) => Promise<void>
 
 interface BattleResult {
     [key: string]: BattleReport;
@@ -49,4 +50,12 @@ interface CommandHandler {
     [key: string]: commandHandler;
 }
 
-export { ReturnScript, BattleResult, ChatInput, ChatOutput, CommandHandler, SocketInput, ChatJoiner };
+export {
+    ReturnScript,
+    BattleResult,
+    ChatInput,
+    ChatOutput,
+    ChatJoiner,
+    CommandHandler,
+    SocketInput,
+};

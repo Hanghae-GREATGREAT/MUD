@@ -13,7 +13,7 @@ export default {
         socket: Socket, CMD: string | undefined, 
         userInfo: UserInfo, userStatus: UserStatus
     ) => {
-        
+
         let tempScript: string = '';
         const tempLine =
             '=======================================================================\n';
