@@ -1,19 +1,18 @@
 import { Socket } from 'socket.io';
 import { redis } from '../db/cache';
 import { ChatInput } from '../interfaces/socket';
-
+import { io } from '../app';
+import { chatJoiner } from '../handler/front/home.handler';
 
 export default {
     chatController: (socket: Socket, { name, message, field }: ChatInput) => {
         redis.set(socket.id, name, { EX: 60 * 5 });
 
         const script = `${name}: ${message}\n`;
-        socket.broadcast.emit('chat', { script, field });
+        socket.to(chatJoiner[socket.id]).emit('chat', { script, field });
         socket.emit('chat', { script, field });
-    }
-}
-
-
+    },
+};
 
 // socket.on('info', ({ name }: UserSession)=>{
 //     CharacterService.findOneByName(name).then((character)=>{

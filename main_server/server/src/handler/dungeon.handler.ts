@@ -1,13 +1,13 @@
 import { Socket } from 'socket.io';
-import { DungeonService } from '../services';
+import { DungeonService, chatService } from '../services';
 import { battleCache } from '../db/cache';
 import { front } from '.';
 import { homeScript } from '../scripts';
 import { UserInfo } from '../interfaces/user';
-
+import { io } from '../app';
+import { roomList, chatJoiner } from './front/home.handler';
 
 export default {
-    
     help: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript = '';
 
@@ -22,20 +22,19 @@ export default {
         socket.emit('print', { script, userInfo, field });
     },
 
-    getDungeonList: async(socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
+    getDungeonList: async (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         console.log('dungeon list.');
 
-        const result = await front.checkUser(userInfo)
+        const result = await front.checkUser(userInfo);
         if (result) {
             const script = homeScript.loadHome;
-            const field = 'front'
+            const field = 'front';
             socket.emit('print', { script, userInfo, field });
         }
         // 던전 목록 불러오기
         const dungeonList = DungeonService.getDungeonList();
         // 임시 스크립트 선언
-        const tempLine =
-            '=======================================================================\n';
+        const tempLine = '=======================================================================\n';
         let tempScript: string = '';
 
         tempScript += `${userInfo.name}은(는) 깊은 심연으로 발걸음을 내딛습니다.\n\n`;
@@ -43,7 +42,25 @@ export default {
 
         const script = tempLine + tempScript;
         const field = 'dungeon';
-        
+
+        // 채팅 재참가
+        if (!chatJoiner[socket.id]) {
+            // 채팅 참가
+            const resultArray = chatService.enterChat(socket.id);
+            const enterIndex = resultArray[0];
+
+            chatJoiner[`${socket.id}`] = `${enterIndex}`;
+
+            socket.join(`${enterIndex}`);
+            socket.emit('reEnterChat');
+            io.to(`${enterIndex}`).emit(
+                'enterChat',
+                userInfo.username,
+                roomList.get(enterIndex)!.size,
+                resultArray[1],
+            );
+        }
+
         socket.emit('print', { script, userInfo, field, chat: true });
     },
 
@@ -51,8 +68,7 @@ export default {
         console.log('dungeon.handler.ts: dungeonInfo()');
 
         // 임시 스크립트 선언
-        const tempLine =
-            '=======================================================================\n';
+        const tempLine = '=======================================================================\n';
         let tempScript: string = '';
         let nextField = '';
 
@@ -106,8 +122,7 @@ export function dungeonList(name: string) {
     console.log(dungeonList);
 
     // 임시 스크립트 선언
-    const tempLine =
-        '=======================================================================\n';
+    const tempLine = '=======================================================================\n';
     let tempScript: string = '';
 
     tempScript += `${name}은(는) 깊은 심연으로 발걸음을 내딛습니다.\n\n`;
