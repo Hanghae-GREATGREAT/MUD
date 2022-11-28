@@ -1,7 +1,6 @@
 import { InferAttributes } from 'sequelize';
 import { Items, Skills } from '../db/models';
 
-
 interface SignupForm {
     username: string;
     password: string;
@@ -39,14 +38,15 @@ interface UserStatus {
     hp: number;
     mp: number;
     exp: number;
-    item: InferAttributes<Items, { omit: never; }>[] // | string;
-    skill: InferAttributes<Skills, { omit: never; }>[] // | string;
+    item: InferAttributes<Items, { omit: never }>[]; // | string;
+    skill: InferAttributes<Skills, { omit: never }>[]; // | string;
     // item: Items[];
     // skill: Skills[];
 
     cooldown?: number;
     isDead?: string;
     levelup?: boolean;
+    pvpRoom?: string;
 }
 
 interface UserInfo {
@@ -56,10 +56,4 @@ interface UserInfo {
     name: string;
 }
 
-
-export {
-    SignupForm,
-    UserCache,
-    UserStatus,
-    UserInfo
-}
+export { SignupForm, UserCache, UserStatus, UserInfo };

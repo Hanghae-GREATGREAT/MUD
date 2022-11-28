@@ -1,15 +1,16 @@
-import { CharacterService } from '../services'
-import { Socket } from 'socket.io'
+import { Socket } from 'socket.io';
+import { CharacterService } from '../services';
 import { redis } from '../db/cache';
-import { CommandHandler, SocketInput } from '../interfaces/socket';
+import { roomList, chatJoiner } from '../handler/front/home.handler';
 import { front, global } from '../handler';
+import { CommandHandler, SocketInput } from '../interfaces/socket';
 
 
 export default {
 
     globalController: (socket: Socket, { line, userInfo, option }: SocketInput) => {
         const [CMD1, CMD2]: string[] = line.trim().toUpperCase().split(' ');
-console.log(CMD1, CMD2, option);
+        
         const commandHandler: CommandHandler = {
             'HOME': global.backToHome,
             'OUT': front.signout,
@@ -30,12 +31,18 @@ console.log(CMD1, CMD2, option);
 
         callback({
             status: 200,
-            userStatus
+            userStatus,
         });
     },
 
     disconnect: (socket: Socket) => {
+        if (chatJoiner[socket.id]) {
+            const joinedRoom = Number(chatJoiner[socket.id]);
+            roomList.get(joinedRoom)!.delete(socket.id);
+            delete chatJoiner[socket.id];
+            console.log(`roomList: ${roomList}\nchatJoiner: ${chatJoiner}`);
+        }
         redis.del(socket.id);
-        // console.log(socket.id, 'SOCKET DISCONNECTED');
-    }
-}
+        console.log(socket.id, 'SOCKET DISCONNECTED');
+    },
+};
