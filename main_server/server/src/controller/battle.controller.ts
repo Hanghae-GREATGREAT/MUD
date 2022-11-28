@@ -6,7 +6,7 @@ import { battleCache } from '../db/cache';
 export default {
 
     battleController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
-        console.log('battle.controller.ts: battleController', userStatus);
+        console.log('battle.controller.ts: battleController', userStatus.name);
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
 
         if (CMD1 === '자동1') {

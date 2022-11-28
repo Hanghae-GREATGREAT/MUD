@@ -24,7 +24,8 @@ const fs = require('fs');
 const path = require('path');
 
 const URL = 'http://0.0.0.0:3333';
-const MAX_CLIENTS = 100;
+const NAME = 'autoSingle'
+const MAX_CLIENTS = 1;
 const POLLING_PERCENTAGE = 0.05;
 const CLIENT_CREATE_INTERVAL_IN_MS = 500;
 const SCENARIO_INTERVAL_IN_MS = 10000;
@@ -99,12 +100,9 @@ const createClient = async(i) => {
 
         await sleep(BATTLE_RUN_TIME);
 
-        const r4 = await emit('autoBattle', { line: '중단', userInfo, userStatus, option });
-        userInfo = r4.userInfo;
-        console.log('중단');
+        await emit('autoBattle', { line: '중단', userInfo, userStatus, option });
 
         await emit('dungeon', { line: 'out', userInfo, userStatus, option });
-        console.log('로그아웃');
 
         // const end = performance.now().toFixed(2);
         // performanceTime.push(end-start);
@@ -117,20 +115,21 @@ const createClient = async(i) => {
 }
 // createClient(0);
 const main = async() => {
-    const { totalMemory, availableMemory, userCpuSeconds, cpuConsumptionPercent } = await getResourceUsage(`${URL}/api/resource`);
-    const totalMemoryMb = (totalMemory/1024/1024).toFixed(2);
-    const availableMemoryMb = (availableMemory/1024/1024).toFixed(2);
-    console.log(
-        'SERVER CURRENT STATUS\n'+
-        `total memory: ${totalMemoryMb}/${availableMemoryMb}mb, cpu usuage: ${userCpuSeconds}ms/sec, cpu occupied: ${cpuConsumptionPercent}%
-    `);
     for(let i=0; i<MAX_CLIENTS; i++) {
         await sleep(CLIENT_CREATE_INTERVAL_IN_MS);
         createClient(i);
     }
 };
 
-(() => {
+(async() => {
+    const { totalMemory, availableMemory, userCpuSeconds, cpuConsumptionPercent } = await getResourceUsage(`${URL}/api/resource`);
+    const totalMemoryMb = (totalMemory/1024/1024).toFixed(2);
+    const availableMemoryMb = (availableMemory/1024/1024).toFixed(2);
+    const INITAL_STATUS = (
+        'SERVER INITIAL STATUS\n'+
+        `total memory: ${totalMemoryMb}/${availableMemoryMb}mb, cpu usuage: ${userCpuSeconds}ms/sec, cpu occupied: ${cpuConsumptionPercent}%\n`
+    );
+
     const start = Date.now() + 1000*60*60*9;
     main();
 
@@ -141,7 +140,7 @@ const main = async() => {
     const minute = ('00'+date.getMinutes()).slice(-2);
 
     // 로그 생성
-    const FILE_NAME = `autoSingle-${MAX_CLIENTS}-${BATTLE_RUN_TIME}-${CLIENT_CREATE_INTERVAL_IN_MS}(${day} ${hour}${minute}).txt`;
+    const FILE_NAME = `${NAME}-${MAX_CLIENTS}-${BATTLE_RUN_TIME}-${CLIENT_CREATE_INTERVAL_IN_MS}(${day} ${hour}${minute}).txt`;
     const FILE_PATH = path.join(__dirname, 'logs', FILE_NAME);
     fs.writeFileSync(FILE_PATH, '');
     console.log(`log file '${FILE_NAME}' created`);
@@ -229,7 +228,8 @@ const main = async() => {
                     `start: ${new Date(start)}\n`+
                     `end: ${new Date(end)}\n`+
                     `time: ${min}m ${sec}s\n\n`+
-                    `scenario: front/in >> sign:20 >> sign:21 >> front/out\n`+
+                    `scenario: front/in >> sign:20 >> sign:21 >> front/D\n`+
+                    `dungeon/입장 1 >> battle/자동 >> sleep(${BATTLE_RUN_TIME}) >> autoBattle/중단 >> dungeon/out\n\n`+
                     `MAX_CLIENTS: ${MAX_CLIENTS}\n`+
                     `CLIENT_CREATE_INTERVAL_IN_MS: ${CLIENT_CREATE_INTERVAL_IN_MS}\n`+
                     `SCENARIO_REPEAT_PER_USER: ${SCENARIO_REPEAT_PER_USER}\n\n`+
@@ -242,6 +242,7 @@ const main = async() => {
                     `average memory usage: ${AVG_MEMORY}/${availableMemoryMb}MB\n`+
                     `average cpu usage: ${AVG_CPU_USAGE}ms/sec\n`+
                     `average cpu consumption: ${AVG_CPU_CONSUMPTION}%\n\n\n`+
+                    `${INITAL_STATUS}\n`+
                     `### DETAIL LOG ###\n\n`;
     
                 fs.readFile(FILE_PATH, (err, data) => {
