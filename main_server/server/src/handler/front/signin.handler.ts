@@ -30,8 +30,14 @@ export default {
         const username = userInfo.username;
         const password = CMD;
         const result = await UserService.signin({ username, password });
+        if (!result) {
+            const script = signinScript.incorrect;
+            const field = 'front';
+            socket.emit('print', { field, script, userInfo: {} });
+            return;
+        }
 
-        const userId = result?.userId || 0;
+        const userId = result.userId;
         const character = await CharacterService.findOneByUserId(userId);
 
         const userSession = {
@@ -50,8 +56,8 @@ export default {
                 name: userStatus!.name,
             }
 
-            const script = result ? signinScript.title: signinScript.incorrect;
-            const field = result ? 'front' : 'sign:21';
+            const script = signinScript.title;
+            const field = 'front';
 
             socket.emit('printBattle', { field, script, userInfo, userStatus });
         }

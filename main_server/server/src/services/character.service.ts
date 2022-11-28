@@ -135,7 +135,7 @@ class CharacterService {
         characterId: number | string,
         damage: number,
         cost: number,
-        monsterId: number | string,
+        monsterId?: number | string,
     ): Promise<UserStatus> {
         const result = await this.getUserStatus(characterId);
         // const questId = await QuestCompletes.findOne()

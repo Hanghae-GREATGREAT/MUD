@@ -15,6 +15,7 @@ export default {
         tempScript += '목록 - 던전 목록을 불러옵니다.\n';
         tempScript += '입장 (번호) - 던전에 들어갑니다.\n';
         tempScript += '돌아가기 - 이전 단계로 돌아갑니다.\n';
+        tempScript += '글로벌 명령어 : g [OPTION]\n'
 
         const script = tempScript;
         const field = 'dungeon';
@@ -23,7 +24,7 @@ export default {
     },
 
     getDungeonList: async(socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
-        console.log('dungeon list.');
+        // console.log('dungeon list.');
 
         const result = await front.checkUser(userInfo)
         if (result) {
