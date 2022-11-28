@@ -15,26 +15,18 @@ const commandRouter = {
     'enhance': gerneralSend,
     'gamble': gerneralSend,
 
-    'global': gerneralSend,
+    'global': globalSend,
 }
 
-function gerneralSend(field, option) {
-    console.log('general send', field, option)
-    const line = commendInput.val();
-    commendInput.val('');
-    const userInfo = localStorage.getItem('user');
-    const userStatus = status.get();
+function gerneralSend(field, input) {
+    console.log('general send', field, input.line)
 
-    toServer.volatile.emit(field, { line, userInfo: JSON.parse(userInfo), userStatus, option });
+    toServer.volatile.emit(field, input);
 }
 
-function battleSend(field, option) {
-    console.log('battle send', field, option)
-    const line = commendInput.val();
-    commendInput.val('');
-    const userInfo = localStorage.getItem('user');
-    const userStatus = status.get();
-    const { cooldown } = userStatus;
+function battleSend(field, input) {
+    console.log('battle send', field, input.line)
+    const { cooldown } = input.userStatus;
 
     if (checkSkillCD(+cooldown)) {
         const script = '아직 스킬이 준비되지 않았습니다.\n'
@@ -42,5 +34,18 @@ function battleSend(field, option) {
         commandLine.scrollTop(Number.MAX_SAFE_INTEGER);
         return;
     }
-    toServer.volatile.emit(field, { line, userInfo: JSON.parse(userInfo), userStatus, option });
+    toServer.volatile.emit(field, input);
+}
+
+function globalSend(field, input) {
+    console.log('global send', field, input.line, input.option);
+
+    if(input.option.match(/battle|action|autoBattle|pvp/)) {
+        const script = `\n전투 중에는 불가능한 명령입니다!!\n`;
+        commandLine.append(script);
+        commandLine.scrollTop(Number.MAX_SAFE_INTEGER);
+        return;
+    }
+
+    toServer.volatile.emit(field, input);
 }
