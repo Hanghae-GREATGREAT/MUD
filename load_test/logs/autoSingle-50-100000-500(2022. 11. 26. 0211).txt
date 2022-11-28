@@ -1,0 +1,103 @@
+TEST RESULT: autoSingle-50-100000-500(2022. 11. 26. 0211).txt
+
+start: Sat Nov 26 2022 11:11:38 GMT+0900 (대한민국 표준시)
+end: Sat Nov 26 2022 11:13:48 GMT+0900 (대한민국 표준시)
+time: 2m 10.26s
+
+scenario: front/in >> sign:20 >> sign:21 >> front/D
+dungeon/입장 1 >> battle/자동 >> sleep(100000) >> autoBattle/중단 >> dungeon/out
+
+MAX_CLIENTS: 50
+CLIENT_CREATE_INTERVAL_IN_MS: 500
+SCENARIO_REPEAT_PER_USER: 1
+
+total emit count: 400
+emit per seconds: 3.07
+total scenario try: 50
+scenario complete: 50
+scenario fail: 0
+average memory usage: 289.44/3877.69MB
+average cpu usage: 33.77ms/sec
+average cpu consumption: 14.73%
+
+
+### DETAIL LOG ###
+
+progress: 0/50, clients: 18
+emits/sec: 10.74, scenario completion: 0/0 => 0, total memory: 250.38/3899.38mb, cpu usuage: 20.781ms/sec, cpu occupied: 12.097%
+
+progress: 0/50, clients: 19
+emits/sec: 11.39, scenario completion: 0/0 => 0, total memory: 254.38/3898.14mb, cpu usuage: 21.562ms/sec, cpu occupied: 12.2227%
+
+progress: 0/50, clients: 29
+emits/sec: 11.97, scenario completion: 0/0 => 0, total memory: 264.63/3896.12mb, cpu usuage: 22.937ms/sec, cpu occupied: 12.612%
+
+progress: 0/50, clients: 39
+emits/sec: 11.37, scenario completion: 0/0 => 0, total memory: 267.63/3891.04mb, cpu usuage: 24.218ms/sec, cpu occupied: 13.0056%
+
+progress: 0/50, clients: 49
+emits/sec: 11.99, scenario completion: 0/0 => 0, total memory: 284.63/3889.42mb, cpu usuage: 26.062ms/sec, cpu occupied: 13.6248%
+
+progress: 0/50, clients: 50
+emits/sec: 2.40, scenario completion: 0/0 => 0, total memory: 284.63/3881.08mb, cpu usuage: 27.25ms/sec, cpu occupied: 13.943%
+
+progress: 0/50, clients: 50
+emits/sec: 0.00, scenario completion: 0/0 => 0, total memory: 288.13/3887.63mb, cpu usuage: 28.265ms/sec, cpu occupied: 14.1649%
+
+progress: 0/50, clients: 50
+emits/sec: 0.00, scenario completion: 0/0 => 0, total memory: 291.88/3884.49mb, cpu usuage: 29.281ms/sec, cpu occupied: 14.3708%
+
+progress: 0/50, clients: 50
+emits/sec: 0.00, scenario completion: 0/0 => 0, total memory: 295.38/3869.12mb, cpu usuage: 30.125ms/sec, cpu occupied: 14.4958%
+
+progress: 0/50, clients: 50
+emits/sec: 0.00, scenario completion: 0/0 => 0, total memory: 296.88/3890.52mb, cpu usuage: 31.562ms/sec, cpu occupied: 14.8465%
+
+progress: 0/50, clients: 50
+emits/sec: 0.00, scenario completion: 0/0 => 0, total memory: 296.88/3886.21mb, cpu usuage: 32.296ms/sec, cpu occupied: 14.9315%
+
+progress: 0/50, clients: 50
+emits/sec: 0.00, scenario completion: 0/0 => 0, total memory: 296.88/3880.61mb, cpu usuage: 33.156ms/sec, cpu occupied: 15.0071%
+
+progress: 0/50, clients: 50
+emits/sec: 0.00, scenario completion: 0/0 => 0, total memory: 297.13/3880.22mb, cpu usuage: 33.937ms/sec, cpu occupied: 15.0919%
+
+progress: 0/50, clients: 50
+emits/sec: 0.00, scenario completion: 0/0 => 0, total memory: 297.38/3876.22mb, cpu usuage: 34.531ms/sec, cpu occupied: 15.1316%
+
+progress: 0/50, clients: 50
+emits/sec: 0.00, scenario completion: 0/0 => 0, total memory: 296.63/3878.99mb, cpu usuage: 35.781ms/sec, cpu occupied: 15.3623%
+
+progress: 0/50, clients: 50
+emits/sec: 0.00, scenario completion: 0/0 => 0, total memory: 296.63/3895.28mb, cpu usuage: 36.625ms/sec, cpu occupied: 15.4359%
+
+progress: 0/50, clients: 50
+emits/sec: 0.00, scenario completion: 0/0 => 0, total memory: 296.63/3881.39mb, cpu usuage: 37.453ms/sec, cpu occupied: 15.4899%
+
+progress: 0/50, clients: 50
+emits/sec: 0.00, scenario completion: 0/0 => 0, total memory: 296.63/3881.81mb, cpu usuage: 38.437ms/sec, cpu occupied: 15.6413%
+
+progress: 0/50, clients: 50
+emits/sec: 0.00, scenario completion: 0/0 => 0, total memory: 296.63/3884.82mb, cpu usuage: 39.343ms/sec, cpu occupied: 15.7222%
+
+progress: 0/50, clients: 50
+emits/sec: 0.00, scenario completion: 0/0 => 0, total memory: 297.13/3875.60mb, cpu usuage: 40.25ms/sec, cpu occupied: 15.7901%
+
+progress: 9/50, clients: 41
+emits/sec: 3.59, scenario completion: 9/9 => 100, total memory: 296.38/3885.05mb, cpu usuage: 41.203ms/sec, cpu occupied: 15.8973%
+
+progress: 18/50, clients: 32
+emits/sec: 3.60, scenario completion: 9/9 => 100, total memory: 296.38/3890.88mb, cpu usuage: 41.828ms/sec, cpu occupied: 15.8518%
+
+progress: 28/50, clients: 22
+emits/sec: 3.99, scenario completion: 10/10 => 100, total memory: 296.38/3881.93mb, cpu usuage: 42.312ms/sec, cpu occupied: 15.7718%
+
+progress: 38/50, clients: 12
+emits/sec: 4.00, scenario completion: 10/10 => 100, total memory: 296.38/3882.07mb, cpu usuage: 42.781ms/sec, cpu occupied: 15.6898%
+
+progress: 48/50, clients: 2
+emits/sec: 3.99, scenario completion: 10/10 => 100, total memory: 296.38/3881.79mb, cpu usuage: 42.984ms/sec, cpu occupied: 15.5314%
+
+progress: 50/50, clients: 0
+emits/sec: 0.80, scenario completion: 2/2 => 100, total memory: 296.38/3877.69mb, cpu usuage: 43.062ms/sec, cpu occupied: 15.3248%
+

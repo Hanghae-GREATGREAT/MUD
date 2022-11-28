@@ -1,0 +1,244 @@
+TEST RESULT: autoSingle-500-100000-500(2022. 11. 28. 1506).txt
+
+start: Tue Nov 29 2022 00:06:31 GMT+0900 (대한민국 표준시)
+end: Tue Nov 29 2022 00:12:31 GMT+0900 (대한민국 표준시)
+time: 6m 0.56s
+
+scenario: front/in >> sign:20 >> sign:21 >> front/D
+dungeon/입장 1 >> battle/자동 >> sleep(100000) >> autoBattle/중단 >> dungeon/out
+
+MAX_CLIENTS: 500
+CLIENT_CREATE_INTERVAL_IN_MS: 500
+SCENARIO_REPEAT_PER_USER: 1
+
+total emit count: 4000
+emit per seconds: 11.09
+total scenario try: 500
+scenario complete: 500
+scenario fail: 0
+average memory usage: 333.97/3888.53MB
+average cpu usage: 23.83ms/sec
+average cpu consumption: 3.49%
+
+
+SERVER INITIAL STATUS
+total memory: 240.38/3905.75mb, cpu usuage: 3.906ms/sec, cpu occupied: 0.809333%
+
+### DETAIL LOG ###
+
+progress: 0/500, clients: 10
+emits/sec: 9.88, scenario completion: 0/0 => 0, total memory: 245.88/3902.54mb, cpu usuage: 4.14ms/sec, cpu occupied: 0.854717%
+
+progress: 0/500, clients: 20
+emits/sec: 11.98, scenario completion: 0/0 => 0, total memory: 252.13/3898.70mb, cpu usuage: 4.421ms/sec, cpu occupied: 0.899252%
+
+progress: 0/500, clients: 29
+emits/sec: 11.98, scenario completion: 0/0 => 0, total memory: 262.13/3892.30mb, cpu usuage: 4.89ms/sec, cpu occupied: 0.980741%
+
+progress: 0/500, clients: 39
+emits/sec: 11.98, scenario completion: 0/0 => 0, total memory: 265.13/3890.99mb, cpu usuage: 5.25ms/sec, cpu occupied: 1.04349%
+
+progress: 0/500, clients: 49
+emits/sec: 11.99, scenario completion: 0/0 => 0, total memory: 283.63/3889.33mb, cpu usuage: 5.765ms/sec, cpu occupied: 1.13327%
+
+progress: 0/500, clients: 59
+emits/sec: 11.99, scenario completion: 0/0 => 0, total memory: 283.63/3889.11mb, cpu usuage: 6.187ms/sec, cpu occupied: 1.20198%
+
+progress: 0/500, clients: 69
+emits/sec: 11.39, scenario completion: 0/0 => 0, total memory: 284.63/3884.65mb, cpu usuage: 6.515ms/sec, cpu occupied: 1.26375%
+
+progress: 0/500, clients: 79
+emits/sec: 11.97, scenario completion: 0/0 => 0, total memory: 289.88/3874.29mb, cpu usuage: 6.796ms/sec, cpu occupied: 1.31062%
+
+progress: 0/500, clients: 89
+emits/sec: 11.99, scenario completion: 0/0 => 0, total memory: 292.88/3891.28mb, cpu usuage: 7.328ms/sec, cpu occupied: 1.4007%
+
+progress: 0/500, clients: 99
+emits/sec: 11.40, scenario completion: 0/0 => 0, total memory: 292.88/3890.24mb, cpu usuage: 7.75ms/sec, cpu occupied: 1.46452%
+
+progress: 0/500, clients: 109
+emits/sec: 11.99, scenario completion: 0/0 => 0, total memory: 293.38/3879.66mb, cpu usuage: 8.234ms/sec, cpu occupied: 1.54345%
+
+progress: 0/500, clients: 119
+emits/sec: 12.00, scenario completion: 0/0 => 0, total memory: 297.13/3887.97mb, cpu usuage: 8.687ms/sec, cpu occupied: 1.61316%
+
+progress: 0/500, clients: 128
+emits/sec: 11.99, scenario completion: 0/0 => 0, total memory: 297.38/3882.07mb, cpu usuage: 9.078ms/sec, cpu occupied: 1.66831%
+
+progress: 0/500, clients: 138
+emits/sec: 11.99, scenario completion: 0/0 => 0, total memory: 297.88/3873.03mb, cpu usuage: 9.89ms/sec, cpu occupied: 1.81176%
+
+progress: 0/500, clients: 148
+emits/sec: 12.00, scenario completion: 0/0 => 0, total memory: 297.63/3889.01mb, cpu usuage: 10.546ms/sec, cpu occupied: 1.91383%
+
+progress: 0/500, clients: 158
+emits/sec: 11.98, scenario completion: 0/0 => 0, total memory: 297.63/3882.99mb, cpu usuage: 10.984ms/sec, cpu occupied: 1.97041%
+
+progress: 0/500, clients: 168
+emits/sec: 11.40, scenario completion: 0/0 => 0, total memory: 297.63/3887.63mb, cpu usuage: 11.671ms/sec, cpu occupied: 2.07967%
+
+progress: 0/500, clients: 178
+emits/sec: 12.00, scenario completion: 0/0 => 0, total memory: 297.63/3876.44mb, cpu usuage: 12.218ms/sec, cpu occupied: 2.15935%
+
+progress: 0/500, clients: 188
+emits/sec: 11.98, scenario completion: 0/0 => 0, total memory: 300.38/3878.23mb, cpu usuage: 12.828ms/sec, cpu occupied: 2.2529%
+
+progress: 0/500, clients: 198
+emits/sec: 12.00, scenario completion: 0/0 => 0, total memory: 300.38/3873.21mb, cpu usuage: 13.375ms/sec, cpu occupied: 2.32736%
+
+progress: 9/500, clients: 199
+emits/sec: 14.99, scenario completion: 9/9 => 100, total memory: 304.63/3878.47mb, cpu usuage: 14.062ms/sec, cpu occupied: 2.42302%
+
+progress: 19/500, clients: 199
+emits/sec: 15.98, scenario completion: 10/10 => 100, total memory: 304.63/3863.69mb, cpu usuage: 14.609ms/sec, cpu occupied: 2.49496%
+
+progress: 29/500, clients: 199
+emits/sec: 15.40, scenario completion: 10/10 => 100, total memory: 308.88/3870.29mb, cpu usuage: 15.468ms/sec, cpu occupied: 2.61453%
+
+progress: 39/500, clients: 199
+emits/sec: 16.00, scenario completion: 10/10 => 100, total memory: 317.88/3852.17mb, cpu usuage: 16.093ms/sec, cpu occupied: 2.70326%
+
+progress: 49/500, clients: 199
+emits/sec: 15.38, scenario completion: 10/10 => 100, total memory: 317.88/3862.71mb, cpu usuage: 16.578ms/sec, cpu occupied: 2.77154%
+
+progress: 59/500, clients: 199
+emits/sec: 16.00, scenario completion: 10/10 => 100, total memory: 319.63/3870.20mb, cpu usuage: 17.296ms/sec, cpu occupied: 2.87908%
+
+progress: 68/500, clients: 200
+emits/sec: 16.20, scenario completion: 9/9 => 100, total memory: 319.63/3857.46mb, cpu usuage: 17.812ms/sec, cpu occupied: 2.94015%
+
+progress: 78/500, clients: 200
+emits/sec: 15.40, scenario completion: 10/10 => 100, total memory: 336.04/3830.85mb, cpu usuage: 18.453ms/sec, cpu occupied: 3.0215%
+
+progress: 88/500, clients: 199
+emits/sec: 16.00, scenario completion: 10/10 => 100, total memory: 358.04/3815.06mb, cpu usuage: 19.109ms/sec, cpu occupied: 3.10851%
+
+progress: 98/500, clients: 199
+emits/sec: 15.99, scenario completion: 10/10 => 100, total memory: 367.12/3869.88mb, cpu usuage: 20.015ms/sec, cpu occupied: 3.23126%
+
+progress: 108/500, clients: 199
+emits/sec: 16.00, scenario completion: 10/10 => 100, total memory: 367.12/3847.34mb, cpu usuage: 20.703ms/sec, cpu occupied: 3.31338%
+
+progress: 118/500, clients: 199
+emits/sec: 15.98, scenario completion: 10/10 => 100, total memory: 367.12/3825.20mb, cpu usuage: 21.171ms/sec, cpu occupied: 3.36891%
+
+progress: 128/500, clients: 199
+emits/sec: 15.98, scenario completion: 10/10 => 100, total memory: 352.62/3860.86mb, cpu usuage: 21.937ms/sec, cpu occupied: 3.46449%
+
+progress: 138/500, clients: 199
+emits/sec: 15.98, scenario completion: 10/10 => 100, total memory: 352.62/3836.86mb, cpu usuage: 22.515ms/sec, cpu occupied: 3.5295%
+
+progress: 148/500, clients: 199
+emits/sec: 16.00, scenario completion: 10/10 => 100, total memory: 336.37/3867.22mb, cpu usuage: 23.359ms/sec, cpu occupied: 3.636%
+
+progress: 158/500, clients: 199
+emits/sec: 15.99, scenario completion: 10/10 => 100, total memory: 325.62/3868.64mb, cpu usuage: 24.343ms/sec, cpu occupied: 3.75872%
+
+progress: 167/500, clients: 200
+emits/sec: 15.00, scenario completion: 9/9 => 100, total memory: 325.62/3851.00mb, cpu usuage: 24.781ms/sec, cpu occupied: 3.80268%
+
+progress: 176/500, clients: 201
+emits/sec: 15.00, scenario completion: 9/9 => 100, total memory: 343.62/3828.36mb, cpu usuage: 25.281ms/sec, cpu occupied: 3.85049%
+
+progress: 187/500, clients: 200
+emits/sec: 16.39, scenario completion: 11/11 => 100, total memory: 352.37/3873.60mb, cpu usuage: 26.078ms/sec, cpu occupied: 3.95389%
+
+progress: 197/500, clients: 200
+emits/sec: 15.96, scenario completion: 10/10 => 100, total memory: 352.37/3838.07mb, cpu usuage: 26.687ms/sec, cpu occupied: 4.01283%
+
+progress: 206/500, clients: 201
+emits/sec: 15.60, scenario completion: 9/9 => 100, total memory: 347.62/3867.50mb, cpu usuage: 27.656ms/sec, cpu occupied: 4.13726%
+
+progress: 216/500, clients: 201
+emits/sec: 15.39, scenario completion: 10/10 => 100, total memory: 347.62/3847.05mb, cpu usuage: 28.39ms/sec, cpu occupied: 4.21537%
+
+progress: 226/500, clients: 201
+emits/sec: 15.40, scenario completion: 10/10 => 100, total memory: 359.87/3881.24mb, cpu usuage: 29.156ms/sec, cpu occupied: 4.31365%
+
+progress: 236/500, clients: 200
+emits/sec: 15.40, scenario completion: 10/10 => 100, total memory: 359.87/3834.27mb, cpu usuage: 29.703ms/sec, cpu occupied: 4.36658%
+
+progress: 245/500, clients: 201
+emits/sec: 14.40, scenario completion: 9/9 => 100, total memory: 374.62/3873.30mb, cpu usuage: 30.375ms/sec, cpu occupied: 4.43747%
+
+progress: 255/500, clients: 201
+emits/sec: 14.16, scenario completion: 10/10 => 100, total memory: 374.62/3822.34mb, cpu usuage: 30.843ms/sec, cpu occupied: 4.48252%
+
+progress: 265/500, clients: 201
+emits/sec: 15.39, scenario completion: 10/10 => 100, total memory: 390.87/3782.67mb, cpu usuage: 31.39ms/sec, cpu occupied: 4.53105%
+
+progress: 275/500, clients: 201
+emits/sec: 15.96, scenario completion: 10/10 => 100, total memory: 425.62/3862.69mb, cpu usuage: 32.437ms/sec, cpu occupied: 4.65464%
+
+progress: 285/500, clients: 201
+emits/sec: 15.60, scenario completion: 10/10 => 100, total memory: 425.62/3815.88mb, cpu usuage: 32.968ms/sec, cpu occupied: 4.69753%
+
+progress: 294/500, clients: 202
+emits/sec: 15.59, scenario completion: 9/9 => 100, total memory: 425.62/3769.47mb, cpu usuage: 33.468ms/sec, cpu occupied: 4.73574%
+
+progress: 305/500, clients: 195
+emits/sec: 13.80, scenario completion: 11/11 => 100, total memory: 427.62/3866.16mb, cpu usuage: 34.125ms/sec, cpu occupied: 4.79756%
+
+progress: 314/500, clients: 186
+emits/sec: 6.00, scenario completion: 9/9 => 100, total memory: 427.62/3827.01mb, cpu usuage: 34.562ms/sec, cpu occupied: 4.82866%
+
+progress: 325/500, clients: 175
+emits/sec: 4.40, scenario completion: 11/11 => 100, total memory: 427.62/3804.47mb, cpu usuage: 34.828ms/sec, cpu occupied: 4.83772%
+
+progress: 335/500, clients: 165
+emits/sec: 3.99, scenario completion: 10/10 => 100, total memory: 427.62/3795.03mb, cpu usuage: 35.14ms/sec, cpu occupied: 4.85447%
+
+progress: 345/500, clients: 155
+emits/sec: 4.00, scenario completion: 10/10 => 100, total memory: 428.37/3794.54mb, cpu usuage: 35.609ms/sec, cpu occupied: 4.8925%
+
+progress: 354/500, clients: 146
+emits/sec: 3.60, scenario completion: 9/9 => 100, total memory: 429.62/3781.85mb, cpu usuage: 35.921ms/sec, cpu occupied: 4.90671%
+
+progress: 364/500, clients: 136
+emits/sec: 4.00, scenario completion: 10/10 => 100, total memory: 395.24/3882.39mb, cpu usuage: 36.437ms/sec, cpu occupied: 4.95556%
+
+progress: 374/500, clients: 126
+emits/sec: 4.00, scenario completion: 10/10 => 100, total memory: 395.24/3875.18mb, cpu usuage: 36.703ms/sec, cpu occupied: 4.95963%
+
+progress: 384/500, clients: 116
+emits/sec: 4.00, scenario completion: 10/10 => 100, total memory: 328.24/3840.02mb, cpu usuage: 37.187ms/sec, cpu occupied: 4.99232%
+
+progress: 394/500, clients: 106
+emits/sec: 4.00, scenario completion: 10/10 => 100, total memory: 328.24/3871.23mb, cpu usuage: 37.593ms/sec, cpu occupied: 5.01503%
+
+progress: 404/500, clients: 96
+emits/sec: 4.00, scenario completion: 10/10 => 100, total memory: 328.24/3860.41mb, cpu usuage: 37.968ms/sec, cpu occupied: 5.04133%
+
+progress: 413/500, clients: 87
+emits/sec: 3.60, scenario completion: 9/9 => 100, total memory: 313.49/3872.22mb, cpu usuage: 38.531ms/sec, cpu occupied: 5.08036%
+
+progress: 422/500, clients: 78
+emits/sec: 3.60, scenario completion: 9/9 => 100, total memory: 313.49/3874.60mb, cpu usuage: 38.859ms/sec, cpu occupied: 5.09286%
+
+progress: 430/500, clients: 70
+emits/sec: 3.20, scenario completion: 8/8 => 100, total memory: 309.99/3885.25mb, cpu usuage: 39.359ms/sec, cpu occupied: 5.13302%
+
+progress: 438/500, clients: 62
+emits/sec: 3.20, scenario completion: 8/8 => 100, total memory: 309.99/3869.16mb, cpu usuage: 39.687ms/sec, cpu occupied: 5.14882%
+
+progress: 444/500, clients: 56
+emits/sec: 2.40, scenario completion: 6/6 => 100, total memory: 309.99/3867.66mb, cpu usuage: 39.843ms/sec, cpu occupied: 5.14058%
+
+progress: 453/500, clients: 47
+emits/sec: 3.60, scenario completion: 9/9 => 100, total memory: 308.99/3881.40mb, cpu usuage: 40.359ms/sec, cpu occupied: 5.17977%
+
+progress: 464/500, clients: 36
+emits/sec: 4.40, scenario completion: 11/11 => 100, total memory: 308.99/3873.70mb, cpu usuage: 40.5ms/sec, cpu occupied: 5.16971%
+
+progress: 472/500, clients: 28
+emits/sec: 3.19, scenario completion: 8/8 => 100, total memory: 308.99/3867.54mb, cpu usuage: 40.625ms/sec, cpu occupied: 5.15437%
+
+progress: 483/500, clients: 17
+emits/sec: 4.40, scenario completion: 11/11 => 100, total memory: 309.99/3866.37mb, cpu usuage: 40.703ms/sec, cpu occupied: 5.13566%
+
+progress: 494/500, clients: 6
+emits/sec: 4.39, scenario completion: 11/11 => 100, total memory: 308.24/3886.46mb, cpu usuage: 41.078ms/sec, cpu occupied: 5.15261%
+
+progress: 500/500, clients: 0
+emits/sec: 2.40, scenario completion: 6/6 => 100, total memory: 308.24/3888.53mb, cpu usuage: 41.14ms/sec, cpu occupied: 5.13582%
+

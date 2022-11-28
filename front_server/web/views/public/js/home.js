@@ -1,6 +1,7 @@
 
 const SERVER_URL = SERVER.getServerUrl();
-const toServer = io.connect(`ws://${SERVER_URL}/`);
+console.log(SERVER_URL)
+const toServer = io.connect(`ws://${SERVER_URL}/`, { transports: ['websocket'] });
 
 
 const commandLine = $('.commendLine');
@@ -68,11 +69,17 @@ function checkValidation(userInfo) {
 
 commendForm.submit((e) => {
     e.preventDefault();
-    const [field, option] = localStorage.getItem('field').split(':');
-    // field = line ? 'field' : 'global'    글로벌 명령어 판별
+    let [field, option] = localStorage.getItem('field').split(':');
+    const line = commendInput.val();
+    commendInput.val('');
+    const userInfo = localStorage.getItem('user');
+    const userStatus = status.get();
 
-    if (!Object.hasOwn(commandRouter, field)) gerneralSend(field, option);
-    commandRouter[field](field, option);
+    if (line.slice(0,2).trim().toUpperCase() === 'G') [field, option] = ['global', field];
+    const input = { line, userInfo: JSON.parse(userInfo), userStatus, option };
+    
+    if (!Object.hasOwn(commandRouter, field)) gerneralSend(field, input);
+    commandRouter[field](field, input);
 });
 
 function checkSkillCD(cooldown) {
@@ -82,6 +89,7 @@ function checkSkillCD(cooldown) {
 toServer.on('print', printHandler);
 
 function printHandler({ field, script, userInfo }) {
+    console.log(field, script);
     localStorage.setItem('field', field);
     if (userInfo) localStorage.setItem('user', JSON.stringify(userInfo));
 
