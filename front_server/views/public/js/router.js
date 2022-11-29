@@ -4,6 +4,7 @@ const commandRouter = {
     'sign': gerneralSend,
 
     'dungeon': battleSend,
+    'encounter': battleSend,
     'action': battleSend,
     'battle': battleSend,
     'autoBattle': battleSend,

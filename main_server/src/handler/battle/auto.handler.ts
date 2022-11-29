@@ -43,7 +43,7 @@ export default {
 
         const cache = battleCache.get(characterId);
         console.log('auto.handler.ts: get cache', cache)
-        setEnvironmentData(characterId, JSON.stringify(cache));
+        setEnvironmentData(characterId, JSON.stringify({ monsterId, dungeonLevel }));
 
         const { port1: autoToDead, port2: autoToDeadReceive } = new MessageChannel();
         const { port1: skillToDead, port2: skillToDeadReceive } = new MessageChannel();
