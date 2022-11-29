@@ -12,6 +12,7 @@ export default {
         tempScript += '목록 - NPC 목록을 불러옵니다.\n';
         tempScript += '[번호] - 번호에 해당하는 NPC를 방문합니다.\n';
         tempScript += 'OUT - 로그아웃 합니다.\n';
+        tempScript += '글로벌 명령어 : g [OPTION]\n';
 
         const script = tempScript;
         const field = 'village';

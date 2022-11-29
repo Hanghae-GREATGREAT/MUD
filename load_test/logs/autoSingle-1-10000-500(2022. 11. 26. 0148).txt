@@ -1,0 +1,32 @@
+TEST RESULT: autoSingle-1-10000-500(2022. 11. 26. 0148).txt
+
+start: Sat Nov 26 2022 10:48:03 GMT+0900 (대한민국 표준시)
+end: Sat Nov 26 2022 10:48:18 GMT+0900 (대한민국 표준시)
+time: 0m 15.15s
+
+scenario: front/in >> sign:20 >> sign:21 >> front/out
+MAX_CLIENTS: 1
+CLIENT_CREATE_INTERVAL_IN_MS: 500
+SCENARIO_REPEAT_PER_USER: 1
+
+total emit count: 8
+emit per seconds: 0.53
+total scenario try: 1
+scenario complete: 1
+scenario fail: 0
+average memory usage: 241.63/3906.31MB
+average cpu usage: 13.34ms/sec
+average cpu consumption: 37.56%
+
+
+### DETAIL LOG ###
+
+progress: 0/1, clients: 1
+emits/sec: 1.19, scenario completion: 0/0 => 0, total memory: 241.63/3906.41mb, cpu usuage: 13.25ms/sec, cpu occupied: 42.0139%
+
+progress: 0/1, clients: 1
+emits/sec: 0.00, scenario completion: 0/0 => 0, total memory: 241.63/3906.04mb, cpu usuage: 13.359ms/sec, cpu occupied: 37.2683%
+
+progress: 1/1, clients: 0
+emits/sec: 0.40, scenario completion: 1/1 => 100, total memory: 241.63/3906.31mb, cpu usuage: 13.406ms/sec, cpu occupied: 33.3891%
+

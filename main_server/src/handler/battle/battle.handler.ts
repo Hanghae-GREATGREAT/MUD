@@ -13,7 +13,7 @@ export default {
         socket: Socket, CMD: string | undefined, 
         userInfo: UserInfo, userStatus: UserStatus
     ) => {
-        
+
         let tempScript: string = '';
         const tempLine =
             '=======================================================================\n';
@@ -169,7 +169,7 @@ export default {
         const { name: monsterName, hp: monsterHP, attack: monsterDamage, exp: monsterExp } = monster;
 
         // 유저 턴
-        console.log('유저턴');
+        // console.log('유저턴');
         const playerHit = BattleService.hitStrength(playerDamage);
         const playerAdjective = BattleService.dmageAdjective(
             playerHit,
@@ -178,10 +178,10 @@ export default {
         tempScript += `\n당신의 ${playerAdjective} 공격이 ${monsterName}에게 적중했다. => ${playerHit}의 데미지!\n`;
 
         const isDead = await MonsterService.refreshStatus(monsterId, playerHit, characterId);
-        if (!isDead) throw new Error('몬스터 정보를 찾을 수 없습니다');
+        if (!isDead) return { script: '내부에러', field: 'dungeon', userStatus, error: true };
 
         if (isDead === 'dead') {
-            console.log('몬스터 사망');
+            // console.log('몬스터 사망');
             battleCache.set(characterId, { dead: 'monster' });
             // await redis.hSet(characterId, { dead: 'monster' });
             const { script, field, userStatus } = await battle.resultMonsterDead(monster, tempScript);
@@ -190,7 +190,7 @@ export default {
         }
 
         // 몬스터 턴
-        console.log('몬스터 턴');
+        // console.log('몬스터 턴');
         const monsterHit = BattleService.hitStrength(monsterDamage);
         const monsterAdjective = BattleService.dmageAdjective(
             monsterHit,
@@ -200,7 +200,7 @@ export default {
 
         userStatus = await CharacterService.refreshStatus(characterId, monsterHit, 0, monsterId);
         if (userStatus.isDead === 'dead') {
-            console.log('유저 사망');
+            // console.log('유저 사망');
 
             field = 'adventureResult';
             tempScript += '\n!! 치명상 !!\n';

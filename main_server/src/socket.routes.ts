@@ -4,7 +4,7 @@ import { ChatInput, SocketInput } from './interfaces/socket';
 
 
 const onConnection = (socket: Socket) => {
-    console.log('SOCKET CONNECTED', socket.id);
+    // console.log('SOCKET CONNECTED', socket.id);
 
     /************************************************************************
                                     홈                                      
@@ -23,6 +23,7 @@ const onConnection = (socket: Socket) => {
     socket.on('dungeon', (input: SocketInput) => field.dungeonController(socket, input));
 
     socket.on('village', (input: SocketInput) => field.villageController(socket, input));
+    
     /************************************************************************
                                     마을                                      
      ************************************************************************/
@@ -84,6 +85,8 @@ const onConnection = (socket: Socket) => {
     /************************************************************************
                                     기타                                      
      ************************************************************************/
+
+    socket.on('global', (input: SocketInput) => common.globalController(socket, input));
 
     socket.on('request user status', common.requestStatus);
 

@@ -1,0 +1,25 @@
+
+services:
+  server:
+    container_name: server
+    image: ninthsun91/mud-server:1.2.0
+    build:
+      context: main_server
+      dockerfile: ./Dockerfile
+    env_file:
+      - ./main_server/.env
+    ports:
+      - "3333:3333"
+
+  front:
+    container_name: front
+    image: ninthsun91/mud-front:1.2.0
+    build:
+      context: front_server
+      dockerfile: ./Dockerfile
+    env_file:
+      - ./front_server/.env
+    ports:
+      - "8080:8080"
+    depends_on:
+      - server

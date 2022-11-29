@@ -4,7 +4,7 @@ import village, { NpcList } from './village.handler';
 import npc from './npc';
 import front from './front';
 import pvpBattle from './pvpBattle'
-// import { pvpBattleList } from './pvpBattle/pvpBattle.handler'
+import global from './global.handler';
 
 
 export { 
@@ -14,5 +14,5 @@ export {
     village, NpcList, 
     npc,
     pvpBattle,
-    //  pvpBattleList,
+    global,
 };

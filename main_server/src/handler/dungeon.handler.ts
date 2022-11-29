@@ -1,7 +1,9 @@
 import { Socket } from 'socket.io';
-import { DungeonService } from '../services';
+import { io } from '../app';
 import { battleCache } from '../db/cache';
+import { DungeonService, chatService } from '../services';
 import { front } from '.';
+import { roomList, chatJoiner } from './front/home.handler';
 import { homeScript } from '../scripts';
 import { UserInfo } from '../interfaces/user';
 
@@ -15,6 +17,7 @@ export default {
         tempScript += '목록 - 던전 목록을 불러옵니다.\n';
         tempScript += '입장 (번호) - 던전에 들어갑니다.\n';
         tempScript += '돌아가기 - 이전 단계로 돌아갑니다.\n';
+        tempScript += '글로벌 명령어 : g [OPTION]\n'
 
         const script = tempScript;
         const field = 'dungeon';
@@ -23,7 +26,7 @@ export default {
     },
 
     getDungeonList: async(socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
-        console.log('dungeon list.');
+        // console.log('dungeon list.');
 
         const result = await front.checkUser(userInfo)
         if (result) {
@@ -44,6 +47,24 @@ export default {
         const script = tempLine + tempScript;
         const field = 'dungeon';
         
+        // 채팅 재참가
+        if (!chatJoiner[socket.id]) {
+            // 채팅 참가
+            const resultArray = chatService.enterChat(socket.id);
+            const enterIndex = resultArray[0];
+
+            chatJoiner[`${socket.id}`] = `${enterIndex}`;
+
+            socket.join(`${enterIndex}`);
+            socket.emit('reEnterChat');
+            io.to(`${enterIndex}`).emit(
+                'enterChat',
+                userInfo.username,
+                roomList.get(enterIndex)!.size,
+                resultArray[1],
+            );
+        }
+
         socket.emit('print', { script, userInfo, field, chat: true });
     },
 

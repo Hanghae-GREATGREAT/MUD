@@ -11,7 +11,6 @@ interface ReturnScript {
     error?: boolean | Error;
 }
 
-
 type BattleReport = (socket: Socket, user: UserStatus, script: string) => Promise<void>
 
 interface BattleResult {
@@ -28,6 +27,9 @@ interface ChatOutput {
     output: string;
 }
 
+interface ChatJoiner {
+    [key: string]: string;
+}
 
 interface SocketInput {
     line: string;
@@ -53,6 +55,7 @@ export {
     BattleResult,
     ChatInput,
     ChatOutput,
+    ChatJoiner,
     CommandHandler,
     SocketInput,
 };
