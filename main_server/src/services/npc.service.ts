@@ -1,3 +1,4 @@
+import { CharacterService } from '.';
 import { Characters } from '../db/models';
 
 class NpcService {
@@ -89,55 +90,51 @@ class NpcService {
     }
 
     /** (임시) 무기 강화 */
-    async enhance(characterId: number): Promise<string> {
-        const Character = await Characters.findByPk(characterId);
+    async enhance(characterId: number) {
+        const userStatus = await CharacterService.findByPk(characterId);
         // 임시 스크립트 선언
         let tempScript = '';
-        if (!Character) {
+        if (!userStatus) {
             throw new Error('Enhance Error : Character not found');
         }
-
+        const { level, item, exp } = userStatus;
         // 강화 단계 확인
-        const weaponRate = Number(Character.item.split(':')[0]);
-        let successRate = 0; // 성공 확률
+        const weaponLevel = Number(item.split(':')[0]);
 
-        if (weaponRate < 10) {
-            successRate = 100 - 2 * weaponRate;
-        } else if (weaponRate < 15) {
-            successRate = 30;
-        } else if (weaponRate < 23) {
-            successRate = 3;
-        } else if (weaponRate < 24) {
-            successRate = 2;
-        } else if (weaponRate < 25) {
-            successRate = 1;
-        } else {
-            return '퍼거스 : 자네 무기는 더 이상 강화할 수 없어.\n\n';
+        // 강화 비용 확인
+        if (exp < weaponLevel * 10) {
+            const tempScript = `다음 단계 강화를 위한 필요 경험치 ${weaponLevel*10}\n\n`;
+            return { tempScript, userStatus };
         }
 
+        // 강화 성공 확률
+        // 25*(x+10) / 1.1^(x+10)
+        const successRate = (25*(weaponLevel+10)) / 1.1^(weaponLevel+10)
         // 무기 강화(임시)
-        const randomInt = Math.floor(Math.random() * 100);
+        const randomRate = (Math.random() * 100);
 
-        if (randomInt < successRate) {
-            Character.update({
-                attack:
-                    Character.attack - weaponRate * 10 + (weaponRate + 1) * 10,
-                item: `${weaponRate + 1}:1`,
-            });
+        if (randomRate < successRate) {
+            userStatus.attack = 10 + level + weaponLevel + 1;
+            userStatus.item = `${weaponLevel + 1}:1`;
+            userStatus.exp = exp - 10 * weaponLevel;
+            await Characters.update({
+                attack: userStatus.attack,
+                item: userStatus.item,
+                exp: userStatus.exp
+            }, { where: { characterId } });
             tempScript += '강화에 성공했습니다!! => 무기레벨 + 1\n\n';
             tempScript += '퍼거스 : 크하하! 이몸도 아직 죽지 않았다구!\n\n';
+            return { tempScript, userStatus }
         } else {
-            Character.update({
-                exp: Character.exp - 10,
-            });
+            const userStatus = await CharacterService.addExp(characterId, -10);
             tempScript += '강화에 실패했습니다..\n\n';
             tempScript += '퍼거스 : 어이쿠.. 손이 미끄러졌네.. 헐..\n';
             tempScript += '퍼거스 : ...\n';
             tempScript +=
                 '퍼거스 : 자, 자, 이미 이렇게 된거, 새로하나 장만... 응? 응?\n\n';
+            return { tempScript, userStatus };
         }
 
-        return tempScript;
     }
 
     /** 에트나 스크립트 랜덤 반환 */

@@ -123,7 +123,7 @@ export default {
         if (!dungeonLevel) return;
 
         // 몬스터 생성
-        const { monsterId, name } = await MonsterService.createNewMonster(dungeonLevel, characterId);
+        const { monsterId, name, exp } = await MonsterService.createNewMonster(dungeonLevel, characterId);
         const monsterCreatedScript = `\n${name}이(가) 등장했습니다.\n\n`;
         battleCache.set(characterId, { monsterId });
 
@@ -153,7 +153,8 @@ export default {
                     case 'player':
                         dungeon.getDungeonList(socket, '', userInfo);
                         return;
-                        case 'monster':
+                    case 'monster':
+                        const userStatus = await CharacterService.addExp(characterId, exp);
                         battleCache.set(characterId, { dungeonLevel });
                         battle.autoBattleOld(socket, '', userInfo, userStatus);
                         return;
@@ -179,6 +180,7 @@ export default {
                             dungeon.getDungeonList(socket, '', userInfo);
                             return;
                             case 'monster':
+                            const userStatus = await CharacterService.addExp(characterId, exp);
                             battleCache.set(characterId, { dungeonLevel });
                             battle.autoBattleOld(socket, '', userInfo, userStatus);
                             return;

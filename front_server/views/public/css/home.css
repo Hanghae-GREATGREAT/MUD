@@ -65,20 +65,41 @@ body > .container > .windows > .commendWindow > .userInfo {
 }
 
 body > .container > .windows > .commendWindow > .userInfo > .infoName {
-    flex: 3;
+    flex: 4;
+    display: flex;
+    flex-direction: row;
 }
 
 body > .container > .windows > .commendWindow > .userInfo > .infoName > span {
+    flex: 7;
     color: rgb(192, 192, 192);
     font-size: 50px;
-    margin-left: 50px;
-
-    margin-bottom: 10px;
+    margin: auto 0px auto 50px;
+    /* border: 1px red solid; */
 }
 
-body > .container > .windows > .commendWindow > .userInfo > .infoName > .exp {
+body > .container > .windows > .commendWindow > .userInfo > .infoName > span > a {
+    font-size: 30px;
+    margin-left: 20px;
+}
+
+body > .container > .windows > .commendWindow > .userInfo > .infoName > .infoExp {
+    flex: 3;
+
+    color:rgb(192, 192, 192);
+    /* margin-bottom: -10px; */
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: flex-end;
+}
+
+body > .container > .windows > .commendWindow > .userInfo > .infoName > .infoExp > .exp {
+    color: rgb(192, 192, 192);
+    /* margin-bottom: 10px;
     font-size: 25px;
-    margin-left: 10px;
+    margin-left: 10px; */
 }
 
 body > .container > .windows > .commendWindow > .userInfo > .infoSub {

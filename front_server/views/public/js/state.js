@@ -10,7 +10,6 @@ class State{
     }
     
     set = (updateState) => {
-        console.log('update: ', updateState)
         this.#state = updateState
         this.#render();
     }
@@ -33,10 +32,14 @@ class State{
             userInfo.append(statusHTML);
             return;
         }
-    
+        const weapon = status.item.split(':')[0];
         const statusHTML = `
         <div class="infoName">
-            <span>${status.name} / Lv. ${status.level}</span><span class="exp">경험치: ${status.exp}</span>
+            <span>${status.name}<a class="level">/ Lv. ${status.level}</a></span>
+            <div class="infoExp">
+                <span class="weapon">무기레벨: ${weapon}</span>
+                <span class="exp">경험치: ${status.exp}</span>
+            </div>
         </div>
         <div class="infoSub">
             <div class="infoUser"><span>${status.username}</span></div>
