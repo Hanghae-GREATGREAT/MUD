@@ -1,20 +1,16 @@
-
 const SERVER_URL = SERVER.getServerUrl();
-console.log(SERVER_URL)
+console.log(SERVER_URL);
 const toServer = io.connect(`ws://${SERVER_URL}/`, { transports: ['websocket'] });
-
 
 const commandLine = $('.commendLine');
 const commendInput = $('#commendInput');
 const commendForm = $('.commendInput');
 const chatInput = $('#chatInput');
 const chatBoxId = $('#chatBox');
-const chatForm = $('.chatForm')
-
-
+const chatForm = $('.chatForm');
 
 let status;
-$(async() => {
+$(async () => {
     chatBoxId.empty();
     commandLine.empty();
 
@@ -25,11 +21,11 @@ $(async() => {
 });
 
 function checkSession() {
-    console.log('refreshed...checking session')
+    console.log('refreshed...checking session');
     let field = localStorage.getItem('field');
     let userInfo = localStorage.getItem('user');
 
-    if (!field || !field.match(/dungeon|village/) || !userInfo || userInfo==='{}') {
+    if (!field || !field.match(/dungeon|village/) || !userInfo || userInfo === '{}') {
         console.log('invalid session');
         status.set({});
         field = 'none';
@@ -37,15 +33,15 @@ function checkSession() {
 
         return { field, userInfo };
     }
-    
+
     console.log('valid session found');
-    return new Promise( (resolve) => {
+    return new Promise((resolve) => {
         const { characterId } = JSON.parse(userInfo);
         toServer.emit('request user status', characterId, (response) => {
             const { userStatus } = response;
             status.set(userStatus);
             console.log('status loaded: ', userStatus);
-    
+
             resolve({ field, userInfo });
         });
     });
@@ -62,7 +58,6 @@ function checkValidation(userInfo) {
     toServer.emit('none', { line: 'CHECK', userInfo });
 }
 
-
 /*****************************************************************************
                                 커맨드 스크립트
 ******************************************************************************/
@@ -75,15 +70,15 @@ commendForm.submit((e) => {
     const userInfo = localStorage.getItem('user');
     const userStatus = status.get();
 
-    if (line.slice(0,2).trim().toUpperCase() === 'G') [field, option] = ['global', field];
+    if (line.slice(0, 2).trim().toUpperCase() === 'G') [field, option] = ['global', field];
     const input = { line, userInfo: JSON.parse(userInfo), userStatus, option };
-    
+
     if (!Object.hasOwn(commandRouter, field)) gerneralSend(field, input);
     commandRouter[field](field, input);
 });
 
 function checkSkillCD(cooldown) {
-    return ((Date.now() - cooldown) < 1500);
+    return Date.now() - cooldown < 1500;
 }
 
 toServer.on('print', printHandler);
@@ -100,9 +95,9 @@ function printHandler({ field, script, userInfo }) {
 toServer.on('printBattle', printBattleHandler);
 
 function printBattleHandler({ field, script, userInfo, userStatus }) {
-    console.log('printBattle', field, userInfo)
+    console.log('printBattle', field, userInfo);
     localStorage.setItem('field', field);
-    if (userInfo) localStorage.setItem('user', JSON.stringify(userInfo));    
+    if (userInfo) localStorage.setItem('user', JSON.stringify(userInfo));
     if (userStatus) {
         console.log('printBattle received status ', userStatus);
         status.set(userStatus);
@@ -134,22 +129,18 @@ async function signoutHandler({ field, script, userInfo }) {
     loadScript(field, JSON.stringify(userInfo));
 }
 
-
-
 /*****************************************************************************
                                 채팅 스크립트
 ******************************************************************************/
 
-const chatEnterRoom = (field) => {
-    const chatRoom = {
-        'none': 'none',
-        'home': '홈',
-        'village': '마을',
-        'dungeon': '던전',      // 던전 세분화해야함
-    }
+const chatEnterRoom = (userName, people, limit) => {
+    // chatBoxId.empty();
+    const newMessage = `<span>${userName}님이 채팅방에 입장하였습니다.\n(${people}/${limit}명 참가중)</span>\n`;
+    chatBoxId.append(newMessage);
+};
+const reEnterRoom = () => {
     chatBoxId.empty();
-    if (chatRoom[field] === 'none') return chatBoxId.append('채팅은 마을과 던전에서만 가능합니다.\n');
-    const newMessage = `<span>${chatRoom[field]} 채팅방에 입장하였습니다.</span>\n`;
+    const newMessage = `<span>채팅방에 다시 연결 되었습니다.\n`;
     chatBoxId.append(newMessage);
 };
 
@@ -160,20 +151,20 @@ const chatNewMessage = ({ script, field }) => {
     if (currentField.includes(field)) {
         chatBoxId.append(newMessage);
         chatBoxId.scrollTop(Number.MAX_SAFE_INTEGER);
-    };
+    }
 };
 
 chatForm.submit((e) => {
     e.preventDefault();
     const field = localStorage.getItem('field').split(':')[0];
     if (!field.match(/dungeon|village/)) return chatInput.val('');
-    
+
     const userInfo = localStorage.getItem('user');
     const { name } = JSON.parse(userInfo);
     const data = {
         name,
         message: chatInput.val(),
-        field
+        field,
     };
     toServer.emit('submit', data);
     chatInput.val('');
@@ -182,3 +173,5 @@ chatForm.submit((e) => {
 toServer.on('chat', chatNewMessage);
 
 toServer.on('enterChat', chatEnterRoom);
+
+toServer.on('reEnterChat', reEnterRoom);
