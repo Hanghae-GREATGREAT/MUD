@@ -3,7 +3,7 @@ import { io } from '../../app';
 import { UserInfo } from '../../interfaces/user';
 import { NpcService } from '../../services';
 
-export const publicRooms = new Set();
+export const publicRooms: Set<string> = new Set<string>();
 
 export default {
     pvpHelp: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
@@ -50,10 +50,18 @@ export default {
             if (sids.get(key) === undefined) publicRooms.add(key);
         });
 
-        const roomNames = [...publicRooms];
-        roomNames.map((roomName)=>{
-            if (!Number(roomName)) tempScript += `${roomName}, `
-        })
+        // const roomNames = [...publicRooms];
+        // roomNames.map((roomName)=>{
+        //     if (!Number(roomName)) tempScript += `${roomName}, `
+        // })
+        const roomNames: string[] = [];
+        for (const roomName of [...publicRooms]) {
+            if (roomName!.includes('pvpRoom')) {
+            const name: string = roomName!.split(' ')[1];
+            roomNames.push(name);
+            tempScript += `${name}, `
+            }
+        }
         if (roomNames.length === 0) tempScript += '생성된 방이 존재하지 않습니다.';
         tempScript += '\n\n1. 방생성 - >1 방이름< 으로 입력하게나 ! \n';
         tempScript += '2. 방입장 - >2 방이름< 으로 입력하게나 !\n';

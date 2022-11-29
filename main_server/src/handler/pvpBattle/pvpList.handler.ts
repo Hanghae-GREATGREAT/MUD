@@ -5,14 +5,14 @@ import { UserInfo, UserStatus } from '../../interfaces/user';
 
 import { publicRooms } from '../npc/pvp.handler';
 
-interface Rooms {
+interface PvpPlayer {
     socketId:string;
-    userStatus: UserStatus
-    target?: string|undefined;
-    selectSkill?: string|undefined;
+    userStatus: UserStatus;
+    target?: string|undefined; // username
+    selectSkill?: string|undefined; // skillname
 }
 
-export const rooms:Map<string, Map<string, Rooms>> = new Map();
+export const rooms: Map<string, Map<string, PvpPlayer>> = new Map<string, Map<string, PvpPlayer>>();
 
 export default {
     pvpListHelp: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
@@ -32,13 +32,13 @@ export default {
     },
 
     createRoom: (socket: Socket, CMD: string | undefined, userInfo: UserInfo, userStatus: UserStatus) => {
-        const roomName = CMD!.trim();
+        const roomName = `pvpRoom ${CMD!.trim()}`;
 
         // 방 이름이 숫자일때
         if(Number(CMD)) return pvpBattle.pvpListWrongCommand(socket, '방 이름은 한글 또는 영문자만 가능합니다.', userInfo)
 
         // 이미 존재하는 방 생성시도시
-        if (publicRooms.has(CMD!)) return pvpBattle.pvpListWrongCommand(socket, '이미 존재하는 방 입니다.', userInfo)
+        if (publicRooms.has(roomName)) return pvpBattle.pvpListWrongCommand(socket, '이미 존재하는 방 입니다.', userInfo)
         
         userStatus.pvpRoom = roomName;
         rooms.set(roomName, new Map())
@@ -59,10 +59,13 @@ export default {
     },
 
     joinRoom: (socket: Socket, CMD: string | undefined, userInfo: UserInfo, userStatus: UserStatus) => {
-        const roomName = CMD!.trim();
+        const roomName = `pvpRoom ${CMD!.trim()}`;
+
+        // 채팅룸 입장 시도시
+        if(Number(CMD)) return pvpBattle.pvpListWrongCommand(socket, '방 이름은 한글 또는 영문자만 가능합니다.', userInfo)
 
         // 존재하지 않는 방 입장시도시
-        if(!publicRooms.has(CMD!)) return pvpBattle.pvpListWrongCommand(socket, '존재하지 않는 방이름 입니다.', userInfo)
+        if(!publicRooms.has(roomName)) return pvpBattle.pvpListWrongCommand(socket, '존재하지 않는 방이름 입니다.', userInfo)
         
         // 입장 초과시 입장불가
         if (rooms.get(roomName)!.size > 4) return pvpBattle.pvpListWrongCommand(socket, '4명 정원초과입니다.', userInfo)
