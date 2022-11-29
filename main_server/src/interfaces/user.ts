@@ -48,6 +48,7 @@ interface UserStatus {
     isDead?: string;
     levelup?: boolean;
     pvpRoom?: string;
+    chatRoom?: number;
 }
 
 interface UserInfo {

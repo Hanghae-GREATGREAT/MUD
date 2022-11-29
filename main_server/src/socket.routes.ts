@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io';
-import { battle, chat, common, field, home, TEST, village } from './controller';
+import { battle, chat, common, field, home, TEST, village, pvpBattle } from './controller';
 import { ChatInput, SocketInput } from './interfaces/socket';
 
 
@@ -36,6 +36,8 @@ const onConnection = (socket: Socket) => {
 
     socket.on('gamble', (input: SocketInput) => village.gambleController(socket, input));
 
+    socket.on('pvp', (input: SocketInput) => village.pvpController(socket, input));
+
     /************************************************************************
                                     전투                                      
      ************************************************************************/
@@ -53,6 +55,26 @@ const onConnection = (socket: Socket) => {
      ************************************************************************/
 
     socket.on('adventureResult', (input: SocketInput) => battle.resultController(socket, input));
+
+    /************************************************************************
+                                   시련의 장                                      
+     ************************************************************************/
+
+    socket.on('pvpList', (input: SocketInput) => pvpBattle.pvpListController(socket, input))
+
+    socket.on('pvpBattle', (input: SocketInput) => pvpBattle.pvpBattleController(socket, input));
+
+    socket.on('enemyChoice', (input: SocketInput) => pvpBattle.enemyChoiceController(socket, input));
+
+    socket.on('attackChoice', (input: SocketInput) => pvpBattle.attackChoiceController(socket, input));
+
+    // socket.on('anemyAttack', (input: SocketInput) => pvpBattle.anemyAttackController(socket, input));
+
+    /************************************************************************
+                                    시련의 장 종료                                    
+    ************************************************************************/
+
+    // socket.on('pvpResult', (input: SocketInput) => pvpBattle.pvpResultController(socket, input));
 
     /************************************************************************
                                     채팅박스                                      

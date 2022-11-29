@@ -1,0 +1,133 @@
+import { Socket } from 'socket.io';
+import { pvpBattle } from '../handler';
+import { rooms } from '../handler/pvpBattle/pvpList.handler';
+import { SocketInput, CommandHandler } from '../interfaces/socket';
+
+export default {
+
+    // 
+    pvpListController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
+        const [CMD1, CMD2]: string[] = line.trim().split(' ');
+
+        if (!CMD2) return pvpBattle.pvpListWrongCommand(socket, '방이름을 입력해주세요', userInfo)
+
+        const commandHandler: CommandHandler = {
+            '도움말': pvpBattle.pvpListHelp,
+            '돌': pvpBattle.userLeave,
+            '1': pvpBattle.createRoom,
+            '2': pvpBattle.joinRoom
+        };
+
+        if (!commandHandler[CMD1]) {
+            return pvpBattle.pvpListWrongCommand(socket, CMD1, userInfo);
+        }
+
+        commandHandler[CMD1](socket, CMD2, userInfo, userStatus);
+
+        // 6명이 채워지면 자동으로 시작
+    },
+    // pvp룸 입장 후 6명이 되기까지 기다리는중
+    pvpBattleController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
+
+        const [CMD1, CMD2]: string[] = line.trim().split(' ');
+        const commandHandler: CommandHandler = {
+            '도움말': pvpBattle.pvpBattleHelp,
+            '현': pvpBattle.getUsers,
+            '돌': pvpBattle.userLeave
+        };
+
+        if (!commandHandler[CMD1]) {
+            console.log(`is wrong command : '${CMD1}'`);
+            pvpBattle.pvpBattleWrongCommand(socket, CMD1, userInfo);
+            return;
+        }
+
+        commandHandler[CMD1](socket, CMD2, userInfo, userStatus);
+
+        // 6명이 채워지면 자동으로 시작
+    },
+
+    // 전투가 시작된 후 공격 상대를 고른다.
+    enemyChoiceController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
+        const [CMD1, CMD2]: string[] = line.trim().split(' ');
+        const roomName = userStatus.pvpRoom;
+        const userNames: string[] = [];
+
+        // 본인 선택시 예외처리
+        const pvpRoom = rooms.get(roomName!)
+        const iterator = pvpRoom!.values()
+        for (let i = 0; i < rooms.get(roomName!)!.size; i++) {
+            userNames.push(iterator.next().value.userStatus.username)
+        }
+
+        // 본인의 index를 확인
+        const myIndex = userNames.findIndex((e)=>e===userInfo.username)
+        
+        // 유저가 속한 팀이아닌 상대팀만을 선택
+        if (myIndex < 2 && Number(CMD1)-1 < 2) return pvpBattle.selectWrong(socket, CMD1, userInfo, userStatus);
+        else if (myIndex >= 2 && Number(CMD1)-1 >= 2) return pvpBattle.selectWrong(socket, CMD1, userInfo, userStatus);
+        else if (Number(CMD1) > 4) return pvpBattle.selectWrong(socket, CMD1, userInfo, userStatus);
+
+        pvpRoom!.get(userInfo.username)!.target = userNames[Number(CMD1)-1]
+        
+        const commandHandler: CommandHandler = {
+            '도움말': pvpBattle.enemyChoiceHelp,
+            '1': pvpBattle.selecting,
+            '2': pvpBattle.selecting,
+            '3': pvpBattle.selecting,
+            '4': pvpBattle.selecting,
+            // 5: pvpBattle.selecting,
+            // 6: pvpBattle.selecting,
+        };
+
+        if (!commandHandler[CMD1]) {
+            console.log(`is wrong command : '${CMD1}'`);
+            pvpBattle.enemyChoiceWrongCommand(socket, CMD1, userInfo);
+            return;
+        }
+
+        commandHandler[CMD1](socket, CMD2, userInfo, userStatus);
+    },
+
+    // 공격할 수단을 선택
+    // 2가지로 나뉘어한다. 
+    // 1,2,3번 유저는 4,5,6번 유저를 선택할 수 있고,
+    // 4,5,6번 유저는 1,2,3번 유저를 선택할 수 있다.
+    // 공격 대상을 지정한 값을 가지고 있을 것이 필요함.
+    attackChoiceController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
+        const [CMD1, CMD2]: string[] = line.trim().split(' ');
+
+        // 커맨드 예외처리, 유저가 가진 스킬만을 사용할 수 있다.
+        if (CMD1 === '도움말') return pvpBattle.attackChoiceHelp(socket, CMD1, userInfo, userStatus)
+        else if (!CMD2) return pvpBattle.attackChoiceWrongCommand(socket, CMD2, userInfo)
+        else if (CMD1==='1' && CMD2 === '기본공격') return pvpBattle.selectSkills(socket, CMD2, userInfo, userStatus);
+        else if (CMD1==='1' && CMD2 !== '기본공격') return pvpBattle.attackChoiceWrongCommand(socket, CMD2, userInfo)
+        else if (!userStatus.skill[Number(CMD1)-2]) return pvpBattle.isSkills(socket, CMD2, userInfo, userStatus)
+        else if (userStatus.skill[Number(CMD1)-2].name !== CMD2) return pvpBattle.isSkills(socket, CMD2, userInfo, userStatus)
+
+        const commandHandler: CommandHandler = {
+            2: pvpBattle.selectSkills,
+            3: pvpBattle.selectSkills,
+            4: pvpBattle.selectSkills,
+        };
+
+        if (!commandHandler[CMD1]) {
+            console.log(`is wrong command : '${CMD1}'`);
+            pvpBattle.attackChoiceWrongCommand(socket, CMD1, userInfo);
+            return;
+        }
+
+        commandHandler[CMD1](socket, CMD2, userInfo, userStatus);
+    },
+
+
+    // anemyAttackController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
+    //     const [CMD1, CMD2]: string[] = line.trim().split(' ');
+    // },
+
+    // 1회 공격이 이루어지고 결과를 출력, 한팀이 전멸시 승리팀 표시
+    // hp 회복 후 마을로 보내진다.
+    // pvpResultController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
+    //     const [CMD1, CMD2]: string[] = line.trim().split(' ');
+    // }
+}

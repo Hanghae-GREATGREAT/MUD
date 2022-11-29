@@ -112,6 +112,15 @@ function printBattleHandler({ field, script, userInfo, userStatus }) {
     commandLine.scrollTop(Number.MAX_SAFE_INTEGER);
 }
 
+toServer.on('fieldScriptPrint', fieldScriptPrint);
+
+function fieldScriptPrint({ field, script }) {
+    localStorage.setItem('field', field);
+
+    commandLine.append(script);
+    commandLine.scrollTop(Number.MAX_SAFE_INTEGER);
+}
+
 toServer.on('signout', signoutHandler);
 
 async function signoutHandler({ field, script, userInfo }) {
