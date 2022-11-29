@@ -1,11 +1,7 @@
 import { Socket } from 'socket.io';
+import { io } from '../../app';
 import { pvpBattle } from '..';
 import { UserInfo, UserStatus } from '../../interfaces/user';
-import { pvpUsers, roomName } from './pvpList.handler'; 
-
-import { enemyChoice } from '../../controller/pvpBattle.controller';
-import { io } from '../../app';
-
 import { rooms } from './pvpList.handler';
 
 export default {
@@ -26,11 +22,9 @@ export default {
 
     // 상대 유저를 고를때 마다 메세지 출력
     selecting: (socket: Socket, CMD: string | undefined, userInfo: UserInfo, userStatus: UserStatus) => {
-        rooms.get(roomName).push({socketId:socket.id, userStatus});
+        const roomName = userStatus.pvpRoom;
+        let targets: string[] = [];
 
-        if(enemyChoice.size === 2) {
-            return pvpBattle.selectUserResult(socket, CMD, userInfo)
-        }
         let tempScript: string = '';
         const tempLine =
             '=======================================================================\n\n';
@@ -40,7 +34,21 @@ export default {
         const script = tempLine + tempScript;
         const field = 'enemyChoice';
 
-        socket.emit('printBattle', { field, script, userInfo, userStatus });
+        socket.emit('print', { field, script, userInfo, userStatus });
+
+        const pvpRoom = rooms.get(roomName!)
+        const iterator = pvpRoom!.values()
+        for (let i = 0; i < pvpRoom!.size; i++) {
+            targets.push(iterator.next().value.target)
+        }
+
+        // undefined인 값 제거
+        const users = targets.filter(names=>names !== undefined)
+
+        // 공격할 유저 모두 선택시 다음 로직으로 보내준다.
+        if(users.length === 4) {
+            return pvpBattle.selectUserResult(socket, CMD, userInfo, userStatus)
+        }
     },
 
     selectWrong: (socket: Socket, CMD: string | undefined, userInfo: UserInfo, userStatus: UserStatus) => {
@@ -57,39 +65,47 @@ export default {
         socket.emit('printBattle', { field, script, userInfo, userStatus });
     },
 
-    selectUserResult: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
+    selectUserResult: (socket: Socket, CMD: string | undefined, userInfo: UserInfo, userStatus: UserStatus) => {
+        const roomName = userStatus.pvpRoom;
+        const users: string[] = []
+        const targets: string[] = []
+        const pvpRoom = rooms.get(roomName!)
+        const user = [...pvpRoom!]
+
+        for (let i = 0; i < user.length; i++) {
+            users.push(user[i][1].userStatus.username)
+            targets.push(user[i][1].target!)
+        }
+
         let tempScript: string = '';
         const tempLine =
             '=======================================================================\n\n';
 
-        const selectUser = [...enemyChoice]
-
-        const userInfos = [...rooms.get(roomName)]
-
         tempScript += '샤크스 경 :\n';
 
-        // 배열 안에 배열이 6개 있을때, 
-        for (let i = 0; i < selectUser.length; i++){
-            tempScript += `${selectUser[i][0]}가 ${selectUser[i][1]}를 지목 했다네 !\n`
+        // 선택한 유저목록을 보여준다.
+        for (let i = 0; i < rooms.get(roomName!)!.size; i++){
+            tempScript += `${users[i]}가 ${targets[i]}를 지목 했다네 !\n`;
         }
 
-        tempScript += '\n 어떤 공격을 할텐가 ?\n'
-        tempScript += '\n 중간 공백을 포함해서 입력해주게 !\n'
+        tempScript += '\n 어떤 공격을 할텐가 ?\n';
+        tempScript += '\n 중간 공백을 포함해서 입력해주게 !\n';
 
-        tempScript += `1 기본공격\n`
+        tempScript += `1 기본공격\n`;
 
-        let skillScript:string = ''
+        let skillScript: string = '';
 
-        for (let y=0; y < userInfos.length; y++){
-            for (let i = 0; i < userInfos[y].userStatus.skill.length; i++) {
-                let skills = userInfos[y].userStatus.skill
-                skillScript += `${i+2} ${skills[i].name}\n`
-        }
+        // 유저별로 선택할 수 있는 목록을 보여준다.
+        for (let y=0; y < user.length; y++){
+            for (let i = 0; i < user[y][1].userStatus.skill.length; i++) {
+                let skills = user[y][1].userStatus.skill[i]
+                    skillScript += `${i+2} ${skills.name}\n`
+            }
 
         const script = tempLine + tempScript + skillScript;
         const field = 'attackChoice';
-        io.to(userInfos[y].socketId).emit('fieldScriptPrint', { field, script });
-        skillScript = ''
+        io.to(user[y][1].socketId).emit('fieldScriptPrint', { field, script });
+        skillScript = '';
         }
     },
 

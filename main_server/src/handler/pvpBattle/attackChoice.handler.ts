@@ -1,9 +1,8 @@
 import { Socket } from 'socket.io';
 import { pvpBattle } from '..';
+import { rooms } from './pvpList.handler';
 import { UserInfo, UserStatus } from '../../interfaces/user';
-import { enemyChoice } from '../../controller/pvpBattle.controller';
 
-export const selectSkills = new Map();
 export default {
     attackChoiceHelp: (socket: Socket, CMD: string | undefined, userInfo: UserInfo, userStatus: UserStatus) => {
         let tempScript: string = '';
@@ -20,12 +19,26 @@ export default {
         socket.emit('printBattle', { field, script, userInfo, userStatus });
     },
 
-    // 상대 유저를 고를때 마다 메세지 출력
+    // 상대 유저를 고를때 마다 대기 메세지 출력
+    // 모두 선택시 다음로직으로 보내준다.
     selectSkills: (socket: Socket, CMD: string | undefined, userInfo: UserInfo, userStatus: UserStatus) => {
-        // 유저가 고른 스킬을 이름으로 받아오고 스킬을 선택한 유저가 타겟팅한 상대 유저와 함께 .set 해준다.
-        selectSkills.set(enemyChoice.get(userInfo.username), CMD!.trim())
-        if (selectSkills.size === 2) {
-            return pvpBattle.enemyAttack(socket, CMD, userInfo, userStatus)
+        const roomName = userStatus.pvpRoom;
+        const selectSkills: string[] = [];
+        const pvpRoom = rooms.get(roomName!)
+        pvpRoom!.get(userInfo.username)!.selectSkill = CMD!.trim();
+        const user = [...pvpRoom!]
+
+        // 선택한 스킬 push
+        for (let i = 0; i < pvpRoom!.size; i++) {
+            selectSkills.push(user[i][1].selectSkill!)
+        }
+
+        // undefined인 값 제거
+        const skills = selectSkills.filter(names => names !== undefined)
+
+        // 모두 선택시 다음로직으로 보내준다.
+        if (skills.length === 4) {
+            return pvpBattle.enemyAttack(socket, CMD, userInfo, userStatus);
         }
 
         let tempScript: string = '';
@@ -40,6 +53,7 @@ export default {
         socket.emit('printBattle', { field, script, userInfo, userStatus });
     },
 
+    // 스킬명을 잘못 입력하였거나 유저가 가진 스킬이 아닐시
     isSkills: (socket: Socket, CMD: string | undefined, userInfo: UserInfo, userStatus: UserStatus) => {
         let tempScript: string = '';
         const tempLine =

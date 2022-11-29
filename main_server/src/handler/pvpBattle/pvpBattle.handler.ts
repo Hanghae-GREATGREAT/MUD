@@ -1,8 +1,8 @@
 import { Socket } from 'socket.io';
 import { UserInfo, UserStatus } from '../../interfaces/user';
 import { io } from '../../app';
-import { roomName, pvpUsers } from './pvpList.handler';
 import { Characters } from '../../db/models';
+import { rooms } from './pvpList.handler';
 
 export default {
     pvpBattleHelp: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
@@ -20,26 +20,15 @@ export default {
         socket.emit('print', { script, userInfo, field });
     },
 
-    // welcomeUsers: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
-    //     let tempScript: string = '';
-    //     const tempLine =
-    //         '=======================================================================\n\n';
-
-    //     tempScript += `${userInfo.username}님이 입장하셨습니다.\n\n`
-
-    //     const script = tempLine + tempScript;
-    //     let field = 'pvpBattle';
-
-    //     socket.emit('print', { script, userInfo, field });
-    // },
-
-    getUsers:(socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
+    // 입장한 방의 현재인원 확인
+    getUsers:(socket: Socket, CMD: string | undefined, userInfo: UserInfo, userStatus: UserStatus) => {
+        let users = rooms.get(userStatus.pvpRoom!)!.size;
 
         let tempScript: string = '';
         const tempLine =
             '=======================================================================\n\n';
 
-        tempScript += `현재 인원은 ${pvpUsers.size}명 입니다.\n`;
+        tempScript += `현재 인원은 ${users}명 입니다.\n`;
 
         const script = tempLine + tempScript;
         const field = 'pvpBattle';
@@ -48,15 +37,23 @@ export default {
     },
 
     // 6명이 되면 게임시작
-    pvpStart: async (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
+    pvpStart: async (socket: Socket, CMD: string | undefined, userInfo: UserInfo, userStatus:UserStatus) => {
+        const roomName = userStatus.pvpRoom;
 
         let tempScript: string = '';
         const tempLine =
             '=======================================================================\n\n';
 
-        const names = [...pvpUsers]
-        const userInfos = [];
+        const names:string[] = [];
 
+        const pvpRoom = rooms.get(roomName!)
+        const iterator = pvpRoom!.values()
+        for (let i = 0; i < pvpRoom!.size; i++) {
+            names.push(iterator.next().value.userStatus.username)
+        }
+
+        // 캐릭터별 이름, 레벨, 체력, 공격력, 방어력 표시
+        const userInfos = [];
         for (let i = 0; i< names.length; i++) {
            userInfos.push(await Characters.findOne({where:{name:names[i]!}}))
         }
@@ -71,13 +68,13 @@ export default {
         const script = tempLine + tempScript;
         const field = 'enemyChoice'
 
-        io.to(roomName!).emit('fieldScriptPrint', { script, field });
+        io.to(userStatus.pvpRoom!).emit('fieldScriptPrint', { script, field });
     },
 
-    // 마을로 보내는 로직 구현필요.
-    userLeave:(socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
+    // 방에서 나가기
+    userLeave:(socket: Socket, CMD: string | undefined, userInfo: UserInfo, userStatus: UserStatus) => {
         let tempScript: string = '';
-        pvpUsers.delete(userInfo.username)
+        rooms.get(userStatus.pvpRoom!)!.delete(userInfo.username)
 
         const tempLine =
         '=======================================================================\n\n';
@@ -93,6 +90,7 @@ export default {
         const script = tempLine + tempScript;
         const field = 'village';
 
+        socket.leave(userStatus.pvpRoom!)
         socket.emit('print', { script, userInfo, field });
     },
 

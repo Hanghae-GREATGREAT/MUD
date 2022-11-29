@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io';
-import { village, npc, pvpBattle } from '../handler';
+import { village, npc } from '../handler';
 import { SocketInput, CommandHandler } from '../interfaces/socket';
 
 export default {

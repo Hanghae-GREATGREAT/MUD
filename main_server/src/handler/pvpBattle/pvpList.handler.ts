@@ -1,13 +1,18 @@
 import { Socket } from 'socket.io';
-import { UserInfo } from '../../interfaces/user';
-import { pvpBattle } from '..';
 import { io } from '../../app';
+import { pvpBattle } from '..';
+import { UserInfo, UserStatus } from '../../interfaces/user';
 
-export let pvpUsers = new Set();
+import { publicRooms } from '../npc/pvp.handler';
 
-export let roomName:string | undefined;
+interface Rooms {
+    socketId:string;
+    userStatus: UserStatus
+    target?: string|undefined;
+    selectSkill?: string|undefined;
+}
 
-export const rooms = new Map();
+export const rooms:Map<string, Map<string, Rooms>> = new Map();
 
 export default {
     pvpListHelp: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
@@ -26,10 +31,15 @@ export default {
         socket.emit('print', { script, userInfo, field });
     },
 
-    createRoom: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
-        pvpUsers.add(userInfo.username)
-        roomName = CMD!.trim();
-        rooms.set(roomName, [])
+    createRoom: (socket: Socket, CMD: string | undefined, userInfo: UserInfo, userStatus: UserStatus) => {
+        const roomName = CMD!.trim();
+
+        // 이미 존재하는 방 생성시도시
+        if (publicRooms.has(CMD!)) return pvpBattle.pvpListWrongCommand(socket, '이미 존재하는 방 입니다.', userInfo)
+        
+        userStatus.pvpRoom = roomName;
+        rooms.set(roomName, new Map())
+        rooms.get(roomName)!.set(userInfo.username,{socketId:socket.id, userStatus})
 
         let tempScript: string = '';
         const tempLine =
@@ -41,12 +51,21 @@ export default {
         const field = 'pvpBattle';
 
         socket.join(roomName)
+        socket.emit('printBattle',{userStatus})
         io.to(roomName).emit('fieldScriptPrint', { script, field });
     },
 
-    joinRoom: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
-        pvpUsers.add(userInfo.username)
-        roomName = CMD!.trim();
+    joinRoom: (socket: Socket, CMD: string | undefined, userInfo: UserInfo, userStatus: UserStatus) => {
+        const roomName = CMD!.trim();
+
+        // 존재하지 않는 방 입장시도시
+        if(!publicRooms.has(CMD!)) return pvpBattle.pvpListWrongCommand(socket, '존재하지 않는 방이름 입니다.', userInfo)
+        
+        // 입장 초과시 입장불가
+        if (rooms.get(roomName)!.size > 4) return pvpBattle.pvpListWrongCommand(socket, '4명 정원초과입니다.', userInfo)
+
+        userStatus.pvpRoom = roomName;
+        rooms.get(roomName)!.set(userInfo.username,{socketId:socket.id, userStatus})
 
         let tempScript: string = '';
         const tempLine =
@@ -58,10 +77,11 @@ export default {
         const field = 'pvpBattle';
 
         socket.join(roomName)
+        socket.emit('printBattle',{userStatus})
         io.to(roomName).emit('fieldScriptPrint', { script, field });
 
-        if (pvpUsers.size === 2) {
-           return pvpBattle.pvpStart(socket, CMD, userInfo)
+        if (rooms.get(roomName)!.size === 4) {
+           return pvpBattle.pvpStart(socket, CMD, userInfo, userStatus)
         }
     },
 

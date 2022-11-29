@@ -1,7 +1,9 @@
 import { Socket } from 'socket.io';
+import { io } from '../../app';
 import { UserInfo } from '../../interfaces/user';
 import { NpcService } from '../../services';
-import { io } from '../../app';
+
+export const publicRooms = new Set();
 
 export default {
     pvpHelp: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
@@ -44,14 +46,13 @@ export default {
 
         // pvpRoom 목록을 보여준다.
         const { sids, rooms } = io.sockets.adapter;
-        const publicRooms:string[] = [];
         rooms.forEach((_, key) => {
-            if (sids.get(key) === undefined) publicRooms.push(key);
+            if (sids.get(key) === undefined) publicRooms.add(key);
         });
 
-        if (!publicRooms[0]) tempScript += '생성된 방이 존재하지 않습니다.'
-
-        publicRooms.map((roomName)=>{
+        if (publicRooms.size===0) tempScript += '생성된 방이 존재하지 않습니다.';
+        const roomNames = [...publicRooms];
+        roomNames.map((roomName)=>{
             tempScript += `${roomName}, `
         })
 
