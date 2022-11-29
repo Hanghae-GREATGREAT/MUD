@@ -1,6 +1,7 @@
 const SERVER_URL = SERVER.getServerUrl();
 console.log(SERVER_URL);
 const toServer = io.connect(`ws://${SERVER_URL}/`, { transports: ['websocket'] });
+const toBattle = io.connect(`ws://${SERVER_URL}/battle`, { transports: ['websocket'] });
 
 const commandLine = $('.commendLine');
 const commendInput = $('#commendInput');
@@ -48,10 +49,17 @@ function checkSession() {
 }
 
 function loadScript(field, userInfo) {
-    if (field === 'none' || userInfo === '{}') {
-        return toServer.emit('none', { line: 'LOAD', userInfo: {} });
+    switch (field) {
+        case 'dungeon':
+            toBattle.emit('dungeon', { line: 'LOAD', userInfo: JSON.parse(userInfo) });
+            return;    
+        case 'village':
+            toServer.emit('dungeon', { line: 'LOAD', userInfo: JSON.parse(userInfo) });
+            return;
+        default:
+            toServer.emit('none', { line: 'LOAD', userInfo: {} });
+            return;
     }
-    toServer.emit('dungeon', { line: 'LOAD', userInfo: JSON.parse(userInfo) });
 }
 
 function checkValidation(userInfo) {
@@ -82,9 +90,10 @@ function checkSkillCD(cooldown) {
 }
 
 toServer.on('print', printHandler);
+toBattle.on('print', printHandler);
 
 function printHandler({ field, script, userInfo }) {
-    console.log(field, script);
+    console.log(field);
     localStorage.setItem('field', field);
     if (userInfo) localStorage.setItem('user', JSON.stringify(userInfo));
 
@@ -93,9 +102,10 @@ function printHandler({ field, script, userInfo }) {
 }
 
 toServer.on('printBattle', printBattleHandler);
+toBattle.on('printBattle', printBattleHandler);
 
 function printBattleHandler({ field, script, userInfo, userStatus }) {
-    console.log('printBattle', field, userInfo);
+    console.log('printBattle', field);
     localStorage.setItem('field', field);
     if (userInfo) localStorage.setItem('user', JSON.stringify(userInfo));
     if (userStatus) {

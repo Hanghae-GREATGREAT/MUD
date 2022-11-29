@@ -6,7 +6,7 @@ class CharacterService {
     /***************************************************************
         모든 필드 JOIN해서 가져옴
     ****************************************************************/
-    async findByPk(characterId: number | string): Promise<any> {
+    async findByPk(characterId: number | string) {
         const character: Characters | null = await Characters.findOne({
             where: { characterId: Number(characterId) },
             include: [Users, Fields, Titles],
@@ -27,6 +27,7 @@ class CharacterService {
     async getUserStatus(
         characterId: number | string,
     ): Promise<UserStatus | null> {
+
         const character: Characters | null = await Characters.findOne({
             where: { characterId: Number(characterId) },
             include: [Users, Fields, Titles],
@@ -177,8 +178,8 @@ class CharacterService {
         const status = await this.getUserStatus(characterId);
         if (!status) throw new Error('존재하지 않는 캐릭터');
 
-        const reHp = status.hp + status.maxhp * 0.05;
-        const reMp = status.hp + status.maxmp * 0.2;
+        const reHp = status.hp + (status.maxhp / 20);
+        const reMp = status.mp + (status.maxmp / 5);
         Characters.update(
             {
                 exp: status.exp + exp,
@@ -192,7 +193,7 @@ class CharacterService {
 
         const level = Characters.levelCalc(status.exp + exp, status.level);
         let levelup = false;
-        if (level > status.level) {
+        if (level !== status.level) {
             levelup = true;
             Characters.update(
                 {

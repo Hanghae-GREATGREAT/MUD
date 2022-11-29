@@ -14,6 +14,10 @@ class dBConnection {
     DB_USER: string;
     DB_PASSWORD: string;
     DB_HOST: string;
+    REDIS_HOST: string;
+    REDIS_USER: string;
+    REDIS_PASSWORD: string;
+    REDIS_PORT: number;
 
     constructor() {
         this.NODE_ENV = process.env.NODE_ENV ? 
@@ -28,10 +32,14 @@ class dBConnection {
         this.DB_HOST = process.env[`${DB[this.NODE_ENV]}_HOST`]!;
         this.DB_NAME = process.env[`${DB[this.NODE_ENV]}_NAME`]!;
         this.DB_USER = process.env[`${DB[this.NODE_ENV]}_USER`]!;
-        this.DB_PASSWORD = process.env[`${DB[this.NODE_ENV]}_PASSWORD`]!;   
+        this.DB_PASSWORD = process.env[`${DB[this.NODE_ENV]}_PASSWORD`]!;
+
+        this.REDIS_HOST = process.env[`REDIS_${DB[this.NODE_ENV]}_HOST`]!;
+        this.REDIS_USER = process.env[`REDIS_${DB[this.NODE_ENV]}_USER`]!;
+        this.REDIS_PASSWORD = process.env[`REDIS_${DB[this.NODE_ENV]}_PASSWORD`]!;
+        this.REDIS_PORT = Number(process.env.REDIS_PORT);
     }
 }
-
 
 class Env extends dBConnection {
 
@@ -40,9 +48,6 @@ class Env extends dBConnection {
     CLIENT_URL: string;
     ROOT_PATH: string;
     SRC_PATH: string;
-    REDIS_HOST: string;
-    REDIS_USER: string;
-    REDIS_PASSWORD: string;
 
     constructor() {
         super();
@@ -53,9 +58,6 @@ class Env extends dBConnection {
         this.ROOT_PATH = path.resolve('./');
         this.SRC_PATH = path.resolve(__dirname);
 
-        this.REDIS_HOST = process.env.REDIS_HOST!;
-        this.REDIS_USER = process.env.REDIS_USER!;
-        this.REDIS_PASSWORD = process.env.REDIS_PASSWORD!;
     }
 }
 

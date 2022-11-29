@@ -26,7 +26,7 @@ export default {
         socket: Socket, CMD: string | undefined, 
         userInfo: UserInfo, id: string
     ) => {
-        
+
         const username = userInfo.username;
         const password = CMD;
         const result = await UserService.signin({ username, password });
