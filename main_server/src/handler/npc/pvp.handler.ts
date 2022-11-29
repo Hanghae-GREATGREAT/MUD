@@ -50,12 +50,11 @@ export default {
             if (sids.get(key) === undefined) publicRooms.add(key);
         });
 
-        if (publicRooms.size===0) tempScript += '생성된 방이 존재하지 않습니다.';
         const roomNames = [...publicRooms];
         roomNames.map((roomName)=>{
-            tempScript += `${roomName}, `
+            if (!Number(roomName)) tempScript += `${roomName}, `
         })
-
+        if (roomNames.length === 0) tempScript += '생성된 방이 존재하지 않습니다.';
         tempScript += '\n\n1. 방생성 - >1 방이름< 으로 입력하게나 ! \n';
         tempScript += '2. 방입장 - >2 방이름< 으로 입력하게나 !\n';
 

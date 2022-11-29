@@ -74,7 +74,6 @@ export default {
     // 방에서 나가기
     userLeave:(socket: Socket, CMD: string | undefined, userInfo: UserInfo, userStatus: UserStatus) => {
         let tempScript: string = '';
-        rooms.get(userStatus.pvpRoom!)!.delete(userInfo.username)
 
         const tempLine =
         '=======================================================================\n\n';
@@ -90,6 +89,9 @@ export default {
         const script = tempLine + tempScript;
         const field = 'village';
 
+        rooms.get(userStatus.pvpRoom!)!.delete(userInfo.username);
+        userStatus.pvpRoom = undefined;
+        
         socket.leave(userStatus.pvpRoom!)
         socket.emit('print', { script, userInfo, field });
     },

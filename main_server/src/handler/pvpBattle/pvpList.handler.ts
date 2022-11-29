@@ -34,6 +34,9 @@ export default {
     createRoom: (socket: Socket, CMD: string | undefined, userInfo: UserInfo, userStatus: UserStatus) => {
         const roomName = CMD!.trim();
 
+        // 방 이름이 숫자일때
+        if(Number(CMD)) return pvpBattle.pvpListWrongCommand(socket, '방 이름은 한글 또는 영문자만 가능합니다.', userInfo)
+
         // 이미 존재하는 방 생성시도시
         if (publicRooms.has(CMD!)) return pvpBattle.pvpListWrongCommand(socket, '이미 존재하는 방 입니다.', userInfo)
         
