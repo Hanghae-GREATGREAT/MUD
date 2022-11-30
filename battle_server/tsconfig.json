@@ -1,11 +1,10 @@
 {
-    "include": ["src", "server.ts", "../battle_server/src/interfaces/common.ts"],
+    "include": ["src", "server.ts"],
     "compilerOptions": {
         "target": "ES6",
         "module": "CommonJS",
         "lib": ["ES6", "ES2022"],
         "esModuleInterop": true,
-        "moduleResolution": "node",
         "outDir": "build",
         "strict": true,
         "allowJs": true

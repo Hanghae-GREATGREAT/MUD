@@ -9,9 +9,8 @@ class RedisCache {
     private readonly client: RedisClientType;
 
     constructor() {
-        this.client = createClient({
-            url: `redis://${env.REDIS_USER}:${env.REDIS_PASSWORD}@${env.REDIS_HOST}/0`,
-        });
+        const { REDIS_URL } = env
+        this.client = createClient({ url: REDIS_URL });
         this.connect();
 
         this.client.on('connect', () => {

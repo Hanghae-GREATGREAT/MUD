@@ -10,14 +10,13 @@ interface DBInterface {
 class dBConnection {
 
     NODE_ENV: string;
+
     DB_NAME: string;
     DB_USER: string;
     DB_PASSWORD: string;
     DB_HOST: string;
-    REDIS_HOST: string;
-    REDIS_USER: string;
-    REDIS_PASSWORD: string;
-    REDIS_PORT: number;
+    
+    REDIS_URL: string
 
     constructor() {
         this.NODE_ENV = process.env.NODE_ENV ? 
@@ -34,10 +33,14 @@ class dBConnection {
         this.DB_USER = process.env[`${DB[this.NODE_ENV]}_USER`]!;
         this.DB_PASSWORD = process.env[`${DB[this.NODE_ENV]}_PASSWORD`]!;
 
-        this.REDIS_HOST = process.env[`REDIS_${DB[this.NODE_ENV]}_HOST`]!;
-        this.REDIS_USER = process.env[`REDIS_${DB[this.NODE_ENV]}_USER`]!;
-        this.REDIS_PASSWORD = process.env[`REDIS_${DB[this.NODE_ENV]}_PASSWORD`]!;
-        this.REDIS_PORT = Number(process.env.REDIS_PORT);
+        const REDIS_HOST = process.env[`REDIS_${DB[this.NODE_ENV]}_HOST`]!;
+        const REDIS_USER = process.env[`REDIS_${DB[this.NODE_ENV]}_USER`]!;
+        const REDIS_PASSWORD = process.env[`REDIS_${DB[this.NODE_ENV]}_PASSWORD`]!;
+        const REDIS_PORT = Number(process.env[`REDIS_${DB[this.NODE_ENV]}_PORT`]);
+
+        this.REDIS_URL = this.NODE_ENV === 'production' ?
+            `redis://${REDIS_HOST}:${REDIS_PORT}` :
+            `redis://${REDIS_USER}:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}/0`;
     }
 }
 
@@ -49,6 +52,9 @@ class Env extends dBConnection {
     ROOT_PATH: string;
     SRC_PATH: string;
 
+    BATTLE_URL: string;
+    BATTLE_PORT: number;
+
     constructor() {
         super();
 
@@ -58,6 +64,9 @@ class Env extends dBConnection {
         this.ROOT_PATH = path.resolve('./');
         this.SRC_PATH = path.resolve(__dirname);
 
+        this.BATTLE_PORT = Number(process.env.BATTLE_SERVER_PORT);
+        this.BATTLE_URL = this.NODE_ENV === 'production' ? 
+            process.env.BATTLE_SERVER_URL || 'localhost' : 'localhost';
     }
 }
 
