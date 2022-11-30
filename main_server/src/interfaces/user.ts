@@ -39,7 +39,8 @@ interface UserStatus {
     hp: number;
     mp: number;
     exp: number;
-    item: InferAttributes<Items, { omit: never; }>[] // | string;
+    item: string;
+    // item: InferAttributes<Items, { omit: never; }>[] // | string;
     skill: InferAttributes<Skills, { omit: never; }>[] // | string;
     // item: Items[];
     // skill: Skills[];

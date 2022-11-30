@@ -38,7 +38,7 @@ export default {
         const tempLine =
             '=======================================================================\n';
 
-        const actionScript: string = await NpcService.enhance(
+        const { tempScript: actionScript, userStatus } = await NpcService.enhance(
             Number(userInfo.characterId),
         );
 

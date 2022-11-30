@@ -3,8 +3,24 @@ import { battle, chat, common, field, home, TEST, village, pvpBattle } from './c
 import { ChatInput, SocketInput } from './interfaces/socket';
 
 
-const onConnection = (socket: Socket) => {
-    // console.log('SOCKET CONNECTED', socket.id);
+export const battleConnection = (socket: Socket) => {
+    console.log('BATTLE NAMESPACE CONNECTED', socket.id);
+
+    socket.on('dungeon', (input: SocketInput) => field.dungeonController(socket, input));
+
+    socket.on('battle', (input: SocketInput) => battle.battleController(socket, input));
+
+    socket.on('encounter', (input: SocketInput) => battle.encounterController(socket, input));
+
+    socket.on('action', (input: SocketInput) => battle.actionController(socket, input));
+
+    socket.on('autoBattle', (input: SocketInput) => battle.autoBattleController(socket, input));
+
+    socket.on('adventureResult', (input: SocketInput) => battle.resultController(socket, input));
+}
+
+export const onConnection = (socket: Socket) => {
+    console.log('MAIN NAMESPACE CONNECTED', socket.id);
 
     /************************************************************************
                                     홈                                      
@@ -20,7 +36,7 @@ const onConnection = (socket: Socket) => {
                                     필드                                      
      ************************************************************************/
 
-    socket.on('dungeon', (input: SocketInput) => field.dungeonController(socket, input));
+    
 
     socket.on('village', (input: SocketInput) => field.villageController(socket, input));
     
@@ -38,23 +54,12 @@ const onConnection = (socket: Socket) => {
 
     socket.on('pvp', (input: SocketInput) => village.pvpController(socket, input));
 
-    /************************************************************************
-                                    전투                                      
-     ************************************************************************/
-
-    socket.on('battle', (input: SocketInput) => battle.battleController(socket, input));
-
-    socket.on('encounter', (input: SocketInput) => battle.encounterController(socket, input));
-
-    socket.on('action', (input: SocketInput) => battle.actionController(socket, input));
-
-    socket.on('autoBattle', (input: SocketInput) => battle.autoBattleController(socket, input));
 
     /************************************************************************
                                    모험 종료                                      
      ************************************************************************/
 
-    socket.on('adventureResult', (input: SocketInput) => battle.resultController(socket, input));
+    
 
     /************************************************************************
                                    시련의 장                                      
@@ -95,4 +100,4 @@ const onConnection = (socket: Socket) => {
     socket.on('disconnect', () => common.disconnect(socket));
 };
 
-export default onConnection;
+// export default onConnection;

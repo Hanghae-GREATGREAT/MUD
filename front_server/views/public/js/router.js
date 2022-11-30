@@ -4,6 +4,7 @@ const commandRouter = {
     'sign': gerneralSend,
 
     'dungeon': battleSend,
+    'encounter': battleSend,
     'action': battleSend,
     'battle': battleSend,
     'autoBattle': battleSend,
@@ -34,7 +35,7 @@ function battleSend(field, input) {
         commandLine.scrollTop(Number.MAX_SAFE_INTEGER);
         return;
     }
-    toServer.volatile.emit(field, input);
+    toBattle.volatile.emit(field, input);
 }
 
 function globalSend(field, input) {

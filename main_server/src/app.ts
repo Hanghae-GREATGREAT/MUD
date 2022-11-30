@@ -2,7 +2,7 @@ import env from './config.env';
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import onConnection from './socket.routes';
+import { battleConnection, onConnection } from './socket.routes';
 
 import sequelize from './db/config/connection';
 import associate from './db/config/associate';
@@ -24,6 +24,9 @@ export const io = new Server(httpServer, {
 io.use((socket, next)=>{next()})
 // io.use(SocketMiddleware)
 io.on('connection', onConnection);
+
+const battleNamespace = io.of('/battle');
+battleNamespace.on('connection', battleConnection);
 
 
 if (env.NODE_ENV !== 'test') {
