@@ -22,7 +22,7 @@ export default {
 
         tempScript += '명령어 : \n';
         tempScript += '1 - 시련의 장 방생성을 합니다.\n';
-        tempScript += '2 - 입장할 방 목록을 불러옵니다.\n';
+        tempScript += '2 - 시련의 장 방이름을 입력하여 입장합니다.\n';
         tempScript += '[돌]아가기 - 마을로 돌아갑니다.\n';
 
         const script = tempLine + tempScript;
@@ -84,13 +84,15 @@ export default {
 
         socket.join(roomName);
         socket.emit('printBattle',{userStatus});
-        io.to(roomName).emit('fieldScriptPrint', { script, field });
-
+        
         if (rooms.get(roomName)!.size === 4) return pvpBattle.pvpStart(socket, CMD, userInfo, userStatus)
         else if (rooms.get(roomName)!.size > 4) {
             rooms.get(roomName)!.get(userInfo.username)!.target = 'none';
             rooms.get(roomName)!.get(userInfo.username)!.selectSkill = 'none';
-        }
+            socket.emit('printBattle', { script, field, userInfo });
+        } else io.to(roomName).emit('fieldScriptPrint', { script, field });
+        
+
     },
 
     pvpListWrongCommand: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {

@@ -32,7 +32,7 @@ export default {
         const pvpRoom = rooms.get(roomName!)
         const user = [...pvpRoom!]
 
-        for (let i = 0; i < pvpRoom!.size; i++) {
+        for (let i = 0; i < 4; i++) {
             userNames.push(user[i][1].userStatus.name)
             target.push(user[i][1].target!)
             selectSkills.push(user[i][1].selectSkill!)
@@ -41,7 +41,7 @@ export default {
         const multiples:number[] = [];
         const attacks:number[] = [];
 
-        for (let i = 0; i < selectSkills.length; i++) {
+        for (let i = 0; i < 4; i++) {
            const characters = await Characters.findOne({ where: { name:userNames[i]! }});
            attacks.push(characters!.attack);
            let skill = await Skills.findOne({ where: {name: selectSkills[i] }});
@@ -53,23 +53,23 @@ export default {
         // 타겟캐릭터 체력과 적용될 스킬과 데미지가 이루어진다.
         // 스킬 데미지 계산
         const playerSkillDamage: number[] = [];
-        for (let i = 0; i < userNames.length; i++) playerSkillDamage.push(Math.floor((attacks[i]! * multiples[i]!) / 100));
+        for (let i = 0; i < 4; i++) playerSkillDamage.push(Math.floor((attacks[i]! * multiples[i]!) / 100));
 
         const realDamage: number[] = [];
-        for (let i = 0; i < userNames.length; i++) realDamage.push(BattleService.hitStrength(playerSkillDamage[i]));
+        for (let i = 0; i < 4; i++) realDamage.push(BattleService.hitStrength(playerSkillDamage[i]));
 
-        for (let i = 0; i < userNames.length; i++) await Characters.increment({ hp:-realDamage[i] }, { where: { name:target[i] }})
+        for (let i = 0; i < 4; i++) await Characters.increment({ hp:-realDamage[i] }, { where: { name:target[i] }})
         
         const teamA: number[] = [];
         const teamB: number[] = [];
-        for (let i = 0; i < userNames.length; i++) {
+        for (let i = 0; i < 4; i++) {
             const characters = await Characters.findOne({ where: { name: userNames[i]! }})
             
             // hp가 0이하일시 0으로 update
             if (characters!.hp <= 0) {
                 characters!.update({ hp: 0 }, { where: { name: userNames[i]! }});
-                user[i][1].selectSkill = 'none';
-                user[i][1].target = 'none';
+                user[i][1].selectSkill = 'dead';
+                user[i][1].target = 'dead';
             } 
             if (i < 2) teamA.push(characters!.hp)
             else teamB.push(characters!.hp)
@@ -82,8 +82,8 @@ export default {
         let tempScript: string = '';
 
         // 타겟으로 지정한 대상 + 적용될 스킬과 데미지 출력
-        for (let i = 0; i < userNames.length; i++){
-            if (target[i] === 'none') continue;
+        for (let i = 0; i < 4; i++){
+            if (target[i] === 'dead') continue;
             tempScript += `${userNames[i]}가 ${target[i]}에게 ${realDamage[i]}의 데미지를 입혔다 ! \n`;
         }
         const tempLine =
@@ -108,11 +108,11 @@ export default {
         io.to(userStatus.pvpRoom!).emit('fieldScriptPrint', { field, script });
 
         // 종료 후 모든유저 maxHp까지 회복
-        for (let y = 0; y < userNames.length; y++){
+        for (let y = 0; y < 4; y++){
             const characterHp = await Characters.findOne({ where: { name: userNames[y]! }})
 
             // hp를 max로 채워주고 userStatus에 저장된값 초기화.
-            // 사망한 유저는 고른 스킬과 고른 유저가 none이 된다.
+            // 사망한 유저는 고른 스킬과 고른 유저가 dead이 된다.
             characterHp!.update({ hp: characterHp!.maxhp },{ where: {name: userNames[y]! }})
             user[y][1].selectSkill = undefined;
             user[y][1].target = undefined;
@@ -130,9 +130,9 @@ export default {
         io.to(userStatus.pvpRoom!).emit('fieldScriptPrint', { field, script });
 
         // userStatus에 저장된값 초기화 후 공격할 유저 선택하는 로직실행.
-        for (let i = 0; i < userNames.length; i++) {
+        for (let i = 0; i < 4; i++) {
             // 사망한 유저가 아닐시 초기화
-            if (user[i][1].selectSkill !== 'none' || user[i][1].target !== 'none') {
+            if (user[i][1].selectSkill !== 'none' || user[i][1].target !== 'dead') {
                 user[i][1].selectSkill = undefined;
                 user[i][1].target = undefined;
             }

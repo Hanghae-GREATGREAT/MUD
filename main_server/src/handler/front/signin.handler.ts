@@ -36,7 +36,7 @@ export default {
             socket.emit('print', { field, script, userInfo: {} });
             return;
         }
-
+        console.log(result)
         const userId = result.userId;
         const character = await CharacterService.findOneByUserId(userId);
 
