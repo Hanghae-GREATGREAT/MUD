@@ -48,8 +48,8 @@ export default {
 
         const pvpRoom = rooms.get(roomName!)
         const iterator = pvpRoom!.values()
-        for (let i = 0; i < pvpRoom!.size; i++) {
-            names.push(iterator.next().value.userStatus.username)
+        for (let i = 0; i < 4; i++) {
+            names.push(iterator.next().value.userStatus.name)
         }
 
         // 캐릭터별 이름, 레벨, 체력, 공격력, 방어력 표시
@@ -61,8 +61,9 @@ export default {
         tempScript += `샤크스 경 : \n`;
         tempScript += `공격할 유저를 선택하게나 !\n\n`;
 
-        for (let i = 0; i < names.length; i++) {
-            tempScript += `${i+1}. Lv${userInfos[i]?.level} ${names[i]} - hp: ${userInfos[i]?.hp}/${userInfos[i]?.maxhp}, attack: ${userInfos[i]?.attack}, defense: ${userInfos[i]?.defense}\n`;
+        for (let i = 0; i < 4; i++) {
+            if (userInfos[i]!.hp === 0) continue;
+            tempScript += `${i+1}. Lv${userInfos[i]!.level} ${names[i]} - hp: ${userInfos[i]!.hp}/${userInfos[i]!.maxhp}, attack: ${userInfos[i]!.attack}, defense: ${userInfos[i]!.defense}\n`;
         }
 
         const script = tempLine + tempScript;

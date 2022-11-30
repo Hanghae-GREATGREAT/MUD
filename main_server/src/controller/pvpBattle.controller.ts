@@ -5,15 +5,15 @@ import { SocketInput, CommandHandler } from '../interfaces/socket';
 
 export default {
 
-    // 
+    // pvp룸 생성 및 입장
     pvpListController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
 
-        if (!CMD2) return pvpBattle.pvpListWrongCommand(socket, '방이름을 입력해주세요', userInfo)
+        if (CMD2 === '도움말') return pvpBattle.pvpListHelp;
+        else if (CMD2 === '돌'|| CMD2 === '돌아가기') return pvpBattle.userLeave;
+        else if (!CMD2) return pvpBattle.pvpListWrongCommand(socket, '방이름을 입력해주세요', userInfo)
 
         const commandHandler: CommandHandler = {
-            '도움말': pvpBattle.pvpListHelp,
-            '돌': pvpBattle.userLeave,
             '1': pvpBattle.createRoom,
             '2': pvpBattle.joinRoom
         };
@@ -23,9 +23,8 @@ export default {
         }
 
         commandHandler[CMD1](socket, CMD2, userInfo, userStatus);
-
-        // 6명이 채워지면 자동으로 시작
     },
+
     // pvp룸 입장 후 6명이 되기까지 기다리는중
     pvpBattleController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
 
@@ -43,32 +42,33 @@ export default {
         }
 
         commandHandler[CMD1](socket, CMD2, userInfo, userStatus);
-
-        // 6명이 채워지면 자동으로 시작
     },
 
     // 전투가 시작된 후 공격 상대를 고른다.
-    enemyChoiceController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
+    enemyChoiceController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {    
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
         const roomName = userStatus.pvpRoom;
         const userNames: string[] = [];
+        const pvpRoom = rooms.get(roomName!);
 
-        // 본인 선택시 예외처리
-        const pvpRoom = rooms.get(roomName!)
-        const iterator = pvpRoom!.values()
+        // 사망한 유저인지 확인
+        if (pvpRoom!.get(userInfo.username)?.target === 'none') return pvpBattle.enemyChoiceWrongCommand(socket, '관전 중에는 입력하지 못합니다.', userInfo);
+
+        // 본인 선택시 예외처리로직 시작
+        const iterator = pvpRoom!.values();
         for (let i = 0; i < rooms.get(roomName!)!.size; i++) {
-            userNames.push(iterator.next().value.userStatus.username)
+            userNames.push(iterator.next().value.userStatus.name);
         }
 
         // 본인의 index를 확인
-        const myIndex = userNames.findIndex((e)=>e===userInfo.username)
+        const myIndex = userNames.findIndex((e)=>e===userStatus.name);
         
         // 유저가 속한 팀이아닌 상대팀만을 선택
         if (myIndex < 2 && Number(CMD1)-1 < 2) return pvpBattle.selectWrong(socket, CMD1, userInfo, userStatus);
         else if (myIndex >= 2 && Number(CMD1)-1 >= 2) return pvpBattle.selectWrong(socket, CMD1, userInfo, userStatus);
         else if (Number(CMD1) > 4) return pvpBattle.selectWrong(socket, CMD1, userInfo, userStatus);
 
-        pvpRoom!.get(userInfo.username)!.target = userNames[Number(CMD1)-1]
+        pvpRoom!.get(userInfo.username)!.target = userNames[Number(CMD1)-1];
         
         const commandHandler: CommandHandler = {
             '도움말': pvpBattle.enemyChoiceHelp,
@@ -96,14 +96,16 @@ export default {
     // 공격 대상을 지정한 값을 가지고 있을 것이 필요함.
     attackChoiceController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
+        const pvpRoom = rooms.get(userStatus.pvpRoom!);
 
         // 커맨드 예외처리, 유저가 가진 스킬만을 사용할 수 있다.
-        if (CMD1 === '도움말') return pvpBattle.attackChoiceHelp(socket, CMD1, userInfo, userStatus)
-        else if (!CMD2) return pvpBattle.attackChoiceWrongCommand(socket, CMD2, userInfo)
-        else if (CMD1==='1' && CMD2 === '기본공격') return pvpBattle.selectSkills(socket, CMD2, userInfo, userStatus);
-        else if (CMD1==='1' && CMD2 !== '기본공격') return pvpBattle.attackChoiceWrongCommand(socket, CMD2, userInfo)
-        else if (!userStatus.skill[Number(CMD1)-2]) return pvpBattle.isSkills(socket, CMD2, userInfo, userStatus)
-        else if (userStatus.skill[Number(CMD1)-2].name !== CMD2) return pvpBattle.isSkills(socket, CMD2, userInfo, userStatus)
+        if (CMD1 === '도움말') return pvpBattle.attackChoiceHelp(socket, CMD1, userInfo, userStatus);
+        if (pvpRoom!.get(userInfo.username)!.selectSkill === 'none') return pvpBattle.enemyChoiceWrongCommand(socket, '관전 중에는 입력하지 못합니다.', userInfo);
+        if (!CMD2) return pvpBattle.attackChoiceWrongCommand(socket, CMD2, userInfo);
+        if (CMD1==='1' && CMD2 === '기본공격') return pvpBattle.selectSkills(socket, CMD2, userInfo, userStatus);
+        if (CMD1==='1' && CMD2 !== '기본공격') return pvpBattle.attackChoiceWrongCommand(socket, CMD2, userInfo);
+        if (!userStatus.skill[Number(CMD1)-2]) return pvpBattle.isSkills(socket, CMD2, userInfo, userStatus);
+        if (userStatus.skill[Number(CMD1)-2].name !== CMD2) return pvpBattle.isSkills(socket, CMD2, userInfo, userStatus);
 
         const commandHandler: CommandHandler = {
             2: pvpBattle.selectSkills,

@@ -29,7 +29,7 @@ export default {
         const user = [...pvpRoom!]
 
         // 선택한 스킬 push
-        for (let i = 0; i < pvpRoom!.size; i++) {
+        for (let i = 0; i < 4; i++) {
             selectSkills.push(user[i][1].selectSkill!)
         }
 
@@ -37,7 +37,7 @@ export default {
         const skills = selectSkills.filter(names => names !== undefined)
 
         // 모두 선택시 다음로직으로 보내준다.
-        if (skills.length === 4) {
+        if (skills.length >= 4) {
             return pvpBattle.enemyAttack(socket, CMD, userInfo, userStatus);
         }
 

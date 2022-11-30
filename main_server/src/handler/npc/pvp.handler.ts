@@ -50,10 +50,6 @@ export default {
             if (sids.get(key) === undefined) publicRooms.add(key);
         });
 
-        // const roomNames = [...publicRooms];
-        // roomNames.map((roomName)=>{
-        //     if (!Number(roomName)) tempScript += `${roomName}, `
-        // })
         const roomNames: string[] = [];
         for (const roomName of [...publicRooms]) {
             if (roomName!.includes('pvpRoom')) {

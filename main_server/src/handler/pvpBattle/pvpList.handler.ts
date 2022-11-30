@@ -48,7 +48,7 @@ export default {
         const tempLine =
             '=======================================================================\n\n';
 
-        tempScript += `${userInfo.username}님이 입장하셨습니다.\n\n`
+        tempScript += `${userStatus.name}님이 입장하셨습니다.\n\n`
 
         const script = tempLine + tempScript;
         const field = 'pvpBattle';
@@ -68,7 +68,7 @@ export default {
         if(!publicRooms.has(roomName)) return pvpBattle.pvpListWrongCommand(socket, '존재하지 않는 방이름 입니다.', userInfo)
         
         // 입장 초과시 입장불가
-        if (rooms.get(roomName)!.size > 4) return pvpBattle.pvpListWrongCommand(socket, '4명 정원초과입니다.', userInfo)
+        // if (rooms.get(roomName)!.size > 4) return pvpBattle.pvpListWrongCommand(socket, '4명 정원초과입니다.', userInfo)
 
         userStatus.pvpRoom = roomName;
         rooms.get(roomName)!.set(userInfo.username,{socketId:socket.id, userStatus})
@@ -77,17 +77,19 @@ export default {
         const tempLine =
             '=======================================================================\n\n';
 
-        tempScript += `${userInfo.username}님이 입장하셨습니다.\n\n`
+        tempScript += `${userStatus.name}님이 입장하셨습니다.\n\n`
 
         const script = tempLine + tempScript;
         const field = 'pvpBattle';
 
-        socket.join(roomName)
-        socket.emit('printBattle',{userStatus})
+        socket.join(roomName);
+        socket.emit('printBattle',{userStatus});
         io.to(roomName).emit('fieldScriptPrint', { script, field });
 
-        if (rooms.get(roomName)!.size === 4) {
-           return pvpBattle.pvpStart(socket, CMD, userInfo, userStatus)
+        if (rooms.get(roomName)!.size === 4) return pvpBattle.pvpStart(socket, CMD, userInfo, userStatus)
+        else if (rooms.get(roomName)!.size > 4) {
+            rooms.get(roomName)!.get(userInfo.username)!.target = 'none';
+            rooms.get(roomName)!.get(userInfo.username)!.selectSkill = 'none';
         }
     },
 
