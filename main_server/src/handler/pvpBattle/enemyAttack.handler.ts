@@ -33,7 +33,7 @@ export default {
         const user = [...pvpRoom!]
 
         for (let i = 0; i < pvpRoom!.size; i++) {
-            userNames.push(user[i][1].userStatus.username)
+            userNames.push(user[i][1].userStatus.name)
             target.push(user[i][1].target!)
             selectSkills.push(user[i][1].selectSkill!)
         }
@@ -42,9 +42,9 @@ export default {
         const attacks:number[] = [];
 
         for (let i = 0; i < selectSkills.length; i++) {
-           const characters = await Characters.findOne({where:{name:userNames[i]!}});
+           const characters = await Characters.findOne({ where: { name:userNames[i]! }});
            attacks.push(characters!.attack);
-           let skill = await Skills.findOne({where:{name:selectSkills[i]}});
+           let skill = await Skills.findOne({ where: {name: selectSkills[i] }});
            !skill ? multiples.push(100) : multiples.push(skill!.multiple);
         //    if (!skill) multiples.push(100)
         //    else multiples.push(skill!.multiple);
@@ -58,34 +58,39 @@ export default {
         const realDamage: number[] = [];
         for (let i = 0; i < userNames.length; i++) realDamage.push(BattleService.hitStrength(playerSkillDamage[i]));
 
-        for (let i = 0; i < userNames.length; i++) await Characters.increment({hp:-realDamage[i]},{where:{name:target[i]}})
+        for (let i = 0; i < userNames.length; i++) await Characters.increment({ hp:-realDamage[i] }, { where: { name:target[i] }})
         
         const teamA: number[] = [];
         const teamB: number[] = [];
         for (let i = 0; i < userNames.length; i++) {
-            const characters = await Characters.findOne({where:{name:userNames[i]!}})
+            const characters = await Characters.findOne({ where: { name: userNames[i]! }})
             
             // hp가 0이하일시 0으로 update
-            if (characters!.hp <= 0) characters?.update({hp:0},{where:{name:userNames[i]!}})
-            if (i<2) teamA.push(characters!.hp)
+            if (characters!.hp <= 0) {
+                characters!.update({ hp: 0 }, { where: { name: userNames[i]! }});
+                user[i][1].selectSkill = 'none';
+                user[i][1].target = 'none';
+            } 
+            if (i < 2) teamA.push(characters!.hp)
             else teamB.push(characters!.hp)
         }
         
         // 팀 전멸 여부 확인
-        const isDifA = teamA.reduce((a,b)=>a+b,0) === 0
-        const isDifB = teamB.reduce((a,b)=>a+b,0) === 0
+        const isDifA = teamA.reduce((a, b) => a + b, 0) === 0
+        const isDifB = teamB.reduce((a, b) => a + b, 0) === 0
 
         let tempScript: string = '';
 
         // 타겟으로 지정한 대상 + 적용될 스킬과 데미지 출력
         for (let i = 0; i < userNames.length; i++){
+            if (target[i] === 'none') continue;
             tempScript += `${userNames[i]}가 ${target[i]}에게 ${realDamage[i]}의 데미지를 입혔다 ! \n`;
         }
         const tempLine =
             '=======================================================================\n\n';
 
         // 한 쪽팀 전멸시 로직 실행
-        if (isDifA||isDifB) {
+        if (isDifA || isDifB) {
             let isWinner: string = '';
             if (isDifB) isWinner += 'A팀'
             else if (isDifA) isWinner += 'B팀'
@@ -104,10 +109,11 @@ export default {
 
         // 종료 후 모든유저 maxHp까지 회복
         for (let y = 0; y < userNames.length; y++){
-            const characterHp = await Characters.findOne({where:{name:userNames[y]!}})
+            const characterHp = await Characters.findOne({ where: { name: userNames[y]! }})
 
             // hp를 max로 채워주고 userStatus에 저장된값 초기화.
-            characterHp!.update({hp: characterHp!.maxhp},{where:{name:userNames[y]!}})
+            // 사망한 유저는 고른 스킬과 고른 유저가 none이 된다.
+            characterHp!.update({ hp: characterHp!.maxhp },{ where: {name: userNames[y]! }})
             user[y][1].selectSkill = undefined;
             user[y][1].target = undefined;
         }
@@ -125,8 +131,12 @@ export default {
 
         // userStatus에 저장된값 초기화 후 공격할 유저 선택하는 로직실행.
         for (let i = 0; i < userNames.length; i++) {
-            user[i][1].selectSkill = undefined;
-            user[i][1].target = undefined;
+            // 사망한 유저가 아닐시 초기화
+            if (user[i][1].selectSkill !== 'none' || user[i][1].target !== 'none') {
+                user[i][1].selectSkill = undefined;
+                user[i][1].target = undefined;
+            }
+            
         }
         pvpBattle.pvpStart(socket, CMD, userInfo, userStatus)
     },

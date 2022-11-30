@@ -73,7 +73,7 @@ export default {
         const user = [...pvpRoom!]
 
         for (let i = 0; i < user.length; i++) {
-            users.push(user[i][1].userStatus.username)
+            users.push(user[i][1].userStatus.name)
             targets.push(user[i][1].target!)
         }
 
@@ -84,28 +84,36 @@ export default {
         tempScript += '샤크스 경 :\n';
 
         // 선택한 유저목록을 보여준다.
-        for (let i = 0; i < rooms.get(roomName!)!.size; i++){
+        for (let i = 0; i < 4; i++){
+            if (targets[i]==='none') continue;
             tempScript += `${users[i]}가 ${targets[i]}를 지목 했다네 !\n`;
         }
 
-        tempScript += '\n 어떤 공격을 할텐가 ?\n';
-        tempScript += '\n 중간 공백을 포함해서 입력해주게 !\n';
+        // 사망하지 않은 유저에게만 스킬 목록출력
+        if (pvpRoom!.get(userInfo.username)?.selectSkill !== 'none') {
+            tempScript += '\n 어떤 공격을 할텐가 ?\n';
+            tempScript += '\n 중간 공백을 포함해서 입력해주게 !\n';
 
-        tempScript += `1 기본공격\n`;
+            tempScript += `1 기본공격\n`;
 
-        let skillScript: string = '';
+            let skillScript: string = '';
 
-        // 유저별로 선택할 수 있는 목록을 보여준다.
-        for (let y=0; y < user.length; y++){
-            for (let i = 0; i < user[y][1].userStatus.skill.length; i++) {
-                let skills = user[y][1].userStatus.skill[i]
-                    skillScript += `${i+2} ${skills.name}\n`
+            // 유저별로 선택할 수 있는 목록을 보여준다.
+            for (let y=0; y < user.length; y++){
+                for (let i = 0; i < user[y][1].userStatus.skill.length; i++) {
+                    if (pvpRoom!.get(userInfo.username)!.selectSkill === 'none') {
+                        tempScript = `관전 중에는 입력하지 못합니다.\n`;
+                        continue;
+                    } 
+                    let skills = user[y][1].userStatus.skill[i]
+                        skillScript += `${i+2} ${skills.name}\n`
+                }
+
+            const script = tempLine + tempScript + skillScript;
+            const field = 'attackChoice';
+            io.to(user[y][1].socketId).emit('fieldScriptPrint', { field, script });
+            skillScript = '';
             }
-
-        const script = tempLine + tempScript + skillScript;
-        const field = 'attackChoice';
-        io.to(user[y][1].socketId).emit('fieldScriptPrint', { field, script });
-        skillScript = '';
         }
     },
 
