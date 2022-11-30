@@ -1,25 +1,30 @@
 import { Socket } from 'socket.io';
+import { fetchPost } from '../common';
+import env from '../config.env';
 import { dungeon, front, village } from '../handler';
-import { SocketInput, CommandHandler } from '../interfaces/socket';
+import { SocketInput, CommandHandler, CommandRouter } from '../interfaces/socket';
+
+const BATTLE_URL = `http://${env.BATTLE_URL}:${env.BATTLE_PORT}`;
 
 // dungeon, village
 export default {
     dungeonController: async (socket: Socket, { line, userInfo }: SocketInput) => {
         const [CMD1, CMD2]: string[] = line.trim().toUpperCase().split(' ');
-        console.log('inputCommand : ', CMD1, CMD2);
 
-        const commandHandler: CommandHandler = {
-            'LOAD': dungeon.getDungeonList,
-            '목록': dungeon.getDungeonList,
-            '도움말': dungeon.help,
-            '입장': dungeon.getDungeonInfo,
-            'OUT': front.signout
+        const cmdRoute: CommandRouter = {
+            'LOAD': 'load',
+            '목록': 'dungeonList',
+            '도움말': 'help',
+            '입장': 'dungeonInfo',
+            // 'OUT': 'signout',
         }
-        if (!commandHandler[CMD1]) {
-            dungeon.wrongCommand(socket, CMD1, userInfo);
+        if (!cmdRoute[CMD1]) {
+            const URL = `${BATTLE_URL}/dungeon/wrongCommand`;
+            fetchPost({ URL, socketId: socket.id, CMD: CMD2, userInfo });
             return;
         }
-        commandHandler[CMD1](socket, CMD2, userInfo, socket.id);
+        const URL = `${BATTLE_URL}/dungeon/${cmdRoute[CMD1]}`
+        fetchPost({ URL, socketId: socket.id, CMD: CMD2, userInfo });
     },
 
     villageController: async (socket: Socket, { line, userInfo }: SocketInput) => {

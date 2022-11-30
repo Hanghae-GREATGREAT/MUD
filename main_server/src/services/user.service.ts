@@ -3,6 +3,7 @@ import { Users } from '../db/models';
 import { redis } from '../db/cache';
 import { HttpException, HttpStatus } from '../common';
 import { CharacterService } from '.';
+import { UserInfo } from '../interfaces/user';
 
 
 class UserService {
@@ -33,6 +34,18 @@ class UserService {
          });
 
         return Boolean(user);
+    }
+
+    async checkUser(userInfo: UserInfo) {
+        const { userId, characterId, name } = userInfo;
+        const character = await CharacterService.findOneByUserId(userId);
+
+        // userSession으로 들어온 정보와 일치하는 캐릭터가 없을 때
+        return (
+            !character ||
+            character.characterId !== characterId ||
+            character.name !== name
+        );
     }
 
     async signout(userId: number, id: string) {

@@ -1,25 +1,44 @@
 
 services:
+  redis:
+    container_name: mud-redis
+    image: 'redis:alpine'
+    ports:
+      - '6379:6379'
+
   server:
     container_name: server
-    image: ninthsun91/mud-server:1.2.0
+    image: ninthsun91/mud-server:1.3.0
     build:
       context: main_server
       dockerfile: ./Dockerfile
     env_file:
       - ./main_server/.env
     ports:
-      - "3333:3333"
+      - '3333:3333'
+
+    # battle-server:
+    #   container_name: battle-server
+    #   image: ninthsun91/mud-battle:1.3.0
+    #   build:
+    #     context: battle_server
+    #     dockerfile: ./Dockerfile
+    #   env_file:
+    #     - ./battle_server/.env
+    #   ports:
+    #     - '3334:3334'
+    #   depends_on:
+    #     - server
 
   front:
     container_name: front
-    image: ninthsun91/mud-front:1.2.0
+    image: ninthsun91/mud-front:1.3.0
     build:
       context: front_server
       dockerfile: ./Dockerfile
     env_file:
       - ./front_server/.env
     ports:
-      - "8080:8080"
+      - '8080:8080'
     depends_on:
       - server
