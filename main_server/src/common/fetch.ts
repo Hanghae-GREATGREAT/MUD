@@ -23,13 +23,13 @@ const fetchPost = (params: PostParams): Promise<unknown> => {
     }
 
     return new Promise((resolve, reject) => {
-        console.log('fetch Promise', body);
         fetch(URL, { 
             method: 'post', 
             headers,
             body: JSON.stringify(body),
         }).then((response) => {
-            console.log('fetch response', response);
+            console.log(response.status, response.url)
+            resolve(response);
         }).catch(errorReport);
     });
 }
