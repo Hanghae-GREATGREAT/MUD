@@ -2,7 +2,7 @@ import { Socket } from 'socket.io';
 import { io } from '../../app';
 import { pvpBattle } from '..';
 import { UserInfo, UserStatus } from '../../interfaces/user';
-import { rooms } from './pvpList.handler';
+import { maxUsers, rooms } from './pvpList.handler';
 
 export default {
     enemyChoiceHelp: (socket: Socket, CMD: string | undefined, userInfo: UserInfo, userStatus: UserStatus) => {
@@ -23,7 +23,7 @@ export default {
     // 상대 유저를 고를때 마다 메세지 출력
     selecting: (socket: Socket, CMD: string | undefined, userInfo: UserInfo, userStatus: UserStatus) => {
         const roomName = userStatus.pvpRoom;
-        let targets: string[] = [];
+        const targets: string[] = [];
 
         let tempScript: string = '';
         const tempLine =
@@ -38,15 +38,15 @@ export default {
 
         const pvpRoom = rooms.get(roomName!)
         const iterator = pvpRoom!.values()
-        for (let i = 0; i < pvpRoom!.size; i++) {
+        for (let i = 0; i < maxUsers; i++) {
             targets.push(iterator.next().value.target)
         }
 
         // undefined인 값 제거
-        const users = targets.filter(names=>names !== undefined)
+        const users = targets.filter(names => names !== undefined)
 
         // 공격할 유저 모두 선택시 다음 로직으로 보내준다.
-        if(users.length === 4) {
+        if(users.length === maxUsers) {
             return pvpBattle.selectUserResult(socket, CMD, userInfo, userStatus)
         }
     },
@@ -58,6 +58,7 @@ export default {
 
         tempScript += '샤크스 경 :\n';
         tempScript += '자신 또는 본인이 속한 팀은 고를 수 없다네 !\n';
+        tempScript += '앗..아아.. 방금 고른 유저는 이미 사망했다네...\n';
 
         const script = tempLine + tempScript;
         const field = 'enemyChoice';
@@ -72,7 +73,7 @@ export default {
         const pvpRoom = rooms.get(roomName!)
         const user = [...pvpRoom!]
 
-        for (let i = 0; i < user.length; i++) {
+        for (let i = 0; i < maxUsers; i++) {
             users.push(user[i][1].userStatus.name)
             targets.push(user[i][1].target!)
         }
@@ -84,13 +85,14 @@ export default {
         tempScript += '샤크스 경 :\n';
 
         // 선택한 유저목록을 보여준다.
-        for (let i = 0; i < 4; i++){
-            if (targets[i]==='none') continue;
+        for (let i = 0; i < maxUsers; i++){
+            if (targets[i] === 'none' || targets[i] === 'dead') continue;
             tempScript += `${users[i]}가 ${targets[i]}를 지목 했다네 !\n`;
         }
 
         // 사망하지 않은 유저에게만 스킬 목록출력
-        if (pvpRoom!.get(userInfo.username)?.selectSkill !== 'none') {
+        const isDead = pvpRoom!.get(userInfo.username)!.selectSkill
+        // if (isDead !== 'none' || isDead !== 'dead') {
             tempScript += '\n 어떤 공격을 할텐가 ?\n';
             tempScript += '\n 중간 공백을 포함해서 입력해주게 !\n';
 
@@ -99,9 +101,9 @@ export default {
             let skillScript: string = '';
 
             // 유저별로 선택할 수 있는 목록을 보여준다.
-            for (let y=0; y < user.length; y++){
+            for (let y=0; y < maxUsers; y++){
                 for (let i = 0; i < user[y][1].userStatus.skill.length; i++) {
-                    if (pvpRoom!.get(userInfo.username)!.selectSkill === 'none') {
+                    if (isDead === 'none' || isDead === 'dead') {
                         tempScript = `관전 중에는 입력하지 못합니다.\n`;
                         continue;
                     } 
@@ -114,7 +116,7 @@ export default {
             io.to(user[y][1].socketId).emit('fieldScriptPrint', { field, script });
             skillScript = '';
             }
-        }
+        // }
     },
 
     pvpWrongCommand: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {

@@ -13,6 +13,7 @@ interface PvpPlayer {
 }
 
 export const rooms: Map<string, Map<string, PvpPlayer>> = new Map<string, Map<string, PvpPlayer>>();
+export const maxUsers: number = 4;
 
 export default {
     pvpListHelp: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
@@ -22,7 +23,7 @@ export default {
 
         tempScript += '명령어 : \n';
         tempScript += '1 - 시련의 장 방생성을 합니다.\n';
-        tempScript += '2 - 입장할 방 목록을 불러옵니다.\n';
+        tempScript += '2 - 시련의 장 방이름을 입력하여 입장합니다.\n';
         tempScript += '[돌]아가기 - 마을로 돌아갑니다.\n';
 
         const script = tempLine + tempScript;
@@ -60,6 +61,7 @@ export default {
 
     joinRoom: (socket: Socket, CMD: string | undefined, userInfo: UserInfo, userStatus: UserStatus) => {
         const roomName = `pvpRoom ${CMD!.trim()}`;
+        const pvpRoom = rooms.get(roomName)
 
         // 채팅룸 입장 시도시
         if(Number(CMD)) return pvpBattle.pvpListWrongCommand(socket, '방 이름은 한글 또는 영문자만 가능합니다.', userInfo)
@@ -71,7 +73,7 @@ export default {
         // if (rooms.get(roomName)!.size > 4) return pvpBattle.pvpListWrongCommand(socket, '4명 정원초과입니다.', userInfo)
 
         userStatus.pvpRoom = roomName;
-        rooms.get(roomName)!.set(userInfo.username,{socketId:socket.id, userStatus})
+        pvpRoom!.set(userInfo.username,{socketId:socket.id, userStatus})
 
         let tempScript: string = '';
         const tempLine =
@@ -84,13 +86,13 @@ export default {
 
         socket.join(roomName);
         socket.emit('printBattle',{userStatus});
-        io.to(roomName).emit('fieldScriptPrint', { script, field });
-
-        if (rooms.get(roomName)!.size === 4) return pvpBattle.pvpStart(socket, CMD, userInfo, userStatus)
-        else if (rooms.get(roomName)!.size > 4) {
-            rooms.get(roomName)!.get(userInfo.username)!.target = 'none';
-            rooms.get(roomName)!.get(userInfo.username)!.selectSkill = 'none';
-        }
+        
+        if (pvpRoom!.size === maxUsers) return pvpBattle.pvpStart(socket, CMD, userInfo, userStatus)
+        else if (pvpRoom!.size > maxUsers) {
+            pvpRoom!.get(userInfo.username)!.target = 'none';
+            pvpRoom!.get(userInfo.username)!.selectSkill = 'none';
+            socket.emit('printBattle', { script, field, userInfo });
+        } else io.to(roomName).emit('fieldScriptPrint', { script, field });
     },
 
     pvpListWrongCommand: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
