@@ -2,7 +2,7 @@ import { Socket } from 'socket.io';
 import { UserInfo, UserStatus } from '../../interfaces/user';
 import { io } from '../../app';
 import { Characters } from '../../db/models';
-import { rooms } from './pvpList.handler';
+import { maxUsers, rooms } from './pvpList.handler';
 
 export default {
     pvpBattleHelp: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
@@ -48,20 +48,20 @@ export default {
 
         const pvpRoom = rooms.get(roomName!)
         const iterator = pvpRoom!.values()
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < maxUsers; i++) {
             names.push(iterator.next().value.userStatus.name)
         }
 
         // 캐릭터별 이름, 레벨, 체력, 공격력, 방어력 표시
         const userInfos = [];
-        for (let i = 0; i< names.length; i++) {
+        for (let i = 0; i < maxUsers; i++) {
            userInfos.push(await Characters.findOne({where:{name:names[i]!}}))
         }
 
         tempScript += `샤크스 경 : \n`;
         tempScript += `공격할 유저를 선택하게나 !\n\n`;
 
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < maxUsers; i++) {
             if (userInfos[i]!.hp === 0) continue;
             tempScript += `${i+1}. Lv${userInfos[i]!.level} ${names[i]} - hp: ${userInfos[i]!.hp}/${userInfos[i]!.maxhp}, attack: ${userInfos[i]!.attack}, defense: ${userInfos[i]!.defense}\n`;
         }

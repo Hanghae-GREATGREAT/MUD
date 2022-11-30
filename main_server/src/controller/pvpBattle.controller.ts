@@ -1,6 +1,7 @@
 import { Socket } from 'socket.io';
+import { Characters } from '../db/models';
 import { pvpBattle, village } from '../handler';
-import { rooms } from '../handler/pvpBattle/pvpList.handler';
+import { maxUsers, rooms } from '../handler/pvpBattle/pvpList.handler';
 import { SocketInput, CommandHandler } from '../interfaces/socket';
 
 export default {
@@ -57,17 +58,21 @@ export default {
 
         // 본인 선택시 예외처리로직 시작
         const iterator = pvpRoom!.values();
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < maxUsers; i++) {
             userNames.push(iterator.next().value.userStatus.name);
         }
-
+        
         // 본인의 index를 확인
         const myIndex = userNames.findIndex((e)=>e===userStatus.name);
         
         // 유저가 속한 팀이아닌 상대팀만을 선택
         if (myIndex < 2 && Number(CMD1)-1 < 2) return pvpBattle.selectWrong(socket, CMD1, userInfo, userStatus);
         else if (myIndex >= 2 && Number(CMD1)-1 >= 2) return pvpBattle.selectWrong(socket, CMD1, userInfo, userStatus);
-        else if (Number(CMD1) > 4) return pvpBattle.selectWrong(socket, CMD1, userInfo, userStatus);
+        else if (Number(CMD1) > maxUsers) return pvpBattle.selectWrong(socket, CMD1, userInfo, userStatus);
+        
+        // 이미 사망한 유저를 선택하지 못한다.
+        const dontSelect = await Characters.findOne({ where: { name: userNames[Number(CMD1)-1] }})
+        if (dontSelect!.hp === 0) return pvpBattle.selectWrong(socket, CMD2, userInfo, userStatus)
 
         pvpRoom!.get(userInfo.username)!.target = userNames[Number(CMD1)-1];
         
@@ -77,8 +82,8 @@ export default {
             '2': pvpBattle.selecting,
             '3': pvpBattle.selecting,
             '4': pvpBattle.selecting,
-            // 5: pvpBattle.selecting,
-            // 6: pvpBattle.selecting,
+            // '5': pvpBattle.selecting,
+            // '6': pvpBattle.selecting,
         };
 
         if (!commandHandler[CMD1]) {

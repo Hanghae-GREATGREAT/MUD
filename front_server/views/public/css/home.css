@@ -1,5 +1,12 @@
+@font-face {
+    font-family: 'DungGeunMo';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
 * {
-    font-family: 'Noto Sans KR', sans-serif;
+    font-family: 'DungGeunMo'
 }
 
 body {
@@ -26,9 +33,10 @@ body > .container > .logo {
 
 body > .container > .logo > span {
     font-size: 30px;
-    margin-left: 30px;
+    margin: 10px 0 0 30px;
 
     color: white;
+    display: inline-block;
 }
 
 body > .container > .windows {
