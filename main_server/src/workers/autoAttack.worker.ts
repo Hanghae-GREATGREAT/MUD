@@ -58,7 +58,8 @@ async function autoAttack(userStatus: UserStatus): Promise<AutoWorkerResult> {
 
     // 유저&몬스터 정보 불러오기
     console.log('autoAttack.worker.ts: 유저&몬스터 정보, ', characterId);
-    const { hp: playerHP, attack: playerDamage } = await CharacterService.findByPk(characterId);
+    const character = await CharacterService.findByPk(characterId);
+    const { hp: playerHP, attack: playerDamage } = character!
     const monster = await MonsterService.findByPk(monsterId);
     
     if (!monster) return { status: 'terminate', script: '몬스터 정보 에러' };
