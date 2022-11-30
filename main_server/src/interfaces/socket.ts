@@ -50,6 +50,10 @@ interface CommandHandler {
     [key: string]: commandHandler;
 }
 
+interface CommandRouter {
+    [key: string]: string;
+}
+
 export {
     ReturnScript,
     BattleResult,
@@ -57,5 +61,6 @@ export {
     ChatOutput,
     ChatJoiner,
     CommandHandler,
+    CommandRouter,
     SocketInput,
 };

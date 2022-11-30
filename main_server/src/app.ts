@@ -3,12 +3,11 @@ import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { battleConnection, onConnection } from './socket.routes';
-
-import sequelize from './db/config/connection';
-import associate from './db/config/associate';
-
+import { pubClient, subClient } from './socket';
 import apiRouter from './api.routes';
 import error from './middlewares/errorhandlers';
+import sequelize from './db/config/connection';
+import associate from './db/config/associate';
 
 
 const app = express();
@@ -24,6 +23,8 @@ export const io = new Server(httpServer, {
 io.use((socket, next)=>{next()})
 // io.use(SocketMiddleware)
 io.on('connection', onConnection);
+pubClient.on('connect', () => console.log('REDIS PUB CONNECTED'));
+subClient.on('connect', () => console.log('REDIS SUB CONNECTED'));
 
 const battleNamespace = io.of('/battle');
 battleNamespace.on('connection', battleConnection);
