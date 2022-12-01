@@ -8,8 +8,16 @@
  * 
  */
 
+import HttpException from "./httpException";
+
 const errorReport = (error: Error) => {
-    console.error(error);
+    if (error instanceof HttpException) {
+        console.log('HttpException', error.message)
+        console.error(error);
+    } else {
+        console.log('ERROR: ', error.message);
+        console.error(error);
+    }
 }
 
 export default errorReport;

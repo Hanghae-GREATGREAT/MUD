@@ -23,7 +23,7 @@ export default {
         tempScript += '[중단] 하기 - 전투를 중단하고 마을로 돌아갑니다.\n';
 
         const script = tempScript;
-        const field = 'action';
+        const field = 'autoBattle';
 
         socket.emit('print', { script, userInfo, field });
     },

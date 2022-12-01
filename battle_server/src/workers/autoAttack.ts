@@ -9,12 +9,13 @@ class AutoAttackWorker {
 
     private threads: Map<number, Worker> = new Map();
 
-    start = (userStatus: UserStatus, autoToDead: MessagePort): Promise<void> => {
+    start = (socketId: string, userStatus: UserStatus, autoToDead: MessagePort): Promise<void> => {
         const { characterId } = userStatus;
         console.log('autoAttack.ts: 기본공격반복 start() 시작, ', characterId);
         const workerData: AutoWorkerData = {
             userStatus,
             path: './autoAttack.worker.ts',
+            socketId,
         }
 
         return new Promise((resolve, reject) => {

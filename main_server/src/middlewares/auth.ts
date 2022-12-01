@@ -16,7 +16,7 @@ export default {
     authMiddleware: async(req: Request, res: Response, next: NextFunction)=>{
         const ip = req.socket.remoteAddress;
         if (!ip) {
-            throw new HttpException('잘못된 접근입니다', HttpStatus.BAD_REQUEST);
+            throw new HttpException('잘못된 접근입니다', 400);
         }
 console.log(ip);
         const sessionData = await redis.get(ip);

@@ -1,92 +1,78 @@
 import { Socket } from 'socket.io';
-import { battle, dungeon } from '../handler';
-import { SocketInput, CommandHandler } from '../interfaces/socket';
-import { battleCache } from '../db/cache';
+import env from '../config.env';
+import { battle } from '../handler';
+import { fetchPost } from '../common';
+import { SocketInput, CommandHandler, CommandRouter } from '../interfaces/socket';
 
+
+const BATTLE_URL = `http://${env.BATTLE_URL}:${env.BATTLE_PORT}`;
 
 export default {
 
     battleController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
         console.log('battle.controller.ts: battleController', userStatus.name);
-        const [CMD1, CMD2]: string[] = line.trim().split(' ');
+        const [CMD1, CMD2] = line.trim().split(' ');
 
-        if (CMD1 === '자동1') {
-            console.log('battle.controller.ts: 자동 분기점');
-            battle.autoBattle(socket, CMD2, userStatus);
+        const cmdRoute: CommandRouter = {
+            '도움말': 'help',
+            '수동': 'normal',
+            '자동': 'autoW',
+            '자동단일': 'auto',
+            '돌': 'dungeonInfo',
+            // 'OUT': 'signout',
+        }
+        if (!cmdRoute[CMD1]) {
+            const URL = `${BATTLE_URL}/dungeon/wrongCommand`;
+            fetchPost({ URL, socketId: socket.id, CMD: line, userInfo });
             return;
         }
-        const commandHandler: CommandHandler = {
-            '도움말': battle.help,
-            '수동': battle.encounter,
-            '자동': battle.autoBattleOld,
-            '돌': dungeon.getDungeonList,
-        };
-
-        if (!commandHandler[CMD1]) {
-            battle.wrongCommand(socket, CMD1, userInfo);
-            return;
-        }
-
-        commandHandler[CMD1](socket, CMD2, userInfo, userStatus);
+        const URL = `${BATTLE_URL}/battle/${cmdRoute[CMD1]}`
+        fetchPost({ URL, socketId: socket.id, CMD: CMD2, userInfo, userStatus });
     },
 
     encounterController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
-        const [CMD1, CMD2]: string[] = line.trim().toUpperCase().split(' ');
+        const [CMD1, CMD2] = line.trim().toUpperCase().split(' ');
 
-        const commandHandler: CommandHandler = {
-            'LOAD': battle.encounter,
-            '도움말': battle.ehelp,
-            '공격': battle.attack,
-            '도망': battle.quitBattle,
-        };
-        if (!commandHandler[CMD1]) {
-            battle.wrongCommand(socket, CMD1, userInfo);
+        const cmdRoute: CommandRouter = {
+            '도움말': 'ecthelp',
+            '공격': 'attack',
+            '도망': 'quit',
+        }
+        if (!cmdRoute[CMD1]) {
+            const URL = `${BATTLE_URL}/dungeon/ectWrongCommand`;
+            fetchPost({ URL, socketId: socket.id, CMD: line, userInfo });
             return;
         }
-
-        commandHandler[CMD1](socket, CMD2, userInfo, userStatus);
+        const URL = `${BATTLE_URL}/battle/${cmdRoute[CMD1]}`
+        fetchPost({ URL, socketId: socket.id, CMD: CMD2, userInfo, userStatus });
     },
 
     actionController: async(socket: Socket, { line, userInfo, userStatus, option }: SocketInput) => {
-        const [CMD1, CMD2]: string[] = line.trim().split(' ');
-        const { characterId } = userInfo;
-
-        if (CMD1 === '중단') {
-            battle.quitAutoBattle(socket, '', userInfo);
-            return;
-        }
-
-        await battle.actionSkill(socket, CMD1, userInfo, userStatus);
-
-        const {  autoAttackTimer, dungeonLevel, dead } = battleCache.get(characterId);
-        if (dead) {
-            clearInterval(autoAttackTimer);
-            battleCache.delete(characterId);
-            battleCache.set(characterId, { dungeonLevel });
-
-            battle.reEncounter(socket, '', userInfo);
-            return;
-        }        
+        const [CMD1, CMD2] = line.trim().split(' ');
+        
+        const URL = `${BATTLE_URL}/battle/action`;
+        fetchPost({ URL, socketId: socket.id, CMD: CMD1, userInfo, userStatus });
     },
 
-    autoBattleController: async (socket: Socket, { line, userInfo }: SocketInput) => {
-        const [CMD1, CMD2]: string[] = line.trim().split(' ');
-        console.log('socketon enccounter');
+    autoBattleController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
+        const [CMD1, CMD2] = line.trim().split(' ');
 
-        const commandHandler: CommandHandler = {
-            '도움말': battle.autoBattleHelp,
-            '중단': battle.quitAutoBattle,
-        };
-        if (!commandHandler[CMD1]) {
-            commandHandler['도움말'](socket, CMD1, userInfo);
+        const cmdRoute: CommandRouter = {
+            '도움말': 'autoHelp',
+            '중단': 'autoQuit',
+        }
+        if (!cmdRoute[CMD1]) {
+            const URL = `${BATTLE_URL}/dungeon/wrongCommand`;
+            fetchPost({ URL, socketId: socket.id, CMD: line, userInfo });
             return;
         }
-
-        commandHandler[CMD1](socket, CMD2, userInfo);
+        const URL = `${BATTLE_URL}/battle/${cmdRoute[CMD1]}`
+        fetchPost({ URL, socketId: socket.id, CMD: CMD1, userInfo, userStatus });
     },
 
+    // 미구현...
     resultController: async (socket: Socket, { line, userInfo }: SocketInput) => {
-        const [CMD1, CMD2]: string[] = line.trim().toUpperCase().split(' ');
+        const [CMD1, CMD2] = line.trim().toUpperCase().split(' ');
 
         const commandHandler: CommandHandler = {
             'LOAD': battle.adventureload,

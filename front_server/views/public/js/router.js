@@ -22,7 +22,11 @@ const commandRouter = {
 function gerneralSend(field, input) {
     console.log('general send', field, input.line)
 
-    toServer.volatile.emit(field, input);
+    mainSocket.volatile.emit(field, input);
+}
+
+function checkSkillCD(cooldown) {
+    return Date.now() - cooldown < 1500;
 }
 
 function battleSend(field, input) {
@@ -35,7 +39,7 @@ function battleSend(field, input) {
         commandLine.scrollTop(Number.MAX_SAFE_INTEGER);
         return;
     }
-    toBattle.volatile.emit(field, input);
+    battleSocket.volatile.emit(field, input);
 }
 
 function globalSend(field, input) {
@@ -48,5 +52,5 @@ function globalSend(field, input) {
         return;
     }
 
-    toServer.volatile.emit(field, input);
+    mainSocket.volatile.emit(field, input);
 }
