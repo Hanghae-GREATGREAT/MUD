@@ -9,13 +9,13 @@ class SkillAttackWorker {
 
     private threads: Map<number, Worker> = new Map();
 
-    start = (userStatus: UserStatus, skillToDead: MessagePort): Promise<void> => {
+    start = (socketId: string, userStatus: UserStatus, skillToDead: MessagePort): Promise<void> => {
         const { characterId } = userStatus;
         console.log('skillAttack.ts: 스킬반복 start() 시작, ', characterId);
         const workerData: AutoWorkerData = {
             userStatus,
             path: './skillAttack.worker.ts',
-            
+            socketId,
         }
 
         return new Promise((resolve, reject) => {

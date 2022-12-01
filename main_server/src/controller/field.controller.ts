@@ -21,7 +21,7 @@ export default {
         }
         if (!cmdRoute[CMD1]) {
             const URL = `${BATTLE_URL}/dungeon/wrongCommand`;
-            fetchPost({ URL, socketId: socket.id, CMD: CMD2, userInfo });
+            fetchPost({ URL, socketId: socket.id, CMD: line, userInfo });
             return;
         }
         const URL = `${BATTLE_URL}/dungeon/${cmdRoute[CMD1]}`

@@ -16,8 +16,8 @@ export default {
         const cmdRoute: CommandRouter = {
             '도움말': 'help',
             '수동': 'normal',
-            '자동': 'auto',
-            '자동1': 'autoW',
+            '자동': 'autoW',
+            '자동단일': 'auto',
             '돌': 'dungeonInfo',
             // 'OUT': 'signout',
         }
@@ -39,7 +39,7 @@ export default {
             '도망': 'quit',
         }
         if (!cmdRoute[CMD1]) {
-            const URL = `${BATTLE_URL}/dungeon/wrongCommand`;
+            const URL = `${BATTLE_URL}/dungeon/ectWrongCommand`;
             fetchPost({ URL, socketId: socket.id, CMD: line, userInfo });
             return;
         }

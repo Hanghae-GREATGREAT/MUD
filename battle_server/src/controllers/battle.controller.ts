@@ -106,8 +106,14 @@ export default {
         }
 
         if (CMD === '중단') {
-            battleHandler.stopAuto(socketId, userInfo);
-            res.status(200).end();
+            const error = battleHandler.stopAuto(socketId, userInfo);
+            error ? next(error) : res.status(200).end();
+            return;
+        } else if (!CMD.match(/1|2|3/)) {
+            const script = battleScript.battleHelp(CMD);
+            const field = 'action';
+
+            BATTLE.to(socketId).emit('printBattle', { field, script, userInfo });
             return;
         }
 
@@ -128,13 +134,15 @@ export default {
         }).catch(error => next(error));
     },
     autoBattleWorker: async(req: Request, res: Response, next: NextFunction) => {
-        const { socketId, CMD, userInfo, userStatus }: PostBody = req.body;
+        const { socketId, userInfo, userStatus }: PostBody = req.body;
         if (!userInfo || !userStatus) {
             const error = new HttpException('MISSING PARAMS', 400);
             return next(error);
         }
 
-        res.status(200).end();
+        autoBattleHandler.autoBattleWorker(socketId, userStatus).then(() => {
+            res.status(200).end();
+        }).catch(error => next(error));
     },
     autoQuit: async(req: Request, res: Response, next: NextFunction) => {
         const { socketId, userInfo }: PostBody = req.body;
@@ -143,9 +151,8 @@ export default {
             return next(error);
         }
 
-        battleHandler.stopAuto(socketId, userInfo);
-
-        res.status(200).end();
+        const error = battleHandler.stopAutoWorker(socketId, userInfo);
+        error ? next(error) : res.status(200).end();
     },
 }
 

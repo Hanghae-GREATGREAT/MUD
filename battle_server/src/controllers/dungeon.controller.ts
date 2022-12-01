@@ -24,13 +24,27 @@ export default {
     },
     wrongCommand: (req: Request, res: Response, next: NextFunction) => {
         const { socketId, CMD, userInfo }: PostBody = req.body;
-        if (!userInfo || !CMD) {
+        if (!userInfo) {
             const error = new HttpException('MISSING PARAMS', 400);
             return next(error);
         }
 
-        const script = dungeonScript.wrong(CMD);
+        const script = dungeonScript.wrong(CMD || '');
         const field = 'dungeon';
+
+        BATTLE.to(socketId).emit('print', { script, userInfo, field });
+
+        res.status(200).end();
+    },
+    ectWrongCommand: (req: Request, res: Response, next: NextFunction) => {
+        const { socketId, CMD, userInfo }: PostBody = req.body;
+        if (!userInfo) {
+            const error = new HttpException('MISSING PARAMS', 400);
+            return next(error);
+        }
+
+        const script = dungeonScript.wrong(CMD || '');
+        const field = 'encounter';
 
         BATTLE.to(socketId).emit('print', { script, userInfo, field });
 

@@ -57,8 +57,7 @@ export default {
             const { dungeonLevel } = battleCache.get(characterId);
             if (!dungeonLevel || !characterId) {
                 const error = new HttpException(
-                    'encounter cache error: dungeonLevel missing',
-                    500
+                    'encounter cache error: dungeonLevel missing', 500
                 );
                 return reject(error);
             }

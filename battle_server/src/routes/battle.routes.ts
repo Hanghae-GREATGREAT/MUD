@@ -17,7 +17,7 @@ router.post('/auto', battleController.autoBattle);
 router.post('/autoW', battleController.autoBattleWorker);
 router.post('/autoQuit', battleController.autoQuit);
 
-router.post('/dungeonInfo', dungeonController.dungeonInfo);
+router.post('/dungeonInfo', dungeonController.dungeonList);
 
 
 export default router;

@@ -9,12 +9,13 @@ class isMonsterDead {
 
     private threads: Map<number, Worker> = new Map();
 
-    check = (userStatus: UserStatus, { autoToDeadReceive, skillToDeadReceive }: IsDeadReceiver): Promise<AutoWorkerResult> => {
+    check = (socketId: string, userStatus: UserStatus, { autoToDeadReceive, skillToDeadReceive }: IsDeadReceiver): Promise<AutoWorkerResult> => {
         const { characterId } = userStatus;
         console.log('isMonsterDead.ts: 사망확인 check() 시작, ', characterId);
         const workerData: AutoWorkerData = { 
             userStatus,
             path: './isMonsterDead.worker.ts',
+            socketId,
         };
 
         return new Promise((resolve, reject) => {
@@ -44,7 +45,7 @@ class isMonsterDead {
         return this.threads.get(characterId);
     }
 
-    terminateWorker = (characterId: number) => {
+    terminate = (characterId: number) => {
         const worker = this.threads.get(characterId);
         worker?.terminate();
     }

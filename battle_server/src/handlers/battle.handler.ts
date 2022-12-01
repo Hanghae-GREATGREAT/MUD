@@ -5,6 +5,7 @@ import { UserInfo, UserStatus } from '../interfaces/user';
 import BATTLE from '../redis';
 import { battleScript } from '../scripts';
 import { MonsterService, BattleService, CharacterService } from '../services';
+import { autoAttackWorker, isMonsterDeadWorker, skillAttackWorker } from '../workers';
 import { autoAttack } from './autobattle.handler';
 
 
@@ -19,14 +20,13 @@ export default {
     
                 autoAttack(userStatus).then(async(result) => {
                     if (result instanceof Error) return reject(result);
-    console.log('autoAttack resolved', result);
+
                     const { field, script, userStatus } = result;
                     const data = { 
-                        field: field ? 'action' : field,
+                        field: field === undefined ? 'action' : field,
                         script, userInfo, userStatus 
                     };
-    console.log(socketId)
-    console.log(BATTLE)
+
                     BATTLE.to(socketId).emit('printBattle', data);
     
                     // dead = 'moster'|'player'|undefined
@@ -63,11 +63,9 @@ export default {
         const { characterId } = userInfo;
         const { monsterId } = battleCache.get(characterId);
         if (!monsterId) {
-            const error = new HttpException(
-                'quit battle cache error: monsterId missing',
-                500
+            return new HttpException(
+                'quit battle cache error: monsterId missing', 500
             )
-            return error;
         }
 
         // 몬스터 삭제
@@ -98,16 +96,14 @@ export default {
             const { monsterId } = battleCache.get(characterId);
             if (!monsterId) {
                 const error = new HttpException(
-                    'skill select cache error: monsterId missing',
-                    500,
+                    'skill select cache error: monsterId missing', 500
                 );
                 return reject(error);
             }
             const monster = await MonsterService.findByPk(monsterId);
             if (!monster) {
                 const error = new HttpException(
-                    'skill select cache error: monster missing',
-                    500,
+                    'skill select cache error: monster missing', 500
                 );
                 return reject(error);
             }        
@@ -130,8 +126,7 @@ export default {
             const isDead = await MonsterService.refreshStatus(monsterId, realDamage, characterId);
             if (!monster) {
                 const error = new HttpException(
-                    'skill monster refresh error: monster missing',
-                    500,
+                    'skill monster refresh error: monster missing', 500
                 );
                 return reject(error);
             }  
@@ -157,12 +152,18 @@ export default {
         });
     },
 
-    stopAuto: (socketId: string, userInfo: UserInfo) => {
+    stopAuto: (socketId: string, userInfo: UserInfo): HttpException|void => {
         const { characterId } = userInfo;
 
         // 기본공격 중단 & 몬스터 삭제
         // 이벤트 루프에 이미 들어가서 대기중인 타이머가 있을 수 있음
         const { autoAttackTimer } = battleCache.get(characterId);
+        if (!autoAttackTimer) {
+            console.log('autoAttackTimer Error', autoAttackTimer)
+            return new HttpException(
+                'stopAuto cache error: autoAttackTimer missing', 500
+            );
+        }
         clearInterval(autoAttackTimer);       
         if (autoAttackTimer === undefined) {
             setTimeout(() => {
@@ -170,6 +171,22 @@ export default {
                 clearInterval(autoAttackTimer);
             }, 300);
         }
+        const { monsterId } = battleCache.get(characterId);
+        battleCache.delete(characterId);
+        if (monsterId) MonsterService.destroyMonster(monsterId, characterId);
+
+        const script = `
+        ========================================
+        전투를 중단하고 마을로 돌아갑니다. \n\n`
+        const field = 'dungeon';
+        BATTLE.to(socketId).emit('print', { field, script, userInfo });
+    },
+    stopAutoWorker: (socketId: string, userInfo: UserInfo): HttpException|void => {
+        const { characterId } = userInfo;
+
+        autoAttackWorker.terminate(characterId);
+        skillAttackWorker.terminate(characterId);
+        isMonsterDeadWorker.terminate(characterId);
         const { monsterId } = battleCache.get(characterId);
         battleCache.delete(characterId);
         if (monsterId) MonsterService.destroyMonster(monsterId, characterId);
