@@ -1,5 +1,6 @@
 const SERVER_URL = SERVER.getServerUrl();
 const mainSocket = io.connect(`ws://${SERVER_URL}/`, { transports: ['websocket'] });
+const frontSocket = io.connect(`ws://${SERVER_URL}/front`, { transports: ['websocket'] });
 const battleSocket = io.connect(`ws://${SERVER_URL}/battle`, { transports: ['websocket'] });
 
 const commandLine = $('.commendLine');
@@ -51,12 +52,12 @@ function loadScript(field, userInfo) {
     switch (field) {
         case 'dungeon':
             battleSocket.emit('dungeon', { line: 'LOAD', userInfo: JSON.parse(userInfo) });
-            return;    
+            return;
         case 'village':
             mainSocket.emit('dungeon', { line: 'LOAD', userInfo: JSON.parse(userInfo) });
             return;
         default:
-            mainSocket.emit('none', { line: 'LOAD', userInfo: {} });
+            frontSocket.emit('none', { line: 'LOAD', userInfo: {} });
             return;
     }
 }
@@ -84,7 +85,6 @@ commendForm.submit((e) => {
     commandRouter[field](field, input);
 });
 
-
 /*****************************************************************************
                                 이벤트 리스너
 ******************************************************************************/
@@ -93,6 +93,9 @@ mainSocket.on('print', printHandler);
 mainSocket.on('printBattle', printBattleHandler);
 mainSocket.on('signout', signoutHandler);
 mainSocket.on('fieldScriptPrint', fieldScriptPrint);
+
+frontSocket.on('print', printHandler);
+frontSocket.on('printBattle', printBattleHandler);
 
 battleSocket.on('print', printHandler);
 battleSocket.on('printBattle', printBattleHandler);
