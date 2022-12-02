@@ -1,10 +1,10 @@
-import autoAttack from './autoAttack';
-import isMonsterDead from './isMonsterDead';
-import skillAttack from './skillAttack';
+import autoAttackWorker from './autoAttack';
+import isMonsterDeadWorker from './isMonsterDead';
+import skillAttackWorker from './skillAttack';
 
 
 export {
-    autoAttack,
-    isMonsterDead,
-    skillAttack,
+    autoAttackWorker,
+    isMonsterDeadWorker,
+    skillAttackWorker,
 }

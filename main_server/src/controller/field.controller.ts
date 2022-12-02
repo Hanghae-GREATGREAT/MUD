@@ -4,6 +4,7 @@ import env from '../config.env';
 import { dungeon, front, village } from '../handler';
 import { SocketInput, CommandHandler, CommandRouter } from '../interfaces/socket';
 
+
 const BATTLE_URL = `http://${env.BATTLE_URL}:${env.BATTLE_PORT}`;
 
 // dungeon, village
@@ -20,7 +21,7 @@ export default {
         }
         if (!cmdRoute[CMD1]) {
             const URL = `${BATTLE_URL}/dungeon/wrongCommand`;
-            fetchPost({ URL, socketId: socket.id, CMD: CMD2, userInfo });
+            fetchPost({ URL, socketId: socket.id, CMD: line, userInfo });
             return;
         }
         const URL = `${BATTLE_URL}/dungeon/${cmdRoute[CMD1]}`

@@ -1,14 +1,5 @@
+import { BattleCacheInterface } from "../../interfaces/battle";
 
-
-interface BattleCacheInterface {
-    dungeonLevel?: number;
-    monsterId?: number;
-    autoAttackTimer?: NodeJS.Timer;
-    skillAttackTimer?: NodeJS.Timer;
-    isMonsterDeadTimer?: NodeJS.Timer;
-    quit?: boolean;
-    dead?: string;
-}
 
 class BattleCache {
 

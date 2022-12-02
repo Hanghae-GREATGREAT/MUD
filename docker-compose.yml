@@ -17,18 +17,18 @@ services:
     ports:
       - '3333:3333'
 
-    # battle-server:
-    #   container_name: battle-server
-    #   image: ninthsun91/mud-battle:1.3.0
-    #   build:
-    #     context: battle_server
-    #     dockerfile: ./Dockerfile
-    #   env_file:
-    #     - ./battle_server/.env
-    #   ports:
-    #     - '3334:3334'
-    #   depends_on:
-    #     - server
+  battle:
+    container_name: battle
+    image: ninthsun91/mud-battle:1.3.0
+    build:
+      context: battle_server
+      dockerfile: ./Dockerfile
+    env_file:
+      - ./battle_server/.env
+    ports:
+      - '3334:3334'
+    depends_on:
+      - server
 
   front:
     container_name: front

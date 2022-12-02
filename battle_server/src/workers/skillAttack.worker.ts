@@ -8,7 +8,7 @@ import { UserStatus } from '../interfaces/user';
 import { InferAttributes } from 'sequelize';
 
 
-console.log('skillAttack.worker.ts: 11 >> 스킬공격 워커 모듈 동작')
+// console.log('skillAttack.worker.ts: 11 >> 스킬공격 워커 모듈 동작')
 associate();
 parentPort?.once('message', ({ skillToDead }) => {
     skillAttackWorker(workerData, skillToDead);
@@ -18,21 +18,21 @@ parentPort?.once('message', ({ skillToDead }) => {
 function skillAttackWorker({ userStatus }: AutoWorkerData, skillToDead: MessagePort) {
     
     const { characterId } = userStatus;
-    console.log('skillAttack.worker.ts: 20 >> skillAttackWorker start', characterId);
+    // console.log('skillAttack.worker.ts: 20 >> skillAttackWorker start', characterId);
 
     const cache = getEnvironmentData(characterId);
     battleCache.set(characterId, JSON.parse(cache.toString()));
 
     const skillAttackTimer = setInterval(async () => {
-        console.log('skillAttack.worker.ts: START INTERVAL', Date.now())
+        // console.log('skillAttack.worker.ts: START INTERVAL', Date.now())
         battleCache.set(characterId, { skillAttackTimer });
 
         const chance = Math.random();
-        if (chance < 0.5) return console.log('STOP');
-        console.log('GO')
+        if (chance < 0.5) return // console.log('STOP');
+        // console.log('GO')
 
         autoBattleSkill(userStatus).then(({ status, script }: AutoWorkerResult) => {
-            console.log('skillAttack.worker.ts: autoBattleSkill resolved', status);
+            // console.log('skillAttack.worker.ts: autoBattleSkill resolved', status);
 
             const statusHandler = {
                 continue: continueWorker,
@@ -50,7 +50,7 @@ function skillAttackWorker({ userStatus }: AutoWorkerData, skillToDead: MessageP
 
 
 async function autoBattleSkill(userStatus: UserStatus): Promise<AutoWorkerResult> {
-    console.log('skillAttack.worker.ts >> autoBattleSkill(): 시작')
+    // console.log('skillAttack.worker.ts >> autoBattleSkill(): 시작')
     const { characterId, mp, attack, skill } = userStatus
     let field = 'autoBattle';
     let tempScript = '';
@@ -71,7 +71,7 @@ async function autoBattleSkill(userStatus: UserStatus): Promise<AutoWorkerResult
     if (mp - skillCost < 0) {
         tempScript += `??? : 비전력이 부조카당.\n`;
         const script = tempScript;
-        console.log('skillAttack.worker.ts: 마나 부족')
+        // console.log('skillAttack.worker.ts: 마나 부족')
         return { status: 'continue', script: '' };
     }
 
@@ -86,10 +86,10 @@ async function autoBattleSkill(userStatus: UserStatus): Promise<AutoWorkerResult
     const isDead = await MonsterService.refreshStatus(monsterId, realDamage, characterId);
     if (!isDead) return { status: 'terminate', script: '몬스터 정보 에러' };
     tempScript += `\n당신의 ${skillName} 스킬이 ${monsterName}에게 적중! => ${realDamage}의 데미지!\n`;
-    console.log(tempScript);
+    // console.log(tempScript);
 
     if (isDead === 'dead') {
-        console.log('몬스터 사망 by SKILL ATTACK');
+        // console.log('몬스터 사망 by SKILL ATTACK');
         battleCache.set(characterId, { dead: 'monster' });
         // await redis.hSet(characterId, { dead: 'monster' });
 
@@ -99,7 +99,7 @@ async function autoBattleSkill(userStatus: UserStatus): Promise<AutoWorkerResult
 
     // isDead === 'alive'
     const script = tempScript;
-    console.log('스킬로 안쥬금ㅇㅇㅇㅇ')
+    // console.log('스킬로 안쥬금ㅇㅇㅇㅇ')
     return { status: 'continue', script: '' };
 }
 
@@ -117,7 +117,6 @@ function skillSelector(skill: InferAttributes<Skills, { omit: never; }>[]) {
     for (let i=0; i<skillCounts; i++) {
         const singleChance = (costSum / skillCosts[i]) / chanceSum
         cumChance += singleChance;
-        console.log(chance, cumChance)
         if (chance <= cumChance) {
             skillIndex = i;
             break;

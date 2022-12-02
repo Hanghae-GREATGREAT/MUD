@@ -5,6 +5,7 @@ export interface AutoWorkerData {
     [key: string]: MessagePort|number|string|UserStatus;
     userStatus: UserStatus;
     path: string;
+    socketId: string;
 }
 
 export interface AutoWorkerResult {

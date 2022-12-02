@@ -7,6 +7,7 @@ const router = Router();
 router.post('/load', dungeonController.dungeonList);
 router.post('/help', dungeonController.help);
 router.post('/wrongCommand', dungeonController.wrongCommand);
+router.post('/ectWrongCommand', dungeonController.ectWrongCommand);
 
 router.post('/dungeonList', dungeonController.dungeonList);
 router.post('/dungeonInfo', dungeonController.dungeonInfo);

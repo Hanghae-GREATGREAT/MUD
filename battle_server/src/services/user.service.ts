@@ -4,6 +4,11 @@ import { UserInfo } from '../interfaces/user';
 
 class UserService {
 
+    /**
+     * 
+     * @param userInfo 
+     * @returns 일치하는 user가 없으면 true, 있으면 false
+     */
     async checkUser(userInfo: UserInfo) {
         const { userId, characterId, name } = userInfo;
         const character = await CharacterService.findOneByUserId(userId);

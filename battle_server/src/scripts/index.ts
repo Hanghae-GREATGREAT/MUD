@@ -1,10 +1,12 @@
-import homeScript from './home.script';
-import globalScript from './global.script';
+import battleScript from './battle.script';
 import dungeonScript from './dungeon.script';
+import globalScript from './global.script';
+import homeScript from './home.script';
 
 
 export {
-    homeScript,
+    battleScript,
+    dungeonScript,
     globalScript,
-    dungeonScript
+    homeScript,
 }

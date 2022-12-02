@@ -1,9 +1,7 @@
 const SERVER_URL = SERVER.getServerUrl();
-console.log(SERVER_URL);
-const toServer = io.connect(`ws://${SERVER_URL}/`, { transports: ['websocket'] });
-const toBattle = io.connect(`ws://${SERVER_URL}/battle`, { transports: ['websocket'] });
-const toPvp = io.connect(`ws://${SERVER_URL}/pvp`, { transports: ['websocket'] });
-console.log(toPvp)
+const mainSocket = io.connect(`ws://${SERVER_URL}/`, { transports: ['websocket'] });
+const battleSocket = io.connect(`ws://${SERVER_URL}/battle`, { transports: ['websocket'] });
+const pvpSocket = io.connect(`ws://${SERVER_URL}/pvp`, { transports: ['websocket'] });
 
 const commandLine = $('.commendLine');
 const commendInput = $('#commendInput');
@@ -40,7 +38,7 @@ function checkSession() {
     console.log('valid session found');
     return new Promise((resolve) => {
         const { characterId } = JSON.parse(userInfo);
-        toServer.emit('request user status', characterId, (response) => {
+        mainSocket.emit('request user status', characterId, (response) => {
             const { userStatus } = response;
             status.set(userStatus);
             console.log('status loaded: ', userStatus);
@@ -53,23 +51,23 @@ function checkSession() {
 function loadScript(field, userInfo) {
     switch (field) {
         case 'dungeon':
-            toBattle.emit('dungeon', { line: 'LOAD', userInfo: JSON.parse(userInfo) });
+            battleSocket.emit('dungeon', { line: 'LOAD', userInfo: JSON.parse(userInfo) });
             return;    
         case 'village':
-            toServer.emit('dungeon', { line: 'LOAD', userInfo: JSON.parse(userInfo) });
+            mainSocket.emit('dungeon', { line: 'LOAD', userInfo: JSON.parse(userInfo) });
             return;
         default:
-            toServer.emit('none', { line: 'LOAD', userInfo: {} });
+            mainSocket.emit('none', { line: 'LOAD', userInfo: {} });
             return;
     }
 }
 
 function checkValidation(userInfo) {
-    toServer.emit('none', { line: 'CHECK', userInfo });
+    mainSocket.emit('none', { line: 'CHECK', userInfo });
 }
 
 /*****************************************************************************
-                                커맨드 스크립트
+                                커맨드 입력
 ******************************************************************************/
 
 commendForm.submit((e) => {
@@ -87,13 +85,22 @@ commendForm.submit((e) => {
     commandRouter[field](field, input);
 });
 
-function checkSkillCD(cooldown) {
-    return Date.now() - cooldown < 1500;
-}
 
-toServer.on('print', printHandler);
-toBattle.on('print', printHandler);
-toPvp.on('print', printHandler);
+/*****************************************************************************
+                                이벤트 리스너
+******************************************************************************/
+
+mainSocket.on('print', printHandler);
+mainSocket.on('printBattle', printBattleHandler);
+mainSocket.on('signout', signoutHandler);
+mainSocket.on('fieldScriptPrint', fieldScriptPrint);
+
+battleSocket.on('print', printHandler);
+battleSocket.on('printBattle', printBattleHandler);
+
+pvpSocket.on('print', printHandler);
+pvpSocket.on('printBattle', printBattleHandler);
+pvpSocket.on('fieldScriptPrint', fieldScriptPrint);
 
 function printHandler({ field, script, userInfo }) {
     console.log(field);
@@ -104,12 +111,8 @@ function printHandler({ field, script, userInfo }) {
     commandLine.scrollTop(Number.MAX_SAFE_INTEGER);
 }
 
-toServer.on('printBattle', printBattleHandler);
-toBattle.on('printBattle', printBattleHandler);
-toPvp.on('printBattle', printBattleHandler);
-
 function printBattleHandler({ field, script, userInfo, userStatus }) {
-    console.log('printBattle', field);
+    console.log('printBattle', field, script);
     localStorage.setItem('field', field);
     if (userInfo) localStorage.setItem('user', JSON.stringify(userInfo));
     if (userStatus) {
@@ -121,17 +124,12 @@ function printBattleHandler({ field, script, userInfo, userStatus }) {
     commandLine.scrollTop(Number.MAX_SAFE_INTEGER);
 }
 
-toServer.on('fieldScriptPrint', fieldScriptPrint);
-toPvp.on('fieldScriptPrint', fieldScriptPrint);
-
 function fieldScriptPrint({ field, script }) {
     localStorage.setItem('field', field);
 
     commandLine.append(script);
     commandLine.scrollTop(Number.MAX_SAFE_INTEGER);
 }
-
-toServer.on('signout', signoutHandler);
 
 async function signoutHandler({ field, script, userInfo }) {
     localStorage.setItem('user', JSON.stringify(userInfo));
@@ -181,12 +179,12 @@ chatForm.submit((e) => {
         message: chatInput.val(),
         field,
     };
-    toServer.emit('submit', data);
+    mainSocket.emit('submit', data);
     chatInput.val('');
 });
 
-toServer.on('chat', chatNewMessage);
+mainSocket.on('chat', chatNewMessage);
 
-toServer.on('enterChat', chatEnterRoom);
+mainSocket.on('enterChat', chatEnterRoom);
 
-toServer.on('reEnterChat', reEnterRoom);
+mainSocket.on('reEnterChat', reEnterRoom);
