@@ -2,47 +2,91 @@ import { Socket } from 'socket.io';
 import { Characters } from '../db/models';
 import { pvpBattle, village } from '../handler';
 import { maxUsers, rooms } from '../handler/pvpBattle/pvpList.handler';
-import { SocketInput, CommandHandler } from '../interfaces/socket';
+import { SocketInput, CommandHandler, CommandRouter } from '../interfaces/socket';
+
+import env from '../config.env';
+import { fetchPost } from '../common';
+
+const PVP_URL = `http://${env.PVP_URL}:${env.PVP_PORT}`
 
 export default {
 
     // pvp룸 생성 및 입장
     pvpListController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
+        // const [CMD1, CMD2]: string[] = line.trim().split(' ');
+
+        // if (CMD1 === '도움말') return pvpBattle.pvpListHelp(socket, CMD2, userInfo);
+        // else if (CMD1 === '돌'|| CMD1 === '돌아가기') return village.NpcList(socket, CMD2, userInfo);
+        // else if (!CMD2) return pvpBattle.pvpListWrongCommand(socket, '방이름을 입력해주세요', userInfo)
+
+        // const commandHandler: CommandHandler = {
+        //     '1': pvpBattle.createRoom,
+        //     '2': pvpBattle.joinRoom
+        // };
+
+        // if (!commandHandler[CMD1]) {
+        //     return pvpBattle.pvpListWrongCommand(socket, CMD1, userInfo);
+        // }
+
+        // commandHandler[CMD1](socket, CMD2, userInfo, userStatus);
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
+        console.log(line)
+        
+        if (CMD1 === '돌'|| CMD1 === '돌아가기') return village.NpcList(socket, CMD2, userInfo);
 
-        if (CMD1 === '도움말') return pvpBattle.pvpListHelp(socket, CMD2, userInfo);
-        else if (CMD1 === '돌'|| CMD1 === '돌아가기') return village.NpcList(socket, CMD2, userInfo);
-        else if (!CMD2) return pvpBattle.pvpListWrongCommand(socket, '방이름을 입력해주세요', userInfo)
-
-        const commandHandler: CommandHandler = {
-            '1': pvpBattle.createRoom,
-            '2': pvpBattle.joinRoom
+        const cmdRoute: CommandRouter = {
+            'test': 'test',
+            '도움말':'help',
+            // '돌': 'npclist',
+            // '돌아가기': 'npclist',
+            '1': 'createRoom',
+            '2': 'joinRoom'
         };
 
-        if (!commandHandler[CMD1]) {
-            return pvpBattle.pvpListWrongCommand(socket, CMD1, userInfo);
+        if (!cmdRoute[CMD1]) {
+            const URL = `${PVP_URL}/pvp/wrongCommand`
+            fetchPost({ URL, socketId: socket.id, CMD: CMD2, userInfo })
+            return;
         }
-
-        commandHandler[CMD1](socket, CMD2, userInfo, userStatus);
+        if (!CMD2) {
+            const URL = `${PVP_URL}/pvp/wrongCommand`
+            fetchPost({ URL, socketId: socket.id, CMD: '방이름을 입력해주세요', userInfo })
+            return;
+        }
+        const URL = `${PVP_URL}/pvp/${cmdRoute[CMD1]}`
+        fetchPost({ URL, socketId: socket.id, CMD: CMD2, userInfo })
     },
 
     // pvp룸 입장 후 6명이 되기까지 기다리는중
     pvpBattleController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
+        // const [CMD1, CMD2]: string[] = line.trim().split(' ');
+        // const commandHandler: CommandHandler = {
+        //     '도움말': pvpBattle.pvpBattleHelp,
+        //     '현': pvpBattle.getUsers,
+        //     '돌': pvpBattle.userLeave
+        // };
 
+        // if (!commandHandler[CMD1]) {
+        //     console.log(`is wrong command : '${CMD1}'`);
+        //     pvpBattle.pvpBattleWrongCommand(socket, CMD1, userInfo);
+        //     return;
+        // }
+
+        // commandHandler[CMD1](socket, CMD2, userInfo, userStatus);
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
-        const commandHandler: CommandHandler = {
-            '도움말': pvpBattle.pvpBattleHelp,
-            '현': pvpBattle.getUsers,
-            '돌': pvpBattle.userLeave
+        const cmdRoute: CommandRouter = {
+            '도움말': 'BattleHelp',
+            '현': 'getUsers',
+            '돌': 'leaveRoom'
         };
 
-        if (!commandHandler[CMD1]) {
-            console.log(`is wrong command : '${CMD1}'`);
-            pvpBattle.pvpBattleWrongCommand(socket, CMD1, userInfo);
+        if (!cmdRoute[CMD1]) {
+            const URL = `${PVP_URL}/pvp/wrongCommand`
+            fetchPost({ URL, socketId: socket.id, CMD: CMD2, userInfo })
             return;
         }
-
-        commandHandler[CMD1](socket, CMD2, userInfo, userStatus);
+        const URL = `${PVP_URL}/pvp/${cmdRoute[CMD1]}`
+        fetchPost({ URL, socketId: socket.id, CMD: CMD2, userInfo });
     },
 
     // 전투가 시작된 후 공격 상대를 고른다.
@@ -100,7 +144,7 @@ export default {
     // 1,2,3번 유저는 4,5,6번 유저를 선택할 수 있고,
     // 4,5,6번 유저는 1,2,3번 유저를 선택할 수 있다.
     // 공격 대상을 지정한 값을 가지고 있을 것이 필요함.
-    attackChoiceController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
+    attackChoiceController: (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
         const pvpRoom = rooms.get(userStatus.pvpRoom!);
         const isDead = pvpRoom!.get(userInfo.username)!.target

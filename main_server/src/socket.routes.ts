@@ -19,6 +19,32 @@ export const battleConnection = (socket: Socket) => {
     socket.on('adventureResult', (input: SocketInput) => battle.resultController(socket, input));
 }
 
+export const pvpConnection = (socket: Socket) => {
+    console.log('PVP NAMESPECE CONNECTED', socket.id);
+
+    /************************************************************************
+                                   시련의 장                                      
+     ************************************************************************/
+
+    socket.on('pvpList', (input: SocketInput) => pvpBattle.pvpListController(socket, input))
+
+    socket.on('pvpBattle', (input: SocketInput) => pvpBattle.pvpBattleController(socket, input));
+
+    socket.on('enemyChoice', (input: SocketInput) => pvpBattle.enemyChoiceController(socket, input));
+
+    socket.on('attackChoice', (input: SocketInput) => pvpBattle.attackChoiceController(socket, input));
+
+    // socket.on('anemyAttack', (input: SocketInput) => pvpBattle.anemyAttackController(socket, input));
+
+    /************************************************************************
+                                     시련의 장 종료                                    
+    ************************************************************************/
+
+    // socket.on('pvpResult', (input: SocketInput) => pvpBattle.pvpResultController(socket, input));
+                               
+
+}
+
 export const onConnection = (socket: Socket) => {
     console.log('MAIN NAMESPACE CONNECTED', socket.id);
 
@@ -65,13 +91,13 @@ export const onConnection = (socket: Socket) => {
                                    시련의 장                                      
      ************************************************************************/
 
-    socket.on('pvpList', (input: SocketInput) => pvpBattle.pvpListController(socket, input))
+    // socket.on('pvpList', (input: SocketInput) => pvpBattle.pvpListController(socket, input))
 
-    socket.on('pvpBattle', (input: SocketInput) => pvpBattle.pvpBattleController(socket, input));
+    // socket.on('pvpBattle', (input: SocketInput) => pvpBattle.pvpBattleController(socket, input));
 
-    socket.on('enemyChoice', (input: SocketInput) => pvpBattle.enemyChoiceController(socket, input));
+    // socket.on('enemyChoice', (input: SocketInput) => pvpBattle.enemyChoiceController(socket, input));
 
-    socket.on('attackChoice', (input: SocketInput) => pvpBattle.attackChoiceController(socket, input));
+    // socket.on('attackChoice', (input: SocketInput) => pvpBattle.attackChoiceController(socket, input));
 
     // socket.on('anemyAttack', (input: SocketInput) => pvpBattle.anemyAttackController(socket, input));
 

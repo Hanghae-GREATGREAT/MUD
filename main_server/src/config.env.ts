@@ -55,6 +55,9 @@ class Env extends dBConnection {
     BATTLE_URL: string;
     BATTLE_PORT: number;
 
+    PVP_URL: string;
+    PVP_PORT: number;
+
     constructor() {
         super();
 
@@ -67,6 +70,10 @@ class Env extends dBConnection {
         this.BATTLE_PORT = Number(process.env.BATTLE_SERVER_PORT);
         this.BATTLE_URL = this.NODE_ENV === 'production' ? 
             process.env.BATTLE_SERVER_URL || 'localhost' : 'localhost';
+
+        this.PVP_PORT = Number(process.env.PVP_SERVER_PORT);
+        this.PVP_URL = this.NODE_ENV === 'production' ? 
+            process.env.PVP_SERVER_URL || 'localhost' : 'localhost';
     }
 }
 

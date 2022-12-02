@@ -2,6 +2,8 @@ const SERVER_URL = SERVER.getServerUrl();
 console.log(SERVER_URL);
 const toServer = io.connect(`ws://${SERVER_URL}/`, { transports: ['websocket'] });
 const toBattle = io.connect(`ws://${SERVER_URL}/battle`, { transports: ['websocket'] });
+const toPvp = io.connect(`ws://${SERVER_URL}/pvp`, { transports: ['websocket'] });
+console.log(toPvp)
 
 const commandLine = $('.commendLine');
 const commendInput = $('#commendInput');
@@ -91,6 +93,7 @@ function checkSkillCD(cooldown) {
 
 toServer.on('print', printHandler);
 toBattle.on('print', printHandler);
+toPvp.on('print', printHandler);
 
 function printHandler({ field, script, userInfo }) {
     console.log(field);
@@ -103,6 +106,7 @@ function printHandler({ field, script, userInfo }) {
 
 toServer.on('printBattle', printBattleHandler);
 toBattle.on('printBattle', printBattleHandler);
+toPvp.on('printBattle', printBattleHandler);
 
 function printBattleHandler({ field, script, userInfo, userStatus }) {
     console.log('printBattle', field);
@@ -118,6 +122,7 @@ function printBattleHandler({ field, script, userInfo, userStatus }) {
 }
 
 toServer.on('fieldScriptPrint', fieldScriptPrint);
+toPvp.on('fieldScriptPrint', fieldScriptPrint);
 
 function fieldScriptPrint({ field, script }) {
     localStorage.setItem('field', field);

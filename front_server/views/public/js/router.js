@@ -15,6 +15,13 @@ const commandRouter = {
     'heal': gerneralSend,
     'enhance': gerneralSend,
     'gamble': gerneralSend,
+    'pvp': gerneralSend,
+
+    'pvpList': pvpSend,
+    'pvpBattle': pvpSend,
+    'enemyChoice': pvpSend,
+    'attackChoice': pvpSend,
+    'enemyAttack': pvpSend,
 
     'global': globalSend,
 }
@@ -47,6 +54,12 @@ function globalSend(field, input) {
         commandLine.scrollTop(Number.MAX_SAFE_INTEGER);
         return;
     }
+
+    toServer.volatile.emit(field, input);
+}
+
+function pvpSend(field, input) {
+    console.log('pvp send', field, input.line);
 
     toServer.volatile.emit(field, input);
 }
