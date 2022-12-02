@@ -1,0 +1,48 @@
+TEST RESULT: login-100-20-100(2022. 11. 25. 2329).txt
+
+scenario: front/in >> sign:20 >> sign:21 >> front/out
+MAX_CLIENTS: 100
+CLIENT_CREATE_INTERVAL_IN_MS: 100
+SCENARIO_REPEAT_PER_USER: 20
+
+total emit count: 8000
+emit per seconds: 979.63
+total scenario try: 2000
+scenario complete: 2000
+scenario fail: 0
+average performace: 1027.08ms
+average memory usage: 297.72/3877.46MB
+average cpu usage: 1983.80ms/sec
+average cpu consumption: 14.03%
+
+
+### DETAIL LOG ###
+
+progress: 265/2000, clients: 46
+emits/sec: 237.43, scenario completion: 265/265 => 100, average performance time: 348.25ms
+total memory: 284.54/3872.22mb, cpu usuage: 1932.64ms/sec, cpu occupied: 13.6801%
+
+progress: 583/2000, clients: 90
+emits/sec: 517.96, scenario completion: 318/318 => 100, average performance time: 924.03ms
+total memory: 301.04/3882.18mb, cpu usuage: 1950.75ms/sec, cpu occupied: 13.8031%
+
+progress: 876/2000, clients: 91
+emits/sec: 753.44, scenario completion: 293/293 => 100, average performance time: 1553.91ms
+total memory: 301.04/3884.74mb, cpu usuage: 1967.03ms/sec, cpu occupied: 13.912%
+
+progress: 1184/2000, clients: 85
+emits/sec: 997.20, scenario completion: 308/308 => 100, average performance time: 1482.47ms
+total memory: 301.04/3879.54mb, cpu usuage: 1983.89ms/sec, cpu occupied: 14.0271%
+
+progress: 1509/2000, clients: 74
+emits/sec: 1249.60, scenario completion: 325/325 => 100, average performance time: 1268.18ms
+total memory: 298.79/3887.45mb, cpu usuage: 2002.34ms/sec, cpu occupied: 14.1514%
+
+progress: 1845/2000, clients: 49
+emits/sec: 1502.40, scenario completion: 336/336 => 100, average performance time: 1064.72ms
+total memory: 298.79/3881.82mb, cpu usuage: 2020.97ms/sec, cpu occupied: 14.2773%
+
+progress: 2000/2000, clients: 0
+emits/sec: 1599.36, scenario completion: 155/155 => 100, average performance time: 548.01ms
+total memory: 298.79/3877.46mb, cpu usuage: 2028.97ms/sec, cpu occupied: 14.3288%
+

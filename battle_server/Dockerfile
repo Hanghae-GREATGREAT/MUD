@@ -20,12 +20,14 @@ RUN apk --no-cache add tzdata && \
     echo "Asia/Seoul" > /etc/timezone
 
 # PORT
-EXPOSE 8080
+EXPOSE 3334
 
 # copy source to working directory
-WORKDIR /home/front
-COPY . /home/front
+WORKDIR /home/battle
+COPY . /home/battle
 
 # RUN
 RUN npm install
+RUN npm run build
 CMD npm start
+# CMD npm run dev
