@@ -91,7 +91,7 @@ export default {
         tempScript += `퍼거스\n\n`;
         tempScript += `연륜이 느껴지는 윤곽이 뚜렷한 얼굴에 그리 길지 않게 기른 검은 수염, 그리고 잘 그을린 구릿빛\n피부가 인상적인 남자다.\n뭔가 굵고 낮은 곡조로 콧노래를 흥얼거리고 있는데, 하체에 비해 상체가 잘 발달된 그의 몸은\n그가 흥얼거리는 노래의 박자에 맞춰 기분좋게 천천히 흔들거리고 있다.\n\n`;
         tempScript += `1 - 대화하기\n`;
-        tempScript += `2 - 강화하기\n`;
+        tempScript += `2 - 강화하기 (주의!! 경험치를 소모합니다!!)\n`;
         tempScript += `3 - 돌아가기\n`;
 
         const script = tempLine + tempScript;

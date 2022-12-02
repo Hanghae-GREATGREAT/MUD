@@ -50,7 +50,7 @@ export default {
         const script = tempLine + tempScript;
         const field = 'enhance';
 
-        socket.emit('print', { script, userInfo, field });
+        socket.emit('printBattle', { field, script, userInfo, userStatus });
     },
 
     enhanceWrongCommand: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
