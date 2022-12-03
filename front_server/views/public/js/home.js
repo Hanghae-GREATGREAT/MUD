@@ -125,6 +125,7 @@ function printBattleHandler({ field, script, userInfo, userStatus }) {
 }
 
 function fieldScriptPrint({ field, script }) {
+    console.log('fieldScriptPrint', field, script);
     localStorage.setItem('field', field);
 
     commandLine.append(script);

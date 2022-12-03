@@ -30,6 +30,19 @@ services:
     depends_on:
       - server
 
+  pvp:
+    container_name: pvp
+    image: ninthsun91/mud-pvp:1.3.0
+    build:
+      context: pvp_server
+      dockerfile: ./Dockerfile
+    env_file:
+      - ./pvp_server/.env
+    ports:
+      - '3336:3336'
+    depends_on:
+      - server
+
   front:
     container_name: front
     image: ninthsun91/mud-front:1.3.0

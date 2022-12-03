@@ -15,8 +15,8 @@ const commandRouter = {
     'heal': gerneralSend,
     'enhance': gerneralSend,
     'gamble': gerneralSend,
-    'pvp': gerneralSend,
 
+    'pvpNpc': pvpSend,
     'pvpList': pvpSend,
     'pvpBattle': pvpSend,
     'enemyChoice': pvpSend,

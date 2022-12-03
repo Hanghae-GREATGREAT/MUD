@@ -17,7 +17,7 @@ export default {
         tempScript += '3 - 이전 단계로 돌아갑니다.\n';
 
         const script = tempLine + tempScript;
-        const field = 'pvp';
+        const field = 'pvpNpc';
 
         socket.emit('print', { script, userInfo, field });
     },
@@ -29,7 +29,7 @@ export default {
         const NpcScript: string = NpcService.pvpTalkScript(userInfo.name);
 
         const script = tempLine + NpcScript;
-        const field = 'pvp';
+        const field = 'pvpNpc';
 
         socket.emit('print', { script, userInfo, field });
     },
@@ -76,7 +76,7 @@ export default {
         tempScript += `사용가능한 명령어가 궁금하시다면 '도움말'을 입력해보세요.\n`;
 
         const script = 'Error : \n' + tempScript;
-        const field = 'pvp';
+        const field = 'pvpNpc';
         socket.emit('print', { script, userInfo, field });
     },
 };

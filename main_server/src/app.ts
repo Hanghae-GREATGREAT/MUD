@@ -29,7 +29,7 @@ subClient.on('connect', () => console.log('REDIS SUB CONNECTED'));
 const battleNamespace = io.of('/battle');
 battleNamespace.on('connection', battleConnection);
 
-const pvpNamespace = io.of('/pvp');
+export const pvpNamespace = io.of('/pvp');
 pvpNamespace.on('connection', pvpConnection);
 
 

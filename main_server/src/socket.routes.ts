@@ -26,6 +26,8 @@ export const pvpConnection = (socket: Socket) => {
                                    시련의 장                                      
      ************************************************************************/
 
+    socket.on('pvpNpc', (input: SocketInput) => village.pvpController(socket, input));
+
     socket.on('pvpList', (input: SocketInput) => pvpBattle.pvpListController(socket, input))
 
     socket.on('pvpBattle', (input: SocketInput) => pvpBattle.pvpBattleController(socket, input));
@@ -78,7 +80,7 @@ export const onConnection = (socket: Socket) => {
 
     socket.on('gamble', (input: SocketInput) => village.gambleController(socket, input));
 
-    socket.on('pvp', (input: SocketInput) => village.pvpController(socket, input));
+    // socket.on('pvp', (input: SocketInput) => village.pvpController(socket, input));
 
 
     /************************************************************************
