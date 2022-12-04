@@ -1,5 +1,4 @@
 import { setEnvironmentData } from 'worker_threads';
-
 import { InferAttributes } from 'sequelize';
 import { autoBattleHandler, deadReport } from '.';
 import { HttpException } from '../common';
