@@ -6,7 +6,7 @@
 }
 
 * {
-    font-family: 'DungGeunMo'
+    font-family: 'DungGeunMo';
 }
 
 body {
@@ -29,11 +29,23 @@ body > .container > .logo {
 
     height: 50px;
     border-radius: 15px 15px 0 0;
+
+    display: flex;
 }
 
 body > .container > .logo > span {
     font-size: 30px;
-    margin: 10px 0 0 30px;
+    margin: 10px 15px 0 30px;
+
+    color: white;
+    display: inline-block;
+
+    flex-grow: 0.96;
+}
+
+body > .container > .logo > li {
+    font-size: 25px;
+    margin: 15px 0 0 0;
 
     color: white;
     display: inline-block;
@@ -94,7 +106,7 @@ body > .container > .windows > .commendWindow > .userInfo > .infoName > span > a
 body > .container > .windows > .commendWindow > .userInfo > .infoName > .infoExp {
     flex: 3;
 
-    color:rgb(192, 192, 192);
+    color: rgb(192, 192, 192);
     /* margin-bottom: -10px; */
 
     display: flex;
@@ -113,7 +125,7 @@ body > .container > .windows > .commendWindow > .userInfo > .infoName > .infoExp
 body > .container > .windows > .commendWindow > .userInfo > .infoSub {
     flex: 1;
 
-    color:rgb(192, 192, 192);
+    color: rgb(192, 192, 192);
     margin-right: 20px;
     /* margin-bottom: -10px; */
 
