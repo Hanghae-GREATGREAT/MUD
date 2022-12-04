@@ -168,14 +168,14 @@ const chatEnterRoom = (username, joinerCntScript) => {
     const newMessage = `<span>${username}님이 입장하셨습니다.\n</span>`;
     // 입장인원 갱신
     chatJoinUserNum.empty();
-    chatJoinUserNum.append(`<li>Chat: ${joinerCntScript}</li>`);
+    chatJoinUserNum.append(`<span>Chat: ${joinerCntScript}</span>`);
     chatBoxId.append(newMessage);
 };
 
 const chatLeaveRoom = (joinerCntScript) => {
     // 입장인원 갱신
     chatJoinUserNum.empty();
-    chatJoinUserNum.append(`<li>Chat: ${joinerCntScript}</li>`);
+    chatJoinUserNum.append(`<span>Chat: ${joinerCntScript}</span>`);
 };
 
 const reEnterRoom = () => {
