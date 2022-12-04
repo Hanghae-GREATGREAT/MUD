@@ -164,8 +164,12 @@ chatForm.submit((e) => {
 });
 
 const chatEnterRoom = (username, joinerCntScript) => {
-    // chatBoxId.empty();
     const newMessage = `<span>${username}님이 입장하였습니다.${joinerCntScript}\n</span>`;
+    chatBoxId.append(newMessage);
+};
+
+const chatLeaveRoom = () => {
+    const newMessage = `<span>채팅방 연결 해제!\n</span>`;
     chatBoxId.append(newMessage);
 };
 
@@ -185,5 +189,7 @@ const chatNewMessage = (script) => {
 frontSocket.on('chat', chatNewMessage);
 
 frontSocket.on('joinChat', chatEnterRoom);
+
+frontSocket.on('leaveChat', chatLeaveRoom);
 
 frontSocket.on('reEnterChat', reEnterRoom);
