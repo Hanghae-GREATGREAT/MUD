@@ -9,6 +9,9 @@ const sequelize = new Sequelize({
     password: env.DB_PASSWORD,
     dialect: 'mysql',
     logging: false,
+    retry: {
+        max: 100
+    },
 });
 
 

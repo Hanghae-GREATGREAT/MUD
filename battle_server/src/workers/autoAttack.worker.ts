@@ -5,6 +5,7 @@ import { battleCache } from '../db/cache';
 import { AutoWorkerData, AutoWorkerResult } from '../interfaces/worker';
 import { UserStatus } from '../interfaces/user';
 import BATTLE from '../redis';
+import { errorReport, HttpException } from '../common';
 
 
 // console.log('autoAttack.worker.ts: 9 >> 자동공격 워커 모듈 동작, ', workerData.userStatus.characterId)
@@ -39,6 +40,12 @@ function autoAttackWorker({ socketId, userStatus }: AutoWorkerData, autoToDead: 
             statusHandler[status]({ status, script }, characterId, autoToDead);
 
             return;
+        }).catch((err) => {
+            const error = new HttpException(
+                `autoAttack worker error: ${err.message}`,
+                500, socketId
+            );
+            errorReport(error);
         });
     
     }, 500);

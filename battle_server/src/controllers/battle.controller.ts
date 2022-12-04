@@ -10,7 +10,7 @@ export default {
     help: async(req: Request, res: Response, next: NextFunction) => {
         const { socketId, userInfo }: PostBody = req.body;
         if (!userInfo) {
-            const error = new HttpException('MISSING PARAMS', 400);
+            const error = new HttpException('MISSING PARAMS', 400, socketId);
             return next(error);
         }
 
@@ -24,7 +24,7 @@ export default {
     battleHelp: async(req: Request, res: Response, next: NextFunction) => {
         const { socketId, CMD, userInfo }: PostBody = req.body;
         if (!userInfo || !CMD) {
-            const error = new HttpException('MISSING PARAMS', 400);
+            const error = new HttpException('MISSING PARAMS', 400, socketId);
             return next(error);
         }
 
@@ -38,7 +38,7 @@ export default {
     encounterHelp: async(req: Request, res: Response, next: NextFunction) => {
         const { socketId, userInfo }: PostBody = req.body;
         if (!userInfo) {
-            const error = new HttpException('MISSING PARAMS', 400);
+            const error = new HttpException('MISSING PARAMS', 400, socketId);
             return next(error);
         }
 
@@ -52,7 +52,7 @@ export default {
     autoHelp: async(req: Request, res: Response, next: NextFunction) => {
         const { socketId, CMD, userInfo }: PostBody = req.body;
         if (!userInfo || !CMD) {
-            const error = new HttpException('MISSING PARAMS', 400);
+            const error = new HttpException('MISSING PARAMS', 400, socketId);
             return next(error);
         }
 
@@ -67,7 +67,7 @@ export default {
     encounter: async(req: Request, res: Response, next: NextFunction) => {
         const { socketId, userInfo, userStatus }: PostBody = req.body;
         if (!userInfo || !userStatus) {
-            const error = new HttpException('MISSING PARAMS', 400);
+            const error = new HttpException('MISSING PARAMS', 400, socketId);
             return next(error);
         }
 
@@ -78,7 +78,7 @@ export default {
     attack: async(req: Request, res: Response, next: NextFunction) => {
         const { socketId, userInfo, userStatus }: PostBody = req.body;
         if (!userInfo || !userStatus) {
-            const error = new HttpException('MISSING PARAMS', 400);
+            const error = new HttpException('MISSING PARAMS', 400, socketId);
             return next(error);
         }
 
@@ -89,7 +89,7 @@ export default {
     quit: async(req: Request, res: Response, next: NextFunction) => {
         const { socketId, userInfo }: PostBody = req.body;
         if (!userInfo) {
-            const error = new HttpException('MISSING PARAMS', 400);
+            const error = new HttpException('MISSING PARAMS', 400, socketId);
             return next(error);
         }
 
@@ -101,7 +101,7 @@ export default {
     action: async(req: Request, res: Response, next: NextFunction) => {
         const { socketId, CMD, userInfo, userStatus }: PostBody = req.body;
         if (!userInfo || !userStatus || !CMD) {
-            const error = new HttpException('MISSING PARAMS', 400);
+            const error = new HttpException('MISSING PARAMS', 400, socketId);
             return next(error);
         }
 
@@ -125,7 +125,7 @@ export default {
     autoBattle: async(req: Request, res: Response, next: NextFunction) => {
         const { socketId, CMD, userInfo, userStatus }: PostBody = req.body;
         if (!userInfo || !userStatus) {
-            const error = new HttpException('MISSING PARAMS', 400);
+            const error = new HttpException('MISSING PARAMS', 400, socketId);
             return next(error);
         }
 
@@ -136,7 +136,7 @@ export default {
     autoBattleWorker: async(req: Request, res: Response, next: NextFunction) => {
         const { socketId, userInfo, userStatus }: PostBody = req.body;
         if (!userInfo || !userStatus) {
-            const error = new HttpException('MISSING PARAMS', 400);
+            const error = new HttpException('MISSING PARAMS', 400, socketId);
             return next(error);
         }
 
@@ -147,7 +147,7 @@ export default {
     autoQuit: async(req: Request, res: Response, next: NextFunction) => {
         const { socketId, userInfo }: PostBody = req.body;
         if (!userInfo) {
-            const error = new HttpException('MISSING PARAMS', 400);
+            const error = new HttpException('MISSING PARAMS', 400, socketId);
             return next(error);
         }
 

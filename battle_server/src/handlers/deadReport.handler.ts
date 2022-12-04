@@ -20,13 +20,15 @@ export default {
         const { monsterId, dungeonLevel } = battleCache.get(characterId);
         if (!monsterId) {
             return new HttpException(
-                'deadReport.autoMonster cache error: monsterId missing', 500
+                'deadReport.autoMonster cache error: monsterId missing', 
+                500, socketId
             );
         }
         const monster = await MonsterService.findByPk(monsterId);
         if (!monster) {
             return new HttpException(
-                'deadReport.autoMonster error: monster missing', 500
+                'deadReport.autoMonster error: monster missing', 
+                500, socketId
             );
         }
 
@@ -62,7 +64,8 @@ export default {
         const { monsterId } = battleCache.get(characterId);
         if (!monsterId) {
             return new HttpException(
-                'deadReport.autoPlayer cache error: monsterId missing', 500
+                'deadReport.autoPlayer cache error: monsterId missing', 
+                500, socketId
             );
         }
         battleCache.delete(characterId);

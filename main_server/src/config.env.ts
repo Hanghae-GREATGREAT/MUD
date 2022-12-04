@@ -61,7 +61,8 @@ class Env extends dBConnection {
 
         this.PORT = Number(process.env.PORT) || 8080;
         this.HOST = process.env.HOST || 'localhost';
-        this.CLIENT_URL = process.env.CLIENT_URL || 'localhost:80';
+        this.CLIENT_URL = this.NODE_ENV === 'production' ?
+            process.env.CLIENT_URL! : 'localhost:8080';
         this.ROOT_PATH = path.resolve('./');
         this.SRC_PATH = path.resolve(__dirname);
 

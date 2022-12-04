@@ -6,6 +6,7 @@ import { Skills } from '../db/models';
 import { AutoWorkerData, AutoWorkerResult } from '../interfaces/worker';
 import { UserStatus } from '../interfaces/user';
 import { InferAttributes } from 'sequelize';
+import { errorReport } from '../common';
 
 
 // console.log('skillAttack.worker.ts: 11 >> 스킬공격 워커 모듈 동작')
@@ -43,7 +44,7 @@ function skillAttackWorker({ userStatus }: AutoWorkerData, skillToDead: MessageP
             statusHandler[status]({ status, script }, characterId, skillToDead);
     
             return;
-        });
+        }).catch(errorReport);
 
     }, 800);
 }

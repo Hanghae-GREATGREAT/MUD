@@ -11,7 +11,7 @@ export default {
     help: (req: Request, res: Response, next: NextFunction) => {
         const { socketId, userInfo }: PostBody = req.body;
         if (!userInfo) {
-            const error = new HttpException('MISSING PARAMS', 400);
+            const error = new HttpException('MISSING PARAMS', 400, socketId);
             return next(error);
         }
 
@@ -25,7 +25,7 @@ export default {
     wrongCommand: (req: Request, res: Response, next: NextFunction) => {
         const { socketId, CMD, userInfo }: PostBody = req.body;
         if (!userInfo) {
-            const error = new HttpException('MISSING PARAMS', 400);
+            const error = new HttpException('MISSING PARAMS', 400, socketId);
             return next(error);
         }
 
@@ -39,7 +39,7 @@ export default {
     ectWrongCommand: (req: Request, res: Response, next: NextFunction) => {
         const { socketId, CMD, userInfo }: PostBody = req.body;
         if (!userInfo) {
-            const error = new HttpException('MISSING PARAMS', 400);
+            const error = new HttpException('MISSING PARAMS', 400, socketId);
             return next(error);
         }
 
@@ -54,7 +54,7 @@ export default {
     dungeonList: async(req: Request, res: Response, next: NextFunction) => {
         const { socketId, userInfo }: PostBody = req.body;
         if (!userInfo) {
-            const error = new HttpException('MISSING PARAMS', 400);
+            const error = new HttpException('MISSING PARAMS', 400, socketId);
             return next(error);
         }
 
@@ -65,7 +65,7 @@ export default {
     dungeonInfo: (req: Request, res: Response, next: NextFunction) => {
         const { socketId, CMD, userInfo }: PostBody = req.body;
         if (!userInfo || !CMD) {
-            const error = new HttpException('MISSING PARAMS', 400);
+            const error = new HttpException('MISSING PARAMS', 400, socketId);
             return next(error);
         }
 

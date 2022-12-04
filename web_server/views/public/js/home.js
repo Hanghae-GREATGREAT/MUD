@@ -110,7 +110,7 @@ function printHandler({ field, script, userInfo }) {
     localStorage.setItem('field', field);
     if (userInfo) localStorage.setItem('user', JSON.stringify(userInfo));
 
-    commandLine.append(script);
+    if (script) commandLine.append(script);
     commandLine.scrollTop(Number.MAX_SAFE_INTEGER);
 }
 
@@ -123,7 +123,7 @@ function printBattleHandler({ field, script, userInfo, userStatus }) {
         status.set(userStatus);
     }
 
-    commandLine.append(script);
+    if (script) commandLine.append(script);
     commandLine.scrollTop(Number.MAX_SAFE_INTEGER);
 }
 

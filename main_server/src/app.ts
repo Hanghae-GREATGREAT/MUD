@@ -16,7 +16,7 @@ const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
     cors: {
-        origin: env.CLIENT_URL,
+        origin: 'http://localhost:8080',
         methods: 'POST, GET',
     },
 });

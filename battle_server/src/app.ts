@@ -1,5 +1,4 @@
 import express from 'express';
-import { HttpStatus } from './common';
 import associate from './db/config/associate';
 import sequelize from './db/config/connection';
 import env from './env';

@@ -18,7 +18,7 @@ export default {
             const autoAttackTimer = setInterval(async () => {
                 battleCache.set(characterId, { autoAttackTimer });
     
-                autoAttack(userStatus).then(async(result) => {
+                autoAttack(socketId, userStatus).then(async(result) => {
                     if (result instanceof Error) return reject(result);
 
                     const { field, script, userStatus } = result;
@@ -64,7 +64,8 @@ export default {
         const { monsterId } = battleCache.get(characterId);
         if (!monsterId) {
             return new HttpException(
-                'quit battle cache error: monsterId missing', 500
+                'quit battle cache error: monsterId missing', 
+                500, socketId
             )
         }
 
@@ -96,14 +97,16 @@ export default {
             const { monsterId } = battleCache.get(characterId);
             if (!monsterId) {
                 const error = new HttpException(
-                    'skill select cache error: monsterId missing', 500
+                    'skill select cache error: monsterId missing', 
+                    500, socketId
                 );
                 return reject(error);
             }
             const monster = await MonsterService.findByPk(monsterId);
             if (!monster) {
                 const error = new HttpException(
-                    'skill select cache error: monster missing', 500
+                    'skill select cache error: monster missing', 
+                    500, socketId
                 );
                 return reject(error);
             }        
@@ -126,7 +129,8 @@ export default {
             const isDead = await MonsterService.refreshStatus(monsterId, realDamage, characterId);
             if (!monster) {
                 const error = new HttpException(
-                    'skill monster refresh error: monster missing', 500
+                    'skill monster refresh error: monster missing', 
+                    500, socketId
                 );
                 return reject(error);
             }  
@@ -161,7 +165,8 @@ export default {
         if (!autoAttackTimer) {
             console.log('autoAttackTimer Error', autoAttackTimer)
             return new HttpException(
-                'stopAuto cache error: autoAttackTimer missing', 500
+                'stopAuto cache error: autoAttackTimer missing', 
+                500, socketId
             );
         }
         clearInterval(autoAttackTimer);       

@@ -1,0 +1,45 @@
+
+services:
+  redis:
+    container_name: mud-redis
+    image: 'redis:alpine'
+    ports:
+      - '6379:6379'
+
+  server:
+    container_name: server
+    image: ninthsun91/mud-server:${VERSION}.0
+    ports:
+      - '3333:3333'
+
+  battle:
+    container_name: battle
+    image: ninthsun91/mud-battle:${VERSION}.0
+    ports:
+      - '3334:3334'
+    depends_on:
+      - server
+
+  pvp:
+    container_name: pvp
+    image: ninthsun91/mud-pvp:${VERSION}.0
+    ports:
+      - '3336:3336'
+    depends_on:
+      - server
+
+  front:
+    container_name: front
+    image: ninthsun91/mud-front:${VERSION}.0
+    ports:
+      - '3335:3335'
+    depends_on:
+      - server
+
+  web:
+    container_name: web
+    image: ninthsun91/mud-web:${VERSION}.0
+    ports:
+      - '8080:8080'
+    depends_on:
+      - server
