@@ -1,4 +1,4 @@
 
 import { HttpStatus } from './src/common'
 
-console.log(HttpStatus);
+console.log(HttpStatus.INTERNAL_SERVER_ERROR);

@@ -17,7 +17,7 @@ sequelize.authenticate().then(() => {
     console.error(error);
     console.log('DB CONNECTION FAIL');
     process.exit(0);
-}); 
+});
 
 app.use(express.json());
 app.use((req, res, next) => {

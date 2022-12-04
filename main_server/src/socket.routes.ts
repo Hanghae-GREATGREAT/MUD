@@ -64,8 +64,6 @@ export const onConnection = (socket: Socket) => {
                                     필드                                      
      ************************************************************************/
 
-    
-
     socket.on('village', (input: SocketInput) => field.villageController(socket, input));
     
     /************************************************************************
