@@ -1,11 +1,9 @@
 import { Socket } from 'socket.io';
-import { Characters } from '../db/models';
-import { pvpBattle, village } from '../handler';
-import { maxUsers, rooms } from '../handler/pvpBattle/pvpList.handler';
-import { SocketInput, CommandHandler, CommandRouter } from '../interfaces/socket';
-
 import env from '../config.env';
+import { village } from '../handler';
 import { fetchPost } from '../common';
+import { SocketInput, CommandRouter } from '../interfaces/socket';
+
 
 const PVP_URL = `http://${env.PVP_URL}:${env.PVP_PORT}`
 

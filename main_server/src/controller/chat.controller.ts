@@ -1,17 +1,16 @@
-import env from '../config.env';
 import { Socket } from 'socket.io';
-import { redis } from '../db/cache';
-import { chatJoiner } from '../handler/front/home.handler';
-import { ChatInput } from '../interfaces/socket';
+import env from '../config.env';
 import { fetchPost } from '../common';
+import { ChatInput } from '../interfaces/socket';
 
-const FRONTCHAT_URL = `http://${env.FRONTCHAT_URL}:${env.FRONTCHAT_PORT}`;
+
+const FRONT_URL = `http://${env.FRONT_URL}:${env.FRONT_PORT}`;
 
 export default {
     chatController: (socket: Socket, { name, message, field }: ChatInput) => {
         const script = `${name}: ${message}\n`;
 
-        const URL = `${FRONTCHAT_URL}/chat/submit`;
+        const URL = `${FRONT_URL}/chat/submit`;
         fetchPost({ URL, socketId: socket.id, option: script });
     },
 };

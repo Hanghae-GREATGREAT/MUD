@@ -1,10 +1,10 @@
 import { Socket } from 'socket.io';
 import env from '../config.env';
-import { front } from '../handler';
 import { fetchPost } from '../common';
-import { CommandHandler, SocketInput, CommandRouter } from '../interfaces/socket';
+import { SocketInput, CommandRouter } from '../interfaces/socket';
 
-const FRONTCHAT_URL = `http://${env.FRONTCHAT_URL}:${env.FRONTCHAT_PORT}`;
+
+const FRONT_URL = `http://${env.FRONT_URL}:${env.FRONT_PORT}`;
 
 export default {
     noneController: (socket: Socket, { line, userInfo }: SocketInput) => {
@@ -18,7 +18,7 @@ export default {
         const cmdRoute: CommandRouter = {
             LOAD: 'loadHome',
         };
-        const URL = `${FRONTCHAT_URL}/front/${cmdRoute[CMD1]}`;
+        const URL = `${FRONT_URL}/front/${cmdRoute[CMD1]}`;
         fetchPost({ URL, socketId: socket.id, CMD: line, userInfo });
     },
 
@@ -39,12 +39,12 @@ export default {
         };
 
         if (!cmdRoute[CMD1]) {
-            const URL = `${FRONTCHAT_URL}/front/emptyCommand`;
+            const URL = `${FRONT_URL}/front/emptyCommand`;
             fetchPost({ URL, socketId: socket.id, CMD: CMD2, userInfo });
             return;
         }
 
-        const URL = `${FRONTCHAT_URL}/front/${cmdRoute[CMD1]}`;
+        const URL = `${FRONT_URL}/front/${cmdRoute[CMD1]}`;
         fetchPost({ URL, socketId: socket.id, CMD: line, userInfo });
     },
 
@@ -61,12 +61,12 @@ export default {
         };
 
         if (!CMD1 || !option) {
-            const URL = `${FRONTCHAT_URL}/front/emptyCommand`;
+            const URL = `${FRONT_URL}/front/emptyCommand`;
             fetchPost({ URL, socketId: socket.id, CMD: CMD1, userInfo });
             return;
         }
 
-        const URL = `${FRONTCHAT_URL}/front/${cmdRoute[option]}`;
+        const URL = `${FRONT_URL}/front/${cmdRoute[option]}`;
         fetchPost({ URL, socketId: socket.id, CMD: CMD1, userInfo });
     },
 };

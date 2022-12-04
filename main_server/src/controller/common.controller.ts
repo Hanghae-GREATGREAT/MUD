@@ -1,13 +1,14 @@
-import env from '../config.env';
 import { Socket } from 'socket.io';
+import env from '../config.env';
 import { CharacterService } from '../services';
 import { redis } from '../db/cache';
+import { fetchPost } from '../common';
 import { roomList, chatJoiner } from '../handler/front/home.handler';
 import { front, global } from '../handler';
 import { CommandHandler, SocketInput } from '../interfaces/socket';
-import { fetchPost } from '../common';
 
-const FRONTCHAT_URL = `http://${env.FRONTCHAT_URL}:${env.FRONTCHAT_PORT}`;
+
+const FRONT_URL = `http://${env.FRONT_URL}:${env.FRONT_PORT}`;
 
 export default {
     globalController: (socket: Socket, { line, userInfo, option }: SocketInput) => {
@@ -50,7 +51,7 @@ export default {
 
     chatLeave: (socket: Socket) => {
         console.log('disconnect');
-        const URL = `${FRONTCHAT_URL}/chat/chatLeave`;
+        const URL = `${FRONT_URL}/chat/chatLeave`;
         fetchPost({ URL, socketId: socket.id });
     },
 };

@@ -1,7 +1,7 @@
 const commandRouter = {
-    'none': gerneralSend,
-    'front': gerneralSend,
-    'sign': gerneralSend,
+    'none': frontSend,
+    'front': frontSend,
+    'sign': frontSend,
 
     'dungeon': battleSend,
     'encounter': battleSend,
