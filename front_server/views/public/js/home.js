@@ -181,4 +181,4 @@ frontSocket.on('chat', chatNewMessage);
 
 frontSocket.on('joinChat', chatEnterRoom);
 
-frontSocket.on('reEnterChat', reEnterRoom); // 재연결 미구현
+frontSocket.on('reEnterChat', reEnterRoom);
