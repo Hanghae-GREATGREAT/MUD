@@ -8,7 +8,7 @@ import {
     ForeignKey,
     NonAttribute,
 } from 'sequelize';
-import { Users, Titles, Fields, Items, Skills, Monsters } from '../models';
+import { Users, Titles, Fields, Items, Skills, Monsters } from '.';
 import { UserCache } from '../../interfaces/user';
 
 /***************************************************************

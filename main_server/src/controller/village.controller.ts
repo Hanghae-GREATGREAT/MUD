@@ -1,9 +1,9 @@
 import { Socket } from 'socket.io';
+import env from '../config.env';
 import { village, npc } from '../handler';
+import { fetchPost } from '../common';
 import { SocketInput, CommandHandler, CommandRouter } from '../interfaces/socket';
 
-import env from '../config.env';
-import { fetchPost } from '../common';
 
 const PVP_URL = `http://${env.PVP_URL}:${env.PVP_PORT}`
 

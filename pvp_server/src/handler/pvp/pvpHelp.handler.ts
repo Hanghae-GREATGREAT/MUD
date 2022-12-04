@@ -1,5 +1,8 @@
-import { CommandRouter } from "../../interfaces/socket"
 import { pvpHelpScript, pvpScript } from "../../scripts"
+
+interface CommandRouter {
+    [key: string]: string;
+}
 
 export default {
     pvpHelp: (option: string): string => {

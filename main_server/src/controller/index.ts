@@ -16,7 +16,6 @@ export {
     home, 
     village, 
     pvpBattle,
-
     TEST,
     common,
 };

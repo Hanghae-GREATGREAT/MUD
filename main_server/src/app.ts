@@ -9,10 +9,12 @@ import error from './middlewares/errorhandlers';
 import sequelize from './db/config/connection';
 import associate from './db/config/associate';
 
+
 const app = express();
 const httpServer = createServer(app);
 
-export const io = new Server(httpServer, {
+
+const io = new Server(httpServer, {
     cors: {
         origin: env.CLIENT_URL,
         methods: 'POST, GET',
@@ -31,8 +33,9 @@ const frontNameSpace = io.of('/front');
 frontNameSpace.on('connection', frontConnection);
 const battleNamespace = io.of('/battle');
 battleNamespace.on('connection', battleConnection);
-export const pvpNamespace = io.of('/pvp');
+const pvpNamespace = io.of('/pvp');
 pvpNamespace.on('connection', pvpConnection);
+
 
 if (env.NODE_ENV !== 'test') {
     sequelize
@@ -48,6 +51,7 @@ if (env.NODE_ENV !== 'test') {
             process.exit(0);
         });
 }
+
 
 app.use((req, res, next) => {
     res.set({
@@ -65,4 +69,6 @@ app.use('/api', apiRouter);
 
 app.use(error.logger, error.handler);
 
+
 export default httpServer;
+export { io };

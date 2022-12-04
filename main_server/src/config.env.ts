@@ -51,11 +51,8 @@ class Env extends dBConnection {
 
     BATTLE_URL: string;
     BATTLE_PORT: number;
-
-
-    FRONTCHAT_URL: string;
-    FRONTCHAT_PORT: number;
-    
+    FRONT_URL: string;
+    FRONT_PORT: number;
     PVP_URL: string;
     PVP_PORT: number;
 
@@ -72,9 +69,9 @@ class Env extends dBConnection {
         this.BATTLE_URL =
             this.NODE_ENV === 'production' ? process.env.BATTLE_SERVER_URL || 'localhost' : 'localhost';
 
-        this.FRONTCHAT_PORT = Number(process.env.FRONTCHAT_SERVER_PORT);
-        this.FRONTCHAT_URL =
-            this.NODE_ENV === 'production' ? process.env.FRONTCHAT_SERVER_URL || 'localhost' : 'localhost';
+        this.FRONT_PORT = Number(process.env.FRONT_SERVER_PORT);
+        this.FRONT_URL =
+            this.NODE_ENV === 'production' ? process.env.FRONT_SERVER_URL || 'localhost' : 'localhost';
 
         this.PVP_PORT = Number(process.env.PVP_SERVER_PORT);
         this.PVP_URL =

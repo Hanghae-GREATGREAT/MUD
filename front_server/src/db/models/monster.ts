@@ -7,7 +7,7 @@ import {
     ForeignKey,
 } from 'sequelize';
 import sequelize from '../config/connection';
-import { Characters, Fields} from '../models';
+import { Characters, Fields} from '.';
 
 
 class Monsters extends Model<
