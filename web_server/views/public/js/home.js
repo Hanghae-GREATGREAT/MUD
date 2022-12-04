@@ -10,6 +10,7 @@ const commendForm = $('.commendInput');
 const chatInput = $('#chatInput');
 const chatBoxId = $('#chatBox');
 const chatForm = $('.chatForm');
+const chatJoinUserNum = $('#joinUserNum');
 
 let status;
 $(async () => {
@@ -164,9 +165,17 @@ chatForm.submit((e) => {
 });
 
 const chatEnterRoom = (username, joinerCntScript) => {
-    // chatBoxId.empty();
-    const newMessage = `<span>${username}님이 입장하였습니다.${joinerCntScript}\n</span>`;
+    const newMessage = `<span>${username}님이 입장하셨습니다.\n</span>`;
+    // 입장인원 갱신
+    chatJoinUserNum.empty();
+    chatJoinUserNum.append(`<li>Chat: ${joinerCntScript}</li>`);
     chatBoxId.append(newMessage);
+};
+
+const chatLeaveRoom = (joinerCntScript) => {
+    // 입장인원 갱신
+    chatJoinUserNum.empty();
+    chatJoinUserNum.append(`<li>Chat: ${joinerCntScript}</li>`);
 };
 
 const reEnterRoom = () => {
@@ -185,5 +194,7 @@ const chatNewMessage = (script) => {
 frontSocket.on('chat', chatNewMessage);
 
 frontSocket.on('joinChat', chatEnterRoom);
+
+frontSocket.on('leaveChat', chatLeaveRoom);
 
 frontSocket.on('reEnterChat', reEnterRoom);

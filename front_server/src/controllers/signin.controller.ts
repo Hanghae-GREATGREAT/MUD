@@ -3,8 +3,8 @@ import { FRONT } from '../redis';
 import { PostBody } from '../interfaces/common';
 import { UserService, CharacterService } from '../services';
 import { signinScript } from '../scripts';
-import { chatCache } from '../db/cache';
 import { UserInfo } from '../interfaces/user';
+import { chatCache } from '../db/cache';
 
 export default {
     signinUsername: (req: Request, res: Response, next: NextFunction) => {
