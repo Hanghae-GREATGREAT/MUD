@@ -152,7 +152,6 @@ chatForm.submit((e) => {
     const data = {
         name,
         message: chatInput.val(),
-        field,
     };
     frontSocket.emit('submit', data);
     chatInput.val('');

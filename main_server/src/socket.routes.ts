@@ -81,7 +81,7 @@ export const onConnection = (socket: Socket) => {
 
     socket.on('attackChoice', (input: SocketInput) => pvpBattle.attackChoiceController(socket, input));
 
-    // socket.on('anemyAttack', (input: SocketInput) => pvpBattle.anemyAttackController(socket, input));
+    socket.on('anemyAttack', (input: SocketInput) => pvpBattle.anemyAttackController(socket, input));
 
     /************************************************************************
                                     시련의 장 종료                                    

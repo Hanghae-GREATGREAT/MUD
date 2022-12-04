@@ -2,7 +2,7 @@ import env from './config.env';
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import { battleConnection, frontConnection, onConnection } from './socket.routes';
+import { frontConnection, battleConnection, pvpConnection, onConnection } from './socket.routes';
 import { pubClient, subClient } from './socket';
 import apiRouter from './api.routes';
 import error from './middlewares/errorhandlers';
@@ -27,10 +27,12 @@ io.on('connection', onConnection);
 pubClient.on('connect', () => console.log('REDIS PUB CONNECTED'));
 subClient.on('connect', () => console.log('REDIS SUB CONNECTED'));
 
-const battleNamespace = io.of('/battle');
-battleNamespace.on('connection', battleConnection);
 const frontNameSpace = io.of('/front');
 frontNameSpace.on('connection', frontConnection);
+const battleNamespace = io.of('/battle');
+battleNamespace.on('connection', battleConnection);
+export const pvpNamespace = io.of('/pvp');
+pvpNamespace.on('connection', pvpConnection);
 
 if (env.NODE_ENV !== 'test') {
     sequelize
