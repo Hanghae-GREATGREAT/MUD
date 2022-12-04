@@ -3,9 +3,8 @@ const ejs = require('ejs');
 const path = require('path');
 require('dotenv').config();
 
-
 const app = express();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT | 8080;
 
 app.set('views', path.join(__dirname, 'views'));
 app.engine('html', ejs.renderFile);

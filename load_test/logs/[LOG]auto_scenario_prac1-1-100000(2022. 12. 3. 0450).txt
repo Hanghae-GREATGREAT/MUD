@@ -1,0 +1,98 @@
+[LOG]auto_scenario_prac1-1-100000(2022. 12. 3. 0450).txt
+        
+SERVER CURRENT STATUS
+load average: 0/1min, 0.02/5min, 0/15min
+total memory: 29.23/2069.47mb, cpu usuage: 1.36112ms/sec, cpu occupied: 0.26661%
+        
+### DETAIL LOGS ###
+
+progress: 0, clients: 1
+emits/sec: 0.00, scenario completion: 0/0 => 0, average performance time: NaNms
+load average: 0/1min, 0.02/5min, 0/15min
+total memory: 29.23/2069.82mb, cpu usuage: 1.41486ms/sec, cpu occupied: 0.27219%
+
+progress: 0, clients: 1
+emits/sec: 0.00, scenario completion: 0/0 => 0, average performance time: NaNms
+load average: 0/1min, 0.02/5min, 0/15min
+total memory: 29.48/2069.91mb, cpu usuage: 1.4326ms/sec, cpu occupied: 0.274537%
+
+progress: 0, clients: 1
+emits/sec: 0.00, scenario completion: 0/0 => 0, average performance time: NaNms
+load average: 0/1min, 0.02/5min, 0/15min
+total memory: 29.48/2069.69mb, cpu usuage: 1.4326ms/sec, cpu occupied: 0.273621%
+
+progress: 0, clients: 1
+emits/sec: 0.00, scenario completion: 0/0 => 0, average performance time: NaNms
+load average: 0.08/1min, 0.04/5min, 0.01/15min
+total memory: 29.48/2069.41mb, cpu usuage: 1.44002ms/sec, cpu occupied: 0.273041%
+
+progress: 0, clients: 1
+emits/sec: 0.00, scenario completion: 0/0 => 0, average performance time: NaNms
+load average: 0.07/1min, 0.03/5min, 0/15min
+total memory: 29.48/2069.15mb, cpu usuage: 1.44729ms/sec, cpu occupied: 0.272186%
+
+progress: 0, clients: 1
+emits/sec: 0.00, scenario completion: 0/0 => 0, average performance time: NaNms
+load average: 0.07/1min, 0.03/5min, 0/15min
+total memory: 29.48/2069.81mb, cpu usuage: 1.45051ms/sec, cpu occupied: 0.272156%
+
+progress: 0, clients: 1
+emits/sec: 0.00, scenario completion: 0/0 => 0, average performance time: NaNms
+load average: 0.06/1min, 0.03/5min, 0/15min
+total memory: 29.48/2069.37mb, cpu usuage: 1.4628ms/sec, cpu occupied: 0.272108%
+
+progress: 0, clients: 1
+emits/sec: 0.00, scenario completion: 0/0 => 0, average performance time: NaNms
+load average: 0.06/1min, 0.03/5min, 0/15min
+total memory: 29.48/2069.11mb, cpu usuage: 1.4628ms/sec, cpu occupied: 0.271386%
+
+progress: 0, clients: 1
+emits/sec: 0.00, scenario completion: 0/0 => 0, average performance time: NaNms
+load average: 0.05/1min, 0.03/5min, 0/15min
+total memory: 29.48/2069.72mb, cpu usuage: 1.46785ms/sec, cpu occupied: 0.270789%
+
+progress: 0, clients: 1
+emits/sec: 0.00, scenario completion: 0/0 => 0, average performance time: NaNms
+load average: 0.05/1min, 0.03/5min, 0/15min
+total memory: 29.73/2069.61mb, cpu usuage: 1.4948ms/sec, cpu occupied: 0.273659%
+
+progress: 0, clients: 1
+emits/sec: 0.00, scenario completion: 0/0 => 0, average performance time: NaNms
+load average: 0.04/1min, 0.03/5min, 0/15min
+total memory: 29.73/2069.49mb, cpu usuage: 1.49802ms/sec, cpu occupied: 0.272313%
+
+progress: 0, clients: 1
+emits/sec: 0.00, scenario completion: 0/0 => 0, average performance time: NaNms
+load average: 0.04/1min, 0.03/5min, 0/15min
+total memory: 29.73/2069.34mb, cpu usuage: 1.50226ms/sec, cpu occupied: 0.271114%
+
+progress: 0, clients: 1
+emits/sec: 0.00, scenario completion: 0/0 => 0, average performance time: NaNms
+load average: 0.04/1min, 0.03/5min, 0/15min
+total memory: 29.73/2069.21mb, cpu usuage: 1.50555ms/sec, cpu occupied: 0.269809%
+
+progress: 0, clients: 1
+emits/sec: 0.00, scenario completion: 0/0 => 0, average performance time: NaNms
+load average: 0.03/1min, 0.03/5min, 0/15min
+total memory: 29.73/2069.08mb, cpu usuage: 1.50895ms/sec, cpu occupied: 0.268536%
+
+progress: 0, clients: 1
+emits/sec: 0.00, scenario completion: 0/0 => 0, average performance time: NaNms
+load average: 0.03/1min, 0.03/5min, 0/15min
+total memory: 29.73/2068.95mb, cpu usuage: 1.51249ms/sec, cpu occupied: 0.267294%
+
+progress: 0, clients: 1
+emits/sec: 0.00, scenario completion: 0/0 => 0, average performance time: NaNms
+load average: 0.03/1min, 0.03/5min, 0/15min
+total memory: 29.73/2068.82mb, cpu usuage: 1.5156ms/sec, cpu occupied: 0.266061%
+
+progress: 0, clients: 1
+emits/sec: 0.00, scenario completion: 0/0 => 0, average performance time: NaNms
+load average: 0.02/1min, 0.03/5min, 0/15min
+total memory: 29.73/2068.69mb, cpu usuage: 1.51821ms/sec, cpu occupied: 0.264867%
+
+progress: 0, clients: 1
+emits/sec: 0.00, scenario completion: 0/0 => 0, average performance time: NaNms
+load average: 0.02/1min, 0.03/5min, 0/15min
+total memory: 29.73/2069.48mb, cpu usuage: 1.52185ms/sec, cpu occupied: 0.263868%
+
