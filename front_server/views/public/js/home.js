@@ -1,5 +1,6 @@
 const SERVER_URL = SERVER.getServerUrl();
 const mainSocket = io.connect(`ws://${SERVER_URL}/`, { transports: ['websocket'] });
+const frontSocket = io.connect(`ws://${SERVER_URL}/front`, { transports: ['websocket'] });
 const battleSocket = io.connect(`ws://${SERVER_URL}/battle`, { transports: ['websocket'] });
 
 const commandLine = $('.commendLine');
@@ -51,12 +52,12 @@ function loadScript(field, userInfo) {
     switch (field) {
         case 'dungeon':
             battleSocket.emit('dungeon', { line: 'LOAD', userInfo: JSON.parse(userInfo) });
-            return;    
+            return;
         case 'village':
             mainSocket.emit('dungeon', { line: 'LOAD', userInfo: JSON.parse(userInfo) });
             return;
         default:
-            mainSocket.emit('none', { line: 'LOAD', userInfo: {} });
+            frontSocket.emit('none', { line: 'LOAD', userInfo: {} });
             return;
     }
 }
@@ -84,7 +85,6 @@ commendForm.submit((e) => {
     commandRouter[field](field, input);
 });
 
-
 /*****************************************************************************
                                 이벤트 리스너
 ******************************************************************************/
@@ -93,6 +93,9 @@ mainSocket.on('print', printHandler);
 mainSocket.on('printBattle', printBattleHandler);
 mainSocket.on('signout', signoutHandler);
 mainSocket.on('fieldScriptPrint', fieldScriptPrint);
+
+frontSocket.on('print', printHandler);
+frontSocket.on('printBattle', printBattleHandler);
 
 battleSocket.on('print', printHandler);
 battleSocket.on('printBattle', printBattleHandler);
@@ -141,31 +144,8 @@ async function signoutHandler({ field, script, userInfo }) {
                                 채팅 스크립트
 ******************************************************************************/
 
-const chatEnterRoom = (userName, people, limit) => {
-    // chatBoxId.empty();
-    const newMessage = `<span>${userName}님이 채팅방에 입장하였습니다.\n(${people}/${limit}명 참가중)</span>\n`;
-    chatBoxId.append(newMessage);
-};
-const reEnterRoom = () => {
-    chatBoxId.empty();
-    const newMessage = `<span>채팅방에 다시 연결 되었습니다.\n`;
-    chatBoxId.append(newMessage);
-};
-
-const chatNewMessage = ({ script, field }) => {
-    console.log('NEEEEEEEEEEEW', field, script);
-    const newMessage = `<span>${script}</span>`;
-    const currentField = localStorage.getItem('field');
-    if (currentField.includes(field)) {
-        chatBoxId.append(newMessage);
-        chatBoxId.scrollTop(Number.MAX_SAFE_INTEGER);
-    }
-};
-
 chatForm.submit((e) => {
     e.preventDefault();
-    const field = localStorage.getItem('field').split(':')[0];
-    if (!field.match(/dungeon|village/)) return chatInput.val('');
 
     const userInfo = localStorage.getItem('user');
     const { name } = JSON.parse(userInfo);
@@ -174,12 +154,31 @@ chatForm.submit((e) => {
         message: chatInput.val(),
         field,
     };
-    mainSocket.emit('submit', data);
+    frontSocket.emit('submit', data);
     chatInput.val('');
 });
 
-mainSocket.on('chat', chatNewMessage);
+const chatEnterRoom = (username, joinerCntScript) => {
+    // chatBoxId.empty();
+    const newMessage = `<span>${username}님이 입장하였습니다.${joinerCntScript}\n</span>`;
+    chatBoxId.append(newMessage);
+};
 
-mainSocket.on('enterChat', chatEnterRoom);
+const reEnterRoom = () => {
+    chatBoxId.empty();
+    const newMessage = `<span>새로고침 확인.\n채팅에 다시 참여하기 위해 다시 로그인 해주세요.\n</span>`;
+    chatBoxId.append(newMessage);
+};
 
-mainSocket.on('reEnterChat', reEnterRoom);
+const chatNewMessage = (script) => {
+    const newMessage = `<span>${script}</span>`;
+
+    chatBoxId.append(newMessage);
+    chatBoxId.scrollTop(Number.MAX_SAFE_INTEGER);
+};
+
+frontSocket.on('chat', chatNewMessage);
+
+frontSocket.on('joinChat', chatEnterRoom);
+
+frontSocket.on('reEnterChat', reEnterRoom);

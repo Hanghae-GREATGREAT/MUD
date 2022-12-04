@@ -2,7 +2,6 @@ import { Socket } from 'socket.io';
 import { battle, chat, common, field, home, TEST, village, pvpBattle } from './controller';
 import { ChatInput, SocketInput } from './interfaces/socket';
 
-
 export const battleConnection = (socket: Socket) => {
     console.log('BATTLE NAMESPACE CONNECTED', socket.id);
 
@@ -17,7 +16,21 @@ export const battleConnection = (socket: Socket) => {
     socket.on('autoBattle', (input: SocketInput) => battle.autoBattleController(socket, input));
 
     socket.on('adventureResult', (input: SocketInput) => battle.resultController(socket, input));
-}
+};
+
+export const frontConnection = (socket: Socket) => {
+    console.log('FRONT NAMESPACE CONNECTED', socket.id);
+
+    socket.on('none', (input: SocketInput) => home.noneController(socket, input));
+
+    socket.on('front', (input: SocketInput) => home.frontController(socket, input));
+
+    socket.on('sign', (input: SocketInput) => home.signController(socket, input));
+
+    socket.on('submit', (input: ChatInput) => chat.chatController(socket, input));
+
+    socket.on('disconnect', () => common.chatLeave(socket));
+};
 
 export const onConnection = (socket: Socket) => {
     console.log('MAIN NAMESPACE CONNECTED', socket.id);
@@ -26,20 +39,18 @@ export const onConnection = (socket: Socket) => {
                                     홈                                      
      ************************************************************************/
 
-    socket.on('none', (input: SocketInput) => home.noneController(socket, input));
+    // socket.on('none', (input: SocketInput) => home.noneController(socket, input));
 
-    socket.on('front', (input: SocketInput) => home.frontController(socket, input));
+    // socket.on('front', (input: SocketInput) => home.frontController(socket, input));
 
-    socket.on('sign', (input: SocketInput) => home.signController(socket, input));
+    // socket.on('sign', (input: SocketInput) => home.signController(socket, input));
 
     /************************************************************************
                                     필드                                      
      ************************************************************************/
 
-    
-
     socket.on('village', (input: SocketInput) => field.villageController(socket, input));
-    
+
     /************************************************************************
                                     마을                                      
      ************************************************************************/
@@ -54,18 +65,15 @@ export const onConnection = (socket: Socket) => {
 
     socket.on('pvp', (input: SocketInput) => village.pvpController(socket, input));
 
-
     /************************************************************************
                                    모험 종료                                      
      ************************************************************************/
-
-    
 
     /************************************************************************
                                    시련의 장                                      
      ************************************************************************/
 
-    socket.on('pvpList', (input: SocketInput) => pvpBattle.pvpListController(socket, input))
+    socket.on('pvpList', (input: SocketInput) => pvpBattle.pvpListController(socket, input));
 
     socket.on('pvpBattle', (input: SocketInput) => pvpBattle.pvpBattleController(socket, input));
 
@@ -85,7 +93,7 @@ export const onConnection = (socket: Socket) => {
                                     채팅박스                                      
      ************************************************************************/
 
-    socket.on('submit', (input: ChatInput) => chat.chatController(socket, input));
+    // socket.on('submit', (input: ChatInput) => chat.chatController(socket, input));
 
     /************************************************************************
                                     기타                                      
