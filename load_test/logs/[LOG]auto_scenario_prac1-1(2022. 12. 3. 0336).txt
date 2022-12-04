@@ -1,0 +1,14 @@
+[LOG]auto_scenario_prac1-1(2022. 12. 3. 0336).txt
+
+        SERVER CURRENT STATUS
+        load average: 0/1min, 0/5min, 0/15min
+        total memory: 26.86/470.30mb, cpu usuage: 1.35726ms/sec, cpu occupied: 0.0162376%
+    
+
+
+        ### DETAIL LOGS ###
+    progress: 1872165, clients: 0
+emits/sec: 0.00, scenario completion: 0/1872165 => 0, average performance time: NaNms
+load average: 0/1min, 0/5min, 0/15min
+total memory: 27.11/469.98mb, cpu usuage: 1.4624ms/sec, cpu occupied: 0.0171372%
+

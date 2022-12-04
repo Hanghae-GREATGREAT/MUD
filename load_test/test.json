@@ -1,0 +1,10 @@
+{
+    "load average": {
+        "1": 0,
+        "5": 0,
+        "15": 0
+    },
+    "memory": "26.11/472.08mb",
+    "cpu usuage": "1.13864ms/sec",
+    "cpu occupied": "0.103425%"
+}

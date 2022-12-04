@@ -8,7 +8,7 @@ services:
 
   server:
     container_name: server
-    image: ninthsun91/mud-server:1.3.0
+    image: ninthsun91/mud-server:${VERSION}.0
     build:
       context: main_server
       dockerfile: ./Dockerfile
@@ -19,7 +19,7 @@ services:
 
   battle:
     container_name: battle
-    image: ninthsun91/mud-battle:1.3.0
+    image: ninthsun91/mud-battle:${VERSION}.0
     build:
       context: battle_server
       dockerfile: ./Dockerfile
@@ -30,14 +30,40 @@ services:
     depends_on:
       - server
 
+  pvp:
+    container_name: pvp
+    image: ninthsun91/mud-pvp:${VERSION}.0
+    build:
+      context: pvp_server
+      dockerfile: ./Dockerfile
+    env_file:
+      - ./pvp_server/.env
+    ports:
+      - '3336:3336'
+    depends_on:
+      - server
+
   front:
     container_name: front
-    image: ninthsun91/mud-front:1.3.0
+    image: ninthsun91/mud-front:${VERSION}.0
     build:
       context: front_server
       dockerfile: ./Dockerfile
     env_file:
       - ./front_server/.env
+    ports:
+      - '3335:3335'
+    depends_on:
+      - server
+
+  web:
+    container_name: web
+    image: ninthsun91/mud-web:${VERSION}.0
+    build:
+      context: web_server
+      dockerfile: ./Dockerfile
+    env_file:
+      - ./web_server/.env
     ports:
       - '8080:8080'
     depends_on:

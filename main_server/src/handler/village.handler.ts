@@ -130,7 +130,7 @@ export default {
         tempScript += `3. 돌아가기\n`
 
         const script = tempLine + tempScript;
-        const field = 'pvp';
+        const field = 'pvpNpc';
         
         socket.emit('print', { script, userInfo, field });
     },
