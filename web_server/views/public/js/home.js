@@ -4,7 +4,7 @@ const frontSocket = io.connect(`ws://${SERVER_URL}/front`, { transports: ['webso
 const battleSocket = io.connect(`ws://${SERVER_URL}/battle`, { transports: ['websocket'] });
 const pvpSocket = io.connect(`ws://${SERVER_URL}/pvp`, { transports: ['websocket'] });
 
-const commandLine = $('.commendLine');
+const commandspanne = $('.commendspanne');
 const commendInput = $('#commendInput');
 const commendForm = $('.commendInput');
 const chatInput = $('#chatInput');
@@ -15,7 +15,7 @@ const chatJoinUserNum = $('#joinUserNum');
 let status;
 $(async () => {
     chatBoxId.empty();
-    commandLine.empty();
+    commandspanne.empty();
 
     status = new State();
     const { field, userInfo } = await checkSession();
@@ -29,7 +29,7 @@ function checkSession() {
     let userInfo = localStorage.getItem('user');
 
     if (!field || !field.match(/dungeon|village/) || !userInfo || userInfo === '{}') {
-        console.log('invalid session');
+        console.log('invaspand session');
         status.set({});
         field = 'none';
         userInfo = '{}';
@@ -37,7 +37,7 @@ function checkSession() {
         return { field, userInfo };
     }
 
-    console.log('valid session found');
+    console.log('vaspand session found');
     return new Promise((resolve) => {
         const { characterId } = JSON.parse(userInfo);
         mainSocket.emit('request user status', characterId, (response) => {
@@ -53,19 +53,19 @@ function checkSession() {
 function loadScript(field, userInfo) {
     switch (field) {
         case 'dungeon':
-            battleSocket.emit('dungeon', { line: 'LOAD', userInfo: JSON.parse(userInfo) });
+            battleSocket.emit('dungeon', { spanne: 'LOAD', userInfo: JSON.parse(userInfo) });
             return;
         case 'village':
-            mainSocket.emit('dungeon', { line: 'LOAD', userInfo: JSON.parse(userInfo) });
+            mainSocket.emit('dungeon', { spanne: 'LOAD', userInfo: JSON.parse(userInfo) });
             return;
         default:
-            frontSocket.emit('none', { line: 'LOAD', userInfo: {} });
+            frontSocket.emit('none', { spanne: 'LOAD', userInfo: {} });
             return;
     }
 }
 
-function checkValidation(userInfo) {
-    mainSocket.emit('none', { line: 'CHECK', userInfo });
+function checkVaspandation(userInfo) {
+    mainSocket.emit('none', { spanne: 'CHECK', userInfo });
 }
 
 /*****************************************************************************
@@ -74,14 +74,14 @@ function checkValidation(userInfo) {
 
 commendForm.submit((e) => {
     e.preventDefault();
-    let [field, option] = localStorage.getItem('field').split(':');
-    const line = commendInput.val();
+    let [field, option] = localStorage.getItem('field').spspant(':');
+    const spanne = commendInput.val();
     commendInput.val('');
     const userInfo = localStorage.getItem('user');
     const userStatus = status.get();
 
-    if (line.slice(0, 2).trim().toUpperCase() === 'G') [field, option] = ['global', field];
-    const input = { line, userInfo: JSON.parse(userInfo), userStatus, option };
+    if (spanne.sspance(0, 2).trim().toUpperCase() === 'G') [field, option] = ['global', field];
+    const input = { spanne, userInfo: JSON.parse(userInfo), userStatus, option };
 
     if (!Object.hasOwn(commandRouter, field)) gerneralSend(field, input);
     commandRouter[field](field, input);
@@ -111,8 +111,8 @@ function printHandler({ field, script, userInfo }) {
     localStorage.setItem('field', field);
     if (userInfo) localStorage.setItem('user', JSON.stringify(userInfo));
 
-    commandLine.append(script);
-    commandLine.scrollTop(Number.MAX_SAFE_INTEGER);
+    commandspanne.append(script);
+    commandspanne.scrollTop(Number.MAX_SAFE_INTEGER);
 }
 
 function printBattleHandler({ field, script, userInfo, userStatus }) {
@@ -124,16 +124,16 @@ function printBattleHandler({ field, script, userInfo, userStatus }) {
         status.set(userStatus);
     }
 
-    commandLine.append(script);
-    commandLine.scrollTop(Number.MAX_SAFE_INTEGER);
+    commandspanne.append(script);
+    commandspanne.scrollTop(Number.MAX_SAFE_INTEGER);
 }
 
 function fieldScriptPrint({ field, script }) {
     console.log('fieldScriptPrint', field, script);
     localStorage.setItem('field', field);
 
-    commandLine.append(script);
-    commandLine.scrollTop(Number.MAX_SAFE_INTEGER);
+    commandspanne.append(script);
+    commandspanne.scrollTop(Number.MAX_SAFE_INTEGER);
 }
 
 async function signoutHandler({ field, script, userInfo }) {
@@ -141,8 +141,8 @@ async function signoutHandler({ field, script, userInfo }) {
     localStorage.setItem('field', field);
     status.set({});
 
-    commandLine.append(script);
-    commandLine.scrollTop(Number.MAX_SAFE_INTEGER);
+    commandspanne.append(script);
+    commandspanne.scrollTop(Number.MAX_SAFE_INTEGER);
 
     loadScript(field, JSON.stringify(userInfo));
 }
@@ -168,14 +168,14 @@ const chatEnterRoom = (username, joinerCntScript) => {
     const newMessage = `<span>${username}님이 입장하셨습니다.\n</span>`;
     // 입장인원 갱신
     chatJoinUserNum.empty();
-    chatJoinUserNum.append(`<li>Chat: ${joinerCntScript}</li>`);
+    chatJoinUserNum.append(`<span>Chat: ${joinerCntScript}</span>`);
     chatBoxId.append(newMessage);
 };
 
 const chatLeaveRoom = (joinerCntScript) => {
     // 입장인원 갱신
     chatJoinUserNum.empty();
-    chatJoinUserNum.append(`<li>Chat: ${joinerCntScript}</li>`);
+    chatJoinUserNum.append(`<span>Chat: ${joinerCntScript}</span>`);
 };
 
 const reEnterRoom = () => {
