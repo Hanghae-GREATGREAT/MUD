@@ -1,22 +1,24 @@
+import env from '../config.env';
 import { Socket } from 'socket.io';
 import { CharacterService } from '../services';
 import { redis } from '../db/cache';
 import { roomList, chatJoiner } from '../handler/front/home.handler';
 import { front, global } from '../handler';
 import { CommandHandler, SocketInput } from '../interfaces/socket';
+import { fetchPost } from '../common';
 
+const FRONTCHAT_URL = `http://${env.FRONTCHAT_URL}:${env.FRONTCHAT_PORT}`;
 
 export default {
-
     globalController: (socket: Socket, { line, userInfo, option }: SocketInput) => {
         const [CMD1, CMD2]: string[] = line.trim().toUpperCase().split(' ');
-        
+
         const commandHandler: CommandHandler = {
-            'HOME': global.backToHome,
-            'OUT': front.signout,
-            'HELP': global.help,
-            '도움말': global.help,
-        }
+            HOME: global.backToHome,
+            OUT: front.signout,
+            HELP: global.help,
+            도움말: global.help,
+        };
         if (!commandHandler[CMD2] || CMD2.match(/HELP|도움말/)) {
             console.log('exception');
             commandHandler['HELP'](socket, line, userInfo, option);
@@ -26,7 +28,7 @@ export default {
         commandHandler[CMD2](socket, CMD2, userInfo, socket.id);
     },
 
-    requestStatus: async(characterId: number, callback: any) => {
+    requestStatus: async (characterId: number, callback: any) => {
         const userStatus = await CharacterService.getUserStatus(characterId);
 
         callback({
@@ -44,5 +46,11 @@ export default {
         }
         redis.del(socket.id);
         console.log(socket.id, 'SOCKET DISCONNECTED');
+    },
+
+    chatLeave: (socket: Socket) => {
+        console.log('disconnect');
+        const URL = `${FRONTCHAT_URL}/chat/chatLeave`;
+        fetchPost({ URL, socketId: socket.id });
     },
 };
