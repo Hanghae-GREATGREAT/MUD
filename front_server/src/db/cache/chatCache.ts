@@ -17,7 +17,7 @@ class ChatCache {
 
     joinChat(socketId: string): Array<number> {
         // 입장 정원 설정
-        const setJoinerLimit = 2;
+        const setJoinerLimit = 5;
 
         // tempData
         let accessibleIndex = 1;
