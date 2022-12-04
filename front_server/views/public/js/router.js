@@ -1,30 +1,30 @@
 const commandRouter = {
-    none: frontSend,
-    front: frontSend,
-    sign: frontSend,
+    'none': gerneralSend,
+    'front': gerneralSend,
+    'sign': gerneralSend,
 
-    dungeon: battleSend,
-    encounter: battleSend,
-    action: battleSend,
-    battle: battleSend,
-    autoBattle: battleSend,
-    adventureResult: battleSend,
+    'dungeon': battleSend,
+    'encounter': battleSend,
+    'action': battleSend,
+    'battle': battleSend,
+    'autoBattle': battleSend,
+    'adventureResult': battleSend,
 
-    village: gerneralSend,
-    story: gerneralSend,
-    heal: gerneralSend,
-    enhance: gerneralSend,
-    gamble: gerneralSend,
+    'village': gerneralSend,
+    'story': gerneralSend,
+    'heal': gerneralSend,
+    'enhance': gerneralSend,
+    'gamble': gerneralSend,
 
-    pvpNpc: pvpSend,
-    pvpList: pvpSend,
-    pvpBattle: pvpSend,
-    enemyChoice: pvpSend,
-    attackChoice: pvpSend,
-    enemyAttack: pvpSend,
+    'pvpNpc': pvpSend,
+    'pvpList': pvpSend,
+    'pvpBattle': pvpSend,
+    'enemyChoice': pvpSend,
+    'attackChoice': pvpSend,
+    'enemyAttack': pvpSend,
 
-    global: globalSend,
-};
+    'global': globalSend,
+}
 
 function gerneralSend(field, input) {
     console.log('general send', field, input.line);

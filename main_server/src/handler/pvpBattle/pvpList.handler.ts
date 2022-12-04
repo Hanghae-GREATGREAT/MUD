@@ -4,13 +4,9 @@ import { pvpBattle } from '..';
 import { UserInfo, UserStatus } from '../../interfaces/user';
 
 import { publicRooms } from '../npc/pvp.handler';
+import { PvpPlayer } from '../../interfaces/pvp';
 
-interface PvpPlayer {
-    socketId:string;
-    userStatus: UserStatus;
-    target?: string|undefined; // username
-    selectSkill?: string|undefined; // skillname
-}
+
 
 export const rooms: Map<string, Map<string, PvpPlayer>> = new Map<string, Map<string, PvpPlayer>>();
 export const maxUsers: number = 4;

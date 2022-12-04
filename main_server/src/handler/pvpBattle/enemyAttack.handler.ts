@@ -8,21 +8,6 @@ import { Characters, Skills } from '../../db/models';
 import { UserInfo, UserStatus } from '../../interfaces/user';
 
 export default {
-    enemyAttackhelp: (socket: Socket, CMD: string | undefined, userInfo: UserInfo, userStatus: UserStatus) => {
-        let tempScript: string = '';
-        const tempLine =
-            '=======================================================================\n';
-
-        tempScript += '명령어 : \n';
-        tempScript += '공격할 유저의 번호를 선택하세요.\n';
-        tempScript += '[돌]아가기 - 이전 단계로 돌아갑니다.\n';
-
-        const script = tempLine + tempScript;
-        const field = 'enemyAttack';
-
-        socket.emit('printBattle', { field, script, userInfo, userStatus });
-    },
-
     // 선택된 유저와 선택된 스킬로 데미지 적용 및 전투로직 실행
     enemyAttack: async (socket: Socket, CMD: string | undefined, userInfo: UserInfo, userStatus: UserStatus) => {
         const roomName = userStatus.pvpRoom;

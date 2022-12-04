@@ -1,0 +1,39 @@
+[LOG]auto_scenario_prac1-1(2022. 12. 3. 0359).txt
+        
+SERVER CURRENT STATUS
+        load average: 0.1/1min, 0.16/5min, 0.09/15min
+        total memory: 28.36/469.03mb, cpu usuage: 1.87016ms/sec, cpu occupied: 0.345238%
+    
+        
+### DETAIL LOGS ###
+
+progress: 0, clients: 1
+emits/sec: 0.00, scenario completion: 0/0 => 0, average performance time: NaNms
+load average: 0.09/1min, 0.16/5min, 0.09/15min
+total memory: 28.36/469.66mb, cpu usuage: 1.8808ms/sec, cpu occupied: 0.344147%
+
+progress: 0, clients: 1
+emits/sec: 0.00, scenario completion: 0/0 => 0, average performance time: NaNms
+load average: 0.09/1min, 0.15/5min, 0.09/15min
+total memory: 28.36/468.94mb, cpu usuage: 1.97088ms/sec, cpu occupied: 0.357242%
+
+progress: 0, clients: 1
+emits/sec: 0.00, scenario completion: 0/0 => 0, average performance time: NaNms
+load average: 0.08/1min, 0.15/5min, 0.09/15min
+total memory: 28.36/469.51mb, cpu usuage: 1.98204ms/sec, cpu occupied: 0.355707%
+
+progress: 0, clients: 1
+emits/sec: 0.00, scenario completion: 0/0 => 0, average performance time: NaNms
+load average: 0.23/1min, 0.18/5min, 0.1/15min
+total memory: 28.61/468.99mb, cpu usuage: 1.9893ms/sec, cpu occupied: 0.35527%
+
+progress: 0, clients: 1
+emits/sec: 0.00, scenario completion: 0/0 => 0, average performance time: NaNms
+load average: 0.21/1min, 0.18/5min, 0.1/15min
+total memory: 28.61/469.37mb, cpu usuage: 2.00598ms/sec, cpu occupied: 0.356296%
+
+progress: 1, clients: 0
+emits/sec: 0.00, scenario completion: 1/1 => 100, average performance time: 16886.57ms
+load average: 0.2/1min, 0.18/5min, 0.1/15min
+total memory: 28.61/469.03mb, cpu usuage: 2.0122ms/sec, cpu occupied: 0.355304%
+

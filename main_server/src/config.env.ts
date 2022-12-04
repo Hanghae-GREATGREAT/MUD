@@ -52,9 +52,10 @@ class Env extends dBConnection {
     BATTLE_URL: string;
     BATTLE_PORT: number;
 
+
     FRONTCHAT_URL: string;
     FRONTCHAT_PORT: number;
-
+    
     PVP_URL: string;
     PVP_PORT: number;
 
