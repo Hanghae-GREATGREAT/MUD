@@ -1,6 +1,7 @@
 const SERVER_URL = SERVER.getServerUrl();
 const mainSocket = io.connect(`ws://${SERVER_URL}/`, { transports: ['websocket'] });
 const battleSocket = io.connect(`ws://${SERVER_URL}/battle`, { transports: ['websocket'] });
+const pvpSocket = io.connect(`ws://${SERVER_URL}/pvp`, { transports: ['websocket'] });
 
 const commandLine = $('.commendLine');
 const commendInput = $('#commendInput');
@@ -97,6 +98,10 @@ mainSocket.on('fieldScriptPrint', fieldScriptPrint);
 battleSocket.on('print', printHandler);
 battleSocket.on('printBattle', printBattleHandler);
 
+pvpSocket.on('print', printHandler);
+pvpSocket.on('printBattle', printBattleHandler);
+pvpSocket.on('fieldScriptPrint', fieldScriptPrint);
+
 function printHandler({ field, script, userInfo }) {
     console.log(field);
     localStorage.setItem('field', field);
@@ -120,6 +125,7 @@ function printBattleHandler({ field, script, userInfo, userStatus }) {
 }
 
 function fieldScriptPrint({ field, script }) {
+    console.log('fieldScriptPrint', field, script);
     localStorage.setItem('field', field);
 
     commandLine.append(script);

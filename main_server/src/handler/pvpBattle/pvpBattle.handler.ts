@@ -33,7 +33,7 @@ export default {
         const script = tempLine + tempScript;
         const field = 'pvpBattle';
 
-        socket.emit('printBattle', { script, userInfo, field });
+        socket.emit('printBattle', { script, userInfo, field, userStatus });
     },
 
     // 6명이 되면 게임시작

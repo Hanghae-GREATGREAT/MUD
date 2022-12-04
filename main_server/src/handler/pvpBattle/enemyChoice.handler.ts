@@ -12,7 +12,6 @@ export default {
 
         tempScript += '명령어 : \n';
         tempScript += '공격할 유저의 번호를 선택하세요.\n';
-        tempScript += '[돌]아가기 - 이전 단계로 돌아갑니다.\n';
 
         const script = tempLine + tempScript;
         const field = 'enemyChoice';

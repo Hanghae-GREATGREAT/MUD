@@ -16,6 +16,13 @@ const commandRouter = {
     'enhance': gerneralSend,
     'gamble': gerneralSend,
 
+    'pvpNpc': pvpSend,
+    'pvpList': pvpSend,
+    'pvpBattle': pvpSend,
+    'enemyChoice': pvpSend,
+    'attackChoice': pvpSend,
+    'enemyAttack': pvpSend,
+
     'global': globalSend,
 }
 
@@ -53,4 +60,10 @@ function globalSend(field, input) {
     }
 
     mainSocket.volatile.emit(field, input);
+}
+
+function pvpSend(field, input) {
+    console.log('pvp send', field, input.line);
+
+    pvpSocket.volatile.emit(field, input);
 }
