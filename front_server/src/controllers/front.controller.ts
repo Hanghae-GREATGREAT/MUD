@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { FRONT } from '../redis';
+import { chatCache } from '../db/cache';
 import { CharacterService, UserService } from '../services';
 import { homeScript, placeScript } from '../scripts';
 import { PostBody } from '../interfaces/common';
@@ -42,11 +43,13 @@ export default {
             return next(error);
         }
 
-        // UserService.signout(userInfo.userId, socketId);
+        // 채팅방 나가기
+        chatCache.leaveChat(socketId);
 
         const script = homeScript.signout;
         const field = 'front';
 
+        FRONT.to(socketId).emit('leaveChat');
         FRONT.to(socketId).emit('print', { field, script, userInfo });
     },
 

@@ -18,7 +18,11 @@ export default {
     chatLeave: (req: Request, res: Response, next: NextFunction) => {
         const { socketId }: PostBody = req.body;
 
-        chatCache.leaveChat(socketId);
+        const joinedRoom: string = chatCache.getJoinedRoom(socketId);
+        const joinerScript = chatCache.leaveChat(socketId);
+        if (joinerScript.length > 0) {
+            FRONT.to(joinedRoom).emit('leaveChat', joinerScript);
+        }
 
         res.status(200).end();
     },
