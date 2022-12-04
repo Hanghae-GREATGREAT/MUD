@@ -3,6 +3,7 @@ import { FRONT } from '../redis';
 import { PostBody } from '../interfaces/common';
 import { UserService, CharacterService } from '../services';
 import { signinScript } from '../scripts';
+import { chatCache } from '../db/cache';
 import { UserInfo } from '../interfaces/user';
 
 export default {
@@ -14,7 +15,7 @@ export default {
         const script = signinScript.username;
         const field = 'sign:20';
 
-        FRONT.emit('print', { field, script, userInfo });
+        FRONT.to(socketId).emit('print', { field, script, userInfo });
         res.status(200).end();
     },
 
@@ -54,29 +55,30 @@ export default {
         const userId = result.userId;
         const character = await CharacterService.findOneByUserId(userId);
 
-        // const userSession = {
-        //     userId,
-        //     characterId: character?.characterId,
-        // };
-        // const data = JSON.stringify(userSession);
-        // await redis.set(id, data, { EX: 60*5 });
-
-        if (character) {
-            const userStatus = await CharacterService.getUserStatus(character.characterId);
-
-            userInfo = {
-                userId,
-                username: userStatus!.username,
-                characterId: userStatus!.characterId,
-                name: userStatus!.name,
-            };
-
-            const script = signinScript.title;
-            const field = 'front';
-
-            FRONT.to(socketId).emit('printBattle', { field, script, userInfo, userStatus });
-            res.status(200).end();
+        if (!character) {
+            throw new Error('signinCheck: cannot find character');
         }
+
+        const userStatus = await CharacterService.getUserStatus(character.characterId);
+
+        userInfo = {
+            userId,
+            username: userStatus!.username,
+            characterId: userStatus!.characterId,
+            name: userStatus!.name,
+        };
+
+        const script = signinScript.title;
+        const field = 'front';
+
+        // 채팅방 참가
+        const chatData: Array<number> = chatCache.joinChat(socketId);
+        const enteredRoom = chatData[0];
+        const joinerCntScript = `(${chatData[1]}/${chatData[2]})`;
+        FRONT.in(socketId).socketsJoin(`${enteredRoom}`);
+        FRONT.to(`${enteredRoom}`).emit('joinChat', userInfo.name, joinerCntScript);
+
+        FRONT.to(socketId).emit('printBattle', { field, script, userInfo, userStatus });
 
         res.status(200).end();
     },

@@ -26,6 +26,10 @@ export const frontConnection = (socket: Socket) => {
     socket.on('front', (input: SocketInput) => home.frontController(socket, input));
 
     socket.on('sign', (input: SocketInput) => home.signController(socket, input));
+
+    socket.on('submit', (input: ChatInput) => chat.chatController(socket, input));
+
+    socket.on('disconnect', () => common.chatLeave(socket));
 };
 
 export const onConnection = (socket: Socket) => {
@@ -89,7 +93,7 @@ export const onConnection = (socket: Socket) => {
                                     채팅박스                                      
      ************************************************************************/
 
-    socket.on('submit', (input: ChatInput) => chat.chatController(socket, input));
+    // socket.on('submit', (input: ChatInput) => chat.chatController(socket, input));
 
     /************************************************************************
                                     기타                                      
