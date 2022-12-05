@@ -1,4 +1,4 @@
-import { pvpHelpScript, pvpScript } from "../../scripts"
+import { pvpHelpScript } from "../../scripts"
 
 interface CommandRouter {
     [key: string]: string;
