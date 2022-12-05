@@ -80,7 +80,13 @@ commendForm.submit((e) => {
     const userInfo = localStorage.getItem('user');
     const userStatus = status.get();
 
-    if (line.slice(0, 2).trim().match(/g|G|ㅎ/)) [field, option] = ['global', field];
+    if (
+        line
+            .slice(0, 2)
+            .trim()
+            .match(/g|G|ㅎ/)
+    )
+        [field, option] = ['global', field];
     const input = { line, userInfo: JSON.parse(userInfo), userStatus, option };
 
     if (!Object.hasOwn(commandRouter, field)) gerneralSend(field, input);
@@ -98,6 +104,8 @@ mainSocket.on('fieldScriptPrint', fieldScriptPrint);
 
 frontSocket.on('print', printHandler);
 frontSocket.on('printBattle', printBattleHandler);
+frontSocket.on('pwCoveringOn', pwCoveringOn);
+frontSocket.on('pwCoveringOff', pwCoveringOff);
 
 battleSocket.on('print', printHandler);
 battleSocket.on('printBattle', printBattleHandler);
@@ -145,6 +153,13 @@ async function signoutHandler({ field, script, userInfo }) {
     commandLine.scrollTop(Number.MAX_SAFE_INTEGER);
 
     loadScript(field, JSON.stringify(userInfo));
+}
+
+function pwCoveringOn() {
+    commendInput.attr('type', 'password');
+}
+function pwCoveringOff() {
+    commendInput.attr('type', 'text');
 }
 
 /*****************************************************************************
