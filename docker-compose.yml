@@ -3,28 +3,34 @@ services:
   redis:
     container_name: mud-redis
     image: 'redis:alpine'
+    extra_hosts:
+    - 'host.docker.internal:host-gateway'
     ports:
       - '6379:6379'
 
   server:
     container_name: server
-    image: ninthsun91/mud-server:${VERSION}.0
+    image: ninthsun91/mud-server:${VERSION}.${SUB_VERSION}
     build:
       context: main_server
       dockerfile: ./Dockerfile
     env_file:
       - ./main_server/.env
+    extra_hosts:
+    - 'host.docker.internal:host-gateway'
     ports:
       - '3333:3333'
 
   battle:
     container_name: battle
-    image: ninthsun91/mud-battle:${VERSION}.0
+    image: ninthsun91/mud-battle:${VERSION}.${SUB_VERSION}
     build:
       context: battle_server
       dockerfile: ./Dockerfile
     env_file:
       - ./battle_server/.env
+    extra_hosts:
+    - 'host.docker.internal:host-gateway'
     ports:
       - '3334:3334'
     depends_on:
@@ -32,12 +38,14 @@ services:
 
   pvp:
     container_name: pvp
-    image: ninthsun91/mud-pvp:${VERSION}.0
+    image: ninthsun91/mud-pvp:${VERSION}.${SUB_VERSION}
     build:
       context: pvp_server
       dockerfile: ./Dockerfile
     env_file:
       - ./pvp_server/.env
+    extra_hosts:
+    - 'host.docker.internal:host-gateway'
     ports:
       - '3336:3336'
     depends_on:
@@ -45,12 +53,14 @@ services:
 
   front:
     container_name: front
-    image: ninthsun91/mud-front:${VERSION}.0
+    image: ninthsun91/mud-front:${VERSION}.${SUB_VERSION}
     build:
       context: front_server
       dockerfile: ./Dockerfile
     env_file:
       - ./front_server/.env
+    extra_hosts:
+    - 'host.docker.internal:host-gateway'
     ports:
       - '3335:3335'
     depends_on:
@@ -58,12 +68,12 @@ services:
 
   web:
     container_name: web
-    image: ninthsun91/mud-web:${VERSION}.0
+    image: ninthsun91/mud-web:${VERSION}.${SUB_VERSION}
     build:
       context: web_server
       dockerfile: ./Dockerfile
-    env_file:
-      - ./web_server/.env
+    extra_hosts:
+    - 'host.docker.internal:host-gateway'
     ports:
       - '8080:8080'
     depends_on:

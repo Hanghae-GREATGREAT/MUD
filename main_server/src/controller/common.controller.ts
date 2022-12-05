@@ -8,7 +8,7 @@ import { front, global } from '../handler';
 import { CommandHandler, SocketInput } from '../interfaces/socket';
 
 
-const FRONT_URL = `http://${env.FRONT_URL}:${env.FRONT_PORT}`;
+const FRONT_URL = `http://${env.HOST}:${env.FRONT_PORT}`;
 
 export default {
     globalController: (socket: Socket, { line, userInfo, option }: SocketInput) => {

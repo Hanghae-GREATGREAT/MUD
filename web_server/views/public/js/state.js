@@ -53,14 +53,3 @@ class State{
         return;
     };
 }
-
-
-class Server {
-    #PORT = 3333;
-    #URL = 'localhost'
-
-    getServerUrl = () => {
-        return `${this.#URL}:${this.#PORT}`;
-    }
-}
-const SERVER = new Server();

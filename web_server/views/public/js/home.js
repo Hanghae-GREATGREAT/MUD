@@ -80,7 +80,7 @@ commendForm.submit((e) => {
     const userInfo = localStorage.getItem('user');
     const userStatus = status.get();
 
-    if (line.slice(0, 2).trim().toUpperCase() === 'G') [field, option] = ['global', field];
+    if (line.slice(0, 2).trim().match(/g|G|ㅎ/)) [field, option] = ['global', field];
     const input = { line, userInfo: JSON.parse(userInfo), userStatus, option };
 
     if (!Object.hasOwn(commandRouter, field)) gerneralSend(field, input);

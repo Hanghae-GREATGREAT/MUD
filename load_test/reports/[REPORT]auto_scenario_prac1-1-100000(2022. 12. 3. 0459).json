@@ -1,1 +1,19 @@
-{"TEST_REPORT":"[LOG]auto_scenario_prac1-1-100000(2022. 12. 3. 0459).txt","TEST_NAME":"auto_scenario_prac1","test_start":"2022-12-03T04:59:19.277Z","test_end":"2022-12-03T05:01:37.611Z","test_running_time":"2m 18.33s","MAX_CLIENTS":1,"CLIENT_CREATE_INTERVAL_IN_MS":2000,"TEST_DURATION_IN_MS":100000,"total_emit_count":0,"emit_per_seconds":"0.00","total_scenario_try":3,"scenario_complete":3,"scenario_fail":0,"average_performace":"3148.69ms","average_memory_usage":"29.73/2069.01MB","average_cpu_usage":"1.68ms/sec","average_cpu_consumption":"0.17%"}
+{
+    "TEST_REPORT": "[LOG]auto_scenario_prac1-1-100000(2022. 12. 3. 0459).txt",
+    "TEST_NAME": "auto_scenario_prac1",
+    "test_start": "2022-12-03T04:59:19.277Z",
+    "test_end": "2022-12-03T05:01:37.611Z",
+    "test_running_time": "2m 18.33s",
+    "MAX_CLIENTS": 1,
+    "CLIENT_CREATE_INTERVAL_IN_MS": 2000,
+    "TEST_DURATION_IN_MS": 100000,
+    "total_emit_count": 0,
+    "emit_per_seconds": "0.00",
+    "total_scenario_try": 3,
+    "scenario_complete": 3,
+    "scenario_fail": 0,
+    "average_performace": "3148.69ms",
+    "average_memory_usage": "29.73/2069.01MB",
+    "average_cpu_usage": "1.68ms/sec",
+    "average_cpu_consumption": "0.17%"
+}
