@@ -29,6 +29,11 @@ export default {
         // commandHandler[CMD1](socket, CMD2, userInfo, userStatus);
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
         
+        if (CMD1 === '새' || CMD1 === '새로고침') {
+            const URL = `${PVP_URL}/pvpNpc/pvpGo`;
+            fetchPost({ URL, socketId: socket.id, CMD: CMD1, userInfo, userStatus });
+            return;
+        }
         if (CMD1 === '돌'|| CMD1 === '돌아가기') return village.NpcList(socket, CMD2, userInfo);
         if (CMD1 === '도움말') {
             const URL = `${PVP_URL}/pvp/help`
