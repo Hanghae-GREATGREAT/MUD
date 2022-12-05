@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { frontController, signinController, signupController } from '../controllers';
+import { frontController, globalController, signinController, signupController } from '../controllers';
 
 const router = Router();
 
@@ -27,5 +27,10 @@ router.post('/toVillage', frontController.toVillage);
 // etc
 router.post('/deleteAccount', frontController.deleteAccount);
 router.post('/emptyCommand', frontController.emptyCommand);
+
+// global
+router.post('/toHome', globalController.toHome);
+router.post('/globalHelp', globalController.help);
+router.post('/disconnect', globalController.disconnect);
 
 export default router;

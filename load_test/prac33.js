@@ -1,18 +1,7 @@
-// const URL = 'localhost:3333';
-const URL = '3.35.173.214:3333';
+const URL = 'localhost:3333';
+// const URL = '3.35.173.214:3333';
 
-// SOCKET CONNECTION IMPORT
-const { io } = require('socket.io-client');
-const mainSocket = io(`ws://${URL}/`, { transports: ['websocket'] });
-const frontSocket = io(`ws://${URL}/front`, { transports: ['websocket'] });
-const battleSocket = io(`ws://${URL}/battle`, { transports: ['websocket'] });
 
-const WAIT_COMMAND = Math.random()*2 + 0.5;
-const front = require('./units/front')(frontSocket, WAIT_COMMAND);
-const battle = require('./units/battle')(battleSocket, WAIT_COMMAND);
-const village = require('./units/village')(mainSocket, WAIT_COMMAND);
-const fields = { front, battle, village };
-const selector = require('./units/selector')(fields);
 
 // LOGGING IMPORT
 const getResourceUsage = require('./resource_ec2');
@@ -57,6 +46,19 @@ const sleep = (ms) => {
 
 // CREATE TEST SCENARIO
 const createClient = async(i) => {
+    // SOCKET CONNECTION IMPORT
+    const { io } = require('socket.io-client');
+    const mainSocket = io(`ws://${URL}/`, { transports: ['websocket'] });
+    const frontSocket = io(`ws://${URL}/front`, { transports: ['websocket'] });
+    const battleSocket = io(`ws://${URL}/battle`, { transports: ['websocket'] });
+
+    const WAIT_COMMAND = Math.random()*2 + 0.5;
+    const front = require('./units/front')(frontSocket, WAIT_COMMAND);
+    const battle = require('./units/battle')(battleSocket, WAIT_COMMAND);
+    const village = require('./units/village')(mainSocket, WAIT_COMMAND);
+    const fields = { front, battle, village };
+    const selector = require('./units/selector')(fields);
+    
     try {
         clientCount++;
 
@@ -72,55 +74,62 @@ const createClient = async(i) => {
         if (Math.random() < 0.5) {
             const username = `user${i}`
             console.log('IN', i, username);
-            var { field, userInfo, userStatus, cnt } = await selector.sign[0](username);
+            var { field, userInfo, userStatus, cnt } = await front.signin(username);
             emitCount += cnt;
         } else {
             const username = `test${SET_TIME}`
             console.log('UP', i, username);
-            var { field, userInfo, userStatus, cnt } = await selector.sign[1](username);
+            var { field, userInfo, userStatus, cnt } = await front.signup(username);
             emitCount += cnt;
         } 
+        await sleep(2000);
 
         console.log('SIGNED', userInfo);
         // START RANDOM SCENARIO LOOP
         // example scenario on test... dungeon > autobattle > quit/heal > home
-        while (SET_TIME + TEST_DURATION_IN_MS > Date.now()) {
-            // console.log('loop start');
-            const start = performance.now().toFixed(2);
-            console.log('try', start);
-            const res1 = await front.toDungeon(field, userInfo, userStatus);
-            emitCount += res1.cnt;
-            console.log('to dungeon', res1.userInfo.userId, emitCount);
-    
-            const res2 = await battle.autoFromList(field, userInfo, userStatus, 10);
-            userStatus = res2.userStatus;
-            field = res2.field;
-            emitCount += res2.cnt;
-            console.log('battle over', res2.userInfo.userId, emitCount);
-    
-            if (field === 'heal') {
-                const res3 = await village.heal(field, userInfo, userStatus);
-                userStatus = res3.userStatus;
-                emitCount += res3.cnt;
-                console.log('healed', res3.userInfo.userId, emitCount);
 
-                const res4 = await front.toHome(field, userInfo, userStatus)
-                emitCount += res4.cnt;
-                console.log('scenario success(player dead)', res4.userInfo.userId, emitCount);
-    
-                completeCount++;
-                continue;
-            }
-            const res3 = await front.toHome(field, userInfo, userStatus)
+        const start = performance.now().toFixed(2);
+        console.log('try', start);
+
+        const res1 = await front.toDungeon(field, userInfo, userStatus);
+        emitCount += res1.cnt;
+        console.log('to dungeon', res1.userInfo.userId, emitCount);
+        await sleep(2000);
+
+        const duration = Math.random()*20 + 10;
+        console.log(res1.userInfo.userId, duration);
+        const res2 = await battle.autoFromList(field, userInfo, userStatus, duration);
+        userStatus = res2.userStatus;
+        field = res2.field;
+        emitCount += res2.cnt;
+        console.log('battle over', res2.userInfo.userId, emitCount);
+        await sleep(2000);
+
+        if (field === 'heal') {
+            const res3 = await village.heal(field, userInfo, userStatus);
+            userStatus = res3.userStatus;
             emitCount += res3.cnt;
-            console.log('scenario success', res3.userInfo.userId, emitCount);
+            console.log('healed', res3.userInfo.userId, emitCount);
+            await sleep(2000);
 
-            const end = performance.now().toFixed(2);
-            (end-start) !== NaN ? performanceTime.push(end-start) : 0;
+            const res4 = await front.toHome(field, userInfo, userStatus)
+            emitCount += res4.cnt;
+            console.log('scenario success(player dead)', res4.userInfo.userId, emitCount);
+            await sleep(2000);
+
             completeCount++;
-
-            console.log('REPEAT...?')
+            clientCount--;
+            return;
         }
+        const res3 = await front.toHome(field, userInfo, userStatus)
+        emitCount += res3.cnt;
+        console.log('scenario success', res3.userInfo.userId, emitCount);
+        await sleep(2000);
+
+        const end = performance.now().toFixed(2);
+        (end-start) !== NaN ? performanceTime.push(end-start) : 0;
+        completeCount++;
+
         console.log('TEST SUCCESS', i)
         clientCount--;
 

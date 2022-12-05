@@ -82,5 +82,5 @@ function globalSend(field, input) {
         return;
     }
 
-    mainSocket.volatile.emit(field, input);
+    frontSocket.volatile.emit(field, input);
 }

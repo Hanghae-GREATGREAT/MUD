@@ -3,7 +3,6 @@ import { FRONT } from '../redis';
 import { PostBody } from '../interfaces/common';
 import { UserService, CharacterService } from '../services';
 import { signinScript } from '../scripts';
-import { UserInfo } from '../interfaces/user';
 import { chatCache } from '../db/cache';
 
 export default {

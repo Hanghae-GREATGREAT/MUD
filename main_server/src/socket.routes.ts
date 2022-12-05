@@ -30,6 +30,8 @@ export const frontConnection = (socket: Socket) => {
 
     socket.on('submit', (input: ChatInput) => chat.chatController(socket, input));
 
+    socket.on('global', (input: SocketInput) => common.globalController(socket, input));
+
     socket.on('disconnect', () => common.chatLeave(socket));
 };
 
@@ -78,8 +80,6 @@ export const onConnection = (socket: Socket) => {
 
     socket.on('gamble', (input: SocketInput) => village.gambleController(socket, input));
 
-
-    socket.on('global', (input: SocketInput) => common.globalController(socket, input));
 
     socket.on('request user status', common.requestStatus);
 
