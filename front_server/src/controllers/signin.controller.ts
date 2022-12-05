@@ -28,6 +28,7 @@ export default {
         const field = 'sign:21';
 
         FRONT.to(socketId).emit('print', { field, script, userInfo });
+        FRONT.to(socketId).emit('pwCoveringOn');
         res.status(200).end();
     },
 
@@ -78,6 +79,7 @@ export default {
         FRONT.in(socketId).socketsJoin(`${enteredRoom}`);
         FRONT.to(`${enteredRoom}`).emit('joinChat', userInfo.name, joinerCntScript);
 
+        FRONT.to(socketId).emit('pwCoveringOff');
         FRONT.to(socketId).emit('printBattle', { field, script, userInfo, userStatus });
 
         res.status(200).end();

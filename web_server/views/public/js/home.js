@@ -76,6 +76,7 @@ commendForm.submit((e) => {
     e.preventDefault();
     let [field, option] = localStorage.getItem('field').split(':');
     const line = commendInput.val();
+    console.log(line);
     commendInput.val('');
     const userInfo = localStorage.getItem('user');
     const userStatus = status.get();
@@ -98,6 +99,8 @@ mainSocket.on('fieldScriptPrint', fieldScriptPrint);
 
 frontSocket.on('print', printHandler);
 frontSocket.on('printBattle', printBattleHandler);
+frontSocket.on('pwCoveringOn', pwCoveringOn);
+frontSocket.on('pwCoveringOff', pwCoveringOff);
 
 battleSocket.on('print', printHandler);
 battleSocket.on('printBattle', printBattleHandler);
@@ -145,6 +148,13 @@ async function signoutHandler({ field, script, userInfo }) {
     commandLine.scrollTop(Number.MAX_SAFE_INTEGER);
 
     loadScript(field, JSON.stringify(userInfo));
+}
+
+function pwCoveringOn() {
+    commendInput.attr('type', 'password');
+}
+function pwCoveringOff() {
+    commendInput.attr('type', 'text');
 }
 
 /*****************************************************************************
