@@ -13,7 +13,7 @@ class Env {
     REDIS_URL: string;
 
     constructor() {
-        this.PORT = Number(process.env.PORT);
+        this.PORT = Number(process.env.PVP_PORT);
         this.SRC_PATH = path.resolve(__dirname);
 
         this.DB_HOST = process.env.NODE_ENV === 'production' ? 

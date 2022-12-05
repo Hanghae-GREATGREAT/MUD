@@ -1,5 +1,6 @@
 import { Worker, MessagePort } from 'node:worker_threads';
 import { join } from 'path';
+import { errorReport, HttpException } from '../common';
 import env from '../env';
 import { UserStatus } from '../interfaces/user';
 import { AutoWorkerData } from '../interfaces/worker';
@@ -47,7 +48,7 @@ class SkillAttackWorker {
 
     terminate = (characterId: number) => {
         const worker = this.threads.get(characterId);
-        worker?.terminate();
+        worker?.terminate().catch(errorReport);
     }
 
 }

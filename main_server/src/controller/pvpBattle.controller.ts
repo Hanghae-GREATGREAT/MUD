@@ -5,7 +5,7 @@ import { fetchPost } from '../common';
 import { SocketInput, CommandRouter } from '../interfaces/socket';
 
 
-const PVP_URL = `http://${env.PVP_URL}:${env.PVP_PORT}`
+const PVP_URL = `http://${env.HOST}:${env.PVP_PORT}`
 
 export default {
 

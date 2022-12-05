@@ -4,6 +4,7 @@ import { PostBody } from '../interfaces/common';
 import { CharacterService, UserService } from '../services';
 import { signupScript } from '../scripts';
 import { UserInfo } from '../interfaces/user';
+import { chatCache } from '../db/cache';
 
 export default {
     signupUsername: (req: Request, res: Response, next: NextFunction) => {
@@ -54,7 +55,7 @@ export default {
     },
 
     createCharacter: async (req: Request, res: Response, next: NextFunction) => {
-        const { socketId, userInfo, CMD }: PostBody = req.body;
+        let { socketId, userInfo, CMD }: PostBody = req.body;
 
         if (!userInfo) {
             const error = new Error('createCharacter : Can not find userInfo');
@@ -74,7 +75,7 @@ export default {
 
         const userStatus = await CharacterService.getUserStatus(character.characterId);
 
-        const resultUserInfo: UserInfo = {
+        userInfo = {
             userId,
             username: userStatus!.username,
             characterId: userStatus!.characterId,
@@ -84,7 +85,14 @@ export default {
         const script = signupScript.title;
         const field = 'front';
 
-        FRONT.to(socketId).emit('printBattle', { field, script, resultUserInfo, userStatus });
+        // 채팅방 참가
+        const chatData: Array<number> = chatCache.joinChat(socketId);
+        const enteredRoom = chatData[0];
+        const joinerCntScript = `(${chatData[1]}/${chatData[2]})`;
+        FRONT.in(socketId).socketsJoin(`${enteredRoom}`);
+        FRONT.to(`${enteredRoom}`).emit('joinChat', userInfo.name, joinerCntScript);
+
+        FRONT.to(socketId).emit('printBattle', { field, script, userInfo, userStatus });
         res.status(200).end();
     },
 };

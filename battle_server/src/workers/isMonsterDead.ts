@@ -3,6 +3,7 @@ import { join } from 'path';
 import env from '../env'
 import { AutoWorkerData, AutoWorkerResult, IsDeadReceiver } from '../interfaces/worker';
 import { UserStatus } from '../interfaces/user';
+import { HttpException } from '../common';
 
 
 class isMonsterDead {
@@ -28,8 +29,15 @@ class isMonsterDead {
             console.log('isMonsterDead.ts: check() Promise', worker.threadId, characterId);
 
             worker.on('message', (result: AutoWorkerResult) => {
-                worker.terminate();
-                resolve(result);
+                worker.terminate().catch((err) => {
+                    const error = new HttpException(
+                        `isMonsterDead terminate error: ${err.message}`,
+                        500, socketId
+                    );
+                    reject(error);
+                }).finally(() => {
+                    resolve(result);
+                });
             });
             // worker.on('online', () => {});
             // worker.on('messageerror', reject);

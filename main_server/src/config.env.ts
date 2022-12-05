@@ -45,37 +45,28 @@ class dBConnection {
 class Env extends dBConnection {
     PORT: number;
     HOST: string;
-    CLIENT_URL: string;
+    CLIENT_SOCKET: string;
     ROOT_PATH: string;
     SRC_PATH: string;
 
-    BATTLE_URL: string;
     BATTLE_PORT: number;
-    FRONT_URL: string;
     FRONT_PORT: number;
-    PVP_URL: string;
     PVP_PORT: number;
 
     constructor() {
         super();
 
-        this.PORT = Number(process.env.PORT) || 8080;
-        this.HOST = process.env.HOST || 'localhost';
-        this.CLIENT_URL = process.env.CLIENT_URL || 'localhost:80';
+        this.PORT = Number(process.env.PORT);
+        this.BATTLE_PORT = Number(process.env.BATTLE_SERVER_PORT);
+        this.FRONT_PORT = Number(process.env.FRONT_SERVER_PORT);
+        this.PVP_PORT = Number(process.env.PVP_SERVER_PORT);
+
+        this.HOST =
+            this.NODE_ENV === 'production' ? process.env.HOST || 'localhost' : 'localhost';
+        this.CLIENT_SOCKET = process.env.CLIENT_SOCKET || 'localhost'
+
         this.ROOT_PATH = path.resolve('./');
         this.SRC_PATH = path.resolve(__dirname);
-
-        this.BATTLE_PORT = Number(process.env.BATTLE_SERVER_PORT);
-        this.BATTLE_URL =
-            this.NODE_ENV === 'production' ? process.env.BATTLE_SERVER_URL || 'localhost' : 'localhost';
-
-        this.FRONT_PORT = Number(process.env.FRONT_SERVER_PORT);
-        this.FRONT_URL =
-            this.NODE_ENV === 'production' ? process.env.FRONT_SERVER_URL || 'localhost' : 'localhost';
-
-        this.PVP_PORT = Number(process.env.PVP_SERVER_PORT);
-        this.PVP_URL =
-            this.NODE_ENV === 'production' ? process.env.PVP_SERVER_URL || 'localhost' : 'localhost';
     }
 }
 

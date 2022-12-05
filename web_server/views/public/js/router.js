@@ -1,3 +1,15 @@
+class Server {
+    #PORT = 3333;
+    #URL = 'localhost'
+    // #URL = 'host.docker.internal'
+
+    getServerUrl = () => {
+        return `${this.#URL}:${this.#PORT}`;
+    }
+}
+const SERVER = new Server();
+
+
 const commandRouter = {
     'none': frontSend,
     'front': frontSend,

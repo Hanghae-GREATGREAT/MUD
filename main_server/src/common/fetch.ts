@@ -30,7 +30,20 @@ const fetchPost = (params: PostParams): Promise<unknown> => {
         }).then((response) => {
             console.log(response.status, response.url)
             resolve(response);
-        }).catch(errorReport);
+        }).catch((error) => {
+            errorReport(error);
+
+            const URI = URL.split(':')[-1]
+            const localURL = `http://localhost${URI}`;
+            fetch(localURL, { 
+                method: 'post', 
+                headers,
+                body: JSON.stringify(body),
+            }).then((response) => {
+                console.log(response.status, response.url);
+                resolve(response);
+            }).catch(errorReport);
+        });
     });
 }
 
