@@ -15,6 +15,23 @@ class PvpService {
         return realDamage <= 0 ? 0 : realDamage
     }
 
+    async pvpRoomListScript() {
+        let script: string = pvpScript.welcomePvp + `=Users=====RoomName====\n`;
+        if (pvpRoomList.size === 0) script += pvpScript.defaultList;
+        else {
+            const pvpRooms = pvpRoomList.values();
+            for (const room of pvpRooms) {
+                const getUsers = await this.getUsers(`pvpRoom ${room}`)
+                script += `# ${getUsers}/${maxUsers} # __${room}\n`
+            }
+        }
+        
+        script += `=======================`
+        script += pvpScript.pvpJoin;
+    
+        return script;
+    }
+
     async createRoomValidation(req: Request, res: Response, next: NextFunction, roomName: string): Promise<string | undefined> {
         console.log('createRoomValidation');
         const { socketId, CMD, userInfo, userStatus }: PostBody = req.body;
@@ -299,8 +316,7 @@ class PvpService {
             if (user.isTeam === 'A TEAM') ATeamHp += user.hp;
             else if (user.isTeam === 'B TEAM') BTeamHp += user.hp;
         }
-        console.log(`ATeamHp : ${ATeamHp}`)
-        console.log(`BTeamHp : ${BTeamHp}`)
+        
         let result: string | undefined = undefined;
         if (ATeamHp === 0) result = 'B TEAM';
         else if (BTeamHp === 0) result = 'A TEAM';

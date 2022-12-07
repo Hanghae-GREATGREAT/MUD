@@ -5,6 +5,7 @@ import { HttpException, HttpStatus } from '../common';
 import { PostBody } from '../interfaces/common';
 import { pvpHandler } from '../handler';
 import { pvpRoomList } from './pvp.controller';
+import pvpService from '../services/pvp.service';
 
 export default {
     pvpTalk: (req: Request, res: Response, next: NextFunction) => {
@@ -28,16 +29,7 @@ export default {
             console.log('pvpGo')
             const { socketId, CMD, userInfo, userStatus }: PostBody = req.body;
 
-            let script: string = '';
-            script += pvpScript.welcomePvp;
-
-            const pvpRooms = pvpRoomList.values();
-            for (const room of pvpRooms) script += `${room}, `
-
-            if (pvpRoomList.size === 0) script += pvpScript.defaultList;
-
-            script += pvpScript.pvpJoin;
-
+            const script = await pvpService.pvpRoomListScript();
             const field = 'pvpList';
 
             PVP.to(socketId).emit('printBattle', { script, userInfo, field, userStatus });
