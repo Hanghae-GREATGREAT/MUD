@@ -91,7 +91,7 @@ class NpcService {
 
     /** (임시) 무기 강화 */
     async enhance(characterId: number) {
-        const userStatus = await CharacterService.findByPk(characterId);
+        const userStatus = await CharacterService.getUserStatus(characterId);
         // 임시 스크립트 선언
         let tempScript = '';
         if (!userStatus) {

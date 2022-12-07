@@ -1,7 +1,9 @@
 class Server {
     #PORT = 3333;
-    #URL = 'localhost'
+    // #URL = 'localhost'
     // #URL = 'host.docker.internal'
+    // #URL = 'server';
+    #URL = 'great-effect.com';
 
     getServerUrl = () => {
         return `${this.#URL}:${this.#PORT}`;
@@ -20,6 +22,7 @@ const commandRouter = {
     'action': battleSend,
     'battle': battleSend,
     'autoBattle': battleSend,
+    'autoBattleS': battleSend,
     'adventureResult': battleSend,
 
     'village': gerneralSend,
@@ -85,5 +88,5 @@ function globalSend(field, input) {
         return;
     }
 
-    mainSocket.volatile.emit(field, input);
+    frontSocket.volatile.emit(field, input);
 }

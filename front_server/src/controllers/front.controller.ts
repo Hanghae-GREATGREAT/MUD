@@ -51,6 +51,11 @@ export default {
 
         FRONT.to(socketId).emit('leaveChat');
         FRONT.to(socketId).emit('print', { field, script, userInfo });
+
+        setTimeout(() => {
+            const script = homeScript.reload;
+            FRONT.to(socketId).emit('print', { field, script, userInfo });
+        }, 2000);
     },
 
     toVillage: (req: Request, res: Response, next: NextFunction) => {

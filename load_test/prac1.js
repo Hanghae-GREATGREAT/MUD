@@ -1,8 +1,8 @@
 
 const { io } = require('socket.io-client');
-const URL = 'ws://localhost:3333';
+const URL = 'ws://3.35.173.214:3333';
 const mainSocket = io(URL, { transports: ['websocket'] });
-const BURL = 'ws://localhost:3333/battle';
+const BURL = 'ws://3.35.173.214:3333/battle';
 const battleSocket = io(BURL, { transports: ['websocket'] });
 
 const END = () => {

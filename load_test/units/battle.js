@@ -1,3 +1,6 @@
+
+
+
 module.exports = (socket, WAIT_COMMAND) => {
 
     const sleep = (seconds) => {
@@ -37,7 +40,6 @@ module.exports = (socket, WAIT_COMMAND) => {
     
                         resolve({ field, userInfo, userStatus });
                     });
-                    socket.off('printBattle');
                 }
             });
         });
@@ -52,7 +54,7 @@ module.exports = (socket, WAIT_COMMAND) => {
             await emit('dungeon', { line, userInfo, userStatus });
             field = 'battle';
 
-            return { field, userInfo, userStatus };
+            return { field, userInfo, userStatus, cnt: 1 };
         },
         encounterFromList: async(field, userInfo, userStatus) => {
             console.log('normal');
@@ -67,13 +69,15 @@ module.exports = (socket, WAIT_COMMAND) => {
             userInfo = res.userInfo;
             field = res.field;
 
-            return { field, userInfo, userStatus };
+            return { field, userInfo, userStatus, cnt: 2 };
         },
 
         auto: async(field, userInfo, userStatus, seconds) => {
             await emit('battle', { line: '자동', userInfo, userStatus });
-    
-            return await battleResult(userInfo, userStatus, seconds);
+
+            const result = await battleResult(userInfo, userStatus, seconds);
+
+            return { ...result, cnt: 2 };
         },
         autoFromList: async(field, userInfo, userStatus, seconds) => {
             console.log('autoFromList');
@@ -86,26 +90,28 @@ module.exports = (socket, WAIT_COMMAND) => {
     
             await emit('battle', { line: '자동', userInfo, userStatus });
     
-            return await battleResult(userInfo, userStatus, seconds);
+            const result = await battleResult(userInfo, userStatus, seconds);
+
+            return { ...result, cnt: 3 };
         },
 
         dungeonList: async(field, userInfo, userStatus) => {
             await emit('dungeon', { line: '목록', userInfo, userStatus });
             field = 'dungeon';
 
-            return { field, userInfo, userStatus };
+            return { field, userInfo, userStatus, cnt: 1 };
         },
         dungeonHelp: async(field, userInfo, userStatus) => {
             await emit('dungeon', { line: '도움말', userInfo, userStatus });
             field = 'dungeon';
 
-            return { field, userInfo, userStatus };
+            return { field, userInfo, userStatus, cnt: 1 };
         },
         dungeonWrong: async(field, userInfo, userStatus) => {
             await emit('dungeon', { line: '', userInfo, userStatus });
             field = 'dungeon';
 
-            return { field, userInfo, userStatus };
+            return { field, userInfo, userStatus, cnt: 1 };
         },
     }
     
