@@ -4,7 +4,7 @@ import { pvpScript } from '../scripts';
 import { HttpException } from '../common';
 import { PostBody } from '../interfaces/common';
 import { pvpHandler } from '../handler'
-import pvpService from '../services/pvp.service';
+import pvpService, { isEnd } from '../services/pvp.service';
 import redis from '../db/cache/redis';
 import pvpUsers from '../workers/pvpUsers';
 
@@ -159,9 +159,6 @@ export default {
             const roomName = userStatus.pvpRoom;
 
             const pvpUsersTimer = setInterval(async ()=>{
-                const pvpRoom = await redis.hGetPvpRoom(roomName!);
-                const users = Object.entries(pvpRoom)
-                if (users.length < maxUsers) clearInterval(pvpUsersTimer);
                 const script = await pvpService.pvpStart(userStatus);
                 const field = 'pvpBattle';
 
@@ -169,7 +166,7 @@ export default {
                 await pvpService.getSkills(userStatus)
             }, 8000)
 
-            
+            isEnd.set(roomName!, pvpUsersTimer)
 
             // console.time("pvpUsers.worker.ts");
             // pvpUsers.start(userStatus).then((result) => {
