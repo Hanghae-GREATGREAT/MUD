@@ -327,8 +327,8 @@ class PvpService {
     arranging(userStatus: UserStatus): pvpResult {
 
         const roomName = userStatus!.pvpRoom;
-        const pvpRoom = rooms.get(roomName!)
-        const user = [...pvpRoom!]
+        const pvpRoom = rooms.get(roomName!);
+        const user = [...pvpRoom!];
 
         const userNames: string[] = [];
         const target: string[] = [];
@@ -337,38 +337,39 @@ class PvpService {
         const attacks:number[] = [];
 
         for (let i = 0; i < maxUsers; i++) {
-            userNames.push(user[i][1].userStatus!.name)
-            target.push(user[i][1].target!)
-            selectSkills.push(user[i][1].selectSkill!)
+            userNames.push(user[i][1].userStatus!.name);
+            target.push(user[i][1].target!);
+            selectSkills.push(user[i][1].selectSkill!);
         }
 
         for (let i = 0; i < maxUsers; i++) {
-            const characters = pvpRoom!.get(userNames[i])!.userStatus
+            const characters = pvpRoom!.get(userNames[i])!.userStatus;
             attacks.push(characters!.attack);
             for (let y = 0; y < characters!.skill.length; y++) {
-                const skill = characters!.skill[y]
-                if (selectSkills[i]==='기본공격') multiples.push(100)
-                else if (skill.name === selectSkills[i]) multiples.push(skill.multiple)
+                const skill = characters!.skill[y];
+                if (selectSkills[i] === 'dead') multiples.push(0);
+                else if (selectSkills[i]==='기본공격') multiples.push(100);
+                else if (skill.name === selectSkills[i]) multiples.push(skill.multiple);
             }
         }
-        const realDamage = attacks.map((_, i)=> this.hitStrength(attacks[i] * multiples[i] / 100))
+        const realDamage: number[] = [];
         for (let i = 0; i < maxUsers; i++) {
-            if (target[i] === 'dead') continue;
-            const characters = pvpRoom!.get(target[i])!.userStatus
+            if (target[i] === 'dead' || multiples[i] === 0) continue;
+            realDamage.push(this.hitStrength(attacks[i] * multiples[i] / 100));
+            const characters = pvpRoom!.get(target[i])!.userStatus;
             characters!.hp -= realDamage[i];
-        } 
-
-        return { realDamage, target, userNames, roomName }
+        }
+        return { realDamage, target, userNames, roomName };
     }
 
     pvpResult({ realDamage, target, userNames, roomName }: pvpResult) {
-        const pvpRoom = rooms.get(roomName!)
-        const user = [...pvpRoom!]
+        const pvpRoom = rooms.get(roomName!);
+        const user = [...pvpRoom!];
 
         const teamA: number[] = [];
         const teamB: number[] = [];
         for (let i = 0; i < maxUsers; i++) {
-            const characters = pvpRoom!.get(userNames[i])!.userStatus
+            const characters = pvpRoom!.get(userNames[i])!.userStatus;
             
             // hp가 0이하일시 0으로 update
             if (characters!.hp < 0) {
@@ -376,8 +377,8 @@ class PvpService {
                 user[i][1].selectSkill = 'dead';
                 user[i][1].target = 'dead';
             } 
-            if (i < 2) teamA.push(characters!.hp)
-            else teamB.push(characters!.hp)
+            if (i < 2) teamA.push(characters!.hp);
+            else teamB.push(characters!.hp);
         }
         
         // 팀 전멸 여부 확인

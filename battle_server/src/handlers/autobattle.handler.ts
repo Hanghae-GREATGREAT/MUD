@@ -15,7 +15,7 @@ export default {
     autoBattle: (socketId: string, userInfo: UserInfo, userStatus: UserStatus): Promise<void> => {
         return new Promise(async(resolve, reject) => {
             let tempScript = ''
-            let field = 'autoBattle';
+            let field = 'autoBattleS';
             const { characterId } = userStatus;
             const { dungeonLevel } = battleCache.get(characterId);
             // console.log('auto.handler.ts: check cache ', dungeonLevel, characterId)
@@ -37,12 +37,14 @@ export default {
             // 자동공격 사이클
             const autoAttackTimer = setInterval(async () => {
                 battleCache.set(characterId, { autoAttackTimer });
+
+                // 기본공격
                 autoAttack(socketId, userStatus).then(async(result) => {
                     if (result instanceof Error) return reject(result);
     
                     const { field, script, userStatus } = result
                     const data = { 
-                        field: field === undefined ? 'autoBattle' : field,
+                        field: field === undefined ? 'autoBattleS' : field,
                         script, userInfo, userStatus 
                     };
     
@@ -72,7 +74,7 @@ export default {
                         if (result instanceof Error) return reject(result);
     
                         const { field, script, userStatus } = result    
-                        const data = { field: 'autoBattle', script, userInfo, userStatus }
+                        const data = { field: 'autoBattleS', script, userInfo, userStatus }
     
                         BATTLE.to(socketId).emit('printBattle', data);
     

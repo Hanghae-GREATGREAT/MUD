@@ -4,7 +4,7 @@ services:
     container_name: mud-redis
     image: 'redis:alpine'
     extra_hosts:
-    - 'host.docker.internal:host-gateway'
+      - 'host.docker.internal:host-gateway'
     ports:
       - '6379:6379'
 
@@ -17,7 +17,7 @@ services:
     env_file:
       - ./main_server/.env
     extra_hosts:
-    - 'host.docker.internal:host-gateway'
+      - 'host.docker.internal:host-gateway'
     ports:
       - '3333:3333'
 
@@ -30,7 +30,7 @@ services:
     env_file:
       - ./battle_server/.env
     extra_hosts:
-    - 'host.docker.internal:host-gateway'
+      - 'host.docker.internal:host-gateway'
     ports:
       - '3334:3334'
     depends_on:
@@ -45,7 +45,7 @@ services:
     env_file:
       - ./pvp_server/.env
     extra_hosts:
-    - 'host.docker.internal:host-gateway'
+      - 'host.docker.internal:host-gateway'
     ports:
       - '3336:3336'
     depends_on:
@@ -60,7 +60,7 @@ services:
     env_file:
       - ./front_server/.env
     extra_hosts:
-    - 'host.docker.internal:host-gateway'
+      - 'host.docker.internal:host-gateway'
     ports:
       - '3335:3335'
     depends_on:
@@ -73,7 +73,7 @@ services:
       context: web_server
       dockerfile: ./Dockerfile
     extra_hosts:
-    - 'host.docker.internal:host-gateway'
+      - 'host.docker.internal:host-gateway'
     ports:
       - '8080:8080'
     depends_on:

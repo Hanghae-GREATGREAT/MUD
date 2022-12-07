@@ -15,6 +15,7 @@ export const battleConnection = (socket: Socket) => {
     socket.on('action', (input: SocketInput) => battle.actionController(socket, input));
 
     socket.on('autoBattle', (input: SocketInput) => battle.autoBattleController(socket, input));
+    socket.on('autoBattleS', (input: SocketInput) => battle.autoBattleSController(socket, input));
 
     socket.on('adventureResult', (input: SocketInput) => battle.resultController(socket, input));
 };
@@ -29,6 +30,8 @@ export const frontConnection = (socket: Socket) => {
     socket.on('sign', (input: SocketInput) => home.signController(socket, input));
 
     socket.on('submit', (input: ChatInput) => chat.chatController(socket, input));
+
+    socket.on('global', (input: SocketInput) => common.globalController(socket, input));
 
     socket.on('disconnect', () => common.chatLeave(socket));
 };
@@ -78,8 +81,6 @@ export const onConnection = (socket: Socket) => {
 
     socket.on('gamble', (input: SocketInput) => village.gambleController(socket, input));
 
-
-    socket.on('global', (input: SocketInput) => common.globalController(socket, input));
 
     socket.on('request user status', common.requestStatus);
 

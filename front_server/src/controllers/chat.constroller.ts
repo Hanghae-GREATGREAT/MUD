@@ -8,7 +8,7 @@ export default {
         const { socketId, option }: PostBody = req.body;
 
         const script = option;
-        const joinedRoom: string = chatCache.getJoinedRoom(socketId);
+        const joinedRoom = chatCache.getJoinedRoom(socketId);
 
         FRONT.to(joinedRoom).emit('chat', script);
 
@@ -18,7 +18,7 @@ export default {
     chatLeave: (req: Request, res: Response, next: NextFunction) => {
         const { socketId }: PostBody = req.body;
 
-        const joinedRoom: string = chatCache.getJoinedRoom(socketId);
+        const joinedRoom = chatCache.getJoinedRoom(socketId);
         const joinerScript = chatCache.leaveChat(socketId);
         if (joinerScript.length > 0) {
             FRONT.to(joinedRoom).emit('leaveChat', joinerScript);

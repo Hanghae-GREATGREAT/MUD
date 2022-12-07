@@ -35,7 +35,7 @@ module.exports = (socket, WAIT_COMMAND) => {
             userStatus = r3.userStatus;
             const field = r3.field;
     
-            return { field, userInfo, userStatus };
+            return { field, userInfo, userStatus, cnt: 3 };
         },    
         signup: async(username) => {
             let userInfo = {};
@@ -55,7 +55,7 @@ module.exports = (socket, WAIT_COMMAND) => {
             userStatus = r4.userStatus;
             const field = r4.field;
 
-            return { field, userInfo, userStatus };
+            return { field, userInfo, userStatus, cnt: 4 };
         },
         signout: async() => {
             await emit('front', { line: 'out', userInfo, userStatus });
@@ -64,7 +64,7 @@ module.exports = (socket, WAIT_COMMAND) => {
             const userInfo = {};
             const userStatus = {};
     
-            return { field, userInfo, userStatus };
+            return { field, userInfo, userStatus, cnt: 1 };
         },
     
         toDungeon: async(field, userInfo, userStatus) => {
@@ -73,7 +73,7 @@ module.exports = (socket, WAIT_COMMAND) => {
             userInfo = r1.userInfo;
             field = 'dungeon';
             
-            return { field, userInfo, userStatus };
+            return { field, userInfo, userStatus, cnt: 1 };
         },    
         toVillage: async(field, userInfo, userStatus) => {
             const r1 = await emit('front', { line: 'v', userInfo, userStatus });
@@ -81,7 +81,7 @@ module.exports = (socket, WAIT_COMMAND) => {
             userInfo = r1.userInfo;
             field = 'village';
     
-            return { field, userInfo, userStatus };
+            return { field, userInfo, userStatus, cnt: 1 };
         },
     
         toHome: async(field, userInfo, userStatus) => {
@@ -89,12 +89,12 @@ module.exports = (socket, WAIT_COMMAND) => {
             userInfo = res.userInfo;
             field = 'front';
     
-            return { field, userInfo, userStatus };
+            return { field, userInfo, userStatus, cnt: 1 };
         },
         globalHelp: async(field, userInfo, userStatus) => {
             await emit('global', { line: 'help', userInfo, userStatus });
     
-            return { field, userInfo, userStatus };
+            return { field, userInfo, userStatus, cnt: 1 };
         },
         globalSignout: async() => {
             await emit('global', { line: 'out', userInfo, userStatus });
@@ -103,7 +103,7 @@ module.exports = (socket, WAIT_COMMAND) => {
             const userInfo = {};
             const userStatus = {};
     
-            return { field, userInfo, userStatus };
+            return { field, userInfo, userStatus, cnt: 1 };
         },
     
         delete: async() => {
@@ -113,7 +113,7 @@ module.exports = (socket, WAIT_COMMAND) => {
             const userInfo = {};
             const userStatus = {};
     
-            return { field, userInfo, userStatus };
+            return { field, userInfo, userStatus, cnt: 1 };
         }
     }
 }

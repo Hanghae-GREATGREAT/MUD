@@ -20,7 +20,6 @@ const io = new Server(httpServer, {
         methods: 'POST, GET',
     },
 });
-
 io.use((socket, next) => {
     next();
 });

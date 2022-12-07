@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { io } from './app';
-import { battleCache } from './db/cache';
+import { battleCache, redis } from './db/cache';
 import { CharacterService } from './services';
 
 const router = Router();
@@ -48,6 +48,14 @@ router.get('/resource', (req, res) => {
         // HEAP_STATUS,
         // RESOURCE_USAGE
     });
+});
+
+
+router.get('/report', (req, res) => {
+
+    res.status(200).json({
+        report: process.report?.getReport()
+    })
 });
 
 export default router;
