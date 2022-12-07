@@ -9,9 +9,10 @@ import PVP from "../redis";
 import { pvpScript } from "../scripts";
 
 class PvpService {
-    hitStrength(damage: number) {
+    hitStrength(damage: number, defense: number) {
         const hitStrength = Math.floor(Math.random() * 40) + 80;
-        return Math.floor((damage * hitStrength) / 100);
+       const realDamage = Math.floor((damage * hitStrength) / 100) - defense
+        return realDamage <= 0 ? 0 : realDamage
     }
 
     async createRoomValidation(req: Request, res: Response, next: NextFunction, roomName: string): Promise<string | undefined> {
@@ -124,14 +125,22 @@ class PvpService {
     async pvpStart(userStatus: UserStatus) {
         console.log('pvpStart')
         const roomName = userStatus.pvpRoom;
-        let script = `\n=======================================================================\n\n`;
+        let script = `= TEAM. =Lv. =========== Deamge ======== HP ================ Name======\n`;
         const pvpRoom = await redis.hGetPvpRoom(roomName!);
         const users = Object.entries(pvpRoom)
 
         // 캐릭터별 이름, 레벨, 체력, 공격력, 방어력 표시
         for (let i = 0; i < maxUsers; i++) {
-            const user = users[i][1].userStatus;
-            script += `${user.isTeam} - Lv${user.level} ${user.name} - hp: ${user.hp}/${user.maxhp}, attack: ${user.attack}, defense: ${user.defense}\n`;
+            const user = {
+                isTeam: users[i][1].userStatus.isTeam!,
+                level: String(users[i][1].userStatus.level).padEnd(4, `.`),
+                damage: String(users[i][1].userStatus.damage!).padStart(17, `.`),
+                hp: String(users[i][1].userStatus.hp).padStart(9, `.`),
+                maxhp: String(users[i][1].userStatus.maxhp).padEnd(9, `.`),
+                name: users[i][1].userStatus.name
+            }
+            // script += `${user.isTeam} - Lv${user.level} ${user.name} - hp: ${user.hp}/${user.maxhp}, attack: ${user.attack}, defense: ${user.defense}\n`;
+            script += `#${user.isTeam}  #${user.level}#${user.damage}#${user.hp} / ${user.maxhp}#  ${user.name}\n`;
         }
         return script;
     }
@@ -255,7 +264,7 @@ class PvpService {
         }
         const attack = userStatus.attack;
         const multiple = CMD2 === '기본공격' ? 100 : userStatus.skill.filter(skill => skill.name === CMD2).pop()!.multiple;
-        const realDamage = this.hitStrength(attack * multiple / 100)
+        const realDamage = this.hitStrength(attack * multiple / 100, enemy.defense)
 
         enemy.hp -= realDamage;
         userStatus.damage! += realDamage;
@@ -301,12 +310,13 @@ class PvpService {
 
         const socketIds: string[] = [];
         if (result) {
-            script += tempLine + `${result}이 승리했다네 !\n` + tempLine;
+            script += tempLine + `${result}이 승리했다네 !\n`;
+            script += await this.pvpStart(userStatus)
             for (let i = 0; i < maxUsers; i++) {
                 socketIds.push(users[i][1].socketId);
                 const user = users[i][1].userStatus;
-                const isTeam = user.isTeam === 'A TEAM' ? 'A TEAM' : 'B TEAM';
-                script += `${isTeam} - Lv${user.level} ${user.name} - hp: ${user.hp}/${user.maxhp}, damage: ${user.damage}\n`;
+                // const isTeam = user.isTeam === 'A TEAM' ? 'A TEAM' : 'B TEAM';
+                // script += `${isTeam} - Lv${user.level} ${user.name} - hp: ${user.hp}/${user.maxhp}, damage: ${user.damage}\n`;
                 user.hp = user.maxhp;
                 PVP.to(users[i][1].socketId).emit('printBattle', { field, userStatus: user });
                 await this.leaveRoom(user);
