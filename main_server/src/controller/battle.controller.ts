@@ -70,6 +70,22 @@ export default {
         fetchPost({ URL, socketId: socket.id, CMD: CMD1, userInfo, userStatus });
     },
 
+    autoBattleSController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
+        const [CMD1, CMD2] = line.trim().split(' ');
+
+        const cmdRoute: CommandRouter = {
+            '도움말': 'autoHelpS',
+            '중단': 'autoQuitS',
+        }
+        if (!cmdRoute[CMD1]) {
+            const URL = `${BATTLE_URL}/dungeon/wrongCommand`;
+            fetchPost({ URL, socketId: socket.id, CMD: line, userInfo });
+            return;
+        }
+        const URL = `${BATTLE_URL}/battle/${cmdRoute[CMD1]}`
+        fetchPost({ URL, socketId: socket.id, CMD: CMD1, userInfo, userStatus });
+    },
+
     // 미구현...
     resultController: async (socket: Socket, { line, userInfo }: SocketInput) => {
         const [CMD1, CMD2] = line.trim().toUpperCase().split(' ');

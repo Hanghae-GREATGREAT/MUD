@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { io } from './app';
-import { battleCache } from './db/cache';
+import { battleCache, redis } from './db/cache';
 import { CharacterService } from './services';
 
 
@@ -13,7 +13,6 @@ router.get('/', async (req, res, next) => {
         message: 'API INDEX',
     });
 });
-
 
 router.get('/battleCache', (req, res) => {
     const cache = battleCache.getAll();
@@ -48,6 +47,14 @@ router.get('/resource', (req, res) => {
         // HEAP_STATUS,
         // RESOURCE_USAGE
     });
+});
+
+
+router.get('/report', (req, res) => {
+
+    res.status(200).json({
+        report: process.report?.getReport()
+    })
 });
 
 export default router;

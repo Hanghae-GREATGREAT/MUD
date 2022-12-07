@@ -15,6 +15,7 @@ export const battleConnection = (socket: Socket) => {
     socket.on('action', (input: SocketInput) => battle.actionController(socket, input));
 
     socket.on('autoBattle', (input: SocketInput) => battle.autoBattleController(socket, input));
+    socket.on('autoBattleS', (input: SocketInput) => battle.autoBattleSController(socket, input));
 
     socket.on('adventureResult', (input: SocketInput) => battle.resultController(socket, input));
 };

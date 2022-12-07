@@ -3,7 +3,7 @@ import { HttpException } from '../common';
 import { battleCache } from '../db/cache';
 import { UserInfo, UserStatus } from '../interfaces/user';
 import BATTLE from '../redis';
-import { battleScript } from '../scripts';
+import { battleScript, dungeonScript } from '../scripts';
 import { MonsterService, BattleService, CharacterService } from '../services';
 import { autoAttackWorker, isMonsterDeadWorker, skillAttackWorker } from '../workers';
 import { autoAttack } from './autobattle.handler';
@@ -189,17 +189,56 @@ export default {
     stopAutoWorker: (socketId: string, userInfo: UserInfo): HttpException|void => {
         const { characterId } = userInfo;
 
-        autoAttackWorker.terminate(characterId);
-        skillAttackWorker.terminate(characterId);
-        isMonsterDeadWorker.terminate(characterId);
-        const { monsterId } = battleCache.get(characterId);
+        try {
+            autoAttackWorker.terminate(characterId);
+            skillAttackWorker.terminate(characterId);
+            isMonsterDeadWorker.terminate(characterId);
+            const { monsterId } = battleCache.get(characterId);
+            battleCache.delete(characterId);
+            if (monsterId) MonsterService.destroyMonster(monsterId, characterId);
+    
+            const script = `
+            ========================================
+            전투를 중단하고 입구로 돌아갑니다. \n\n`
+            const field = 'dungeon';
+            BATTLE.to(socketId).emit('print', { field, script, userInfo });
+
+            setTimeout(() => {
+                const script = dungeonScript.entrance;
+                BATTLE.to(socketId).emit('print', { field, script, userInfo });
+            }, 1000);
+        } catch (err: any) {
+            const error = new HttpException(
+                `stopAutoWorker Error: ${err?.message}`,
+                500, socketId
+            )
+            return error;
+        }
+    },
+    stopAutoS: (socketId: string, userInfo: UserInfo): HttpException|void => {
+        const { characterId } = userInfo;
+        const { autoAttackTimer } = battleCache.get(characterId);
         battleCache.delete(characterId);
-        if (monsterId) MonsterService.destroyMonster(monsterId, characterId);
 
         const script = `
         ========================================
-        전투를 중단하고 마을로 돌아갑니다. \n\n`
+        전투를 중단하고 입구로 돌아갑니다. \n\n`
         const field = 'dungeon';
+
+        if (!autoAttackTimer) {
+            const error = new HttpException(
+                `stopAutoS Error: no Timer`,
+                500, socketId
+            )
+            BATTLE.to(socketId).emit('print', { field, script, userInfo });
+            return error;
+        }
+        clearInterval(autoAttackTimer);        
         BATTLE.to(socketId).emit('print', { field, script, userInfo });
+
+        setTimeout(() => {
+            const script = dungeonScript.entrance;
+            BATTLE.to(socketId).emit('print', { field, script, userInfo });
+        }, 1000);
     },
 }

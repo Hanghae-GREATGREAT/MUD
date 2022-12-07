@@ -63,6 +63,20 @@ export default {
 
         res.status(200).end();
     },
+    autoHelpS: async(req: Request, res: Response, next: NextFunction) => {
+        const { socketId, CMD, userInfo }: PostBody = req.body;
+        if (!userInfo || !CMD) {
+            const error = new HttpException('MISSING PARAMS', 400, socketId);
+            return next(error);
+        }
+
+        const script = battleScript.autoHelp(CMD);
+        const field = 'autoBattleS';
+
+        BATTLE.to(socketId).emit('print', { field, script, userInfo });
+
+        res.status(200).end();
+    },
 
     encounter: async(req: Request, res: Response, next: NextFunction) => {
         const { socketId, userInfo, userStatus }: PostBody = req.body;
@@ -152,6 +166,16 @@ export default {
         }
 
         const error = battleHandler.stopAutoWorker(socketId, userInfo);
+        error ? next(error) : res.status(200).end();
+    },
+    autoQuitS: async(req: Request, res: Response, next: NextFunction) => {
+        const { socketId, userInfo }: PostBody = req.body;
+        if (!userInfo) {
+            const error = new HttpException('MISSING PARAMS', 400, socketId);
+            return next(error);
+        }
+
+        const error = battleHandler.stopAutoS(socketId, userInfo);
         error ? next(error) : res.status(200).end();
     },
 }
