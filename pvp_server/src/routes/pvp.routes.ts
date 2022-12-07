@@ -9,6 +9,8 @@ router.get('/', (req, res) => {
     });
 });
 
+// router.post('/test', pvpController.test);
+
 router.post('/createRoom', pvpController.createRoom);
 
 router.post('/joinRoom', pvpController.joinRoom);
@@ -17,9 +19,11 @@ router.post('/getUsers', pvpController.getUsers);
 
 router.post('/leaveRoom', pvpController.leaveRoom);
 
-router.post('/target', pvpController.target);
+router.post('/pvpBattle', pvpController.pvpBattle);
 
-router.post('/pickSkill', pvpController.pickSkill);
+router.post('/users', pvpController.battleUsers)
+
+router.post('/pvpDisconnect', pvpController.pvpDisconnect)
 
 router.post('/wrongCommand', pvpController.wrongCommand);
 

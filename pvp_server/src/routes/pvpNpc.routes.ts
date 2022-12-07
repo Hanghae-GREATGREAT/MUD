@@ -7,4 +7,6 @@ router.post('/pvpTalk', pvpNpcController.pvpTalk);
 
 router.post('/pvpGo', pvpNpcController.pvpGo);
 
+router.post('/help', pvpNpcController.help);
+
 export default router;
