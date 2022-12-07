@@ -8,6 +8,8 @@ import { UserStatus } from "../interfaces/user";
 import PVP from "../redis";
 import { pvpScript } from "../scripts";
 
+export const isEnd: Map<string, NodeJS.Timer> = new Map<string, NodeJS.Timer>();
+
 class PvpService {
     hitStrength(damage: number, defense: number) {
         const hitStrength = Math.floor(Math.random() * 40) + 80;
@@ -328,13 +330,11 @@ class PvpService {
 
         // const socketIds: string[] = [];
         if (result) {
+            clearInterval(isEnd.get(roomName!))
             script += tempLine + `${result}이 승리했다네 !\n`;
             script += await this.pvpStart(userStatus)
             for (let i = 0; i < maxUsers; i++) {
-                // socketIds.push(users[i][1].socketId);
                 const user = users[i][1].userStatus;
-                // const isTeam = user.isTeam === 'A TEAM' ? 'A TEAM' : 'B TEAM';
-                // script += `${isTeam} - Lv${user.level} ${user.name} - hp: ${user.hp}/${user.maxhp}, damage: ${user.damage}\n`;
                 user.hp = user.maxhp;
                 PVP.to(users[i][1].socketId).emit('printBattle', { field, userStatus: user });
                 await this.leaveRoom(user);

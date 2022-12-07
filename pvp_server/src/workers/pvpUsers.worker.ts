@@ -3,6 +3,7 @@ import { PvpUsersWorkerData} from '../interfaces/worker';
 import redis from '../db/cache/redis';
 import { maxUsers } from '../controllers/pvp.controller';
 import PVP from '../redis';
+import { isEnd } from '../services/pvp.service';
 
 console.log('pvpUsers.worker.ts: 8 >> 자동공격 워커 모듈 동작, ', workerData.userStatus.characterId)
 
@@ -16,10 +17,10 @@ function pvpUsersWorker({ userStatus, path }: PvpUsersWorkerData) {
     const { characterId } = userStatus;
     console.log('pvpUsers.worker.ts: 18 >> pvpUsersWorker() 시작', characterId);
     let cnt = 1
+    const roomName = userStatus.pvpRoom;
 
     const pvpUsersTimer = setInterval(async () => {
         let script = `= TEAM. =Lv. =========== Deamge ======== HP ================ Name======\n`;
-        const roomName = userStatus.pvpRoom;
         const pvpRoom = await redis.hGetPvpRoom(roomName!);
         const users = Object.entries(pvpRoom)
         if (users.length < maxUsers) clearInterval(pvpUsersTimer);
@@ -53,6 +54,8 @@ function pvpUsersWorker({ userStatus, path }: PvpUsersWorkerData) {
         }
         console.log(`pvpUsers.worker.ts: 47 >> pvpUsersWorker() ${cnt++}회 작동중`)
     }, 5000);
+    
+    isEnd.set(roomName!, pvpUsersTimer)
 
     return;
 }
