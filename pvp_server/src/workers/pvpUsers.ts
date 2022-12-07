@@ -16,7 +16,6 @@ class PvpUserskWorker {
         console.log('pvpUsers.ts: 기본공격반복 start() 시작, ', characterId);
         const workerData: PvpUsersWorkerData = {
             userStatus, // : '전투 시작할때 방에 있는 사람들 정보 { {socketId, userStatus} }',
-            // socketId,
             path: './pvpUsers.worker.ts',
         }
 

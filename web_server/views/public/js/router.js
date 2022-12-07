@@ -37,10 +37,6 @@ const commandRouter = {
     'pvpBattle': pvpSend,
     'pvpResult': pvpSend,
 
-    // 'enemyChoice': pvpSend,
-    // 'attackChoice': pvpSend,
-    // 'enemyAttack': pvpSend,
-
     'global': globalSend,
 }
 

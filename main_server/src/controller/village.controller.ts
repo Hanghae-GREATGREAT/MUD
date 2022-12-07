@@ -85,22 +85,6 @@ export default {
     pvpController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
         console.log('pvpController', line);
-
-        // const commandHandler: CommandHandler = {
-        //     '도움말': npc.pvpHelp,
-        //     '1': npc.pvpTalk,
-        //     '2': npc.pvp,
-        //     '3': village.NpcList,
-        // };
-
-        // if (!commandHandler[CMD1]) {
-        //     console.log(`is wrong command : '${CMD1}'`);
-        //     npc.pvpWrongCommand(socket, CMD1, userInfo);
-        //     return;
-        // }
-
-        // commandHandler[CMD1](socket, CMD2, userInfo);
-
         if (CMD1 === '3') return village.NpcList(socket, CMD2, userInfo);
 
         const cmdRoute: CommandRouter = {

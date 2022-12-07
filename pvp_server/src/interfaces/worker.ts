@@ -7,10 +7,10 @@ export interface PvpUsersWorkerData {
     path: string;
 }
 
-// export interface PvpUsersWorkerResult {
-//     status: 'monster'|'player'|'terminate'|'continue';
-//     script: string;
-// }
+export interface PvpUsersWorkerTimer {
+    isPause: boolean;
+    timer: NodeJS.Timer;
+}
 
 export interface IsDeadReceiver {
     [key: string]: MessagePort;
