@@ -44,11 +44,18 @@ export const pvpConnection = (socket: Socket) => {
 
     socket.on('pvpList', (input: SocketInput) => pvpBattle.pvpListController(socket, input))
 
+    socket.on('pvpJoin', (input: SocketInput) => pvpBattle.pvpJoinController(socket, input));
+
     socket.on('pvpBattle', (input: SocketInput) => pvpBattle.pvpBattleController(socket, input));
 
-    socket.on('enemyChoice', (input: SocketInput) => pvpBattle.enemyChoiceController(socket, input));
+    socket.on('pvpResult', (input: SocketInput) => pvpBattle.pvpResultController(socket, input));
 
-    socket.on('attackChoice', (input: SocketInput) => pvpBattle.attackChoiceController(socket, input));
+    socket.on('disconnect', () => common.pvpRoomLeave(socket));
+
+
+    // socket.on('enemyChoice', (input: SocketInput) => pvpBattle.enemyChoiceController(socket, input));
+
+    // socket.on('attackChoice', (input: SocketInput) => pvpBattle.attackChoiceController(socket, input));
 
     // socket.on('anemyAttack', (input: SocketInput) => pvpBattle.anemyAttackController(socket, input));
 

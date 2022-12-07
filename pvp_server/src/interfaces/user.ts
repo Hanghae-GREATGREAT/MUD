@@ -46,10 +46,12 @@ interface UserStatus {
     // skill: Skills[];
 
     cooldown?: number;
+    damage?: number;
     isDead?: string;
     levelup?: boolean;
     pvpRoom?: string;
     chatRoom?: number;
+    isTeam?: string;
 }
 
 interface UserInfo {

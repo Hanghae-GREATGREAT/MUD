@@ -1,21 +1,16 @@
 import { UserStatus } from "./user";
 
-
 interface PvpPlayer {
     socketId:string;
-    userStatus?: UserStatus;
-    target?: string; // username
-    selectSkill?: string; // skillname
+    userStatus: UserStatus;
 }
 
-interface pvpResult {
-    userNames: string[];
-    target: string[];
-    realDamage: number[];
-    roomName?: string;
+// key에 User의 name
+interface PvpUser {
+    [key: string]: PvpPlayer;
 }
 
 export {
     PvpPlayer,
-    pvpResult,
+    PvpUser,
 }

@@ -5,7 +5,7 @@ import { fetchPost } from '../common';
 import { SocketInput, CommandHandler, CommandRouter } from '../interfaces/socket';
 
 
-const PVP_URL = `http://${env.HOST}:${env.PVP_PORT}`
+const PVP_URL = `http://${env.HOST}:${env.PVP_PORT}`;
 
 export default {
     storyController: async (socket: Socket, { line, userInfo }: SocketInput) => {
@@ -84,7 +84,7 @@ export default {
 
     pvpController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
-        // console.log('socketon pvp');
+        console.log('pvpController', line);
 
         // const commandHandler: CommandHandler = {
         //     '도움말': npc.pvpHelp,
@@ -103,12 +103,6 @@ export default {
 
         if (CMD1 === '3') return village.NpcList(socket, CMD2, userInfo);
 
-        if (CMD1 === '도움말') {
-            const URL = `${PVP_URL}/pvp/help`
-            fetchPost({ URL, socketId: socket.id, CMD: CMD1, userInfo, option: 'pvpNpc' })
-            return;
-        }
-
         const cmdRoute: CommandRouter = {
                 '도움말': 'help',
                 '1': 'pvpTalk',
@@ -122,6 +116,6 @@ export default {
         }
 
         const URL = `${PVP_URL}/pvpNpc/${cmdRoute[CMD1]}`
-        fetchPost({ URL, socketId: socket.id, CMD: CMD2, userInfo, userStatus })
+        fetchPost({ URL, socketId: socket.id, CMD: CMD2, userInfo, userStatus, option: 'pvpNpc' })
     },
 };

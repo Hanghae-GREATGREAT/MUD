@@ -30,10 +30,13 @@ const commandRouter = {
 
     'pvpNpc': pvpSend,
     'pvpList': pvpSend,
+    'pvpJoin': pvpSend,
     'pvpBattle': pvpSend,
-    'enemyChoice': pvpSend,
-    'attackChoice': pvpSend,
-    'enemyAttack': pvpSend,
+    'pvpResult': pvpSend,
+
+    // 'enemyChoice': pvpSend,
+    // 'attackChoice': pvpSend,
+    // 'enemyAttack': pvpSend,
 
     'global': globalSend,
 }
@@ -68,7 +71,7 @@ function battleSend(field, input) {
 
 function pvpSend(field, input) {
     console.log('pvp send', field, input.line);
-
+    
     pvpSocket.volatile.emit(field, input);
 }
 

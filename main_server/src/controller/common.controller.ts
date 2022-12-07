@@ -9,6 +9,7 @@ import { CommandHandler, SocketInput } from '../interfaces/socket';
 
 
 const FRONT_URL = `http://${env.HOST}:${env.FRONT_PORT}`;
+const PVP_URL = `http://${env.HOST}:${env.PVP_PORT}`;
 
 export default {
     globalController: (socket: Socket, { line, userInfo, option }: SocketInput) => {
@@ -54,4 +55,12 @@ export default {
         const URL = `${FRONT_URL}/chat/chatLeave`;
         fetchPost({ URL, socketId: socket.id });
     },
+
+    pvpRoomLeave: (socket: Socket) => {
+        console.log('pvpRoomDisconnect');
+        const URL = `${PVP_URL}/pvp/pvpDisconnect`;
+        const option = socket.data;
+        fetchPost({ URL, socketId: socket.id, option: option.pvpUser });
+        return;
+    }
 };
