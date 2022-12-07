@@ -5,11 +5,10 @@ import redis from "../db/cache/redis";
 import { PostBody } from "../interfaces/common";
 import { PvpUser } from '../interfaces/pvp'
 import { UserStatus } from "../interfaces/user";
-import { PvpUsersWorkerTimer } from "../interfaces/worker";
 import PVP from "../redis";
 import { pvpScript } from "../scripts";
 
-export const isEnd: Map<string, PvpUsersWorkerTimer> = new Map<string, PvpUsersWorkerTimer>();
+export const isEnd: Map<string, NodeJS.Timer> = new Map<string, NodeJS.Timer>();
 
 class PvpService {
     hitStrength(damage: number, defense: number) {
@@ -126,7 +125,7 @@ class PvpService {
 
         if (getUsers === maxUsers) {
             const script = pvpScript.pvpRoomJoin(userStatus!.name) + '잠시 후 대전이 시작됩니다.\n'
-            const field = 'pvpBattle';
+            const field = 'pvpList';
             PVP.to(roomName).emit('fieldScriptPrint', { script, field });
             PVP.to(socketId).emit('printBattle', { field, userStatus });
             setTimeout(() => {
@@ -329,8 +328,7 @@ class PvpService {
         let script: string = ``;
 
         if (result) {
-            isEnd.get(roomName!)!.isPause = true;
-            clearInterval(isEnd.get(roomName!)!.timer)
+            clearInterval(isEnd.get(roomName!))
             isEnd.delete(roomName!)
             script += tempLine + `${result}이 승리했다네 !\n`;
             script += await this.pvpStart(userStatus)
