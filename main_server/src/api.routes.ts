@@ -3,17 +3,18 @@ import { io } from './app';
 import { battleCache } from './db/cache';
 import { CharacterService } from './services';
 
-
 const router = Router();
 
 router.get('/', async (req, res, next) => {
-
-
     res.status(200).json({
         message: 'API INDEX',
     });
 });
 
+router.get('/key', async (req, res, next) => {
+    const randomKey = Math.random().toString(36).substring(2, 11);
+    res.status(200).json({ key: randomKey });
+});
 
 router.get('/battleCache', (req, res) => {
     const cache = battleCache.getAll();
@@ -22,10 +23,9 @@ router.get('/battleCache', (req, res) => {
     res.status(200).json({ cache });
 });
 
-
 import os from 'os';
 import process from 'process';
-import perfHooks from 'perf_hooks'
+import perfHooks from 'perf_hooks';
 
 router.get('/resource', (req, res) => {
     // const { CPU: PREV_CPU } = req.body;
