@@ -18,12 +18,11 @@ function pvpUsersWorker({ userStatus, path }: PvpUsersWorkerData) {
     console.log('pvpUsers.worker.ts: 18 >> pvpUsersWorker() 시작', characterId);
     let cnt = 1
     const roomName = userStatus.pvpRoom;
-
     const pvpUsersTimer = setInterval(async () => {
         let script = `= TEAM. =Lv. =========== Deamge ======== HP ================ Name======\n`;
         const pvpRoom = await redis.hGetPvpRoom(roomName!);
         const users = Object.entries(pvpRoom)
-        if (users.length < maxUsers) clearInterval(pvpUsersTimer);
+        if (users.length < maxUsers) return;
 
         // 캐릭터별 이름, 레벨, 체력, 공격력, 방어력 표시
         for (const user of users) {
@@ -54,8 +53,6 @@ function pvpUsersWorker({ userStatus, path }: PvpUsersWorkerData) {
         }
         console.log(`pvpUsers.worker.ts: 47 >> pvpUsersWorker() ${cnt++}회 작동중`)
     }, 5000);
-    
     isEnd.set(roomName!, pvpUsersTimer)
-
     return;
 }

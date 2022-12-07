@@ -125,7 +125,7 @@ class PvpService {
 
         if (getUsers === maxUsers) {
             const script = pvpScript.pvpRoomJoin(userStatus!.name) + '잠시 후 대전이 시작됩니다.\n'
-            const field = 'pvpBattle';
+            const field = 'pvpList';
             PVP.to(roomName).emit('fieldScriptPrint', { script, field });
             PVP.to(socketId).emit('printBattle', { field, userStatus });
             setTimeout(() => {
@@ -154,7 +154,6 @@ class PvpService {
                 maxhp: String(users[i][1].userStatus.maxhp).padEnd(9, `.`),
                 name: users[i][1].userStatus.name
             }
-            // script += `${user.isTeam} - Lv${user.level} ${user.name} - hp: ${user.hp}/${user.maxhp}, attack: ${user.attack}, defense: ${user.defense}\n`;
             script += `#${user.isTeam}  #${user.level}#${user.damage}#${user.hp} / ${user.maxhp}#  ${user.name}\n`;
         }
         return script;
@@ -328,9 +327,9 @@ class PvpService {
         const tempLine = `=======================================================================\n`
         let script: string = ``;
 
-        // const socketIds: string[] = [];
         if (result) {
             clearInterval(isEnd.get(roomName!))
+            isEnd.delete(roomName!)
             script += tempLine + `${result}이 승리했다네 !\n`;
             script += await this.pvpStart(userStatus)
             for (let i = 0; i < maxUsers; i++) {

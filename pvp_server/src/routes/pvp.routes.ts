@@ -9,8 +9,6 @@ router.get('/', (req, res) => {
     });
 });
 
-// router.post('/test', pvpController.test);
-
 router.post('/createRoom', pvpController.createRoom);
 
 router.post('/joinRoom', pvpController.joinRoom);

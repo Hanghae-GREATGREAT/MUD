@@ -11,26 +11,6 @@ import pvpUsers from '../workers/pvpUsers';
 export const maxUsers: number = 4;
 export const pvpRoomList: Set<string> = new Set<string>();
 export default {
-    // test: async (req: Request, res: Response, next: NextFunction) => {
-    //     try {
-    //         console.log('pvpWrongCommand')
-    //         const { socketId, CMD, userInfo, userStatus, option }: PostBody = req.body;
-    //         PVP.to(socketId).socketsJoin(`pvpRoom qq`)
-    //         userStatus.pvpRoom = 'pvpRoom qq'
-    //         await pvpUsers.start(userStatus).then((result) => {
-    //             console.log('pvpUsers.handler.ts: 자동 공격 resolved', result);
-    //         })
-
-    //         // const script = '';
-    //         // const field = `pvpList`;
-
-    //         // PVP.to(socketId).emit('printBattle', { script, userInfo, field, userStatus });
-
-    //         res.status(200).end();
-    //     } catch (err) {
-    //         next(err);
-    //     }
-    // },
     createRoom: async (req: Request, res: Response, next: NextFunction) => {
         try {
             console.log('createRoom');
@@ -156,23 +136,25 @@ export default {
             if (!userInfo) new HttpException('userInfo missing', 400);
             if (!userStatus) new HttpException('userStatus missing', 400);
 
-            const roomName = userStatus.pvpRoom;
+            // const roomName = userStatus.pvpRoom;
 
-            const pvpUsersTimer = setInterval(async ()=>{
-                const script = await pvpService.pvpStart(userStatus);
-                const field = 'pvpBattle';
+            // if (!isEnd.get(roomName!)) {
+            //     const pvpUsersTimer = setInterval(async ()=>{
+            //         const script = await pvpService.pvpStart(userStatus);
+            //         const field = 'pvpBattle';
 
-                PVP.to(roomName!).emit('fieldScriptPrint', { script, field });
-                await pvpService.getSkills(userStatus)
-            }, 8000)
+            //         PVP.to(roomName!).emit('fieldScriptPrint', { script, field });
+            //         await pvpService.getSkills(userStatus)
+            //     }, 8000)
+            //     isEnd.set(roomName!, pvpUsersTimer)
+            // }
 
-            isEnd.set(roomName!, pvpUsersTimer)
 
-            // console.time("pvpUsers.worker.ts");
-            // pvpUsers.start(userStatus).then((result) => {
-            //     console.log('pvpUsers.handler.ts: 자동 공격 resolved');
-            // })
-            // console.timeEnd("pvpUsers.worker.ts");
+            console.time("pvpUsers.worker.ts");
+            pvpUsers.start(userStatus).then((result) => {
+                console.log('pvpUsers.handler.ts: 전투 중 유저 목록 GET Start');
+            })
+            console.timeEnd("pvpUsers.worker.ts");
 
             res.status(200).end();
         } catch (err) {
