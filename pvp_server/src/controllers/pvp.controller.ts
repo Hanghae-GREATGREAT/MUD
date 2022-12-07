@@ -6,10 +6,31 @@ import { PostBody } from '../interfaces/common';
 import { pvpHandler } from '../handler'
 import pvpService from '../services/pvp.service';
 import redis from '../db/cache/redis';
+import pvpUsers from '../workers/pvpUsers';
 
 export const maxUsers: number = 4;
 export const pvpRoomList: Set<string> = new Set<string>();
 export default {
+    // test: async (req: Request, res: Response, next: NextFunction) => {
+    //     try {
+    //         console.log('pvpWrongCommand')
+    //         const { socketId, CMD, userInfo, userStatus, option }: PostBody = req.body;
+    //         PVP.to(socketId).socketsJoin(`pvpRoom qq`)
+    //         userStatus.pvpRoom = 'pvpRoom qq'
+    //         await pvpUsers.start(userStatus).then((result) => {
+    //             console.log('pvpUsers.handler.ts: 자동 공격 resolved', result);
+    //         })
+
+    //         // const script = '';
+    //         // const field = `pvpList`;
+
+    //         // PVP.to(socketId).emit('printBattle', { script, userInfo, field, userStatus });
+
+    //         res.status(200).end();
+    //     } catch (err) {
+    //         next(err);
+    //     }
+    // },
     createRoom: async (req: Request, res: Response, next: NextFunction) => {
         try {
             console.log('createRoom');
@@ -53,6 +74,7 @@ export default {
             if (validation === 'wrongCommand') return;
 
             const newUserStatus = await pvpService.joinRoom({ socketId, CMD, userInfo, userStatus })
+            if (newUserStatus === undefined) return;
 
             const startValidation = await pvpService.startValidation(req, res, next, roomName)
             if (startValidation === undefined) return;
@@ -109,18 +131,24 @@ export default {
             res.status(200).end();
         } catch (err) {
             next(err);
-        }},
-
-    pvpDisconnect:async (req: Request, res: Response, next: NextFunction) => {
-        const { socketId, option }: PostBody = req.body;
-        if (!option) return;
-        const [ name, roomName ] = option.split(',');
-        await redis.hDel(roomName, name);
-
-        res.status(200).end();
+        }
     },
 
-    pvpStart:async (req: Request, res: Response, next: NextFunction) => {
+    pvpDisconnect:async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            console.log('pvpDisconnect')
+            const { socketId, option }: PostBody = req.body;
+            if (!option) return;
+            const [ name, roomName ] = option.split(',');
+            await pvpService.pvpDisconnect(name, roomName, socketId)
+
+            res.status(200).end();
+        } catch (err) {
+            next(err)
+        }
+    },
+
+    pvpStart:(req: Request, res: Response, next: NextFunction) => {
         try {
             console.log('pvpStart')
             const { socketId, CMD, userInfo, userStatus }: PostBody = req.body;
@@ -130,12 +158,24 @@ export default {
 
             const roomName = userStatus.pvpRoom;
 
-            const script = await pvpService.pvpStart(userStatus);
-            const field = 'pvpBattle';
+            const pvpUsersTimer = setInterval(async ()=>{
+                const pvpRoom = await redis.hGetPvpRoom(roomName!);
+                const users = Object.entries(pvpRoom)
+                if (users.length < maxUsers) clearInterval(pvpUsersTimer);
+                const script = await pvpService.pvpStart(userStatus);
+                const field = 'pvpBattle';
 
-            PVP.to(roomName!).emit('fieldScriptPrint', { script, field });
+                PVP.to(roomName!).emit('fieldScriptPrint', { script, field });
+                await pvpService.getSkills(userStatus)
+            }, 8000)
 
-            await pvpService.getSkills(userStatus)
+            
+
+            // console.time("pvpUsers.worker.ts");
+            // pvpUsers.start(userStatus).then((result) => {
+            //     console.log('pvpUsers.handler.ts: 자동 공격 resolved');
+            // })
+            // console.timeEnd("pvpUsers.worker.ts");
 
             res.status(200).end();
         } catch (err) {

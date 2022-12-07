@@ -89,20 +89,22 @@ class PvpService {
         console.log('joinRoom');
         const roomName = `pvpRoom ${CMD}`;
         const getUsers = await this.getUsers(roomName);
-        console.log(`joinRoom getUsers : ${getUsers}`)
-
+        PVP.in(socketId).socketsJoin(roomName);
         userStatus.pvpRoom = roomName;
+        if (getUsers === maxUsers) {
+            userStatus.damage = -1;
+            PVP.to(socketId).emit('printBattle', { script: `${CMD}에 입장하셨습니다.\n`, field: 'pvpBattle', userStatus });
+            return undefined;
+        }
 
         userStatus.hp = userStatus.maxhp;
         userStatus.damage = 0;
         userStatus.isTeam = getUsers + 1 <= maxUsers / 2 ? 'A TEAM' : 'B TEAM';
 
-        console.log(`userStatus.isTeam : ${userStatus.isTeam}`)
-
         const inputPlayer:PvpUser = { [userStatus.name]: { socketId, userStatus }}
         await redis.hSetPvpUser(roomName, inputPlayer)
 
-        PVP.in(socketId).socketsJoin(roomName);
+        
 
         return userStatus;
     }
@@ -128,12 +130,6 @@ class PvpService {
                 const request = { body: { socketId, userStatus } };
                 pvpController.pvpStart(request as Request, res, next);
             }, 5000);
-            return undefined;
-        } else if (getUsers > maxUsers) {
-            userStatus.damage = -1;
-            // const inputPlayer:PvpUser = { [userStatus.name]: { socketId, userStatus }}
-            // await redis.hSetPvpUser(roomName, inputPlayer)
-            PVP.to(socketId).emit('printBattle', { script: `${CMD}에 입장하셨습니다.\n`, field: 'pvpBattle', userStatus });
             return undefined;
         }
         return 'done';
@@ -168,27 +164,26 @@ class PvpService {
         const pvpRoom = await redis.hGetPvpRoom(roomName!)
         const users = Object.entries(pvpRoom)
 
-        const tempLine: string = `\n=======================================================================\n\n기본공격, `;
+        const tempLine: string = `=======================================================================\n\n기본공격, `;
 
         let skillScript: string = '';
 
         // 유저별로 선택할 수 있는 목록을 보여준다.
-        setTimeout(() => {
+        // setTimeout(() => {
             for (let y = 0; y < maxUsers; y++) {
                 const user = users[y][1].userStatus
                 for (let i = 0; i < user!.skill.length; i++) {
                     let skills = user!.skill[i]
                         skillScript += `${skills.name}, `
                 }
-            user.cooldown = Date.now();
             
             const script = tempLine + skillScript;
             const field = 'pvpBattle';
             console.log('getSkills SocketId : ', users[y][1].socketId)
-            PVP.to(users[y][1].socketId).emit('printBattle', { script: `${script}\n`, field, userStatus: user });
+            PVP.to(users[y][1].socketId).emit('printBattle', { script: `${script}\n\n`, field, userStatus: user });
             skillScript = '';
             }
-        }, 1500);
+        // }, 5000);
     }
 
     async leaveRoom(userStatus: UserStatus) {
@@ -198,7 +193,15 @@ class PvpService {
         userStatus!.pvpRoom = undefined;
 
         const getUsers = await this.getUsers(roomName!);
-        if (getUsers === 0) pvpRoomList.delete(roomName!);
+        if (getUsers === 0) pvpRoomList.delete(roomName!.split(' ').pop()!);
+    }
+
+    async pvpDisconnect(name: string, roomName: string, socketId: string) {
+        console.log('pvpDisconnect')
+        PVP.in(socketId).socketsLeave(roomName)
+        await redis.hDel(roomName, name);
+        const getUsers = await this.getUsers(roomName);
+        if (getUsers === 0) pvpRoomList.delete(roomName.split(' ').pop()!);
     }
 
     battleValidation({ socketId, CMD, userInfo, userStatus }: PostBody) {
@@ -246,8 +249,7 @@ class PvpService {
             if (user === 'A TEAM') TeamA.push(users[i][0]);
             else if (user === 'B TEAM') TeamB.push(users[i][0]);
         }
-        console.log(`targetValidation TEAM A : ${TeamA}`)
-        console.log(`targetValidation TEAM B : ${TeamB}`)
+        
         if (!TeamA.concat(TeamB).includes(CMD1)) {
             PVP.to(socketId).emit('fieldScriptPrint', { field, script: '잘못된 입력 또는 없는 유저입니다.\n' })
             return undefined;
@@ -324,12 +326,12 @@ class PvpService {
         const tempLine = `=======================================================================\n`
         let script: string = ``;
 
-        const socketIds: string[] = [];
+        // const socketIds: string[] = [];
         if (result) {
             script += tempLine + `${result}이 승리했다네 !\n`;
             script += await this.pvpStart(userStatus)
             for (let i = 0; i < maxUsers; i++) {
-                socketIds.push(users[i][1].socketId);
+                // socketIds.push(users[i][1].socketId);
                 const user = users[i][1].userStatus;
                 // const isTeam = user.isTeam === 'A TEAM' ? 'A TEAM' : 'B TEAM';
                 // script += `${isTeam} - Lv${user.level} ${user.name} - hp: ${user.hp}/${user.maxhp}, damage: ${user.damage}\n`;
@@ -341,7 +343,7 @@ class PvpService {
             PVP.to(roomName!).emit('fieldScriptPrint', { script, field });
             setTimeout(() => {
             PVP.to(roomName!).emit('fieldScriptPrint', { field: 'village', script: pvpScript.village });
-            PVP.to(socketIds).socketsLeave(roomName!);
+            PVP.in(roomName!).socketsLeave(roomName!);
             }, 5000);
         }
     }

@@ -1,9 +1,9 @@
 class Server {
     #PORT = 3333;
-    // #URL = 'localhost'
+    #URL = 'localhost'
     // #URL = 'host.docker.internal'
     // #URL = 'server';
-    #URL = 'great-effect.com';
+    // #URL = 'great-effect.com';
 
     getServerUrl = () => {
         return `${this.#URL}:${this.#PORT}`;

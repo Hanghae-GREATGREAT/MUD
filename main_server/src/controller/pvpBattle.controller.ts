@@ -28,6 +28,12 @@ export default {
 
         // commandHandler[CMD1](socket, CMD2, userInfo, userStatus);
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
+
+        // if (CMD1 === 'test') {
+        //     const URL = `${PVP_URL}/pvp/test`;
+        //     fetchPost({ URL, socketId: socket.id, CMD: CMD1, userInfo, userStatus });
+        //     return;
+        // }
         
         if (CMD1 === '새' || CMD1 === '새로고침') {
             const URL = `${PVP_URL}/pvpNpc/pvpGo`;
