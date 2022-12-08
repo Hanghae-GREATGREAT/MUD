@@ -17,15 +17,46 @@ const chatForm = $('.chatForm');
 const chatJoinUserNum = $('#joinUserNum');
 
 let status;
-$(async () => {
+$(() => {
     chatBoxId.empty();
     commandLine.empty();
 
     status = new State();
-    const { field, userInfo } = await checkSession();
+    const { field, userInfo } = checkSession();
     console.log('load script', field, userInfo);
     loadScript(field, userInfo);
 });
+
+function CryptoController() {
+    let secretKey = '';
+
+    return {
+        GenerateKey: () => {
+            fetch(`http://${SERVER_URL}/api/key`).then((response) => {
+                response.json().then(({ key }) => {
+                    secretKey = key;
+                });
+            });
+        },
+
+        encryptClData: (field, userData) => {
+            const encryptedField = CryptoJS.AES.encrypt(field, secretKey).toString();
+            const encryptedUserData = CryptoJS.AES.encrypt(JSON.stringify(userData), secretKey).toString();
+            return [encryptedField, encryptedUserData];
+        },
+
+        decryptClData: (field, userData) => {
+            const decryptedField = CryptoJS.AES.decrypt(field, secretKey).toString(CryptoJS.enc.Utf8);
+            const decryptedUserData = JSON.parse(
+                CryptoJS.AES.decrypt(userData, secretKey).toString(CryptoJS.enc.Utf8),
+            );
+            return [decryptedField, decryptedUserData];
+        },
+    };
+}
+
+const crypto = CryptoController();
+crypto.GenerateKey();
 
 function checkSession() {
     console.log('refreshed...checking session');
@@ -78,14 +109,26 @@ function checkValidation(userInfo) {
 
 commendForm.submit((e) => {
     e.preventDefault();
-    let [field, option] = localStorage.getItem('field').split(':');
+    const decryptData = crypto.decryptClData(localStorage.getItem('field'), localStorage.getItem('user'));
+
+    let [field, option] = decryptData[0].split(':');
+
+    console.log('field : ', field);
+
     const line = commendInput.val();
+    console.log('90: ', line);
     commendInput.val('');
-    const userInfo = localStorage.getItem('user');
+    const userInfo = decryptData[1];
     const userStatus = status.get();
 
-    if (line.slice(0, 2).trim().match(/g|G|ㅎ/)) [field, option] = ['global', field];
-    const input = { line, userInfo: JSON.parse(userInfo), userStatus, option };
+    if (
+        line
+            .slice(0, 2)
+            .trim()
+            .match(/g|G|ㅎ/)
+    )
+        [field, option] = ['global', field];
+    const input = { line, userInfo, userStatus, option };
 
     if (!Object.hasOwn(commandRouter, field)) gerneralSend(field, input);
     commandRouter[field](field, input);
@@ -102,6 +145,8 @@ mainSocket.on('fieldScriptPrint', fieldScriptPrint);
 
 frontSocket.on('print', printHandler);
 frontSocket.on('printBattle', printBattleHandler);
+frontSocket.on('pwCoveringOn', pwCoveringOn);
+frontSocket.on('pwCoveringOff', pwCoveringOff);
 
 battleSocket.on('print', printHandler);
 battleSocket.on('printBattle', printBattleHandler);
@@ -112,18 +157,20 @@ pvpSocket.on('printBattle', printBattleHandler);
 pvpSocket.on('fieldScriptPrint', fieldScriptPrint);
 
 function printHandler({ field, script, userInfo }) {
-    console.log(field);
-    localStorage.setItem('field', field);
-    if (userInfo) localStorage.setItem('user', JSON.stringify(userInfo));
+    const encryptData = crypto.encryptClData(field, userInfo);
+
+    localStorage.setItem('field', encryptData[0]);
+    if (userInfo) localStorage.setItem('user', encryptData[1]);
 
     if (script) commandLine.append(script);
     commandLine.scrollTop(Number.MAX_SAFE_INTEGER);
 }
 
 function printBattleHandler({ field, script, userInfo, userStatus }) {
-    console.log('printBattle', field, script);
-    localStorage.setItem('field', field);
-    if (userInfo) localStorage.setItem('user', JSON.stringify(userInfo));
+    const encryptData = crypto.encryptClData(field, userInfo);
+    localStorage.setItem('field', encryptData[0]);
+
+    if (userInfo) localStorage.setItem('user', encryptData[1]);
     if (userStatus) {
         console.log('printBattle received status ', userStatus);
         status.set(userStatus);
@@ -134,22 +181,33 @@ function printBattleHandler({ field, script, userInfo, userStatus }) {
 }
 
 function fieldScriptPrint({ field, script }) {
+    const encryptData = crypto.encryptClData(field, { dummy: 1 });
+
     console.log('fieldScriptPrint', field, script);
-    localStorage.setItem('field', field);
+    localStorage.setItem('field', encryptData[0]);
 
     commandLine.append(script);
     commandLine.scrollTop(Number.MAX_SAFE_INTEGER);
 }
 
-async function signoutHandler({ field, script, userInfo }) {
-    localStorage.setItem('user', JSON.stringify(userInfo));
-    localStorage.setItem('field', field);
+function signoutHandler({ field, script, userInfo }) {
+    const encryptData = crypto.encryptClData(field, userInfo);
+
+    localStorage.setItem('field', encryptData[0]);
+    if (userInfo) localStorage.setItem('user', encryptData[1]);
     status.set({});
 
     commandLine.append(script);
     commandLine.scrollTop(Number.MAX_SAFE_INTEGER);
 
     loadScript(field, JSON.stringify(userInfo));
+}
+
+function pwCoveringOn() {
+    commendInput.attr('type', 'password');
+}
+function pwCoveringOff() {
+    commendInput.attr('type', 'text');
 }
 
 /*****************************************************************************
