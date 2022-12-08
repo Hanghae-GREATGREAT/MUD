@@ -74,6 +74,9 @@ class ChatCache {
             console.log(`채팅방 참여데이터 삭제 성공\n(${socketId} : ${joinedRoom})\n`);
 
             const joinerCnt: number = this.roomList.get(joinedRoom)!.size;
+
+            if (joinerCnt === 0) this.roomList.delete(joinedRoom);
+
             joinerScript = `(${joinerCnt}/${this.setJoinerLimit})`;
         }
 
