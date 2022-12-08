@@ -105,6 +105,7 @@ frontSocket.on('printBattle', printBattleHandler);
 
 battleSocket.on('print', printHandler);
 battleSocket.on('printBattle', printBattleHandler);
+battleSocket.on('void', () => {});
 
 pvpSocket.on('print', printHandler);
 pvpSocket.on('printBattle', printBattleHandler);

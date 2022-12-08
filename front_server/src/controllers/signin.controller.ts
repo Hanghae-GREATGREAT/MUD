@@ -33,13 +33,13 @@ export default {
     signinCheck: async (req: Request, res: Response, next: NextFunction) => {
         let { socketId, userInfo, CMD }: PostBody = req.body;
 
-        if (!userInfo) {
+        if (!userInfo || !userInfo.username) {
             const error = new Error('signinCheck : Can not find userInfo');
             return next(error);
         }
 
         const username = userInfo.username;
-        console.log(`password CMd : ${CMD}`);
+        console.log(`password CMd : ${CMD}`, userInfo);
         const password = CMD;
         const result = await UserService.signin({ username, password });
 
