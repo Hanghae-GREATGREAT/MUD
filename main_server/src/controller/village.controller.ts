@@ -95,7 +95,7 @@ export default {
 
         if (!cmdRoute[CMD1]) {
             const URL = `${PVP_URL}/pvp/wrongCommand`
-            fetchPost({ URL, socketId: socket.id, CMD: CMD2, userInfo, option: 'pvpNpc' })
+            fetchPost({ URL, socketId: socket.id, CMD: line, userInfo, option: 'pvpNpc' })
             return;
         }
 
