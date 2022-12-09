@@ -11,6 +11,7 @@ services:
   server:
     container_name: server
     image: ninthsun91/mud-server:${VERSION}.${SUB_VERSION}
+    restart: always
     build:
       context: main_server
       dockerfile: ./Dockerfile
@@ -24,6 +25,7 @@ services:
   battle:
     container_name: battle
     image: ninthsun91/mud-battle:${VERSION}.${SUB_VERSION}
+    restart: always
     build:
       context: battle_server
       dockerfile: ./Dockerfile
@@ -39,6 +41,7 @@ services:
   pvp:
     container_name: pvp
     image: ninthsun91/mud-pvp:${VERSION}.${SUB_VERSION}
+    restart: always
     build:
       context: pvp_server
       dockerfile: ./Dockerfile
@@ -54,6 +57,7 @@ services:
   front:
     container_name: front
     image: ninthsun91/mud-front:${VERSION}.${SUB_VERSION}
+    restart: always
     build:
       context: front_server
       dockerfile: ./Dockerfile
@@ -69,6 +73,7 @@ services:
   web:
     container_name: web
     image: ninthsun91/mud-web:${VERSION}.${SUB_VERSION}
+    restart: always
     build:
       context: web_server
       dockerfile: ./Dockerfile

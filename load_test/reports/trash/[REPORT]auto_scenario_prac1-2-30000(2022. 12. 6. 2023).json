@@ -1,0 +1,19 @@
+{
+    "TEST_REPORT": "[LOG]auto_scenario_prac1-2-30000(2022. 12. 6. 2023).txt",
+    "TEST_NAME": "auto_scenario_prac1",
+    "test_start": "2022-12-06T20:23:17.154Z",
+    "test_end": "2022-12-06T20:24:07.379Z",
+    "test_running_time": "0m 50.23s",
+    "MAX_CLIENTS": 2,
+    "CLIENT_CREATE_INTERVAL_IN_MS": 1000,
+    "TEST_DURATION_IN_MS": 30000,
+    "total_emit_count": 17,
+    "emit_per_seconds": "0.34",
+    "total_scenario_try": 2,
+    "scenario_complete": 2,
+    "scenario_fail": 0,
+    "average_throughput": "22.50ms",
+    "average_memory_usage": "27.50/1982.87MB",
+    "average_cpu_usage": "1.40ms/sec",
+    "average_cpu_consumption": "0.37%"
+}

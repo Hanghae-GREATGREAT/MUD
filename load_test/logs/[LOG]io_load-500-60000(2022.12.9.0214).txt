@@ -1,0 +1,43 @@
+[LOG]io_load-500-60000(2022.12.9.0214).txt
+            
+### DETAIL LOGS ###
+
+progress: 0, clients: 0, connections: 0
+emits/sec: 0.00, scenario completion: 0/0 => 0, average throughput: NaNms
+
+progress: 0, clients: 500, connections: 1000
+emits/sec: 8.70, scenario completion: 0/0 => 0, average throughput: NaNms
+
+progress: 0, clients: 500, connections: 1000
+emits/sec: 117.98, scenario completion: 0/0 => 0, average throughput: 1995.29ms
+
+progress: 0, clients: 500, connections: 1000
+emits/sec: 112.15, scenario completion: 0/0 => 0, average throughput: 2323.04ms
+
+progress: 0, clients: 500, connections: 1000
+emits/sec: 103.69, scenario completion: 0/0 => 0, average throughput: 3448.87ms
+
+progress: 0, clients: 500, connections: 1000
+emits/sec: 90.85, scenario completion: 0/0 => 0, average throughput: 4295.24ms
+
+progress: 0, clients: 500, connections: 1000
+emits/sec: 84.67, scenario completion: 0/0 => 0, average throughput: 4508.51ms
+
+progress: 108, clients: 392, connections: 784
+emits/sec: 72.51, scenario completion: 108/108 => 100, average throughput: 4254.89ms
+
+progress: 234, clients: 266, connections: 532
+emits/sec: 51.56, scenario completion: 126/126 => 100, average throughput: 4136.28ms
+
+progress: 339, clients: 161, connections: 322
+emits/sec: 39.00, scenario completion: 105/105 => 100, average throughput: 4061.69ms
+
+progress: 420, clients: 80, connections: 160
+emits/sec: 32.69, scenario completion: 81/81 => 100, average throughput: 3571.47ms
+
+progress: 484, clients: 16, connections: 32
+emits/sec: 21.97, scenario completion: 64/64 => 100, average throughput: 6140.72ms
+
+progress: 400, clients: 0, connections: 0
+emits/sec: 0.00, scenario completion: 0/16 => 0, average throughput: NaNms
+

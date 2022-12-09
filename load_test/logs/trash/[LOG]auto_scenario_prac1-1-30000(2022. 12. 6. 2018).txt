@@ -1,0 +1,38 @@
+[LOG]auto_scenario_prac1-1-30000(2022. 12. 6. 2018).txt
+        
+SERVER CURRENT STATUS
+load average: 0.13/1min, 0.17/5min, 0.1/15min
+total memory: 26.48/1984.93mb, cpu usuage: 1.14336ms/sec, cpu occupied: 0.921703%
+        
+### DETAIL LOGS ###
+
+progress: 0, clients: 1, connections: 3
+emits/sec: 0.00, scenario completion: 0/0 => 0, average throughput: NaNms
+load average: 0.12/1min, 0.17/5min, 0.1/15min
+total memory: 26.48/1984.52mb, cpu usuage: 1.15776ms/sec, cpu occupied: 0.903257%
+
+progress: 0, clients: 1, connections: 3
+emits/sec: 0.80, scenario completion: 0/0 => 0, average throughput: 59.79ms
+load average: 0.11/1min, 0.17/5min, 0.1/15min
+total memory: 26.73/1983.87mb, cpu usuage: 1.17447ms/sec, cpu occupied: 0.88576%
+
+progress: 0, clients: 1, connections: 3
+emits/sec: 0.00, scenario completion: 0/0 => 0, average throughput: NaNms
+load average: 0.1/1min, 0.16/5min, 0.1/15min
+total memory: 27.23/1984.17mb, cpu usuage: 1.18698ms/sec, cpu occupied: 0.866695%
+
+progress: 0, clients: 1, connections: 3
+emits/sec: 0.00, scenario completion: 0/0 => 0, average throughput: NaNms
+load average: 0.17/1min, 0.18/5min, 0.1/15min
+total memory: 27.23/1983.85mb, cpu usuage: 1.19415ms/sec, cpu occupied: 0.847212%
+
+progress: 0, clients: 1, connections: 3
+emits/sec: 0.00, scenario completion: 0/0 => 0, average throughput: NaNms
+load average: 0.4/1min, 0.22/5min, 0.12/15min
+total memory: 27.23/1983.61mb, cpu usuage: 1.2014ms/sec, cpu occupied: 0.827158%
+
+progress: 1, clients: 0, connections: 0
+emits/sec: 1.00, scenario completion: 1/1 => 100, average throughput: 29.44ms
+load average: 0.61/1min, 0.27/5min, 0.13/15min
+total memory: 27.23/1983.91mb, cpu usuage: 1.2215ms/sec, cpu occupied: 0.816107%
+
