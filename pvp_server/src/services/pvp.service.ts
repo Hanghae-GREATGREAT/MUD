@@ -137,26 +137,34 @@ class PvpService {
         return 'done';
     }
 
-    async pvpStart(userStatus: UserStatus) {
+    async pvpStart(userStatus: UserStatus, result: string) {
         console.log('pvpStart')
         const roomName = userStatus.pvpRoom;
-        let script = `= TEAM. =Lv. =========== Deamge ======== HP ================ Name======\n`;
+        let colorA:string = '';
+        let colorB:string = '';
+        if (result === 'A TEAM') colorA = 'color:#33FF66';
+        else if (result === 'B TEAM') colorB = 'color:#33FF66'
+        const firstLine = `= TEAM. =Lv. =========== Deamge ======== HP ================ Name======\n`;
+        let ATeamScript: string = ``;
+        let BTeamScript: string = ``;
         const pvpRoom = await redis.hGetPvpRoom(roomName!);
         const users = Object.entries(pvpRoom)
+        if (users.length < maxUsers) return;
 
         // 캐릭터별 이름, 레벨, 체력, 공격력, 방어력 표시
-        for (let i = 0; i < maxUsers; i++) {
-            const user = {
-                isTeam: users[i][1].userStatus.isTeam!,
-                level: String(users[i][1].userStatus.level).padEnd(4, `.`),
-                damage: String(users[i][1].userStatus.damage!).padStart(17, `.`),
-                hp: String(users[i][1].userStatus.hp).padStart(9, `.`),
-                maxhp: String(users[i][1].userStatus.maxhp).padEnd(9, `.`),
-                name: users[i][1].userStatus.name
+        for (const user of users) {
+            const userInfo = {
+                isTeam: user[1].userStatus.isTeam!,
+                level: String(user[1].userStatus.level).padEnd(4, `.`),
+                damage: String(user[1].userStatus.damage!).padStart(17, `.`),
+                hp: String(user[1].userStatus.hp).padStart(9, `.`),
+                maxhp: String(user[1].userStatus.maxhp).padEnd(9, `.`),
+                name: user[1].userStatus.name
             }
-            script += `#${user.isTeam}  #${user.level}#${user.damage}#${user.hp} / ${user.maxhp}#  ${user.name}\n`;
+            if (userInfo.isTeam === 'A TEAM') ATeamScript += `<span style=${colorA}>#${userInfo.isTeam}  #${userInfo.level}#${userInfo.damage}#${userInfo.hp} / ${userInfo.maxhp}#  ${userInfo.name}</span>\n`;
+            else if (userInfo.isTeam === 'B TEAM') BTeamScript += `<span style=${colorB}>#${userInfo.isTeam}  #${userInfo.level}#${userInfo.damage}#${userInfo.hp} / ${userInfo.maxhp}#  ${userInfo.name}</span>\n`;
         }
-        return script;
+        return firstLine + ATeamScript + BTeamScript;
     }
 
     async getSkills(userStatus: UserStatus) {
@@ -301,7 +309,7 @@ class PvpService {
         PVP.to(user[1].socketId).emit('printBattle', { field, userStatus: enemy });
         PVP.to(socketId).emit('printBattle', { field, userStatus })
 
-        return `${userStatus.name}이(가) ${user[0]}에게 ${realDamage}의 데미지를 입혔다 ! => ${user[0]} hp: ${enemy.hp}/${enemy.maxhp}\n`
+        return `${userStatus.name}이(가) ${user[0]}에게 <span style='color:red'>${realDamage}</span>의 데미지를 입혔다 ! => <span style='color:red'>${user[0]} hp: ${enemy.hp}/${enemy.maxhp}</span>\n`
     }
 
     async pvpResultValidation({ socketId, CMD, userInfo, userStatus }: PostBody) {
@@ -330,19 +338,21 @@ class PvpService {
         if (result) {
             clearInterval(isEnd.get(roomName!))
             isEnd.delete(roomName!)
-            script += tempLine + `${result}이 승리했다네 !\n`;
-            script += await this.pvpStart(userStatus)
+            script += tempLine + `<span style='color:#33FF66'>${result}이 승리했다네 !</span>\n`;
+            script += await this.pvpStart(userStatus, result)
             for (let i = 0; i < maxUsers; i++) {
                 const user = users[i][1].userStatus;
                 user.hp = user.maxhp;
                 PVP.to(users[i][1].socketId).emit('printBattle', { field, userStatus: user });
                 await this.leaveRoom(user);
             }
-            script += `5초 후 마을로 돌아갑니다..\n`;
-            PVP.to(roomName!).emit('fieldScriptPrint', { script, field });
             setTimeout(() => {
-            PVP.to(roomName!).emit('fieldScriptPrint', { field: 'village', script: pvpScript.village });
-            PVP.in(roomName!).socketsLeave(roomName!);
+                script += `5초 후 마을로 돌아갑니다..\n`;
+                PVP.to(roomName!).emit('fieldScriptPrint', { script, field });
+            }, 500);
+            setTimeout(() => {
+                PVP.to(roomName!).emit('fieldScriptPrint', { field: 'village', script: pvpScript.village });
+                PVP.in(roomName!).socketsLeave(roomName!);
             }, 5000);
         }
     }
