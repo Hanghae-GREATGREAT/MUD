@@ -1,3 +1,4 @@
 import chatCache from './chatCache';
+import redis from './redis';
 
-export { chatCache };
+export { chatCache, redis };
