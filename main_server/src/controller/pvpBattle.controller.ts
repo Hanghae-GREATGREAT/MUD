@@ -46,18 +46,19 @@ export default {
 
         if (CMD1 === '도움말') {
             const URL = `${PVP_URL}/pvp/help`
-            fetchPost({ URL, socketId: socket.id, CMD: CMD1, userInfo, option: 'pvpBattle' })
+            fetchPost({ URL, socketId: socket.id, CMD: CMD1, userInfo, option: 'pvpJoin' })
             return;
         }
 
         const cmdRoute: CommandRouter = {
             '현': 'getUsers',
-            '돌': 'leaveRoom'
+            '돌': 'leaveRoom',
+            '돌아가기': 'leaveRoom',
         };
 
         if (!cmdRoute[CMD1]) {
             const URL = `${PVP_URL}/pvp/wrongCommand`
-            fetchPost({ URL, socketId: socket.id, CMD: CMD2, userInfo, userStatus, option: 'pvpBattle' })
+            fetchPost({ URL, socketId: socket.id, CMD: CMD2, userInfo, userStatus, option: 'pvpJoin' })
             return;
         }
         const URL = `${PVP_URL}/pvp/${cmdRoute[CMD1]}`

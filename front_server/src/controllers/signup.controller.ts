@@ -4,7 +4,7 @@ import { PostBody } from '../interfaces/common';
 import { CharacterService, UserService } from '../services';
 import { signupScript } from '../scripts';
 import { UserInfo } from '../interfaces/user';
-import { chatCache } from '../db/cache';
+import { chatCache, redis } from '../db/cache';
 
 export default {
     signupUsername: (req: Request, res: Response, next: NextFunction) => {
@@ -93,6 +93,11 @@ export default {
         FRONT.to(`${enteredRoom}`).emit('joinChat', userInfo.name, joinerCntScript);
 
         FRONT.to(socketId).emit('printBattle', { field, script, userInfo, userStatus });
+
+        // sesstion create
+        redis.set(userInfo.userId, socketId, { EX : 60*60*24 })
+        console.log(`login session create`)
+
         res.status(200).end();
     },
 };

@@ -3,7 +3,7 @@ import { FRONT } from '../redis';
 import { PostBody } from '../interfaces/common';
 import { UserService, CharacterService } from '../services';
 import { signinScript } from '../scripts';
-import { chatCache } from '../db/cache';
+import { chatCache, redis } from '../db/cache';
 
 export default {
     signinUsername: (req: Request, res: Response, next: NextFunction) => {
@@ -44,7 +44,9 @@ export default {
         if (!result) {
             const script = signinScript.incorrect;
             const field = 'front';
-            FRONT.to(socketId).emit('print', { field, script, userInfo: {} });
+
+            FRONT.to(socketId).emit('pwCoveringOff');
+            FRONT.to(socketId).emit('print', { field, script, userInfo });
             return;
         }
 
@@ -76,6 +78,10 @@ export default {
 
         FRONT.to(socketId).emit('printBattle', { field, script, userInfo, userStatus });
         FRONT.to(socketId).emit('pwCoveringOff');
+
+        // sesstion create
+        redis.set(userInfo.userId, socketId, { EX : 60*60*24 })
+        console.log(`login session create`)
 
         res.status(200).end();
     },

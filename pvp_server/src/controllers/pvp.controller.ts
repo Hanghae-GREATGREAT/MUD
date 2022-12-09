@@ -199,7 +199,7 @@ export default {
             console.log('battleUsers')
             const { socketId, CMD, userInfo, userStatus }: PostBody = req.body;
 
-            const script = await pvpService.pvpStart(userStatus);
+            const script = await pvpService.pvpStart(userStatus, '');
             const field = `pvpBattle`;
 
             PVP.to(socketId).emit('printBattle', { script, userInfo, field, userStatus });
