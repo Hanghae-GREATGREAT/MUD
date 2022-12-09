@@ -21,7 +21,7 @@ const io = new Server(httpServer, {
     },
 });
 io.use((socket, next) => {
-    next();
+    next();    
 });
 // io.use(SocketMiddleware)
 io.on('connection', onConnection);

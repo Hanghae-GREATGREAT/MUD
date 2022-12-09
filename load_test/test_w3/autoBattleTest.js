@@ -78,7 +78,7 @@ const createClient = async(i) => {
     let option = '';
 
     const userNumber = i + 1;
-    let username = `test${('0000'+userNumber).slice(-4)}`;
+    let username = `user${userNumber}`;
 
     clientCount++;
     try {
@@ -96,13 +96,13 @@ const createClient = async(i) => {
 
         await emit('dungeon', { line: '입장 1', userInfo, userStatus, option });
 
-        await emit('battle', { line: '자동', userInfo, userStatus, option });
+        await emit('battle', { line: '자동단일', userInfo, userStatus, option });
 
         await sleep(BATTLE_RUN_TIME);
 
         await emit('autoBattle', { line: '중단', userInfo, userStatus, option });
 
-        await emit('dungeon', { line: 'out', userInfo, userStatus, option });
+        await emit('global', { line: 'out', userInfo, userStatus, option });
 
         // const end = performance.now().toFixed(2);
         // performanceTime.push(end-start);

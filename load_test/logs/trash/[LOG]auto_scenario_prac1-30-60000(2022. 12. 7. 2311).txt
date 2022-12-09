@@ -1,0 +1,8 @@
+[LOG]auto_scenario_prac1-30-60000(2022. 12. 7. 2311).txt
+        
+SERVER CURRENT STATUS
+load average: 0.01/1min, 0.18/5min, 0.18/15min
+total memory: 32.72/230.31mb, cpu usuage: 6.09188ms/sec, cpu occupied: 1.6741%
+        
+### DETAIL LOGS ###
+

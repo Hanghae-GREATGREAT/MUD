@@ -132,6 +132,7 @@ commendForm.submit((e) => {
 
     if (!Object.hasOwn(commandRouter, field)) gerneralSend(field, input);
     commandRouter[field](field, input);
+
 });
 
 /*****************************************************************************
@@ -150,6 +151,7 @@ frontSocket.on('pwCoveringOff', pwCoveringOff);
 
 battleSocket.on('print', printHandler);
 battleSocket.on('printBattle', printBattleHandler);
+battleSocket.on('void', () => {});
 
 pvpSocket.on('print', printHandler);
 pvpSocket.on('printBattle', printBattleHandler);
@@ -215,9 +217,9 @@ function pwCoveringOff() {
 
 chatForm.submit((e) => {
     e.preventDefault();
+    const decryptData = crypto.decryptClData(localStorage.getItem('field'), localStorage.getItem('user'));
 
-    const userInfo = localStorage.getItem('user');
-    const { name } = JSON.parse(userInfo);
+    const { name } = decryptData[1];
     const data = {
         name,
         message: chatInput.val(),

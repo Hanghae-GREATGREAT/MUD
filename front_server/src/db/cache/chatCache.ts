@@ -26,15 +26,18 @@ class ChatCache {
             this.roomList.set(accessibleIndex, new Set([socketId]));
 
             this.chatJoiner[socketId] = `${accessibleIndex}`;
-            console.log('roomList : ', this.roomList);
-            console.log('chatJoiner : ', this.chatJoiner);
+            // console.log('roomList : ', this.roomList);
+            // console.log('chatJoiner : ', this.chatJoiner);
 
             return [accessibleIndex, joinerSize, this.setJoinerLimit];
         }
 
         // 입장 가능한 채팅방 탐색
         for (let i = 1; i <= this.roomList.size; i++) {
-            joinerSize = this.roomList.get(i)!.size;
+            const room = this.roomList.get(i);
+            if (!room) continue;
+
+            joinerSize = room.size;
             if (joinerSize < this.setJoinerLimit) {
                 accessibleIndex = i;
                 break;
@@ -56,8 +59,8 @@ class ChatCache {
         // 채팅방 참가 데이터 등록
         this.chatJoiner[socketId] = `${enteredIndex}`;
 
-        console.log('roomList : ', this.roomList);
-        console.log('chatJoiner : ', this.chatJoiner);
+        // console.log('roomList : ', this.roomList);
+        // console.log('chatJoiner : ', this.chatJoiner);
 
         return [enteredIndex, joinerSize, this.setJoinerLimit];
     }
@@ -71,7 +74,7 @@ class ChatCache {
             const joinedRoom = Number(this.chatJoiner[socketId]);
             this.roomList.get(joinedRoom)!.delete(socketId);
             delete this.chatJoiner[socketId];
-            console.log(`채팅방 참여데이터 삭제 성공\n(${socketId} : ${joinedRoom})\n`);
+            // console.log(`채팅방 참여데이터 삭제 성공\n(${socketId} : ${joinedRoom})\n`);
 
             const joinerCnt: number = this.roomList.get(joinedRoom)!.size;
 
@@ -84,9 +87,16 @@ class ChatCache {
     }
 
     getJoinedRoom(socketId: string): string {
-        console.log('socketId :', socketId);
-        console.log('chatJoiner : ', this.chatJoiner);
+        // console.log('socketId :', socketId);
+        // console.log('chatJoiner : ', this.chatJoiner);
         return this.chatJoiner[socketId];
+    }
+
+    getAll = () => {
+        const roomList = this.roomList;
+        const chatJoiner = this.chatJoiner;
+
+        return { roomList, chatJoiner };
     }
 }
 

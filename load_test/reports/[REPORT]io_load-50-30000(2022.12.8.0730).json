@@ -1,0 +1,19 @@
+{
+    "TEST_NAME": "io load test (concurrency test)",
+    "test_start": "2022-12-08T07:30:54.640Z",
+    "test_end": "2022-12-08T07:31:44.703Z",
+    "test_running_time": "0m 50.06s",
+    "MAX_CLIENT": 50,
+    "THREAD_COUNT": 5,
+    "CLIENT_CREATE_INTERVAL_IN_MS": 100,
+    "TEST_DURATION_IN_MS": 30000,
+    "total_emit_count": 1184,
+    "emit_per_seconds": "23.65",
+    "total_scenario_try": 50,
+    "scenario_complete": 50,
+    "scenario_fail": 0,
+    "average_throughput": "53.80ms",
+    "AWS_MAX_CPU_UTILIZATION": "27.19%",
+    "AWS_MAX_MEM_USED": "705.70mb",
+    "AWS_MAX_MEM_USED_PERCENT": "17.57%"
+}

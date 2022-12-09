@@ -9,8 +9,8 @@ export default {
     loadHome: (req: Request, res: Response, next: NextFunction) => {
         const { socketId, userInfo }: PostBody = req.body;
 
-        console.log('loadHome activated!');
-        console.log(`socket: ${socketId}`);
+        // console.log('loadHome activated!');
+        // console.log(`socket: ${socketId}`);
 
         const script = homeScript.loadHome;
         const field = 'front';
@@ -44,7 +44,7 @@ export default {
         }
 
         // 채팅방 나가기
-        chatCache.leaveChat(socketId);
+        // chatCache.leaveChat(socketId);
 
         // 유저 세션 삭제
         // redis.del(userInfo.userId)

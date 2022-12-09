@@ -51,6 +51,10 @@ class SkillAttackWorker {
         worker?.terminate().catch(errorReport);
     }
 
+    all = () => {
+        return Object.fromEntries(this.threads);
+    }
+
 }
 
 
