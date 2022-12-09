@@ -3,6 +3,7 @@ import env from '../config.env';
 import { CharacterService } from '../services';
 import { fetchPost } from '../common';
 import { CommandRouter, SocketInput } from '../interfaces/socket';
+import { redis } from '../db/cache';
 
 
 const FRONT_URL = `http://${env.HOST}:${env.FRONT_PORT}`;

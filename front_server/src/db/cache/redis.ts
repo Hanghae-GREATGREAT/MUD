@@ -1,5 +1,5 @@
 import { createClient, RedisClientType, SetOptions } from 'redis';
-import env from '../../config.env';
+import env from '../../env';
 
 interface KeyPair {
     [key: string]: string | number;
