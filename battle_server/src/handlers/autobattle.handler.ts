@@ -9,6 +9,7 @@ import { UserInfo, UserStatus } from '../interfaces/user';
 import BATTLE from '../redis';
 import { MonsterService, BattleService, CharacterService } from '../services';
 import { autoAttackWorker, isMonsterDeadWorker, skillAttackWorker } from '../workers';
+import { dungeonScript } from '../scripts';
 
 
 export default {
@@ -36,7 +37,12 @@ export default {
     
             // 자동공격 사이클
             const autoAttackTimer = setInterval(async () => {
-                if (!battleCache.get(characterId)) return;
+                if (!battleCache.get(characterId)) {
+                    const error = '\n<span stype="color:red">[!!]</span>전투 중 문제가 발생하여 입구로 돌아갑니다.\n\n'
+                    const script = dungeonScript.entrance;
+                    const data = { field: 'dungeon', script: error+script };
+                    return BATTLE.to(socketId).emit('print', data);
+                }
                 battleCache.set(characterId, { autoAttackTimer });
 
                 // 기본공격
