@@ -37,14 +37,14 @@ export default {
     },
 
     disconnect: (socket: Socket) => {
-        const URL = `${FRONT_URL}/front/disconnect`;
-        fetchPost({ URL, socketId: socket.id });
+        // const URL = `${FRONT_URL}/front/disconnect`;
+        // fetchPost({ URL, socketId: socket.id });
 
-        console.log(socket.id, 'SOCKET DISCONNECTED');
+        // console.log(socket.id, 'SOCKET DISCONNECTED');
     },
 
     chatLeave: (socket: Socket) => {
-        console.log('disconnect');
+        console.log(socket.id, 'SOCKET DISCONNECTED');
         const URL = `${FRONT_URL}/chat/chatLeave`;
         fetchPost({ URL, socketId: socket.id });
     },

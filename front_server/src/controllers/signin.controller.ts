@@ -9,8 +9,6 @@ export default {
     signinUsername: (req: Request, res: Response, next: NextFunction) => {
         const { socketId, userInfo }: PostBody = req.body;
 
-        console.log(socketId);
-
         const script = signinScript.username;
         const field = 'sign:20';
 
@@ -21,7 +19,6 @@ export default {
     signinPassword: (req: Request, res: Response, next: NextFunction) => {
         const { socketId, userInfo, CMD }: PostBody = req.body;
 
-        console.log(`CMD: ${CMD}`);
         userInfo!.username = CMD!;
         const script = signinScript.password;
         const field = 'sign:21';
@@ -41,16 +38,14 @@ export default {
         }
 
         const username = userInfo.username;
-        console.log(`password CMd : ${CMD}`, userInfo);
         const password = CMD;
         const result = await UserService.signin({ username, password });
 
         if (!result) {
             const script = signinScript.incorrect;
             const field = 'front';
-
-            const error = new Error('signinCheck : Can not find result');
-            return next(error);
+            FRONT.to(socketId).emit('print', { field, script, userInfo: {} });
+            return;
         }
 
         const userId = result.userId;

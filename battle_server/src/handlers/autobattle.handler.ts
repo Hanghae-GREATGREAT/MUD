@@ -36,6 +36,7 @@ export default {
     
             // 자동공격 사이클
             const autoAttackTimer = setInterval(async () => {
+                if (!battleCache.get(characterId)) return;
                 battleCache.set(characterId, { autoAttackTimer });
 
                 // 기본공격
