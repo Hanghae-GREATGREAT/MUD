@@ -56,8 +56,6 @@ export const pvpConnection = (socket: Socket) => {
 
     socket.on('pvpBattle', (input: SocketInput) => pvpBattle.pvpBattleController(socket, input));
 
-    // socket.on('pvpResult', (input: SocketInput) => pvpBattle.pvpResultController(socket, input));
-
     socket.on('disconnect', () => common.pvpRoomLeave(socket));
 }
 

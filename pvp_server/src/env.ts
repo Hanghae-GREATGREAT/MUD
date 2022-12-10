@@ -11,9 +11,11 @@ class Env {
     DB_PASSWORD: string;
 
     NODE_ENV: string;
-    
+
+    HTTP: string;
+    WS: string;
     HOST: string;
-    FRONT_PORT: number;
+    WAS_LB: string;
 
     REDIS_URL: string;
 
@@ -45,10 +47,12 @@ class Env {
             `redis://${REDIS_HOST}:${REDIS_PORT}` :
             `redis://${REDIS_USER}:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}/0`;
 
-        this.FRONT_PORT = Number(process.env.FRONT_PORT);
+        this.HTTP = process.env.HTTP || 'http';
+        this.WS = process.env.WS || 'ws';
         this.HOST =
             this.NODE_ENV === 'production' ? process.env.HOST || 'localhost' : 'localhost';
-    }
+        this.WAS_LB = `${this.HOST}:${process.env.WAS_LB_PORT}`;
+        }
 }
 
 export default new Env();

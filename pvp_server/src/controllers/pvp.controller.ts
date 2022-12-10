@@ -5,12 +5,11 @@ import { HttpException } from '../common';
 import { PostBody } from '../interfaces/common';
 import { pvpHandler } from '../handler'
 import pvpService, { isEnd } from '../services/pvp.service';
-import redis from '../db/cache/redis';
 import pvpUsers from '../workers/pvpUsers';
 import fetchPost from '../common/fetch';
 import env from '../env';
 
-export const FRONT_URL = `http://${env.HOST}:${env.FRONT_PORT}`;
+export const FRONT_URL = `${env.HTTP}://${env.WAS_LB}/front`;
 
 export const maxUsers: number = 4;
 export const pvpRoomList: Map<string, boolean> = new Map<string, boolean>();

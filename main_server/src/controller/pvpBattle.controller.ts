@@ -5,7 +5,6 @@ import { fetchPost } from '../common';
 import { SocketInput, CommandRouter } from '../interfaces/socket';
 import { socketIds } from '../socket.routes';
 
-// const FRONT_URL = `http://${env.HOST}:${env.FRONT_PORT}`;
 const PVP_URL = `${env.HTTP}://${env.WAS_LB}/pvp`
 
 export default {
@@ -92,11 +91,4 @@ export default {
         const URL = `${PVP_URL}/pvp/pvpBattle`
         fetchPost({ URL, socketId: socket.id, CMD, userInfo, userStatus });
     },
-
-    // pvpResultController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
-    //     const [CMD1, CMD2]: string[] = line.trim().split(' ');
-
-    //     const URL = `${FRONT_URL}/chat/pvpChatLeave`
-    //     fetchPost({ URL, socketId: socketIds.get(userInfo.userId)!, userInfo });
-    // },
 }

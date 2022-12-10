@@ -3,7 +3,6 @@ import env from '../config.env';
 import { CharacterService } from '../services';
 import { fetchPost } from '../common';
 import { CommandRouter, SocketInput } from '../interfaces/socket';
-import { redis } from '../db/cache';
 import { socketIds } from '../socket.routes';
 
 
