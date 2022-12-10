@@ -239,7 +239,9 @@ class TestWorker {
         const REPORT_PATH = path.join(__dirname, 'reports', REPORT_NAME);
         fs.writeFileSync(REPORT_PATH, JSON.stringify(RESULT))
         console.log(`report created '${REPORT_NAME}'`);
+
         this.terminate();
+        process.exit(0);
     }
 
     #getTime = () => {

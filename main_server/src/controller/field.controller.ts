@@ -6,7 +6,7 @@ import { SocketInput, CommandHandler, CommandRouter } from '../interfaces/socket
 import { socketIds } from '../socket.routes';
 
 
-const BATTLE_URL = `http://${env.HOST}:${env.BATTLE_PORT}`;
+const BATTLE_URL = `${env.HTTP}://${env.WAS_LB}/battle`;
 
 // dungeon, village
 export default {

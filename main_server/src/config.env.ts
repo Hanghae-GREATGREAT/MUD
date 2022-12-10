@@ -43,18 +43,25 @@ class dBConnection {
 }
 
 class Env extends dBConnection {
-    PORT: number;
+    HTTP: string;
+    WS: string;
+
     HOST: string;
-    CLIENT_SOCKET: string;
     ROOT_PATH: string;
     SRC_PATH: string;
-
+    WAS_LB: string;
+    
+    PORT: number;
     BATTLE_PORT: number;
     FRONT_PORT: number;
     PVP_PORT: number;
 
+
     constructor() {
         super();
+
+        this.HTTP = process.env.HTTP || 'http';
+        this.WS = process.env.WS || 'ws';
 
         this.PORT = Number(process.env.PORT);
         this.BATTLE_PORT = Number(process.env.BATTLE_SERVER_PORT);
@@ -63,7 +70,8 @@ class Env extends dBConnection {
 
         this.HOST =
             this.NODE_ENV === 'production' ? process.env.HOST || 'localhost' : 'localhost';
-        this.CLIENT_SOCKET = process.env.CLIENT_SOCKET || 'localhost'
+        this.WAS_LB = `${this.HOST}:${process.env.WAS_LB_PORT}`;
+
 
         this.ROOT_PATH = path.resolve('./');
         this.SRC_PATH = path.resolve(__dirname);

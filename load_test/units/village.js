@@ -12,14 +12,14 @@ module.exports = (socket, WAIT_COMMAND) => {
             const start = performance.now();
             socket.emit(field, input);
     
-            socket.on('print', (res) => {
+            socket.once('print', (res) => {
                 resolve({ ...res, throughput: performance.now() - start });
             });
-            socket.on('printBattle',  (res) => {
+            socket.once('printBattle',  (res) => {
                 resolve({ ...res, throughput: performance.now() - start });
             });
     
-            socket.on('disconnect', () => {reject(socket.connected)});
+            socket.once('disconnect', () => {reject(socket.connected)});
         });
     }
 

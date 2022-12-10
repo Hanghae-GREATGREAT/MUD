@@ -107,8 +107,7 @@ export default {
             return next(error);
         }
 
-        const result = battleHandler.quit(socketId, userInfo);
-        if (result instanceof Error) return next(result);
+        battleHandler.quit(socketId, userInfo);
 
         res.status(200).end();
     },
@@ -165,8 +164,8 @@ export default {
             return next(error);
         }
 
-        const error = battleHandler.stopAutoWorker(socketId, userInfo);
-        error ? next(error) : res.status(200).end();
+        battleHandler.stopAutoWorker(socketId, userInfo);
+        res.status(200).end();
     },
     autoQuitS: async(req: Request, res: Response, next: NextFunction) => {
         const { socketId, userInfo }: PostBody = req.body;
@@ -175,8 +174,8 @@ export default {
             return next(error);
         }
 
-        const error = battleHandler.stopAutoS(socketId, userInfo);
-        error ? next(error) : res.status(200).end();
+        battleHandler.stopAutoS(socketId, userInfo);
+        res.status(200).end();
     },
 }
 

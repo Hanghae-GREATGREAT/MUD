@@ -20,7 +20,7 @@ RUN apk --no-cache add tzdata && \
     echo "Asia/Seoul" > /etc/timezone
 
 # PORT
-EXPOSE 3336
+# EXPOSE 3336
 
 # copy source to working directory
 WORKDIR /home/pvp

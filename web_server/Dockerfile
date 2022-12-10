@@ -20,7 +20,7 @@ RUN apk --no-cache add tzdata && \
     echo "Asia/Seoul" > /etc/timezone
 
 # PORT
-EXPOSE 8080
+# EXPOSE 8080
 
 # copy source to working directory
 WORKDIR /home/front

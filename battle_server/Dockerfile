@@ -20,7 +20,7 @@ RUN apk --no-cache add tzdata && \
     echo "Asia/Seoul" > /etc/timezone
 
 # PORT
-EXPOSE 3334
+# EXPOSE 3334
 
 # copy source to working directory
 WORKDIR /home/battle

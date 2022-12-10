@@ -16,7 +16,11 @@ const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
     cors: {
-        origin: env.CLIENT_SOCKET,
+        origin: [
+            'http://great-effect.com', 'https://great-effect.com',
+            'http://54.180.171.225', 'https://54.180.171.225',
+            'http://localhost:8080'
+        ],
         methods: 'POST, GET',
     },
 });

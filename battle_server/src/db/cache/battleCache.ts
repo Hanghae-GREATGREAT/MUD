@@ -4,9 +4,11 @@ import { BattleCacheInterface } from "../../interfaces/battle";
 class BattleCache {
 
     private battleMap: Map<number, BattleCacheInterface>;
+    private autoLoop: Map<number, NodeJS.Timer>;
 
     constructor() {
         this.battleMap =  new Map<number, BattleCacheInterface>();
+        this.autoLoop = new Map<number, NodeJS.Timer>();
     }
 
     private empty = {
@@ -43,6 +45,18 @@ class BattleCache {
         return new Promise((resolve, reject) => {
             resolve(this.battleMap.get(+key) || this.empty);
         });
+    }
+
+    setTimer = (key: string|number, timer: NodeJS.Timer) => {
+        this.autoLoop.set(+key, timer);
+    }
+
+    getTimer = (key: string|number) => {
+        return this.autoLoop.get(+key);
+    }
+
+    delTimer = (key: string|number) => {
+        this.autoLoop.delete(+key);
     }
 
 }
