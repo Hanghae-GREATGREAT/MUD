@@ -26,7 +26,7 @@ class PvpService {
             for (const room of pvpRooms) {
                 const isState = room[1] === true ? '전투중' : '대기중';
                 const getUsers = await this.getUsers(`${room[0]}`)
-                const watchers = await this.getUsers(`watch pvpRoom ${room}`)
+                const watchers = await this.getUsers(`watch ${room[0]}`)
                 script += `# [${getUsers}/${maxUsers}] # [${watchers}/${10-maxUsers}] # [ ${isState} ] # [ ${room[0].split(' ').pop()!} ]\n`
             }
         }
