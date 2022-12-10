@@ -3,6 +3,7 @@ import env from '../config.env';
 import { fetchPost } from '../common';
 import { front, village } from '../handler';
 import { SocketInput, CommandHandler, CommandRouter } from '../interfaces/socket';
+import { socketIds } from '../socket.routes';
 
 
 const BATTLE_URL = `http://${env.HOST}:${env.BATTLE_PORT}`;

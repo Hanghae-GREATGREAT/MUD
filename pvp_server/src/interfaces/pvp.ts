@@ -1,7 +1,7 @@
 import { UserStatus } from "./user";
 
 interface PvpPlayer {
-    socketId:string;
+    socketId: string;
     userStatus: UserStatus;
 }
 

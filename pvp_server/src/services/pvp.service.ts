@@ -1,10 +1,11 @@
 import { Request, Response, NextFunction } from "express";
+import fetchPost from "../common/fetch";
 import { pvpController } from "../controllers";
-import { maxUsers, pvpRoomList } from "../controllers/pvp.controller";
+import { FRONT_URL, maxUsers, pvpRoomList } from "../controllers/pvp.controller";
 import redis from "../db/cache/redis";
 import { PostBody } from "../interfaces/common";
 import { PvpUser } from '../interfaces/pvp'
-import { UserStatus } from "../interfaces/user";
+import { UserInfo, UserStatus } from "../interfaces/user";
 import PVP from "../redis";
 import { pvpScript } from "../scripts";
 
@@ -18,17 +19,19 @@ class PvpService {
     }
 
     async pvpRoomListScript() {
-        let script: string = pvpScript.welcomePvp + `=Users=====RoomName====\n`;
+        const pvpRooms = [...pvpRoomList];
+        let script: string = pvpScript.welcomePvp + `===== Users ======= State ==== RoomName ==\n`;
         if (pvpRoomList.size === 0) script += pvpScript.defaultList;
         else {
-            const pvpRooms = pvpRoomList.values();
             for (const room of pvpRooms) {
-                const getUsers = await this.getUsers(`pvpRoom ${room}`)
-                script += `# ${getUsers}/${maxUsers} # __${room}\n`
+                const isState = room[1] === true ? '전투중' : '대기중';
+                const getUsers = await this.getUsers(`${room[0]}`)
+                const watchers = await this.getUsers(`watch pvpRoom ${room}`)
+                script += `# [${getUsers}/${maxUsers}] # [${watchers}/${10-maxUsers}] # [ ${isState} ] # [ ${room[0].split(' ').pop()!} ]\n`
             }
         }
         
-        script += `=======================`
+        script += `==========================================`
         script += pvpScript.pvpJoin;
     
         return script;
@@ -43,8 +46,7 @@ class PvpService {
             return 'wrongCommand';
         }
 
-        const room = roomName.split(' ').pop();
-        if (pvpRoomList.has(room!)) {
+        if (pvpRoomList.has(roomName)) {
             const request = { body: { socketId, CMD: '이미 존재하는 방 입니다.', userStatus, option: 'pvpList' }};
             pvpController.wrongCommand(request as Request, res, next)
             return 'wrongCommand';
@@ -60,15 +62,23 @@ class PvpService {
             return 'wrongCommand'
         }
 
-        const room = roomName.split(' ').pop();
-        if (!pvpRoomList.has(room!)) {
+        if (!pvpRoomList.has(roomName)) {
             const request = { body: { socketId, CMD: '존재하지 않는 방이름 입니다.', userStatus, option: 'pvpList' }};
+            pvpController.wrongCommand(request as Request, res, next)
+            return 'wrongCommand'
+        }
+
+        // 관전자도 redis에 저장하고 총 인원 체크..
+        // 10명 채워지면 입장 불가
+        const watchers = await this.getUsers(`watch ${roomName}`)
+        if (watchers === 10 - maxUsers){
+            const request = { body: { socketId, CMD: '정원초과 입니다.', userStatus, option: 'pvpList' }};
             pvpController.wrongCommand(request as Request, res, next)
             return 'wrongCommand'
         }
     }
 
-    async createRoom({ socketId, CMD, userInfo, userStatus }: PostBody) {
+    async createRoom({ socketId, CMD, userInfo, userStatus, option: frontId }: PostBody) {
         console.log('createRoom');
         const roomName = `pvpRoom ${CMD}`;
 
@@ -78,30 +88,40 @@ class PvpService {
         userStatus.hp = userStatus!.maxhp;
         userStatus.damage = 0;
         userStatus.isTeam = 'A TEAM';
+        userStatus.frontId = frontId;
 
         const inputPlayer:PvpUser = { [userStatus.name]: { socketId, userStatus }}
         await redis.hSetPvpUser(roomName, inputPlayer)
 
-        pvpRoomList.add(roomName.split(' ').pop()!)
+        pvpRoomList.set(roomName, false)
 
         return userStatus;
     }
 
-    async joinRoom({ socketId, CMD, userInfo, userStatus }: PostBody) {
+    async joinRoom({ socketId, CMD, userInfo, userStatus, option: frontId }: PostBody) {
         console.log('joinRoom');
         const roomName = `pvpRoom ${CMD}`;
         const getUsers = await this.getUsers(roomName);
         PVP.in(socketId).socketsJoin(roomName);
         userStatus.pvpRoom = roomName;
-        if (getUsers === maxUsers) {
+        const isFight = pvpRoomList.get(roomName)
+        if (getUsers === maxUsers || isFight === true) {
             userStatus.damage = -1;
+            userStatus.frontId = frontId;
+            const inputPlayer:PvpUser = { [userStatus.name]: { socketId, userStatus }}
+            await redis.hSetPvpUser(`watch ${roomName}`, inputPlayer)
             PVP.to(socketId).emit('printBattle', { script: `${CMD}에 입장하셨습니다.\n`, field: 'pvpBattle', userStatus });
+
+            const URL = `${FRONT_URL}/chat/pvpChatStart`
+            fetchPost({ URL, socketId: userStatus.frontId!, userInfo, option: roomName });
+
             return undefined;
         }
 
         userStatus.hp = userStatus.maxhp;
         userStatus.damage = 0;
         userStatus.isTeam = getUsers + 1 <= maxUsers / 2 ? 'A TEAM' : 'B TEAM';
+        userStatus.frontId = frontId;
 
         const inputPlayer:PvpUser = { [userStatus.name]: { socketId, userStatus }}
         await redis.hSetPvpUser(roomName, inputPlayer)
@@ -122,12 +142,18 @@ class PvpService {
         const { socketId, CMD, userInfo, userStatus }: PostBody = req.body;
 
         const getUsers = await this.getUsers(roomName);
-
-        if (getUsers === maxUsers) {
+        
+        const isFight = pvpRoomList.get(roomName)
+        if (getUsers === maxUsers && isFight === false) {
+            pvpRoomList.set(roomName, true)
             const script = pvpScript.pvpRoomJoin(userStatus!.name) + '잠시 후 대전이 시작됩니다.\n'
             const field = 'pvpList';
             PVP.to(roomName).emit('fieldScriptPrint', { script, field });
             PVP.to(socketId).emit('printBattle', { field, userStatus });
+
+            const URL = `${FRONT_URL}/chat/pvpChatStart`
+            fetchPost({ URL, socketId: userStatus.frontId!, userInfo, option: roomName });
+
             setTimeout(() => {
                 const request = { body: { socketId, userStatus } };
                 pvpController.pvpStart(request as Request, res, next);
@@ -142,14 +168,15 @@ class PvpService {
         const roomName = userStatus.pvpRoom;
         let colorA:string = '';
         let colorB:string = '';
+
         if (result === 'A TEAM') colorA = 'color:#33FF66';
         else if (result === 'B TEAM') colorB = 'color:#33FF66'
+
         const firstLine = `= TEAM. =Lv. =========== Deamge ======== HP ================ Name======\n`;
         let ATeamScript: string = ``;
         let BTeamScript: string = ``;
         const pvpRoom = await redis.hGetPvpRoom(roomName!);
         const users = Object.entries(pvpRoom)
-        if (users.length < maxUsers) return;
 
         // 캐릭터별 이름, 레벨, 체력, 공격력, 방어력 표시
         for (const user of users) {
@@ -180,6 +207,7 @@ class PvpService {
         // 유저별로 선택할 수 있는 목록을 보여준다.
         // setTimeout(() => {
             for (let y = 0; y < maxUsers; y++) {
+                if (!users[y]) continue;
                 const user = users[y][1].userStatus
                 for (let i = 0; i < user!.skill.length; i++) {
                     let skills = user!.skill[i]
@@ -199,7 +227,7 @@ class PvpService {
         console.log(`leaveRoom`)
         const roomName = userStatus!.pvpRoom
         await redis.hDel(roomName!, userStatus.name)
-        userStatus!.pvpRoom = undefined;
+        await redis.hDel(`watch ${roomName}`, userStatus.name)
 
         const getUsers = await this.getUsers(roomName!);
         if (getUsers === 0) pvpRoomList.delete(roomName!.split(' ').pop()!);
@@ -209,6 +237,7 @@ class PvpService {
         console.log('pvpDisconnect')
         PVP.in(socketId).socketsLeave(roomName)
         await redis.hDel(roomName, name);
+        await redis.hDel(`watch ${roomName}`, name)
         const getUsers = await this.getUsers(roomName);
         if (getUsers === 0) pvpRoomList.delete(roomName.split(' ').pop()!);
     }
@@ -254,6 +283,7 @@ class PvpService {
         const TeamB: string[] = [];
 
         for (let i = 0; i < maxUsers; i++) {
+            if (!users[i]) continue;
             const user = users[i][1].userStatus.isTeam;
             if (user === 'A TEAM') TeamA.push(users[i][0]);
             else if (user === 'B TEAM') TeamB.push(users[i][0]);
@@ -323,6 +353,7 @@ class PvpService {
         let BTeamHp: number = 0;
 
         for (let i = 0; i < maxUsers; i++) {
+            if (!users[i]) continue;
             const user = users[i][1].userStatus;
             if (user.isTeam === 'A TEAM') ATeamHp += user.hp;
             else if (user.isTeam === 'B TEAM') BTeamHp += user.hp;
@@ -341,10 +372,33 @@ class PvpService {
             script += tempLine + `<span style='color:#33FF66'>${result}이 승리했다네 !</span>\n`;
             script += await this.pvpStart(userStatus, result)
             for (let i = 0; i < maxUsers; i++) {
+                if (!users[i]) continue;
                 const user = users[i][1].userStatus;
                 user.hp = user.maxhp;
                 PVP.to(users[i][1].socketId).emit('printBattle', { field, userStatus: user });
                 await this.leaveRoom(user);
+
+                const sendUser: UserInfo = {
+                    userId: 0,
+                    username: user.username,
+                    characterId: user.characterId,
+                    name: user.name
+                }
+
+                const URL = `${FRONT_URL}/chat/pvpChatLeave`
+                fetchPost({ URL, socketId: user.frontId!, userInfo: sendUser });
+            }
+            const watchers = Object.entries(await redis.hGetPvpRoom(`watch ${roomName}`));
+            for (const watcher of watchers) {
+                const user = watcher[1].userStatus;
+                const sendUser: UserInfo = {
+                    userId: 0,
+                    username: user.username,
+                    characterId: user.characterId,
+                    name: user.name
+                }
+                const URL = `${FRONT_URL}/chat/pvpChatLeave`
+                fetchPost({ URL, socketId: user.frontId!, userInfo: sendUser });
             }
             setTimeout(() => {
                 script += `5초 후 마을로 돌아갑니다..\n`;

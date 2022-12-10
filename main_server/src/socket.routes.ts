@@ -2,6 +2,8 @@ import { Socket } from 'socket.io';
 import { battle, chat, common, field, home, TEST, village, pvpBattle } from './controller';
 import { ChatInput, SocketInput } from './interfaces/socket';
 
+export const socketIds: Map<number, string> = new Map<number, string>(); 
+
 
 export const battleConnection = (socket: Socket) => {
     console.log('BATTLE NAMESPACE CONNECTED', socket.id);
@@ -50,7 +52,7 @@ export const pvpConnection = (socket: Socket) => {
 
     socket.on('pvpBattle', (input: SocketInput) => pvpBattle.pvpBattleController(socket, input));
 
-    socket.on('pvpResult', (input: SocketInput) => pvpBattle.pvpResultController(socket, input));
+    // socket.on('pvpResult', (input: SocketInput) => pvpBattle.pvpResultController(socket, input));
 
     socket.on('disconnect', () => common.pvpRoomLeave(socket));
 }

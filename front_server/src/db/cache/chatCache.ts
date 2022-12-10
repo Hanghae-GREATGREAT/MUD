@@ -4,12 +4,16 @@ interface ChatJoinerInterface {
 
 class ChatCache {
     private roomList: Map<number, Set<string>>;
+    private pvpRoomList: Map<string, Set<string>>;
     private chatJoiner: ChatJoinerInterface = {};
+    private pvpChatJoiner: ChatJoinerInterface = {};
     // 채팅방 입장 정원
     private setJoinerLimit: number = 5;
+    private pvpSetJoinerLimit: number = 10;
 
     constructor() {
         this.roomList = new Map();
+        this.pvpRoomList = new Map();
     }
 
     joinChat(socketId: string): Array<number> {
@@ -65,6 +69,25 @@ class ChatCache {
         return [enteredIndex, joinerSize, this.setJoinerLimit];
     }
 
+    pvpJoinChat(socketId: string, pvpRoom: string): Array<number> {
+        const roomName: Set<string> = this.pvpRoomList.get(pvpRoom)!
+
+        if (!roomName) {
+            this.pvpRoomList.set(pvpRoom, new Set())
+        }
+        this.pvpRoomList.get(pvpRoom)!.add(socketId)
+
+        const joinerSize = this.pvpRoomList.get(pvpRoom)!.size;
+
+        // 채팅방 참가 데이터 등록
+        this.pvpChatJoiner[socketId] = `${pvpRoom}`;
+
+        console.log('TEST pvpRoomList : ', this.pvpRoomList);
+        console.log('TEST pvpChatJoiner : ', this.pvpChatJoiner);
+
+        return [joinerSize, this.pvpSetJoinerLimit];
+    }
+
     leaveChat(socketId: string): string {
         // tempData
         let joinerScript: string = '';
@@ -86,10 +109,37 @@ class ChatCache {
         return joinerScript;
     }
 
+    pvpLeaveChat(socketId: string): string {
+        // tempData
+        let joinerScript: string = '';
+
+        // 참가중인 채팅방이 있다면 데이터 정리
+        if (this.pvpChatJoiner[socketId]) {
+            const pvpRoom = this.pvpChatJoiner[socketId];
+            this.pvpRoomList.get(pvpRoom)!.delete(socketId);
+            delete this.pvpChatJoiner[socketId];
+            // console.log(`채팅방 참여데이터 삭제 성공\n(${socketId} : ${pvpRoom})\n`);
+
+            const joinerCnt: number = this.pvpRoomList.get(pvpRoom)!.size;
+
+            if (joinerCnt === 0) this.pvpRoomList.delete(pvpRoom);
+
+            joinerScript = `(${joinerCnt}/${this.pvpSetJoinerLimit})`;
+        }
+
+        return joinerScript;
+    }
+
     getJoinedRoom(socketId: string): string {
         // console.log('socketId :', socketId);
         // console.log('chatJoiner : ', this.chatJoiner);
         return this.chatJoiner[socketId];
+    }
+
+    pvpGetJoinedRoom(socketId: string): string {
+        // console.log('socketId :', socketId);
+        // console.log('chatJoiner : ', this.chatJoiner);
+        return this.pvpChatJoiner[socketId];
     }
 
     getAll = () => {

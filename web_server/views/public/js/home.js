@@ -223,6 +223,7 @@ chatForm.submit((e) => {
     const data = {
         name,
         message: chatInput.val(),
+        field: decryptData[0]
     };
     frontSocket.emit('submit', data);
     chatInput.val('');
@@ -256,6 +257,8 @@ const chatNewMessage = (script) => {
 };
 
 frontSocket.on('chat', chatNewMessage);
+
+frontSocket.on('pvpChat', chatNewMessage);
 
 frontSocket.on('joinChat', chatEnterRoom);
 
