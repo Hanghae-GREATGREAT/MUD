@@ -4,7 +4,7 @@ import { fetchPost } from '../common';
 import { SocketInput, CommandRouter } from '../interfaces/socket';
 
 
-const FRONT_URL = `http://${env.HOST}:${env.FRONT_PORT}`;
+const FRONT_URL = `${env.HTTP}://${env.WAS_LB}/front`;
 
 export default {
     noneController: (socket: Socket, { line, userInfo }: SocketInput) => {
@@ -24,8 +24,6 @@ export default {
 
     frontController: async (socket: Socket, { line, userInfo }: SocketInput) => {
         const [CMD1, CMD2]: string[] = line.trim().toUpperCase().split(' ');
-
-        console.log('frontController Activated');
 
         const cmdRoute: CommandRouter = {
             IN: 'signinUsername',

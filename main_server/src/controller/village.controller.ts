@@ -5,7 +5,7 @@ import { fetchPost } from '../common';
 import { SocketInput, CommandHandler, CommandRouter } from '../interfaces/socket';
 
 
-const PVP_URL = `http://${env.HOST}:${env.PVP_PORT}`;
+const PVP_URL = `${env.HTTP}://${env.WAS_LB}/pvp`;
 
 export default {
     storyController: async (socket: Socket, { line, userInfo }: SocketInput) => {
@@ -46,7 +46,6 @@ export default {
 
     enhanceController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
-        console.log('socketon battle');
 
         const commandHandler: CommandHandler = {
             '도움말': npc.enhanceHelp,
@@ -65,7 +64,6 @@ export default {
 
     gambleController: async (socket: Socket, { line, userInfo }: SocketInput) => {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
-        console.log('socketon battle');
 
         const commandHandler: CommandHandler = {
             '도움말': npc.gambleHelp,
@@ -84,7 +82,6 @@ export default {
 
     pvpController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
         const [CMD1, CMD2]: string[] = line.trim().split(' ');
-        console.log('pvpController', line);
         if (CMD1 === '3') return village.NpcList(socket, CMD2, userInfo);
 
         const cmdRoute: CommandRouter = {

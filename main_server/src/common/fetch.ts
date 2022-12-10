@@ -1,4 +1,4 @@
-import fetch from 'node-fetch';
+import fetch, { Response } from 'node-fetch';
 import errorReport from './errorReport';
 import { UserInfo, UserStatus } from '../interfaces/user';
 
@@ -12,7 +12,7 @@ interface PostParams {
     option?: string;
 }
 
-const fetchPost = (params: PostParams): Promise<unknown> => {
+const fetchPost = (params: PostParams): Promise<Response> => {
     const { URL, socketId, CMD, userInfo, userStatus, option } = params;
 
     const headers = { 
@@ -28,7 +28,7 @@ const fetchPost = (params: PostParams): Promise<unknown> => {
             headers,
             body: JSON.stringify(body),
         }).then((response) => {
-            console.log(userInfo?.userId, response.status, response.url)
+            console.log(`[${new Date(Date.now()+1000*60*60*9)}]`, response.status, response.url, userInfo?.userId);
             resolve(response);
         }).catch((error) => {
             errorReport(error);
@@ -40,7 +40,7 @@ const fetchPost = (params: PostParams): Promise<unknown> => {
                 headers,
                 body: JSON.stringify(body),
             }).then((response) => {
-                console.log(userInfo?.userId, response.status, response.url);
+                console.log(`[${new Date(Date.now()+1000*60*60*9)}]`, response.status, response.url, userInfo?.userId);
                 resolve(response);
             }).catch(errorReport);
         });

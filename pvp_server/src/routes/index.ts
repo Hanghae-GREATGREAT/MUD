@@ -5,8 +5,8 @@ import pvpNpcRouter from './pvpNpc.routes'
 const router = Router();
 
 router.get('/', (req, res) => {
-    console.log('BATTLE INDEX');
-    res.status(200).json({ message: 'BATTLE INDEX '});
+    console.log('PVP INDEX');
+    res.status(200).json({ message: 'PVP INDEX '});
 });
 
 router.get('/report', (req, res) => {

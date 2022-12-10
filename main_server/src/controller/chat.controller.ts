@@ -4,7 +4,7 @@ import { fetchPost } from '../common';
 import { ChatInput } from '../interfaces/socket';
 
 
-const FRONT_URL = `http://${env.HOST}:${env.FRONT_PORT}`;
+const FRONT_URL = `${env.HTTP}://${env.WAS_LB}/front`;
 
 export default {
     chatController: (socket: Socket, { name, message, field }: ChatInput) => {

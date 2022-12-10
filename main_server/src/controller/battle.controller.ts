@@ -5,7 +5,7 @@ import { fetchPost } from '../common';
 import { SocketInput, CommandHandler, CommandRouter } from '../interfaces/socket';
 
 
-const BATTLE_URL = `http://${env.HOST}:${env.BATTLE_PORT}`;
+const BATTLE_URL = `${env.HTTP}://${env.WAS_LB}/battle`;
 
 export default {
 

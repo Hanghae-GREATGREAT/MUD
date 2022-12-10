@@ -3,12 +3,6 @@ import { pvpController } from '../controllers';
 
 const router = Router();
 
-router.get('/', (req, res) => {
-    res.status(200).json({
-        message: 'PVP SERVER',
-    });
-});
-
 router.post('/createRoom', pvpController.createRoom);
 
 router.post('/joinRoom', pvpController.joinRoom);

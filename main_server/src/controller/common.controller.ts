@@ -3,11 +3,10 @@ import env from '../config.env';
 import { CharacterService } from '../services';
 import { fetchPost } from '../common';
 import { CommandRouter, SocketInput } from '../interfaces/socket';
-import { redis } from '../db/cache';
 
 
-const FRONT_URL = `http://${env.HOST}:${env.FRONT_PORT}`;
-const PVP_URL = `http://${env.HOST}:${env.PVP_PORT}`;
+const FRONT_URL = `${env.HTTP}://${env.WAS_LB}/front`;
+const PVP_URL = `${env.HTTP}://${env.WAS_LB}/pvp`;
 
 export default {
     globalController: (socket: Socket, { line, userInfo, option }: SocketInput) => {
