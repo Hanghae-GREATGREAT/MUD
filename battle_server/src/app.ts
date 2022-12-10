@@ -47,6 +47,27 @@ app.get('/cache', (req, res) => {
     });
 });
 
+app.get('/clear', (req, res) => {
+    const cache = battleCache.getAll();
+    const battles = Object.entries(cache);
+
+    const total = battles.length;
+    let cnt = 0;
+    for (const battle of battles) {
+        const [ characterId, cache ] = battle;
+        if (Object.hasOwn(cache, 'autoAttackTimer')) {
+            clearInterval(cache.autoAttackTimer);
+            cnt++;
+        }
+        battleCache.delete(characterId);
+    }
+
+    const message = `deleted Timers: ${cnt}, deleted Cache: ${total}`;
+    console.log(message);
+
+    res.status(200).json({ message });
+});
+
 app.get('/report', (req, res) => {
 
     res.status(200).json({

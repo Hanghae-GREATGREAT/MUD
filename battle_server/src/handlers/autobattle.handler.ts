@@ -1,7 +1,7 @@
 import { setEnvironmentData } from 'worker_threads';
 import { InferAttributes } from 'sequelize';
 import { autoBattleHandler, deadReport } from '.';
-import { errorReport, HttpException } from '../common';
+import { battleError, errorReport, HttpException } from '../common';
 import { battleCache } from '../db/cache';
 import { Skills } from '../db/models';
 import { AutoBattleResult, DeadReport } from '../interfaces/battle';
@@ -14,17 +14,19 @@ import { autoAttackWorker, isMonsterDeadWorker, skillAttackWorker } from '../wor
 export default {
     autoBattle: (socketId: string, userInfo: UserInfo, userStatus: UserStatus): Promise<void> => {
         return new Promise(async(resolve, reject) => {
-            let tempScript = ''
+            let LOOP = false;
             let field = 'autoBattleS';
             const { characterId } = userStatus;
             const { dungeonLevel } = battleCache.get(characterId);
             // console.log('auto.handler.ts: check cache ', dungeonLevel, characterId)
             if (!dungeonLevel) {
-                const error = new HttpException(
-                    'autoBattle cache error: dungeonLevel missing', 
-                    500, socketId
-                );
-                return reject(error);
+                battleError(socketId);
+                return resolve();
+                // const error = new HttpException(
+                //     'autoBattle cache error: dungeonLevel missing', 
+                //     500, socketId
+                // );
+                // return reject(error);
             }
     
             // 몬스터 생성
@@ -35,12 +37,17 @@ export default {
             BATTLE.to(socketId).emit('printBattle', { script: monsterCreatedScript, field, userStatus })
     
             // 자동공격 사이클
-            const autoAttackTimer = setInterval(async () => {
-                if (!battleCache.get(characterId)) return;
+            const autoAttackTimer = setInterval(() => {
+                if (LOOP || battleCache.get(characterId).dungeonLevel === 0) {
+                    clearInterval(autoAttackTimer);
+                    battleError(socketId);
+                    return resolve();
+                }
                 battleCache.set(characterId, { autoAttackTimer });
+                // battleCache.setTimer(characterId, autoAttackTimer);
 
                 // 기본공격
-                autoAttack(socketId, userStatus).then(async(result) => {
+                autoAttack(socketId, userStatus).then((result) => {
                     if (!result) {
                         BATTLE.to(socketId).emit('void');
                         return resolve();
@@ -56,6 +63,7 @@ export default {
                     // dead = 'moster'|'player'|undefined
                     const { dead } = battleCache.get(characterId);
                     if (dead) {
+                        LOOP = true;
                         clearInterval(autoAttackTimer);
                         battleCache.delete(characterId);
                       
@@ -76,7 +84,7 @@ export default {
                         return resolve();
                     }
     
-                    autoBattleSkill(socketId, userStatus).then(async(result) => {
+                    autoBattleSkill(socketId, userStatus).then((result) => {
                         if (!result) {
                             BATTLE.to(socketId).emit('void');
                             return resolve();
@@ -89,6 +97,7 @@ export default {
     
                         const { dead } = battleCache.get(characterId);
                         if (dead) {
+                            LOOP = true;
                             clearInterval(autoAttackTimer);
                             battleCache.delete(characterId);
     
@@ -105,7 +114,7 @@ export default {
                 }).catch(reject);
             }, 1500)
     
-            BATTLE.to(socketId).emit('print', { script: tempScript, userInfo, field });
+            BATTLE.to(socketId).emit('print', { script: '', userInfo, field });
         });
     },
 
@@ -115,11 +124,13 @@ export default {
             // console.log('battle.handler.ts: 자동전투 핸들러 시작, ', characterId);
             const { dungeonLevel } = battleCache.get(characterId);
             if (!dungeonLevel) {
-                const error = new HttpException(
-                    'autoBattleWorker cache error: dungeonLevel missing', 
-                    500, socketId
-                );
-                return reject(error);
+                battleError(socketId);
+                return resolve();
+                // const error = new HttpException(
+                //     'autoBattleWorker cache error: dungeonLevel missing', 
+                //     500, socketId
+                // );
+                // return reject(error);
             }
 
             // 몬스터 생성
@@ -143,11 +154,13 @@ export default {
             // 사망판정 워커 할당 >> 소켓 송신
             isMonsterDeadWorker.check(socketId, userStatus, receiver).then(({ status, script}) => {
                 if (status === 'terminate') {
-                    const error = new HttpException(
-                        'deadworker resolved: terminated',
-                        500, socketId
-                    );
-                    return reject(error);
+                    battleError(socketId);
+                    return resolve();
+                    // const error = new HttpException(
+                    //     'deadworker resolved: terminated',
+                    //     500, socketId
+                    // );
+                    // return reject(error);
                 }
 
                 const battleResult: AutoBattleResult = {
@@ -188,11 +201,12 @@ export const autoAttack = async (socketId: string, userStatus: UserStatus): Prom
     // 유저&몬스터 정보 불러오기
     const monster = await MonsterService.findByPk(monsterId);
     if (!monster) {
-        const error = new HttpException(
-            'autoAttack cache Error: monster missing', 
-            500, socketId
-        );
-        return errorReport(error);
+        return battleError(socketId);
+        // const error = new HttpException(
+        //     'autoAttack cache Error: monster missing', 
+        //     500, socketId
+        // );
+        // return errorReport(error);
     }
     const { name: monsterName, attack: monsterDamage } = monster;
 
@@ -204,18 +218,22 @@ export const autoAttack = async (socketId: string, userStatus: UserStatus): Prom
 
     const isDead = await MonsterService.refreshStatus(monsterId, playerHit, characterId);
     if (!isDead) {
-        const error = new HttpException(
-            'autoAttack monster refresh Error: monster missing', 
-            500, socketId
-        );
-        return errorReport(error);
+        return battleError(socketId);
+        // const error = new HttpException(
+        //     'autoAttack monster refresh Error: monster missing', 
+        //     500, socketId
+        // );
+        // return errorReport(error);
     }
 
     // 몬스터 사망
     if (isDead === 'dead') {
         battleCache.set(characterId, { dead: 'monster' });
         const report = await deadReport.monster(monster, tempScript);
-        if (report instanceof Error) return errorReport(report); // Error
+        if (report instanceof Error) {
+            return battleError(socketId);
+            // return errorReport(report); // Error
+        }
         return report; // { field, script, userStatus }
     }
 
@@ -255,19 +273,21 @@ const autoBattleSkill = async(socketId: string,
     // 몬스터 정보 가져오기
     const { monsterId } = battleCache.get(characterId);
     if (!monsterId) {
-        const error = new HttpException(
-            'autoBattleSkill get monster error: monsterId missing', 
-            500, socketId
-        )
-        return errorReport(error);
+        return battleError(socketId);
+        // const error = new HttpException(
+        //     'autoBattleSkill get monster error: monsterId missing', 
+        //     500, socketId
+        // )
+        // return errorReport(error);
     }
     const monster = await MonsterService.findByPk(monsterId);
     if (!monster) {
-        const error = new HttpException(
-            'autoBattleSkill get monster error: monster missing', 
-            500, socketId
-        )
-        return errorReport(error);
+        return battleError(socketId);
+        // const error = new HttpException(
+        //     'autoBattleSkill get monster error: monster missing', 
+        //     500, socketId
+        // )
+        // return errorReport(error);
     }
     const { name: monsterName } = monster;
 
@@ -286,18 +306,22 @@ const autoBattleSkill = async(socketId: string,
     // 몬스터에게 스킬 데미지 적중
     const isDead = await MonsterService.refreshStatus(monsterId, realDamage, characterId);
     if (!isDead) {
-        const error = new HttpException(
-            'autoBattleSkill monster refresh error: monster missing', 
-            500, socketId
-        )
-        return errorReport(error);
+        return battleError(socketId);
+        // const error = new HttpException(
+        //     'autoBattleSkill monster refresh error: monster missing', 
+        //     500, socketId
+        // )
+        // return errorReport(error);
     }
     tempScript += `\n당신의 ${skillName} 스킬이 ${monsterName}에게 적중! => ${realDamage}의 데미지!\n`;
 
     if (isDead === 'dead') {
         battleCache.set(characterId, { dead: 'monster' });
         const report = await deadReport.monster(monster, tempScript);
-        if (report instanceof Error) return errorReport(report); // Error
+        if (report instanceof Error) {
+            return battleError(socketId);
+            // return errorReport(report); // Error
+        }
         return report; // { field, script, userStatus }
     }
 
@@ -328,4 +352,5 @@ const skillSelector = (skill: InferAttributes<Skills, { omit: never; }>[]) => {
 
     return skill[skillIndex];
 }
+
 

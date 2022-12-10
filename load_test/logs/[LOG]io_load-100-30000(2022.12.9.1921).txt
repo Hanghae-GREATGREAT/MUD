@@ -1,0 +1,19 @@
+[LOG]io_load-100-30000(2022.12.9.1921).txt
+            
+### DETAIL LOGS ###
+
+progress: 0, clients: 0, connections: 0
+emits/sec: 0.00, scenario completion: 0/0 => 0, average throughput: NaNms
+
+progress: 0, clients: 100, connections: 200
+emits/sec: 52.49, scenario completion: 0/0 => 0, average throughput: 157.72ms
+
+progress: 0, clients: 100, connections: 200
+emits/sec: 70.06, scenario completion: 0/0 => 0, average throughput: 252.65ms
+
+progress: 0, clients: 100, connections: 200
+emits/sec: 72.31, scenario completion: 0/0 => 0, average throughput: 208.53ms
+
+progress: 100, clients: 0, connections: 0
+emits/sec: 37.37, scenario completion: 100/100 => 100, average throughput: 178.35ms
+
