@@ -1,0 +1,23 @@
+{
+    "TEST_REPORT": "[LOG]auto_scenario_prac1-50-100000(2022. 12. 7. 2339).txt",
+    "TEST_NAME": "auto_scenario_prac1",
+    "test_start": "2022-12-07T23:39:14.307Z",
+    "test_end": "2022-12-07T23:41:34.716Z",
+    "test_running_time": "2m 20.41s",
+    "MAX_CLIENTS": 50,
+    "CLIENT_CREATE_INTERVAL_IN_MS": 500,
+    "TEST_DURATION_IN_MS": 100000,
+    "total_emit_count": 425,
+    "emit_per_seconds": "3.03",
+    "total_scenario_try": 50,
+    "scenario_complete": 50,
+    "scenario_fail": 0,
+    "average_throughput": "20.24ms",
+    "average_memory_usage": "32.79/230.30MB",
+    "average_cpu_usage": "5.78ms/sec",
+    "average_cpu_consumption": "2.14%",
+
+    "AWS_MAX_CPU_UTILIZATION": "19.3%",
+    "AWS_MAX_MEM_USED": "720.86mb",
+    "AWS_MAX_MEM_USED_PERCENT": "17.53%"
+}

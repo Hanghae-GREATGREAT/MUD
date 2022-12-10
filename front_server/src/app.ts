@@ -30,6 +30,28 @@ app.use((req, res, next) => {
     next();
 });
 
+app.get('/', (req, res) => {
+    console.log('FRONT INDEX');
+    res.status(200).json({ message: 'FRONT INDEX' });
+});
+
+import { chatCache } from './db/cache';
+import { FRONT, CHAT } from './redis';
+app.get('/cache', (req, res) => {
+    const result = chatCache.getAll();
+    console.log(FRONT)
+    console.log(CHAT)
+
+    res.status(200).json({ ...result, FRONT, CHAT });
+});
+
+app.get('/report', (req, res) => {
+
+    res.status(200).json({
+        report: process.report?.getReport()
+    })
+});
+
 app.use('/front', frontRouter);
 app.use('/chat', chatRouter);
 

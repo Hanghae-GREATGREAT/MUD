@@ -1,5 +1,5 @@
 import { deadReport, dungeonHandler } from '.';
-import { HttpException } from '../common';
+import { errorReport, HttpException } from '../common';
 import { battleCache } from '../db/cache';
 import { UserInfo, UserStatus } from '../interfaces/user';
 import BATTLE from '../redis';
@@ -19,13 +19,13 @@ export default {
                 battleCache.set(characterId, { autoAttackTimer });
     
                 autoAttack(socketId, userStatus).then(async(result) => {
-                    if (result instanceof Error) return reject(result);
+                    if (!result) {
+                        BATTLE.to(socketId).emit('void');
+                        return resolve();
+                    }
 
                     const { field, script, userStatus } = result;
-                    const data = { 
-                        field: field === undefined ? 'action' : field,
-                        script, userInfo, userStatus 
-                    };
+                    const data = { field: 'action', script, userInfo, userStatus };
 
                     BATTLE.to(socketId).emit('printBattle', data);
     
@@ -212,33 +212,33 @@ export default {
                 `stopAutoWorker Error: ${err?.message}`,
                 500, socketId
             )
-            return error;
+            errorReport(error);
         }
     },
     stopAutoS: (socketId: string, userInfo: UserInfo): HttpException|void => {
-        const { characterId } = userInfo;
-        const { autoAttackTimer } = battleCache.get(characterId);
-        battleCache.delete(characterId);
-
-        const script = `
-        ========================================
-        전투를 중단하고 입구로 돌아갑니다. \n\n`
-        const field = 'dungeon';
-
-        if (!autoAttackTimer) {
+        try {
+            const { characterId } = userInfo;
+            const { autoAttackTimer } = battleCache.get(characterId);
+            clearInterval(autoAttackTimer);        
+            battleCache.delete(characterId);
+    
+            const script = `
+            ========================================
+            전투를 중단하고 입구로 돌아갑니다. \n\n`
+            const field = 'dungeon';
+            BATTLE.to(socketId).emit('print', { field, script, userInfo });
+    
+            setTimeout(() => {
+                const script = dungeonScript.entrance;
+                BATTLE.to(socketId).emit('print', { field, script, userInfo });
+            }, 1000);
+            
+        } catch (err: any) {
             const error = new HttpException(
-                `stopAutoS Error: no Timer`,
+                `stopAutoS Error: no Timer, ${err.message}`,
                 500, socketId
-            )
-            BATTLE.to(socketId).emit('print', { field, script, userInfo });
-            return error;
+            );
+            errorReport(error);
         }
-        clearInterval(autoAttackTimer);        
-        BATTLE.to(socketId).emit('print', { field, script, userInfo });
-
-        setTimeout(() => {
-            const script = dungeonScript.entrance;
-            BATTLE.to(socketId).emit('print', { field, script, userInfo });
-        }, 1000);
     },
 }

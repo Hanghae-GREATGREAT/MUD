@@ -58,6 +58,10 @@ class isMonsterDead {
         worker?.terminate();
     }
 
+    all = () => {
+        return Object.fromEntries(this.threads);
+    }
+
 }
 
 

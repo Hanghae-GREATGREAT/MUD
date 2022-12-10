@@ -1,0 +1,148 @@
+[LOG]auto_scenario_prac1-50-100000(2022. 12. 7. 2339).txt
+        
+SERVER CURRENT STATUS
+load average: 0.2/1min, 0.36/5min, 0.27/15min
+total memory: 31.97/229.32mb, cpu usuage: 3.67951ms/sec, cpu occupied: 1.65927%
+        
+### DETAIL LOGS ###
+
+progress: 0, clients: 9, connections: 27
+emits/sec: 1.57, scenario completion: 0/0 => 0, average throughput: 34.07ms
+load average: 0.18/1min, 0.36/5min, 0.27/15min
+total memory: 31.97/228.85mb, cpu usuage: 3.75832ms/sec, cpu occupied: 1.66608%
+
+progress: 0, clients: 19, connections: 57
+emits/sec: 5.59, scenario completion: 0/0 => 0, average throughput: 33.13ms
+load average: 0.16/1min, 0.35/5min, 0.27/15min
+total memory: 32.22/232.79mb, cpu usuage: 3.97915ms/sec, cpu occupied: 1.72973%
+
+progress: 0, clients: 29, connections: 87
+emits/sec: 8.78, scenario completion: 0/0 => 0, average throughput: 33.26ms
+load average: 0.15/1min, 0.35/5min, 0.27/15min
+total memory: 33.22/231.62mb, cpu usuage: 4.18985ms/sec, cpu occupied: 1.7868%
+
+progress: 0, clients: 39, connections: 117
+emits/sec: 11.40, scenario completion: 0/0 => 0, average throughput: 34.68ms
+load average: 0.14/1min, 0.34/5min, 0.27/15min
+total memory: 33.22/230.46mb, cpu usuage: 4.43846ms/sec, cpu occupied: 1.85512%
+
+progress: 0, clients: 49, connections: 147
+emits/sec: 5.19, scenario completion: 0/0 => 0, average throughput: 35.10ms
+load average: 0.29/1min, 0.37/5min, 0.27/15min
+total memory: 33.22/229.90mb, cpu usuage: 4.65947ms/sec, cpu occupied: 1.91837%
+
+progress: 1, clients: 49, connections: 147
+emits/sec: 8.80, scenario completion: 1/1 => 100, average throughput: 35.75ms
+load average: 0.27/1min, 0.36/5min, 0.27/15min
+total memory: 33.22/228.93mb, cpu usuage: 4.8824ms/sec, cpu occupied: 1.98351%
+
+progress: 1, clients: 49, connections: 147
+emits/sec: 4.20, scenario completion: 0/0 => 0, average throughput: 36.11ms
+load average: 0.32/1min, 0.37/5min, 0.28/15min
+total memory: 33.22/228.53mb, cpu usuage: 5.02741ms/sec, cpu occupied: 2.02205%
+
+progress: 2, clients: 48, connections: 144
+emits/sec: 1.60, scenario completion: 1/1 => 100, average throughput: 13.96ms
+load average: 0.38/1min, 0.38/5min, 0.28/15min
+total memory: 33.22/228.70mb, cpu usuage: 5.16992ms/sec, cpu occupied: 2.05896%
+
+progress: 3, clients: 47, connections: 141
+emits/sec: 1.20, scenario completion: 1/1 => 100, average throughput: 14.52ms
+load average: 0.35/1min, 0.38/5min, 0.28/15min
+total memory: 33.22/228.47mb, cpu usuage: 5.27681ms/sec, cpu occupied: 2.0839%
+
+progress: 6, clients: 44, connections: 132
+emits/sec: 1.40, scenario completion: 3/3 => 100, average throughput: 15.15ms
+load average: 0.56/1min, 0.42/5min, 0.29/15min
+total memory: 32.22/228.99mb, cpu usuage: 5.39737ms/sec, cpu occupied: 2.1141%
+
+progress: 6, clients: 44, connections: 132
+emits/sec: 0.00, scenario completion: 0/0 => 0, average throughput: NaNms
+load average: 0.52/1min, 0.41/5min, 0.29/15min
+total memory: 32.22/228.85mb, cpu usuage: 5.52374ms/sec, cpu occupied: 2.13801%
+
+progress: 7, clients: 43, connections: 129
+emits/sec: 1.20, scenario completion: 1/1 => 100, average throughput: 14.33ms
+load average: 0.47/1min, 0.41/5min, 0.29/15min
+total memory: 32.47/228.58mb, cpu usuage: 5.644ms/sec, cpu occupied: 2.16321%
+
+progress: 8, clients: 42, connections: 126
+emits/sec: 1.00, scenario completion: 1/1 => 100, average throughput: 12.79ms
+load average: 0.44/1min, 0.4/5min, 0.29/15min
+total memory: 32.72/228.31mb, cpu usuage: 5.7633ms/sec, cpu occupied: 2.18384%
+
+progress: 10, clients: 40, connections: 120
+emits/sec: 2.20, scenario completion: 2/2 => 100, average throughput: 12.89ms
+load average: 0.4/1min, 0.39/5min, 0.29/15min
+total memory: 32.72/228.70mb, cpu usuage: 5.86575ms/sec, cpu occupied: 2.20392%
+
+progress: 12, clients: 38, connections: 114
+emits/sec: 2.00, scenario completion: 2/2 => 100, average throughput: 12.00ms
+load average: 0.45/1min, 0.4/5min, 0.29/15min
+total memory: 33.72/230.00mb, cpu usuage: 6.04009ms/sec, cpu occupied: 2.24006%
+
+progress: 16, clients: 34, connections: 102
+emits/sec: 3.19, scenario completion: 4/4 => 100, average throughput: 11.26ms
+load average: 0.41/1min, 0.39/5min, 0.29/15min
+total memory: 32.72/231.34mb, cpu usuage: 6.15826ms/sec, cpu occupied: 2.25367%
+
+progress: 20, clients: 30, connections: 90
+emits/sec: 2.20, scenario completion: 4/4 => 100, average throughput: 14.21ms
+load average: 0.38/1min, 0.39/5min, 0.29/15min
+total memory: 32.72/231.39mb, cpu usuage: 6.25131ms/sec, cpu occupied: 2.26761%
+
+progress: 28, clients: 22, connections: 66
+emits/sec: 5.80, scenario completion: 8/8 => 100, average throughput: 13.21ms
+load average: 0.35/1min, 0.38/5min, 0.28/15min
+total memory: 32.72/230.66mb, cpu usuage: 6.3594ms/sec, cpu occupied: 2.28577%
+
+progress: 29, clients: 21, connections: 63
+emits/sec: 0.80, scenario completion: 1/1 => 100, average throughput: 10.91ms
+load average: 0.32/1min, 0.37/5min, 0.28/15min
+total memory: 32.72/230.98mb, cpu usuage: 6.43333ms/sec, cpu occupied: 2.29007%
+
+progress: 31, clients: 19, connections: 57
+emits/sec: 1.60, scenario completion: 2/2 => 100, average throughput: 12.25ms
+load average: 0.29/1min, 0.37/5min, 0.28/15min
+total memory: 32.72/231.19mb, cpu usuage: 6.51303ms/sec, cpu occupied: 2.29502%
+
+progress: 35, clients: 15, connections: 45
+emits/sec: 3.79, scenario completion: 4/4 => 100, average throughput: 11.48ms
+load average: 0.27/1min, 0.36/5min, 0.28/15min
+total memory: 32.72/230.67mb, cpu usuage: 6.57299ms/sec, cpu occupied: 2.29983%
+
+progress: 37, clients: 13, connections: 39
+emits/sec: 2.19, scenario completion: 2/2 => 100, average throughput: 20.87ms
+load average: 0.25/1min, 0.36/5min, 0.28/15min
+total memory: 32.72/231.03mb, cpu usuage: 6.65086ms/sec, cpu occupied: 2.3018%
+
+progress: 41, clients: 9, connections: 27
+emits/sec: 1.99, scenario completion: 4/4 => 100, average throughput: 11.35ms
+load average: 0.23/1min, 0.35/5min, 0.27/15min
+total memory: 32.72/230.67mb, cpu usuage: 6.74323ms/sec, cpu occupied: 2.30838%
+
+progress: 43, clients: 7, connections: 21
+emits/sec: 1.60, scenario completion: 2/2 => 100, average throughput: 27.87ms
+load average: 0.21/1min, 0.34/5min, 0.27/15min
+total memory: 32.72/230.67mb, cpu usuage: 6.79763ms/sec, cpu occupied: 2.30469%
+
+progress: 46, clients: 4, connections: 12
+emits/sec: 3.00, scenario completion: 3/3 => 100, average throughput: 22.09ms
+load average: 0.19/1min, 0.34/5min, 0.27/15min
+total memory: 32.72/230.70mb, cpu usuage: 6.85315ms/sec, cpu occupied: 2.3023%
+
+progress: 47, clients: 3, connections: 9
+emits/sec: 0.20, scenario completion: 1/1 => 100, average throughput: 11.97ms
+load average: 0.18/1min, 0.33/5min, 0.27/15min
+total memory: 32.72/230.28mb, cpu usuage: 6.91499ms/sec, cpu occupied: 2.29977%
+
+progress: 49, clients: 1, connections: 3
+emits/sec: 1.60, scenario completion: 2/2 => 100, average throughput: 10.93ms
+load average: 0.16/1min, 0.33/5min, 0.27/15min
+total memory: 32.72/230.66mb, cpu usuage: 6.96179ms/sec, cpu occupied: 2.29305%
+
+progress: 50, clients: 0, connections: 0
+emits/sec: 0.80, scenario completion: 1/1 => 100, average throughput: 30.21ms
+load average: 0.15/1min, 0.32/5min, 0.27/15min
+total memory: 32.72/230.30mb, cpu usuage: 7.01628ms/sec, cpu occupied: 2.28472%
+

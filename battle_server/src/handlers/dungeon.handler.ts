@@ -43,7 +43,7 @@ export default {
             script = dungeonInfo + dungeonScript.enter;            
 
             const dungeonLevel = +CMD;
-            const { characterId } = userInfo;
+            const { characterId } = userInfo;            
             battleCache.set(characterId, { dungeonLevel });
             field = 'battle';
         }

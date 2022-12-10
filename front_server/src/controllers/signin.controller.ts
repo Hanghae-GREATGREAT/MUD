@@ -9,8 +9,6 @@ export default {
     signinUsername: (req: Request, res: Response, next: NextFunction) => {
         const { socketId, userInfo }: PostBody = req.body;
 
-        console.log(socketId);
-
         const script = signinScript.username;
         const field = 'sign:20';
 
@@ -21,7 +19,6 @@ export default {
     signinPassword: (req: Request, res: Response, next: NextFunction) => {
         const { socketId, userInfo, CMD }: PostBody = req.body;
 
-        console.log(`CMD: ${CMD}`);
         userInfo!.username = CMD!;
         const script = signinScript.password;
         const field = 'sign:21';
@@ -35,13 +32,12 @@ export default {
     signinCheck: async (req: Request, res: Response, next: NextFunction) => {
         let { socketId, userInfo, CMD }: PostBody = req.body;
 
-        if (!userInfo) {
+        if (!userInfo || !userInfo.username) {
             const error = new Error('signinCheck : Can not find userInfo');
             return next(error);
         }
 
         const username = userInfo.username;
-        console.log(`password CMd : ${CMD}`);
         const password = CMD;
         const result = await UserService.signin({ username, password });
 
@@ -52,8 +48,6 @@ export default {
             FRONT.to(socketId).emit('pwCoveringOff');
             FRONT.to(socketId).emit('print', { field, script, userInfo });
             return;
-            // const error = new Error('signinCheck : Can not find result');
-            // return next(error);
         }
 
         const userId = result.userId;

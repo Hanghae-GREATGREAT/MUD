@@ -28,6 +28,32 @@ app.use((req, res, next) => {
     next();
 });
 
+app.get('/', (req, res) => {
+    console.log('BATTLE INDEX');
+    res.status(200).json({ message: 'BATTLE INDEX '});
+});
+
+import { autoAttackWorker, skillAttackWorker, isMonsterDeadWorker } from './workers';
+import { battleCache } from './db/cache';
+app.get('/cache', (req, res) => {
+    const autoWorkers = autoAttackWorker.all();
+    const skillWorkers = skillAttackWorker.all();
+    const deadWorkers = isMonsterDeadWorker.all();
+    const cache = battleCache.getAll();
+    console.log(cache);
+
+    res.status(200).json({
+        autoWorkers, skillWorkers, deadWorkers, cache
+    });
+});
+
+app.get('/report', (req, res) => {
+
+    res.status(200).json({
+        report: process.report?.getReport()
+    })
+});
+
 app.use('/battle', battleRouter);
 app.use('/dungeon', dungeonRouter);
 
