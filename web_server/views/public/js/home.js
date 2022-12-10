@@ -228,15 +228,6 @@ chatForm.submit((e) => {
     chatInput.val('');
 });
 
-frontSocket.on('chat', chatNewMessage);
-
-frontSocket.on('joinChat', chatEnterRoom);
-
-frontSocket.on('leaveChat', chatLeaveRoom);
-
-frontSocket.on('reEnterChat', reEnterRoom);
-
-
 const chatEnterRoom = (username, joinerCntScript) => {
     const newMessage = `<span>${username}님이 입장하셨습니다.\n</span>`;
     // 입장인원 갱신
@@ -263,3 +254,11 @@ const chatNewMessage = (script) => {
     chatBoxId.append(newMessage);
     chatBoxId.scrollTop(Number.MAX_SAFE_INTEGER);
 };
+
+frontSocket.on('chat', chatNewMessage);
+
+frontSocket.on('joinChat', chatEnterRoom);
+
+frontSocket.on('leaveChat', chatLeaveRoom);
+
+frontSocket.on('reEnterChat', reEnterRoom);

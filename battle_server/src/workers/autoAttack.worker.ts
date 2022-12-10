@@ -5,8 +5,7 @@ import { battleCache } from '../db/cache';
 import { AutoWorkerData, AutoWorkerResult } from '../interfaces/worker';
 import { UserStatus } from '../interfaces/user';
 import BATTLE from '../redis';
-import { errorReport, HttpException } from '../common';
-import { dungeonScript } from '../scripts';
+import { battleError, errorReport, HttpException } from '../common';
 
 
 // console.log('autoAttack.worker.ts: 9 >> 자동공격 워커 모듈 동작, ', workerData.userStatus.characterId)
@@ -19,6 +18,7 @@ parentPort?.once('message', ({ autoToDead }) => {
 function autoAttackWorker({ socketId, userStatus }: AutoWorkerData, autoToDead: MessagePort) {    
 
     const { characterId } = userStatus;
+    let LOOP = false;
     // console.log('autoAttack.worker.ts: 18 >> autoAttackWorker() 시작', characterId);
 
     const cache = getEnvironmentData(characterId);
@@ -26,14 +26,12 @@ function autoAttackWorker({ socketId, userStatus }: AutoWorkerData, autoToDead: 
 
     // console.log(battleCache.getAll());
 
-    const autoAttackTimer = setInterval(async () => {
-        if (!battleCache.get(characterId)) {
-            const error = '\n<span stype="color:red">[!!]</span>전투 중 문제가 발생하여 입구로 돌아갑니다.\n\n'
-            const script = dungeonScript.entrance;
-            const data = { field: 'dungeon', script: error+script };
-            return BATTLE.to(socketId).emit('print', data);
-        }
+    const autoAttackTimer = setInterval(() => {
         // console.log('autoAttack.worker.ts: START INTERVAL', Date.now(), characterId);
+        if (LOOP || battleCache.get(characterId).dungeonLevel === 0) {
+            clearInterval(autoAttackTimer); 
+            return battleError(socketId);
+        }
         battleCache.set(characterId, { autoAttackTimer });
 
         autoAttack(socketId, userStatus).then(({ status, script }: AutoWorkerResult) => {
@@ -48,11 +46,13 @@ function autoAttackWorker({ socketId, userStatus }: AutoWorkerData, autoToDead: 
 
             return;
         }).catch((err) => {
-            const error = new HttpException(
-                `autoAttack worker error: ${err.message}`,
-                500, socketId
-            );
-            errorReport(error);
+            console.log(`autoAttack worker error: ${err.message}`);
+            return battleError(socketId);
+            // const error = new HttpException(
+            //     `autoAttack worker error: ${err.message}`,
+            //     500, socketId
+            // );
+            // errorReport(error);
         });
     
     }, 500);

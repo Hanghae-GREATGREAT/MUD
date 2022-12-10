@@ -1,5 +1,5 @@
 import { deadReport, dungeonHandler } from '.';
-import { errorReport, HttpException } from '../common';
+import { battleError, errorReport, HttpException } from '../common';
 import { battleCache } from '../db/cache';
 import { UserInfo, UserStatus } from '../interfaces/user';
 import BATTLE from '../redis';
@@ -12,19 +12,19 @@ import { autoAttack } from './autobattle.handler';
 
 export default {
     attack: (socketId: string, userInfo: UserInfo, userStatus: UserStatus): Promise<void> => {
-        return new Promise(async(resolve, reject) => {
+        return new Promise((resolve, reject) => {
             const { characterId } = userInfo;
+            let LOOP = false;
 
-            const autoAttackTimer = setInterval(async () => {
-                if (!battleCache.get(characterId)) {
-                    const error = '\n<span stype="color:red">[!!]</span>전투 중 문제가 발생하여 입구로 돌아갑니다.\n\n'
-                    const script = dungeonScript.entrance;
-                    const data = { field: 'dungeon', script: error+script };
-                    return BATTLE.to(socketId).emit('print', data);
+            const autoAttackTimer = setInterval(() => {
+                if (LOOP || battleCache.get(characterId).dungeonLevel === 0) {
+                    clearInterval(autoAttackTimer);
+                    battleError(socketId);
+                    return resolve();
                 }
                 battleCache.set(characterId, { autoAttackTimer });
     
-                autoAttack(socketId, userStatus).then(async(result) => {
+                autoAttack(socketId, userStatus).then((result) => {
                     if (!result) {
                         BATTLE.to(socketId).emit('void');
                         return resolve();
@@ -38,6 +38,7 @@ export default {
                     // dead = 'moster'|'player'|undefined
                     const { dead } = battleCache.get(characterId);
                     if (dead) {
+                        LOOP = true;
                         const { autoAttackTimer, dungeonLevel } = battleCache.get(characterId);
                         clearInterval(autoAttackTimer);
                         battleCache.delete(characterId);
@@ -69,10 +70,11 @@ export default {
         const { characterId } = userInfo;
         const { monsterId } = battleCache.get(characterId);
         if (!monsterId) {
-            return new HttpException(
-                'quit battle cache error: monsterId missing', 
-                500, socketId
-            )
+            return battleError(socketId);
+            // return new HttpException(
+            //     'quit battle cache error: monsterId missing', 
+            //     500, socketId
+            // )
         }
 
         // 몬스터 삭제
@@ -102,19 +104,23 @@ export default {
             // 몬스터 정보 가져오기
             const { monsterId } = battleCache.get(characterId);
             if (!monsterId) {
-                const error = new HttpException(
-                    'skill select cache error: monsterId missing', 
-                    500, socketId
-                );
-                return reject(error);
+                battleError(socketId);
+                return resolve();
+                // const error = new HttpException(
+                //     'skill select cache error: monsterId missing', 
+                //     500, socketId
+                // );
+                // return reject(error);
             }
             const monster = await MonsterService.findByPk(monsterId);
             if (!monster) {
-                const error = new HttpException(
-                    'skill select cache error: monster missing', 
-                    500, socketId
-                );
-                return reject(error);
+                battleError(socketId);
+                return resolve();
+                // const error = new HttpException(
+                //     'skill select cache error: monster missing', 
+                //     500, socketId
+                // );
+                // return reject(error);
             }        
             const { name: monsterName } = monster;
     
@@ -134,11 +140,13 @@ export default {
             // 몬스터에게 스킬 데미지 적용 
             const isDead = await MonsterService.refreshStatus(monsterId, realDamage, characterId);
             if (!monster) {
-                const error = new HttpException(
-                    'skill monster refresh error: monster missing', 
-                    500, socketId
-                );
-                return reject(error);
+                battleError(socketId);
+                return resolve();
+                // const error = new HttpException(
+                //     'skill monster refresh error: monster missing', 
+                //     500, socketId
+                // );
+                // return reject(error);
             }  
             tempScript += `\n당신의 ${skillName} 스킬이 ${monsterName}에게 적중! => ${realDamage}의 데미지!\n`;
     
@@ -146,7 +154,12 @@ export default {
             if (isDead === 'dead' || dead === 'monster') {
                 clearInterval(autoAttackTimer);
                 const report = await deadReport.monster(monster, tempScript);
-                if (report instanceof Error) return reject(report); // Error
+                if (report instanceof Error) {
+                    console.log(report.message);
+                    battleError(socketId);
+                    return resolve();
+                    // return reject(report); // Error
+                }
     
                 BATTLE.to(socketId).emit('printBattle', report); // { field, script, userStatus }
                 battleCache.delete(characterId);
@@ -169,11 +182,13 @@ export default {
         // 이벤트 루프에 이미 들어가서 대기중인 타이머가 있을 수 있음
         const { autoAttackTimer } = battleCache.get(characterId);
         if (!autoAttackTimer) {
-            console.log('autoAttackTimer Error', autoAttackTimer)
-            return new HttpException(
-                'stopAuto cache error: autoAttackTimer missing', 
-                500, socketId
-            );
+            console.log('stopAuto cache error: autoAttackTimer missing')
+            return battleError(socketId);
+            // console.log('autoAttackTimer Error', autoAttackTimer)
+            // return new HttpException(
+            //     'stopAuto cache error: autoAttackTimer missing', 
+            //     500, socketId
+            // );
         }
         clearInterval(autoAttackTimer);       
         if (autoAttackTimer === undefined) {
@@ -192,7 +207,7 @@ export default {
         const field = 'dungeon';
         BATTLE.to(socketId).emit('print', { field, script, userInfo });
     },
-    stopAutoWorker: (socketId: string, userInfo: UserInfo): HttpException|void => {
+    stopAutoWorker: (socketId: string, userInfo: UserInfo) => {
         const { characterId } = userInfo;
 
         try {
@@ -214,14 +229,16 @@ export default {
                 BATTLE.to(socketId).emit('print', { field, script, userInfo });
             }, 1000);
         } catch (err: any) {
-            const error = new HttpException(
-                `stopAutoWorker Error: ${err?.message}`,
-                500, socketId
-            )
-            errorReport(error);
+            console.log(`stopAutoWorker Error: ${err?.message}`);
+            return battleError(socketId);
+            // const error = new HttpException(
+            //     `stopAutoWorker Error: ${err?.message}`,
+            //     500, socketId
+            // )
+            // errorReport(error);
         }
     },
-    stopAutoS: (socketId: string, userInfo: UserInfo): HttpException|void => {
+    stopAutoS: (socketId: string, userInfo: UserInfo) => {
         try {
             const { characterId } = userInfo;
             const { autoAttackTimer } = battleCache.get(characterId);
@@ -240,11 +257,13 @@ export default {
             }, 1000);
             
         } catch (err: any) {
-            const error = new HttpException(
-                `stopAutoS Error: no Timer, ${err.message}`,
-                500, socketId
-            );
-            errorReport(error);
+            console.log(`stopAutoS Error: no Timer, ${err.message}`);
+            return battleError(socketId);
+            // const error = new HttpException(
+            //     `stopAutoS Error: no Timer, ${err.message}`,
+            //     500, socketId
+            // );
+            // errorReport(error);
         }
     },
 }

@@ -25,7 +25,7 @@ router.get('/battleCache', (req, res) => {
 
 import os from 'os';
 import process from 'process';
-import perfHooks from 'perf_hooks';
+import { emitCount } from './socket.routes';
 
 router.get('/resource', (req, res) => {
     // const { CPU: PREV_CPU } = req.body;
@@ -54,8 +54,9 @@ router.get('/resource', (req, res) => {
 router.get('/report', (req, res) => {
 
     res.status(200).json({
-        report: process.report?.getReport()
-    })
+        report: process.report?.getReport(),
+        emitCount
+    });
 });
 
 export default router;

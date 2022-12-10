@@ -14,7 +14,7 @@ const {
 const URL = '3.39.234.153:3333';
 
 // LOGGING VARIABLES
-const througputs = [];
+const throughputs = [];
 let clientCount = 0;
 let emitCount = 0;
 let previousEmitCount = 0;
@@ -25,6 +25,8 @@ let previousCompleteCount = 0;
 
 const MAIN_SOCKETS = new Set();
 const FRONT_SOCKETS = new Set();
+const BATTLE_SOCKETS = new Set();
+const PVP_SOCKETS = new Set();
 
 const sleep = (ms) => {
     return new Promise(r => setTimeout(r, ms))
@@ -36,40 +38,79 @@ const createClient = async(i) => {
     const { io } = require('socket.io-client');
     const mainSocket = io(`ws://${URL}/`, { transports: ['websocket'] });
     const frontSocket = io(`ws://${URL}/front`, { transports: ['websocket'] });
+    const battleSocket = io(`ws://${URL}/battle`, { transports: ['websocket'] });
+    const pvpSocket = io(`ws://${URL}/pvp`, { transports: ['websocket'] });
 
     MAIN_SOCKETS.add(mainSocket);
     FRONT_SOCKETS.add(frontSocket);
+    BATTLE_SOCKETS.add(battleSocket);
+    PVP_SOCKETS.add(pvpSocket);
 
     const WAIT_COMMAND = Math.random()*2 + 0.5;
-    const front = require('./units/front')(frontSocket, WAIT_COMMAND);
-    const village = require('./units/village')(mainSocket, WAIT_COMMAND);
+    const front = require('../units/front')(frontSocket, WAIT_COMMAND);
+    const village = require('../units/village')(mainSocket, WAIT_COMMAND);
+    const battle = require('../units/battle')(battleSocket, WAIT_COMMAND);
+    const pvp = require('../units/pvp')(pvpSocket, WAIT_COMMAND);
+    const fields = { front, battle, village, pvp };
+    const selector = require('../units/selector')(fields);
     
+    let chatLoop = undefined;
     try {
-        const username = `user${i}`;
         clientCount++;
-
+        
         // SET START TIME
         const CLIENT_START = Date.now();
+        
+        // SIGN IN / OUT
+        const SIGN = Math.round(Math.random());
+        const username = SIGN === 0 ? `user${i}` : 'user'+`${Date.now()*i}`.slice(-10);
+        const res = await selector.sign[SIGN](username);
+        let { field, userInfo, userStatus, cnt, throughput } = res;
+        emitCount += cnt;
+        throughputs.push(...throughput);
 
-        /**
-         * const response = await emit()
-         * emitCount += response.cnt
-         * througputs.push(...response.throughput);
-         */
 
+        chatLoop = setInterval(() => {
+            if (Math.random() < 0.80) return;
+            front.chatSubmit(username, 'chatchat').then((res) => {
+                throughputs.push(...res.throughput);
+                emitCount++;
+                console.log(res.script);
+            })
+        }, 3000);
+    
         while (true) {
-            const res1 = await front.signin(username);
-            emitCount += res1.cnt;
-            througputs.push(...res1.throughput);
-
-            const res2 = await front.signout();
-            emitCount += res2.cnt;
-            througputs.push(...res1.throughput);
-
-            if (Date.now() - CLIENT_START > TEST_DURATION_IN_MS) {
-                break;
+            const FIELD = Math.random() < 0.9 ?
+                selector[field] : selector['global'];
+            const SELECT = (Math.random()*FIELD.length)|0;
+            
+            console.log(field, SELECT);
+            if (field === 'battle' || (field === 'dungeon' && SELECT <= 1)) {
+                const BATTLE_DURATION = (
+                    ( Math.random()*(TEST_DURATION_IN_MS/2) + 10 )|0
+                );
+                console.log('battle duration: ', username, BATTLE_DURATION);
+    
+                const res = await FIELD[0](field, userInfo, userStatus, BATTLE_DURATION);
+                field = res.field;
+                userInfo = res.userInfo;
+                userStatus = res.userStatus;
+                emitCount += res.cnt;
+                throughputs.push(...res.throughput);
+            } else {
+                const res = await FIELD[SELECT](field, userInfo, userStatus);
+                field = res.field;
+                userInfo = res.userInfo;
+                userStatus = res.userStatus;
+                emitCount += res.cnt;
+                throughputs.push(...res.throughput);
             }
+            
+            console.log(field, userInfo.userId, userStatus.username);
+    
+            if (Date.now() - CLIENT_START > TEST_DURATION_IN_MS) break;
         }
+
 
         console.log('TEST SUCCESS', i)
         completeCount++;
@@ -81,10 +122,17 @@ const createClient = async(i) => {
         failCount++;
         clientCount--;
     }
+    clearInterval(chatLoop);
+
     mainSocket.disconnect();
     frontSocket.disconnect();
+    battleSocket.disconnect();
+    pvpSocket.disconnect();
+
     MAIN_SOCKETS.delete(mainSocket);
     FRONT_SOCKETS.delete(frontSocket);
+    BATTLE_SOCKETS.delete(battleSocket);
+    PVP_SOCKETS.delete(pvpSocket);
 }
 
 const main = async() => {
@@ -111,14 +159,6 @@ try {
         if (expire - start > 2*TEST_DURATION_IN_MS) {
             failCount += clientCount;
             clientCount = 0;
-            
-            const [ main_remains, front_remains ] = [ MAIN_SOCKETS.values(), FRONT_SOCKETS.values() ];            
-            let [ main, front ] = [ main_remains.next(), front_remains.next() ];
-            while (!main.done && !front.done) {
-                main.value?.disconnect();
-                front.value?.disconnect();
-                [ main, front ] = [ main_remains.next(), front_remains.next() ];
-            }
         }
 
         // EMIT COUNTS
