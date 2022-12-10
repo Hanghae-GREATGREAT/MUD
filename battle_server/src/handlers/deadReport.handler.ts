@@ -10,7 +10,7 @@ import { UserStatus } from '../interfaces/user';
 import { battleCache } from '../db/cache';
 import BATTLE from '../redis';
 import { autoBattleHandler } from '.';
-import { HttpException } from '../common';
+import { battleError, HttpException } from '../common';
 import { battleScript } from '../scripts';
 
 
@@ -18,18 +18,14 @@ export default {
     autoMonster: async(socketId: string, characterId: number, script: string): Promise<HttpException|void> => {
         // console.log('battleCache, after DEAD', battleCache.get(characterId), characterId)
         const { monsterId, dungeonLevel } = battleCache.get(characterId);
-        if (!monsterId) {
-            return new HttpException(
-                'deadReport.autoMonster cache error: monsterId missing', 
-                500, socketId
-            );
+        if (!monsterId || !dungeonLevel) {
+            console.log('deadReport.autoMonster cache error: monsterId missing');
+            return battleError(socketId);
         }
         const monster = await MonsterService.findByPk(monsterId);
         if (!monster) {
-            return new HttpException(
-                'deadReport.autoMonster error: monster missing', 
-                500, socketId
-            );
+            console.log('deadReport.autoMonster error: monster missing');
+            return battleError(socketId);
         }
 
         const { name, exp } = monster;
@@ -63,10 +59,8 @@ export default {
 
         const { monsterId } = battleCache.get(characterId);
         if (!monsterId) {
-            return new HttpException(
-                'deadReport.autoPlayer cache error: monsterId missing', 
-                500, socketId
-            );
+            console.log('deadReport.autoPlayer cache error: monsterId missing');
+            return battleError(socketId);
         }
         battleCache.delete(characterId);
         MonsterService.destroyMonster(monsterId, characterId);

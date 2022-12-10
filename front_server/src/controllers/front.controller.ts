@@ -47,7 +47,7 @@ export default {
         // chatCache.leaveChat(socketId);
 
         // 유저 세션 삭제
-        // redis.del(userInfo.userId)
+        // redis.del(userInfo.characterId)
 
         const script = homeScript.signout;
         const field = 'front';
