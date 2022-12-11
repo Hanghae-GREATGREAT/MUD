@@ -4,7 +4,6 @@ import redis from '../db/cache/redis';
 import { maxUsers } from '../controllers/pvp.controller';
 import PVP from '../redis';
 import { isEnd } from '../services/pvp.service';
-import { PvpUser } from '../interfaces/pvp';
 
 console.log('pvpUsers.worker.ts: 8 >> 자동공격 워커 모듈 동작, ', workerData.userStatus.characterId)
 

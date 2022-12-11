@@ -1,6 +1,6 @@
 import { createClient, RedisClientType, SetOptions } from 'redis';
 import env from '../../env';
-import { PvpUser } from '../../interfaces/pvp';
+import { PvpRooms, PvpUser } from '../../interfaces/pvp';
 import { UserStatus } from '../../interfaces/user';
 
 interface KeyPair {
@@ -38,6 +38,19 @@ class RedisCloud {
 
     async get(key: string|number) {
         return await this.client.get(key.toString());
+    }
+
+    async getRooms() {
+        const room = await this.client.hGetAll('rooms');
+
+        const entries = Object.entries(room);
+        const parse = [];
+        for (const entry of entries) {
+            parse.push([entry[0], JSON.parse(entry[1])]);
+        }
+        const output = Object.fromEntries(parse);
+
+        return output;
     }
 
     async del(key: string|number) {
@@ -82,12 +95,29 @@ class RedisCloud {
         await this.client.hSet(key.toString(), input);
     }
 
+    async hGetOne(field: string): Promise<PvpRooms> {
+        const rooms = await this.client.hGetAll('rooms');
+        
+        const entries = Object.entries(rooms);
+        const parse = [];
+        for (const entry of entries) {
+           if (entry[0] === field) parse.push([entry[0], JSON.parse(entry[1])]);
+        }
+        const output: PvpRooms = Object.fromEntries(parse);
+
+        return output;
+    }
+
     async hGetAll(key: string|number) {
         return await this.client.hGetAll(key.toString());
     }
 
     async hDel(key: string|number, field: string) {
         await this.client.hDel(key.toString(), field);
+    }
+
+    async pvpRoomDel(field: string) {
+        await this.client.hDel('rooms', field);
     }
 
     async hDelBattleCache(key: string|number) {

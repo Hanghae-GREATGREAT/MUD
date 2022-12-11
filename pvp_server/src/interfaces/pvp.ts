@@ -10,7 +10,12 @@ interface PvpUser {
     [key: string]: PvpPlayer;
 }
 
+interface PvpRooms {
+    [key: string]: string | boolean;
+}
+
 export {
     PvpPlayer,
     PvpUser,
+    PvpRooms,
 }
