@@ -3,7 +3,7 @@ import env from '../config.env';
 import { village } from '../handler';
 import { fetchPost } from '../common';
 import { SocketInput, CommandRouter } from '../interfaces/socket';
-
+import { socketIds } from '../socket.routes';
 
 const PVP_URL = `${env.HTTP}://${env.WAS_LB}/pvp`
 
@@ -35,9 +35,12 @@ export default {
             fetchPost({ URL, socketId: socket.id, CMD: CMD2, userInfo, userStatus, option: 'pvpList' })
             return;
         }
+
+        const frontId = socketIds.get(userInfo.userId);
+
         const URL = `${PVP_URL}/pvp/${cmdRoute[CMD1]}`;
-        socket.data.pvpUser = `${userStatus.name},pvpRoom ${CMD2}`
-        fetchPost({ URL, socketId: socket.id, CMD: CMD2, userInfo, userStatus })
+        socket.data.pvpUser = `${userStatus.name},pvpRoom ${CMD2},${userInfo.userId}`
+        fetchPost({ URL, socketId: socket.id, CMD: CMD2, userInfo, userStatus, option: frontId })
     },
 
     // pvp룸 입장 후 6명이 되기까지 기다리는중
@@ -87,18 +90,5 @@ export default {
         }
         const URL = `${PVP_URL}/pvp/pvpBattle`
         fetchPost({ URL, socketId: socket.id, CMD, userInfo, userStatus });
-    },
-
-    pvpResultController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
-        const [CMD1, CMD2]: string[] = line.trim().split(' ');
-
-        if (CMD1 === '도움말') {
-            const URL = `${PVP_URL}/pvp/help`
-            fetchPost({ URL, socketId: socket.id, CMD: CMD1, userInfo, option: 'pvpResult' })
-            return;
-        }
-
-        const URL = `${PVP_URL}/pvp/pvpResult`
-        fetchPost({ URL, socketId: socket.id, CMD: line, userInfo, userStatus });
     },
 }

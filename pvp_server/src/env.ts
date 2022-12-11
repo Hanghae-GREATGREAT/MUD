@@ -10,10 +10,19 @@ class Env {
     DB_USER: string;
     DB_PASSWORD: string;
 
+    NODE_ENV: string;
+
+    HTTP: string;
+    WS: string;
+    HOST: string;
+    WAS_LB: string;
+
     REDIS_URL: string;
     REDIS_CLOUD: string;
 
     constructor() {
+        this.NODE_ENV = process.env.NODE_ENV ? process.env.NODE_ENV.trim().toLowerCase() : 'development';
+
         this.PORT = Number(process.env.PVP_PORT);
         this.SRC_PATH = path.resolve(__dirname);
 
@@ -44,7 +53,13 @@ class Env {
         const CLOUD_HOST = process.env.REDIS_CLOUD_HOST;
         const CLOUD_PORT = process.env.REDIS_CLOUD_PORT;
         this.REDIS_CLOUD = `redis://${CLOUD_USER}:${CLOUD_PASSWORD}@${CLOUD_HOST}:${CLOUD_PORT}/0`;
-    }
+        
+        this.HTTP = process.env.HTTP || 'http';
+        this.WS = process.env.WS || 'ws';
+        this.HOST =
+            this.NODE_ENV === 'production' ? process.env.HOST || 'localhost' : 'localhost';
+        this.WAS_LB = `${this.HOST}:${process.env.WAS_LB_PORT}`;
+        }
 }
 
 export default new Env();

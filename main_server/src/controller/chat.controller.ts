@@ -8,9 +8,19 @@ const FRONT_URL = `${env.HTTP}://${env.WAS_LB}/front`;
 
 export default {
     chatController: (socket: Socket, { name, message, field }: ChatInput) => {
+        console.log(`chatController : ${field}`)
         const script = `${name}: ${message}\n`;
+        const pvpFields: string[] = ['pvpJoin', 'pvpBattle']
+
+        if(pvpFields.includes(field)) {
+            const PVP = `${FRONT_URL}/chat/pvpSubmit`;
+            fetchPost({ URL: PVP, socketId: socket.id, option: script });
+            return;
+        }
 
         const URL = `${FRONT_URL}/chat/submit`;
         fetchPost({ URL, socketId: socket.id, option: script });
+
+        
     },
 };

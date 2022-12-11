@@ -6,14 +6,20 @@ import { PostBody } from '../interfaces/common';
 import { pvpHandler } from '../handler'
 import pvpService, { isEnd } from '../services/pvp.service';
 import pvpUsers from '../workers/pvpUsers';
+import fetchPost from '../common/fetch';
+import env from '../env';
+
+export const FRONT_URL = `${env.HTTP}://${env.WAS_LB}/front`;
 
 export const maxUsers: number = 4;
-export const pvpRoomList: Set<string> = new Set<string>();
+export const pvpRoomList: Map<string, boolean> = new Map<string, boolean>();
+
 export default {
     createRoom: async (req: Request, res: Response, next: NextFunction) => {
         try {
             console.log('createRoom');
-            const { socketId, CMD, userInfo, userStatus }: PostBody = req.body;
+            const { socketId, CMD, userInfo, userStatus, option }: PostBody = req.body;
+            console.log(`메인에서 받아온 front socketId : ${option}`)
             const roomName = `pvpRoom ${CMD}`;
 
             if (!userInfo) new HttpException('userInfo missing', 400);
@@ -24,7 +30,7 @@ export default {
             if (validation === 'wrongCommand') return;
 
             // rooms 갱신 및 수정된 유저정보 갱신 후 새로운 userStatus를 return 받아온다.
-            const newUserStatus = await pvpService.createRoom({ socketId, CMD, userInfo, userStatus });
+            const newUserStatus = await pvpService.createRoom({ socketId, CMD, userInfo, userStatus, option });
 
             const script = pvpScript.pvpRoomJoin(userInfo!.name);
             const field = 'pvpJoin';
@@ -33,6 +39,9 @@ export default {
 
             PVP.to(roomName).emit('fieldScriptPrint', { script, field });
             PVP.to(socketId).emit('printBattle', { field, userInfo, userStatus: newUserStatus });
+
+            const URL = `${FRONT_URL}/chat/pvpChatStart`
+            fetchPost({ URL, socketId: userStatus.frontId!, userInfo, option: roomName });
 
             res.status(200).end();
         } catch (err) {
@@ -43,7 +52,8 @@ export default {
     joinRoom: async (req: Request, res: Response, next: NextFunction) => {
         try {
             console.log('joinRoom');
-            const { socketId, CMD, userInfo, userStatus }: PostBody = req.body;
+            const { socketId, CMD, userInfo, userStatus, option }: PostBody = req.body;
+            console.log(`메인에서 받아온 front socketId : ${option}`)
             const roomName = `pvpRoom ${CMD}`;
 
             if (!userInfo) new HttpException('userInfo missing', 400);
@@ -52,7 +62,7 @@ export default {
             const validation = await pvpService.joinRoomValidation(req, res, next, roomName)
             if (validation === 'wrongCommand') return;
 
-            const newUserStatus = await pvpService.joinRoom({ socketId, CMD, userInfo, userStatus })
+            const newUserStatus = await pvpService.joinRoom({ socketId, CMD, userInfo, userStatus, option })
             if (newUserStatus === undefined) return;
 
             const startValidation = await pvpService.startValidation(req, res, next, roomName)
@@ -64,6 +74,9 @@ export default {
 
             PVP.to(roomName).emit('fieldScriptPrint', { script, field });
             PVP.to(socketId).emit('printBattle', { field, userInfo, userStatus: newUserStatus });
+
+            const URL = `${FRONT_URL}/chat/pvpChatStart`
+            fetchPost({ URL, socketId: userStatus.frontId!, userInfo, option: roomName });
 
             res.status(200).end();
         } catch (err) {
@@ -100,12 +113,16 @@ export default {
             if (!userStatus) new HttpException('userStatus missing', 400);
 
             await pvpService.leaveRoom(userStatus)
+            userStatus!.pvpRoom = undefined;
 
             const script = pvpScript.village;
             const field = 'village';
 
-            PVP.to(socketId).socketsLeave(userStatus.pvpRoom!);
             PVP.to(socketId).emit('printBattle', { script, userInfo, field, userStatus });
+            PVP.in(socketId).socketsLeave(userStatus.pvpRoom!);
+
+            const URL = `${FRONT_URL}/chat/pvpChatLeave`
+            fetchPost({ URL, socketId: userStatus.frontId!, userInfo });
 
             res.status(200).end();
         } catch (err) {
