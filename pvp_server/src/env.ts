@@ -11,6 +11,7 @@ class Env {
     DB_PASSWORD: string;
 
     REDIS_URL: string;
+    REDIS_CLOUD: string;
 
     constructor() {
         this.PORT = Number(process.env.PVP_PORT);
@@ -37,6 +38,12 @@ class Env {
         this.REDIS_URL = process.env.NODE_ENV === 'production' ?
             `redis://${REDIS_HOST}:${REDIS_PORT}` :
             `redis://${REDIS_USER}:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}/0`;
+
+        const CLOUD_USER = process.env.REDIS_CLOUD_USER;
+        const CLOUD_PASSWORD = process.env.REDIS_CLOUD_PASSWORD;
+        const CLOUD_HOST = process.env.REDIS_CLOUD_HOST;
+        const CLOUD_PORT = process.env.REDIS_CLOUD_PORT;
+        this.REDIS_CLOUD = `redis://${CLOUD_USER}:${CLOUD_PASSWORD}@${CLOUD_HOST}:${CLOUD_PORT}/0`;
     }
 }
 

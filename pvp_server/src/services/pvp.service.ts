@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { pvpController } from "../controllers";
 import { maxUsers, pvpRoomList } from "../controllers/pvp.controller";
-import redis from "../db/cache/redis";
+import { redis, redisCloud } from "../db/cache";
 import { PostBody } from "../interfaces/common";
 import { PvpUser } from '../interfaces/pvp'
 import { UserStatus } from "../interfaces/user";
@@ -13,7 +13,7 @@ export const isEnd: Map<string, NodeJS.Timer> = new Map<string, NodeJS.Timer>();
 class PvpService {
     hitStrength(damage: number, defense: number) {
         const hitStrength = Math.floor(Math.random() * 40) + 80;
-       const realDamage = Math.floor((damage * hitStrength) / 100) - defense
+        const realDamage = Math.floor((damage * hitStrength) / 100) - defense
         return realDamage <= 0 ? 0 : realDamage
     }
 

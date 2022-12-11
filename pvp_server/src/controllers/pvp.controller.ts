@@ -5,7 +5,6 @@ import { HttpException } from '../common';
 import { PostBody } from '../interfaces/common';
 import { pvpHandler } from '../handler'
 import pvpService, { isEnd } from '../services/pvp.service';
-import redis from '../db/cache/redis';
 import pvpUsers from '../workers/pvpUsers';
 
 export const maxUsers: number = 4;
