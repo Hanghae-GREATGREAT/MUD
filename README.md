@@ -138,8 +138,8 @@
 # 기술스택
 |분류|기술|
 | :-: |:- |
-|Language|<img src="https://img.shields.io/badge/JavaScript-yellow?style=for-the-badge&logo=javascript&logoColor=white">|<img src="https://img.shields.io/badge/TypeScript-blue?style=for-the-badge&logo=typescript&logoColor=white">|
-|Framework|<img src="https://img.shields.io/badge/nodejs-green?style=for-the-badge&logo=node.js&logoColor=white">|<img src="https://img.shields.io/badge/express-yellow?style=for-the-badge&logo=express&logoColor=white">|
+|Language|<img src="https://img.shields.io/badge/JavaScript-yellow?style=for-the-badge&logo=javascript&logoColor=white"> <img src="https://img.shields.io/badge/TypeScript-blue?style=for-the-badge&logo=typescript&logoColor=white">|
+|Framework|<img src="https://img.shields.io/badge/nodejs-green?style=for-the-badge&logo=node.js&logoColor=white"> <img src="https://img.shields.io/badge/express-yellow?style=for-the-badge&logo=express&logoColor=white">|
 |Build Tool|<img src="https://img.shields.io/badge/ts_node-blue?style=for-the-badge&logo=tsnode&logoColor=white">|
 |DB|<img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=MySQL&logoColor=white">|
 |Server|<img src="https://img.shields.io/badge/aws ec2-232F3E?style=for-the-badge&logo=AmazonAWS&logoColor=white">|
