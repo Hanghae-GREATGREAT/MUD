@@ -12,7 +12,7 @@ import env from '../env';
 export const FRONT_URL = `${env.HTTP}://${env.WAS_LB}/front`;
 
 export const maxUsers: number = 4;
-export const pvpRoomList: Map<string, boolean> = new Map<string, boolean>();
+// export const pvpRoomList: Map<string, boolean> = new Map<string, boolean>();
 
 export default {
     createRoom: async (req: Request, res: Response, next: NextFunction) => {
