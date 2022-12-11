@@ -5,7 +5,7 @@ import { UserInfo, UserStatus } from '../interfaces/user';
 import BATTLE from '../redis';
 import { battleScript, dungeonScript } from '../scripts';
 import { MonsterService, BattleService, CharacterService } from '../services';
-import { autoAttackWorker, isMonsterDeadWorker, skillAttackWorker } from '../workers';
+import autoBattle from '../workers/autoBattle';
 import { autoAttack } from './autobattle.handler';
 
 
@@ -190,11 +190,8 @@ export default {
         const { characterId } = userInfo;
 
         try {
-            if (autoAttackWorker.get(characterId)) {
-                autoAttackWorker.terminate(characterId);
-                skillAttackWorker.terminate(characterId);
-                isMonsterDeadWorker.terminate(characterId);
-
+            if (autoBattle.get(characterId)) {
+                autoBattle.terminate(characterId);
                 battleCache.delete(characterId);
             } else {
                 redis.battleSet(characterId, { WORKER: 'off' });
