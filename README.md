@@ -161,23 +161,6 @@
 <br><br><br>
 
 
-# 설계
-<details>
-    <summary> <b>📝 API 설계</b> </summary>
-    <img src="https://">
-    <div markdown="1">
-        
-> 자세히 보러 가기 👉🏻 [**[Notion] 📝 API 설계**](https://)
->
-        
-<br>
-        
-</div>
-</details>
-
-<br><br><br>
-
-
 # 팀원
 
 |이름|포지션|분담|@ Email|Github|
