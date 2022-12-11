@@ -143,7 +143,7 @@
 
 
 # 시련의 장 (유저 간 PVP 대전) 주요 로직 Flow
-![image](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbaAoRF%2FbtrThmKpVK9%2F49sf2wmle0zx5AMapLCIWk%2Fimg.png)
+![image](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fw55to%2FbtrThNudxyy%2F9qC2BhtkimS6ekIDbsTrY0%2Fimg.png)
 
 <br><br><br>
 
