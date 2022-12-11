@@ -1,12 +1,12 @@
 import { parentPort, workerData, getEnvironmentData, MessagePort } from 'worker_threads'
 import associate from '../db/config/associate';
 import { CharacterService, MonsterService, BattleService } from '../services'
-import { battleCache } from '../db/cache';
+import { battleCache, redis } from '../db/cache';
 import { Skills } from '../db/models';
 import { AutoWorkerData, AutoWorkerResult } from '../interfaces/worker';
 import { UserStatus } from '../interfaces/user';
 import { InferAttributes } from 'sequelize';
-import { errorReport } from '../common';
+import { battleError, errorReport } from '../common';
 
 
 // console.log('skillAttack.worker.ts: 11 >> 스킬공격 워커 모듈 동작')
@@ -16,23 +16,30 @@ parentPort?.once('message', ({ skillToDead }) => {
 });
 
 
-function skillAttackWorker({ userStatus }: AutoWorkerData, skillToDead: MessagePort) {
+function skillAttackWorker({ socketId, userStatus }: AutoWorkerData, skillToDead: MessagePort) {
     
     const { characterId } = userStatus;
     // console.log('skillAttack.worker.ts: 20 >> skillAttackWorker start', characterId);
 
     const cache = getEnvironmentData(characterId);
-    battleCache.set(characterId, JSON.parse(cache.toString()));
+    const { dungeonLevel, monsterId } = JSON.parse(cache.toString());
 
     const skillAttackTimer = setInterval(async () => {
         // console.log('skillAttack.worker.ts: START INTERVAL', Date.now())
-        battleCache.set(characterId, { skillAttackTimer });
+        const { SKILL, WORKER } = await redis.battleGet(characterId);
+        if (SKILL === 'off' || WORKER === 'off' || !dungeonLevel) {
+            clearInterval(skillAttackTimer);
+            redis.battleSet(characterId, { SKILL: 'on'});
+            battleError(socketId);
+            return parentPort?.postMessage('AUTO WORKER LOOP ERROR');
+        }
+        battleCache.set(characterId, { dungeonLevel, monsterId, skillAttackTimer });
 
         const chance = Math.random();
         if (chance < 0.5) return // console.log('STOP');
         // console.log('GO')
 
-        autoBattleSkill(userStatus).then(({ status, script }: AutoWorkerResult) => {
+        autoBattleSkill(socketId, userStatus).then(({ status, script }: AutoWorkerResult) => {
             // console.log('skillAttack.worker.ts: autoBattleSkill resolved', status);
 
             const statusHandler = {
@@ -50,7 +57,7 @@ function skillAttackWorker({ userStatus }: AutoWorkerData, skillToDead: MessageP
 }
 
 
-async function autoBattleSkill(userStatus: UserStatus): Promise<AutoWorkerResult> {
+async function autoBattleSkill(socketId: string, userStatus: UserStatus): Promise<AutoWorkerResult> {
     // console.log('skillAttack.worker.ts >> autoBattleSkill(): 시작')
     const { characterId, mp, attack, skill } = userStatus
     let field = 'autoBattle';
@@ -133,14 +140,20 @@ function continueWorker({ status, script }: AutoWorkerResult, characterId: numbe
 
 function resultWorker({ status, script }: AutoWorkerResult, characterId: number, skillToDead: MessagePort) {
     const { skillAttackTimer } = battleCache.get(characterId);
+
     clearInterval(skillAttackTimer);
+    redis.battleSet(characterId, { SKILL: 'off' });
+    
     skillToDead.postMessage({ status, script });
     parentPort?.postMessage('자동스킬 종료');
 }
 
 function terminateWorker({ status, script }: AutoWorkerResult, characterId: number, skillToDead: MessagePort) {
     const { skillAttackTimer } = battleCache.get(characterId);
+
     clearInterval(skillAttackTimer);
+    redis.battleSet(characterId, { SKILL: 'off' });
+
     skillToDead.postMessage({ status, script });
     parentPort?.postMessage('자동스킬 종료');
 }

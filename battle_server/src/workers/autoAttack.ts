@@ -4,6 +4,7 @@ import env from '../env'
 import { AutoWorkerData } from '../interfaces/worker';
 import { UserStatus } from '../interfaces/user';
 import { errorReport } from '../common';
+import { redis } from '../db/cache';
 
 
 class AutoAttackWorker {
@@ -47,6 +48,7 @@ class AutoAttackWorker {
     }
 
     terminate = (characterId: number) => {
+        // redis.battleSet(characterId, { LOOP: 'off' });
         const worker = this.threads.get(characterId);
         worker?.terminate().catch(errorReport);
     }

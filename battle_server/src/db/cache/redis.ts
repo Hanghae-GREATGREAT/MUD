@@ -1,110 +1,84 @@
-// import { createClient, RedisClientType, SetOptions } from 'redis';
-// import env from '../../env';
+import { createClient, RedisClientType, SetOptions } from 'redis';
+import env from '../../env';
 
-// interface KeyPair {
-//     [key: string]: string | number;
-// }
+interface KeyPair {
+    [key: string]: string | number;
+}
 
-// class RedisCache {
-//     private readonly client: RedisClientType;
+class RedisCache {
+    private readonly client: RedisClientType;
 
-//     constructor() {
-//         this.client = createClient({
-//             url: `redis://${env.REDIS_USER}:${env.REDIS_PASSWORD}@${env.REDIS_HOST}/0`,
-//         });
-//         this.connect();
+    constructor() {
+        this.client = createClient({
+            url: env.REDIS_URL,
+        });
+        this.connect();
 
-//         this.client.on('connect', () => {
-//             console.log('Redis connected');
-//         });
+        this.client.on('connect', () => {
+            console.log('Redis connected');
+        });
 
-//         this.client.on('error', (error) => {
-//             console.log('Redis error, service degraded: ', error);
-//         });
-//     }
+        this.client.on('error', (error) => {
+            console.log('Redis error, service degraded: ', error);
+        });
+    }
 
-//     private async connect() {
-//         await this.client.connect();
-//     }
+    private async connect() {
+        await this.client.connect();
+    }
 
-//     async set(key: string|number, value: string, option: SetOptions = {}) {
-//         await this.client.set(key.toString(), value, option);
-//     }
+    async set(key: string|number, value: string, option: SetOptions = {}) {
+        await this.client.set(key.toString(), value, option);
+    }
 
-//     async get(key: string|number) {
-//         return await this.client.get(key.toString());
-//     }
+    async get(key: string|number) {
+        return await this.client.get(key.toString());
+    }
 
-//     async del(key: string|number) {
-//         await this.client.del(key.toString());
-//     }
+    async del(key: string|number) {
+        await this.client.del(key.toString());
+    }
 
-//     async hSet(key: string|number, data: KeyPair) {
-//         await this.client.hSet(key.toString(), data);
-//     }
+    // { dungeonLevel, monsterId, LOOP }
+    async battleSet(key: string|number, value: KeyPair) {
+        const cache = await this.battleGet(key);
 
-//     async hGet(key: string|number, field: string) {
-//         return await this.client.hGet(key.toString(), field);
-//     }
+        const input = { ...cache, ...value }
+        await this.client.set(`battle${key}`, JSON.stringify(input), { EX: 60 });
+    }
 
-//     async hGetAll(key: string|number) {
-//         return await this.client.hGetAll(key.toString());
-//     }
+    async battleGet(key: string|number): Promise<KeyPair> {
+        const cache = await this.client.get(`battle${key}`) || '{}';
+        return JSON.parse(cache);
+    }
 
-//     async hDel(key: string|number, field: string) {
-//         await this.client.hDel(key.toString(), field);
-//     }
+    async battleDel(key: string|number) {
+        await this.client.del(`battle${key}`);
+    }
 
-//     async hDelBattleCache(key: string|number) {
-//         // const fields = Object.keys(data);
-//         const fields = [
-//             'characterId', 'dungeonLevel', 'monsterId', 'autoAttackId', 'quit', 'dead'
-//         ];
-//         await this.client.hDel(key.toString(), [...fields]);
-//     }
+    async hSet(key: string|number, data: KeyPair) {
+        await this.client.hSet(key.toString(), data);
+    }
 
-//     async hDelResetCache(key: string|number) {
-//         // const fields = Object.keys(data);
-//         const fields = [
-//             'characterId', 'monsterId', 'autoAttackId', 'quit', 'dead'
-//         ];
-//         await this.client.hDel(key.toString(), [...fields]);
-//     }
+    async hGet(key: string|number, field: string) {
+        return await this.client.hGet(key.toString(), field);
+    }
 
-//     async disconnect() {
-//         await this.client.disconnect();
-//     }
+    async hGetAll(key: string|number) {
+        return await this.client.hGetAll(key.toString());
+    }
 
-//     getClient() {
-//         return this.client;
-//     }
-// }
+    async hDel(key: string|number, field: string) {
+        await this.client.hDel(key.toString(), field);
+    }
 
-// export default new RedisCache();
+    async disconnect() {
+        await this.client.disconnect();
+    }
 
-// // export class RedisCache {
-// //     private readonly cache: RedisClientType;
-// //     private ttl: number;
+    getClient() {
+        return this.client;
+    }
+}
 
-// //     constructor(ttl: number) {
-
-// //         this.ttl = ttl;
-// //         this.cache = createClient({
-// //             url: `redis://${env.REDIS_USER}:${env.REDIS_PASSWORD}@${env.REDIS_HOST}`
-// //         });
-
-// //         this.cache.on('connect', () => {
-// //             console.log('Redis connected');
-// //         });
-
-// //         this.cache.on('error', (error) => {
-// //             console.log('Redis error, service degraded: ', error);
-// //         });
-// //     }
-
-// //     async get<T>(key: string, fetcher: ()=>Promise<T>): Promise<T> {
-
-// //         if (!this.cache.connect) {}
-
-// //     }
-// // }
+export default new RedisCache();

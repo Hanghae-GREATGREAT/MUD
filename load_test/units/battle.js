@@ -41,25 +41,25 @@ let alive = 0;
     
                     flag = true;
                     alive++;
-                    console.log('ALIVE', userInfo.userId);
+                    console.log('ALIVE', userInfo.characterId);
                     emit('autoBattleS', { line: '중단', userInfo, userStatus }).then((res) => {
                         userInfo = res.userInfo;
                         const field = 'dungeon';
                         resolve({ ...res, field, userInfo, userStatus });
                     }).catch((error) => {
-                        console.log('battleResult Error', userInfo.userId, error.message);
-                        reject(`Error: battleResult, ${userInfo.userId}, ${error.message}`);
+                        console.log('battleResult Error', userInfo.characterId, error.message);
+                        reject(`Error: battleResult, ${userInfo.characterId}, ${error.message}`);
                     });
                 },
                 'heal': (res, time) => {
                     flag = true;
                     dead++;
-                    console.log('DEAD', userInfo.userId);
+                    console.log('DEAD', userInfo.characterId);
                     resolve({ field: res.field, userInfo, userStatus });
                 },
                 'dungeon': (res, time) => {
                     flag = true;
-                    console.log('BATTLE ERROR RETRUNING TO ENTRANCE', userInfo.userId);
+                    console.log('BATTLE ERROR RETRUNING TO ENTRANCE', userInfo.characterId);
                     resolve({ field: res.field, userInfo, userStatus });
                 }
             }
@@ -149,7 +149,7 @@ let alive = 0;
             }
         },
         autoFromList: async(field, userInfo, userStatus, seconds=30) => {
-            console.log('autoFromList', userInfo.userId);
+            console.log('autoFromList', userInfo.characterId);
 
             try {
                 const { level } = userStatus;
@@ -157,15 +157,15 @@ let alive = 0;
                 const line = dungeonLevel <= 5 ? `입장 ${dungeonLevel}` : '입장 5';
                 const throughput = [];
         
-                console.log('to dungeon', userInfo.userId);
+                console.log('to dungeon', userInfo.characterId);
                 const r1 = await emit('dungeon', { line, userInfo, userStatus });
                 throughput.push(r1.throughput);
         
-                console.log('auto start', userInfo.userId);
+                console.log('auto start', userInfo.characterId);
                 const r2 = await emit('battle', { line: '자동단일', userInfo, userStatus });
                 throughput.push(r2.throughput);
                 
-                console.log('listen result', userInfo.userId);
+                console.log('listen result', userInfo.characterId);
                 const result = await battleResult(userInfo, userStatus, seconds);
                 cnt++;
                 console.log('RESULT OUT', cnt);

@@ -82,28 +82,28 @@ const createClient = async(i) => {
         const res1 = await front.toDungeon(field, userInfo, userStatus);
         emitCount += res1.cnt;
         througputs.push(...res1.throughput);
-        console.log('to dungeon', res1.userInfo.userId, emitCount, througputs.length);
+        console.log('to dungeon', res1.userInfo.characterId, emitCount, througputs.length);
 
         const duration = Math.random()*20 + 30;
-        console.log(res1.userInfo.userId, duration);
+        console.log(res1.userInfo.characterId, duration);
         const res2 = await battle.autoFromList(field, userInfo, userStatus, duration);
         userStatus = res2.userStatus;
         field = res2.field;
         emitCount += res2.cnt;
         througputs.push(...res2.throughput);
-        console.log('battle over', res2.userInfo.userId, emitCount, througputs.length);
+        console.log('battle over', res2.userInfo.characterId, emitCount, througputs.length);
 
         if (field === 'heal') {
             const res3 = await village.heal(field, userInfo, userStatus);
             userStatus = res3.userStatus;
             emitCount += res3.cnt;
             througputs.push(...res3.throughput);
-            console.log('healed', res3.userInfo.userId, emitCount, througputs.length);
+            console.log('healed', res3.userInfo.characterId, emitCount, througputs.length);
 
             const res4 = await front.toHome(field, userInfo, userStatus)
             emitCount += res4.cnt;
             througputs.push(...res4.throughput);
-            console.log('scenario success(player dead)', res4.userInfo.userId, emitCount, througputs.length);
+            console.log('scenario success(player dead)', res4.userInfo.characterId, emitCount, througputs.length);
 
             completeCount++;
             clientCount--;
@@ -112,7 +112,7 @@ const createClient = async(i) => {
         const res3 = await front.toHome(field, userInfo, userStatus)
         emitCount += res3.cnt;
         througputs.push(...res3.throughput);
-        console.log('scenario success', res3.userInfo.userId, emitCount, througputs.length);
+        console.log('scenario success', res3.userInfo.characterId, emitCount, througputs.length);
 
         
         console.log('TEST SUCCESS', i)

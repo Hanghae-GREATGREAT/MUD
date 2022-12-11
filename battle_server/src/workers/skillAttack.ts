@@ -1,6 +1,7 @@
 import { Worker, MessagePort } from 'node:worker_threads';
 import { join } from 'path';
 import { errorReport, HttpException } from '../common';
+import { redis } from '../db/cache';
 import env from '../env';
 import { UserStatus } from '../interfaces/user';
 import { AutoWorkerData } from '../interfaces/worker';
@@ -47,6 +48,7 @@ class SkillAttackWorker {
     }
 
     terminate = (characterId: number) => {
+        // redis.battleSet(characterId, { SKILL: 'off' });
         const worker = this.threads.get(characterId);
         worker?.terminate().catch(errorReport);
     }

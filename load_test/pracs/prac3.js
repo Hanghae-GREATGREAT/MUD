@@ -90,30 +90,30 @@ const createClient = async(i) => {
             console.log('try', start);
             const res1 = await front.toDungeon(field, userInfo, userStatus);
             emitCount += res1.cnt;
-            console.log('to dungeon', res1.userInfo.userId, emitCount);
+            console.log('to dungeon', res1.userInfo.characterId, emitCount);
     
             const res2 = await battle.autoFromList(field, userInfo, userStatus, 10);
             userStatus = res2.userStatus;
             field = res2.field;
             emitCount += res2.cnt;
-            console.log('battle over', res2.userInfo.userId, emitCount);
+            console.log('battle over', res2.userInfo.characterId, emitCount);
     
             if (field === 'heal') {
                 const res3 = await village.heal(field, userInfo, userStatus);
                 userStatus = res3.userStatus;
                 emitCount += res3.cnt;
-                console.log('healed', res3.userInfo.userId, emitCount);
+                console.log('healed', res3.userInfo.characterId, emitCount);
 
                 const res4 = await front.toHome(field, userInfo, userStatus)
                 emitCount += res4.cnt;
-                console.log('scenario success(player dead)', res4.userInfo.userId, emitCount);
+                console.log('scenario success(player dead)', res4.userInfo.characterId, emitCount);
     
                 completeCount++;
                 continue;
             }
             const res3 = await front.toHome(field, userInfo, userStatus)
             emitCount += res3.cnt;
-            console.log('scenario success', res3.userInfo.userId, emitCount);
+            console.log('scenario success', res3.userInfo.characterId, emitCount);
 
             const end = performance.now().toFixed(2);
             (end-start) !== NaN ? performanceTime.push(end-start) : 0;

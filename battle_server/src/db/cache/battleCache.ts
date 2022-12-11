@@ -1,5 +1,8 @@
 import { BattleCacheInterface } from "../../interfaces/battle";
 
+interface KeyPair {
+    [key: string]: number|string|NodeJS.Timer;
+}
 
 class BattleCache {
 
@@ -19,7 +22,7 @@ class BattleCache {
         dead: '',
     }
 
-    set = (key: string|number, data: BattleCacheInterface): void => {
+    set = (key: string|number, data: KeyPair): void => {
         const oldCache = this.getOld(+key) || {};
         const newCache = {...oldCache, ...data};
         this.battleMap.set(+key, newCache);

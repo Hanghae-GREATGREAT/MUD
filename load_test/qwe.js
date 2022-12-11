@@ -76,7 +76,7 @@ const createClient = async(id) => {
                 throughputs.push(...res.throughput);
             }
             
-            console.log(field, userInfo.userId, userStatus.username);
+            console.log(field, userInfo.characterId, userStatus.username);
     
             if (Date.now() - start > 1000*60) break;
         }
