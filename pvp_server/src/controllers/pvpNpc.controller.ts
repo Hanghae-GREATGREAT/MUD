@@ -4,7 +4,6 @@ import { pvpScript } from '../scripts';
 import { HttpException, HttpStatus } from '../common';
 import { PostBody } from '../interfaces/common';
 import { pvpHandler } from '../handler';
-import { pvpRoomList } from './pvp.controller';
 import pvpService from '../services/pvp.service';
 
 export default {
