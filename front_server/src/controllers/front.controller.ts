@@ -57,7 +57,7 @@ export default {
 
         setTimeout(() => {
             const script = homeScript.reload;
-            FRONT.to(socketId).emit('print', { field, script, userInfo });
+            FRONT.to(socketId).emit('print', { field, script, userInfo: {} });
         }, 2000);
     },
 
