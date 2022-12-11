@@ -1,7 +1,7 @@
 import { parentPort, workerData, getEnvironmentData, MessagePort } from 'worker_threads'
 import associate from '../db/config/associate';
 import { CharacterService, MonsterService, BattleService } from '../services'
-import { battleCache } from '../db/cache';
+import { battleCache, redis } from '../db/cache';
 import { AutoWorkerData, AutoWorkerResult } from '../interfaces/worker';
 import { UserStatus } from '../interfaces/user';
 import BATTLE from '../redis';
@@ -18,21 +18,22 @@ parentPort?.once('message', ({ autoToDead }) => {
 function autoAttackWorker({ socketId, userStatus }: AutoWorkerData, autoToDead: MessagePort) {    
 
     const { characterId } = userStatus;
-    let LOOP = false;
     // console.log('autoAttack.worker.ts: 18 >> autoAttackWorker() 시작', characterId);
 
+    // { dungeonLevel, monsterId } from main thread
     const cache = getEnvironmentData(characterId);
-    battleCache.set(characterId, JSON.parse(cache.toString()));
+    const { dungeonLevel, monsterId } = JSON.parse(cache.toString());
 
-    // console.log(battleCache.getAll());
-
-    const autoAttackTimer = setInterval(() => {
+    const autoAttackTimer = setInterval(async() => {
         // console.log('autoAttack.worker.ts: START INTERVAL', Date.now(), characterId);
-        if (LOOP || battleCache.get(characterId).dungeonLevel === 0) {
-            clearInterval(autoAttackTimer); 
-            return battleError(socketId);
+        const { LOOP, WORKER } = await redis.battleGet(characterId);
+        if (LOOP === 'off' || WORKER === 'off' || !dungeonLevel) {
+            clearInterval(autoAttackTimer);
+            redis.battleSet(characterId, { LOOP: 'on'});
+            battleError(socketId);
+            return parentPort?.postMessage('AUTO WORKER LOOP ERROR');
         }
-        battleCache.set(characterId, { autoAttackTimer });
+        battleCache.set(characterId, { dungeonLevel, monsterId, autoAttackTimer });
 
         autoAttack(socketId, userStatus).then(({ status, script }: AutoWorkerResult) => {
             // console.log('autoAttack.worker.ts: 38 >> autoAttack result: ', status, characterId);
@@ -142,14 +143,20 @@ function continueWorker({ status, script }: AutoWorkerResult, characterId: numbe
 
 function resultWorker({ status, script }: AutoWorkerResult, characterId: number, autoToDead: MessagePort) {
     const { autoAttackTimer } = battleCache.get(characterId);
+
     clearInterval(autoAttackTimer);
+    redis.battleSet(characterId, { LOOP: 'off' });
+
     autoToDead.postMessage({ status, script });
     parentPort?.postMessage('자동공격 종료');
 }
 
 function terminateWorker({ status, script }: AutoWorkerResult, characterId: number, autoToDead: MessagePort) {
     const { autoAttackTimer } = battleCache.get(characterId);
+
     clearInterval(autoAttackTimer);
+    redis.battleSet(characterId, { LOOP: 'off' });
+
     autoToDead.postMessage({ status, script });
     parentPort?.postMessage('자동공격 종료');
 }

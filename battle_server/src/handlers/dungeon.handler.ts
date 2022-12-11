@@ -1,5 +1,5 @@
 import { HttpException } from '../common';
-import { battleCache } from '../db/cache';
+import { redis } from '../db/cache';
 import { UserInfo, UserStatus } from '../interfaces/user';
 import BATTLE from '../redis';
 import { homeScript, dungeonScript, battleScript } from '../scripts';
@@ -42,9 +42,8 @@ export default {
         } else {
             script = dungeonInfo + dungeonScript.enter;            
 
-            const dungeonLevel = +CMD;
             const { characterId } = userInfo;            
-            battleCache.set(characterId, { dungeonLevel });
+            redis.battleSet(characterId, { dungeonLevel: +CMD });
             field = 'battle';
         }
 
@@ -54,7 +53,7 @@ export default {
     encounter: (socketId: string, userInfo: UserInfo, userStatus: UserStatus): Promise<void> => {
         return new Promise(async(resolve, reject) => {
             const { characterId } = userInfo;
-            const { dungeonLevel } = battleCache.get(characterId);
+            const { dungeonLevel } = await redis.battleGet(characterId);
             if (!dungeonLevel || !characterId) {
                 const error = new HttpException(
                     'encounter cache error: dungeonLevel missing', 
@@ -67,7 +66,7 @@ export default {
             const { name, monsterId } = await MonsterService.createNewMonster(dungeonLevel, characterId);
     
             // 던전 진행상황 업데이트
-            battleCache.set(characterId, { monsterId })
+            redis.battleSet(characterId, { monsterId });
     
             const script = battleScript.encounter(name);
             const field = 'encounter';

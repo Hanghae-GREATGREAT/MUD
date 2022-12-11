@@ -106,7 +106,7 @@ const createClient = async(i) => {
                 const BATTLE_DURATION = (
                     ((Math.random() * 0.8 * REMAIN_TEST_DURATION) / 1000)|0
                 );
-                console.log('battle duration: ', userInfo.userId, BATTLE_DURATION);
+                console.log('battle duration: ', userInfo.characterId, BATTLE_DURATION);
     
                 const res = await FIELD[0](field, userInfo, userStatus, BATTLE_DURATION);
                 field = res.field;
@@ -123,7 +123,7 @@ const createClient = async(i) => {
                 throughputs.push(...res.throughput);
             }
             
-            console.log(userInfo.userId, field);
+            console.log(userInfo.characterId, field);
     
             if (Date.now() - CLIENT_START > TEST_DURATION_IN_MS) break;
         }

@@ -28,7 +28,7 @@ const fetchPost = (params: PostParams): Promise<Response> => {
             headers,
             body: JSON.stringify(body),
         }).then((response) => {
-            console.log(`[${new Date(Date.now()+1000*60*60*9)}]`, response.status, response.url, userInfo?.userId);
+            console.log(`[${new Date(Date.now()+1000*60*60*9)}]`, response.status, response.url, userInfo?.characterId);
             resolve(response);
         }).catch((error) => {
             errorReport(error);
@@ -40,7 +40,7 @@ const fetchPost = (params: PostParams): Promise<Response> => {
                 headers,
                 body: JSON.stringify(body),
             }).then((response) => {
-                console.log(`[${new Date(Date.now()+1000*60*60*9)}]`, response.status, response.url, userInfo?.userId);
+                console.log(`[${new Date(Date.now()+1000*60*60*9)}]`, response.status, response.url, userInfo?.characterId);
                 resolve(response);
             }).catch(errorReport);
         });

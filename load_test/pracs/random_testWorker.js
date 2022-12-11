@@ -106,7 +106,7 @@ const createClient = async(i) => {
                 throughputs.push(...res.throughput);
             }
             
-            console.log(field, userInfo.userId, userStatus.username);
+            console.log(field, userInfo.characterId, userStatus.username);
     
             if (Date.now() - CLIENT_START > TEST_DURATION_IN_MS) break;
         }
