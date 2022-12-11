@@ -2,6 +2,7 @@ import { Socket } from 'socket.io';
 import env from '../config.env';
 import { fetchPost } from '../common';
 import { SocketInput, CommandRouter } from '../interfaces/socket';
+import { socketIds } from '../socket.routes';
 
 
 const FRONT_URL = `${env.HTTP}://${env.WAS_LB}/front`;
@@ -44,6 +45,9 @@ export default {
 
         const URL = `${FRONT_URL}/front/${cmdRoute[CMD1]}`;
         fetchPost({ URL, socketId: socket.id, CMD: line, userInfo });
+
+        socketIds.set(userInfo.userId, socket.id)
+        console.log(`front socketId save : ${socketIds.get(userInfo.userId)}`)
     },
 
     signController: async (socket: Socket, { line, userInfo, option }: SocketInput) => {

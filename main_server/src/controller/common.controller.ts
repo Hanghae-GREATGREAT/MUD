@@ -3,6 +3,7 @@ import env from '../config.env';
 import { CharacterService } from '../services';
 import { fetchPost } from '../common';
 import { CommandRouter, SocketInput } from '../interfaces/socket';
+import { socketIds } from '../socket.routes';
 
 
 const FRONT_URL = `${env.HTTP}://${env.WAS_LB}/front`;
@@ -54,6 +55,12 @@ export default {
         const URL = `${PVP_URL}/pvp/pvpDisconnect`;
         const option = socket.data;
         fetchPost({ URL, socketId: socket.id, option: option.pvpUser });
+
+        if (!option.pvpUser) return;
+
+        const FRONTURL = `${FRONT_URL}/chat/pvpChatLeave`;
+        const { userId } = option.pvpUser.split(' ').pop();
+        fetchPost({ URL: FRONTURL, socketId: socketIds.get(userId)! });
         return;
     }
 };

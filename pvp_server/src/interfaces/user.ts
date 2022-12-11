@@ -52,6 +52,7 @@ interface UserStatus {
     pvpRoom?: string;
     chatRoom?: number;
     isTeam?: string;
+    frontId?: string;
 }
 
 interface UserInfo {

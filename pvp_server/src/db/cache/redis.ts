@@ -68,7 +68,7 @@ class RedisCache {
         }
         const output: PvpUser = Object.fromEntries(parse);
 
-        return output
+        return output;
     }
 
     async hSetPvpUser(key: string, data: PvpUser) {
