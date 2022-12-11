@@ -183,6 +183,6 @@
 
 |이름|포지션|분담|@ Email|Github|
 |------|------|------|------|------|
-|김세욱|BackEnd|검색(쿼리 최적화)<br>부하 테스트<br>캐싱<br/>|ninthsun91@gmail.com|https://github.com/ninthsun91|
-|왕준혁|BackEnd|검색(쿼리 최적화)<br>부하 테스트<br>동시성 제어|@gmail.com|https://github.com/Monggle88|
-|장용호|BackEnd|검색(쿼리 최적화)<br>부하 테스트<br>로깅|didlsdydgh@gmail.com|https://github.com/JangKroed|
+|김세욱|BackEnd|작<br>업<br>중<br/>|ninthsun91@gmail.com|https://github.com/ninthsun91|
+|왕준혁|BackEnd|작<br>업<br>중|@gmail.com|https://github.com/Monggle88|
+|장용호|BackEnd|작<br>업<br>중|didlsdydgh@gmail.com|https://github.com/JangKroed|
