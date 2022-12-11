@@ -1,63 +1,87 @@
-import { Worker, MessagePort } from 'node:worker_threads';
-import { join } from 'path';
-import { errorReport, HttpException } from '../common';
-import { redis } from '../db/cache';
-import env from '../env';
-import { UserStatus } from '../interfaces/user';
-import { AutoWorkerData } from '../interfaces/worker';
+import { InferAttributes } from "sequelize";
+import { battleCache } from "../db/cache";
+import { Skills } from "../db/models";
+import { UserStatus } from "../interfaces/user";
+import { AutoWorkerResult } from "../interfaces/worker";
+import { MonsterService, BattleService, CharacterService } from "../services";
 
 
-class SkillAttackWorker {
+async function skillAttack(socketId: string, userStatus: UserStatus): Promise<AutoWorkerResult> {
+    // console.log('skillAttack.worker.ts >> autoBattleSkill(): 시작')
+    const { characterId, mp, attack, skill } = userStatus
+    let field = 'autoBattle';
+    let tempScript = '';
 
-    private threads: Map<number, Worker> = new Map();
+    // 스킬 정보 가져오기 & 사용할 스킬 선택 (cost 반비례 확률)
+    const selectedSkill = skillSelector(skill);
+    const { name: skillName, cost: skillCost, multiple } = selectedSkill;
 
-    start = (socketId: string, userStatus: UserStatus, skillToDead: MessagePort): Promise<void> => {
-        const { characterId } = userStatus;
-        console.log('skillAttack.ts: 스킬반복 start() 시작, ', characterId);
-        const workerData: AutoWorkerData = {
-            userStatus,
-            path: './skillAttack.worker.ts',
-            socketId,
+    // 몬스터 정보 가져오기
+    // const { monsterId } = await redis.hGetAll(characterId);
+    const { monsterId } = battleCache.get(characterId);
+    if (!monsterId) return { status: 'error', script: '몬스터 정보 에러' };
+    const monster = await MonsterService.findByPk(monsterId);
+    if (!monster) return { status: 'error', script: '몬스터 정보 에러' };
+    const { name: monsterName, hp: monsterHp, exp: monsterExp } = monster;
+
+    // 마나 잔여량 확인
+    if (mp - skillCost < 0) {
+        tempScript += `??? : 비전력이 부조카당.\n`;
+        const script = tempScript;
+        // console.log('skillAttack.worker.ts: 마나 부족')
+        return { status: 'continue', script: '' };
+    }
+
+    // 스킬 데미지 계산 & 마나 cost 소모
+    const playerSkillDamage: number = Math.floor(
+        (attack * multiple) / 100,
+    );
+    const realDamage: number = BattleService.hitStrength(playerSkillDamage);
+    userStatus = await CharacterService.refreshStatus(characterId, 0, skillCost, monsterId);
+
+    // 몬스터에게 스킬 데미지 적중
+    const isDead = await MonsterService.refreshStatus(monsterId, realDamage, characterId);
+    if (!isDead) return { status: 'error', script: '몬스터 정보 에러' };
+    tempScript += `\n당신의 ${skillName} 스킬이 ${monsterName}에게 적중! => ${realDamage}의 데미지!\n`;
+    // console.log(tempScript);
+
+    if (isDead === 'dead') {
+        // console.log('몬스터 사망 by SKILL ATTACK');
+        battleCache.set(characterId, { dead: 'monster' });
+        // await redis.hSet(characterId, { dead: 'monster' });
+
+        const script = `\n${monsterName}에게 ${skillName} 마무리 일격!! => ${realDamage}의 데미지!`;
+        return { status: 'monster', script };
+    }
+
+    // isDead === 'alive'
+    const script = tempScript;
+    // console.log('스킬로 안쥬금ㅇㅇㅇㅇ')
+    return { status: 'continue', script: '' };
+}
+
+function skillSelector(skill: InferAttributes<Skills, { omit: never; }>[]) {
+    const skillCounts = skill.length;
+    const skillCosts = skill.map((s)=>s.cost);        
+    const costSum = skillCosts.reduce((a: number, b: number)=>a+b, 0);
+    const chanceSum = skillCosts.reduce((a: number, b: number) => {
+        return a + costSum/b
+    }, 0);
+
+    const chance = Math.random();
+    let skillIndex = 0;
+    let cumChance =  0;
+    for (let i=0; i<skillCounts; i++) {
+        const singleChance = (costSum / skillCosts[i]) / chanceSum
+        cumChance += singleChance;
+        if (chance <= cumChance) {
+            skillIndex = i;
+            break;
         }
-
-        return new Promise((resolve, reject) => {
-            const worker = new Worker(
-                join(env.SRC_PATH, 'workers', 'skillAttack.worker.js'),
-                { workerData }
-            );
-            worker.postMessage({ skillToDead }, [ skillToDead ]);
-            this.threads.set(characterId, worker);
-            console.log('skillAttack.ts: start() Promise', worker.threadId, characterId);
-
-            worker.on('message', (result) => {
-                worker.terminate();
-                resolve(result);
-            });
-            // worker.on('online', () => {});
-            worker.on('messageerror', reject);
-            worker.on('error', reject);
-            worker.on('exit', (code) => {
-                console.log(`skillAttack ${characterId} exitCode: ${code}, `, characterId);
-                this.threads.delete(characterId);
-            });
-        });
     }
 
-    get = (characterId: number) => {
-        return this.threads.get(characterId);
-    }
-
-    terminate = (characterId: number) => {
-        // redis.battleSet(characterId, { SKILL: 'off' });
-        const worker = this.threads.get(characterId);
-        worker?.terminate().catch(errorReport);
-    }
-
-    all = () => {
-        return Object.fromEntries(this.threads);
-    }
-
+    return skill[skillIndex];
 }
 
 
-export default new SkillAttackWorker();
+export default skillAttack;

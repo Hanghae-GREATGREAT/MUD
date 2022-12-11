@@ -1,4 +1,4 @@
-const { parentPort, workerData } = require('worker_threads');
+const { workerData } = require('worker_threads');
 const path = require('path');
 
 require('ts-node').register();
