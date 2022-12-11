@@ -135,6 +135,18 @@
 
 <br><br><br>
 
+
+# ERD
+![image](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FLQM3y%2FbtrTmYuuoFa%2FofPvJOnd27c03eGDHviBQk%2Fimg.png)
+
+<br><br><br>
+
+
+# 시련의 장 (유저 간 PVP 대전) 주요 로직 Flow
+![image](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbaAoRF%2FbtrThmKpVK9%2F49sf2wmle0zx5AMapLCIWk%2Fimg.png)
+
+<br><br><br>
+
 # 기술스택
 |분류|기술|
 | :-: |:- |
@@ -151,18 +163,6 @@
 
 
 # 설계
-<details>
-    <summary> <b>📕 DB 설계 (ERD)</b> </summary>
-    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FLQM3y%2FbtrTmYuuoFa%2FofPvJOnd27c03eGDHviBQk%2Fimg.png">
-    <div markdown="1">
-        
-> 자세히 보러 가기 👉🏻 [**[Notion] 📕 DB 설계**](https://)
->
-        
-<br>
-        
-</div>
-</details>
 <details>
     <summary> <b>📝 API 설계</b> </summary>
     <img src="https://">
