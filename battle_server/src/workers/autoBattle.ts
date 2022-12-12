@@ -29,9 +29,11 @@ class AutoBattleWorker extends EventEmitter {
         }
 
         if (this.threads.size > this.threadCount) {
+            console.log('POOL IS FULL', characterId)
 
             this.waitList.push(characterId);
-            this.on(`${characterId}`, () => {
+            this.once(`${characterId}`, () => {
+                console.log('POOL IS READY', characterId);
                 this.create(workerData).then((result) => {
                     this.result(socketId, characterId, result);
                 }).catch(errorReport);
@@ -54,7 +56,7 @@ class AutoBattleWorker extends EventEmitter {
             );
             const workerId = worker.threadId;
             this.threads.set(characterId, worker);
-            console.log('autoBattle.ts: worker created', workerId, characterId);
+            console.log('autoBattle.ts: worker created', workerId, this.threads.size, characterId);
 
             worker.on('message', (result: AutoWorkerResult) => {
                 console.log('autoBattle.ts: worker message received', characterId);
