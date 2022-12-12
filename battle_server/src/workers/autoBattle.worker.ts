@@ -12,28 +12,28 @@ const isDead = new EventEmitter();
 
 const autoAttackLoop = ({ socketId, userStatus }: AutoWorkerData) => {
     const { characterId } = userStatus;
-    console.log('autoBattle.worker.ts: autoAttack start', characterId);
+    // console.log('autoBattle.worker.ts: autoAttack start', characterId);
 
     const cache = getEnvironmentData(characterId);
     const { dungeonLevel, monsterId } = JSON.parse(cache.toString());
 
     const autoAttackTimer = setInterval(async() => {
-        console.log('autuBattle.worker.ts: autoAttack interval', characterId);
+        // console.log('autuBattle.worker.ts: autoAttack interval', characterId);
 
-        const { LOOP, WORKER } = await redis.battleGet(characterId);
-        if (LOOP === 'off' || WORKER === 'off' || !dungeonLevel) {
+        const cache = await redis.battleGet(characterId);
+        if (cache.LOOP === 'off' || !dungeonLevel) {
             clearInterval(autoAttackTimer);
             redis.battleSet(characterId, { LOOP: 'on'});
-            battleError(socketId);
 
-            const msg = `AUTOATTACK ERROR: ${LOOP}, ${WORKER}, ${dungeonLevel}, ${characterId}`;
-            isDead.emit('dead', { status: 'error', msg });
+            const status = cache.status === 'terminate' ? 'terminate' : 'error';
+            const msg = `AUTOATTACK ERROR: ${cache.LOOP} ${dungeonLevel}, ${characterId}`;
+            isDead.emit('dead', { status, msg });
         }
         battleCache.set(characterId, { dungeonLevel, monsterId, autoAttackTimer });
 
-        console.log('autoBattle.worker.ts: autoAttack calc', characterId)
+        // console.log('autoBattle.worker.ts: autoAttack calc', characterId)
         autoAttack(socketId, userStatus).then((result: AutoWorkerResult) => {
-            console.log('autoBattle.worker.ts: autoAttack resolved', characterId);
+            // console.log('autoBattle.worker.ts: autoAttack resolved', characterId);
             // result = { status, script }
             // status = player | monster | terminate
 
@@ -50,21 +50,21 @@ const autoAttackLoop = ({ socketId, userStatus }: AutoWorkerData) => {
 
 const skillAttackLoop = ({ socketId, userStatus }: AutoWorkerData) => {
     const { characterId } = userStatus;
-    console.log('autoBattle.worker.ts: skillAttack start', characterId);
+    // console.log('autoBattle.worker.ts: skillAttack start', characterId);
 
     const cache = getEnvironmentData(characterId);
     const { dungeonLevel, monsterId } = JSON.parse(cache.toString());
 
     const skillAttackTimer = setInterval(async () => {
         // console.log('skillAttack.worker.ts: START INTERVAL', Date.now())
-        const { SKILL, WORKER } = await redis.battleGet(characterId);
-        if (SKILL === 'off' || WORKER === 'off' || !dungeonLevel) {
+        const cache = await redis.battleGet(characterId);
+        if (cache.SKILL === 'off' || !dungeonLevel) {
             clearInterval(skillAttackTimer);
             redis.battleSet(characterId, { SKILL: 'on'});
-            battleError(socketId);
             
-            const msg = `AUTOATTACK ERROR: ${SKILL}, ${WORKER}, ${dungeonLevel}, ${characterId}`;
-            isDead.emit('dead', { status: 'error', msg });
+            const status = cache.status === 'terminate' ? 'terminate' : 'error';
+            const msg = `AUTOATTACK ERROR: ${cache.SKILL}, ${dungeonLevel}, ${characterId}`;
+            isDead.emit('dead', { status, msg });
         }
         battleCache.set(characterId, { dungeonLevel, monsterId, skillAttackTimer });
 
@@ -73,7 +73,7 @@ const skillAttackLoop = ({ socketId, userStatus }: AutoWorkerData) => {
 
         console.log('autoBattle.worker.ts: skillAttack calc', characterId)
         skillAttack(socketId, userStatus).then((result: AutoWorkerResult) => {
-            console.log('autoBattle.worker.ts: skillAttack resolved', characterId);
+            // console.log('autoBattle.worker.ts: skillAttack resolved', characterId);
             // result = { status, script }
             // status = player | monster | terminate
 
@@ -95,17 +95,15 @@ const main = () => {
         const { autoAttackTimer, skillAttackTimer } = battleCache.get(characterId);
         clearInterval(autoAttackTimer);
         clearInterval(skillAttackTimer);
-        redis.battleSet(characterId, { LOOP: 'off', SKILL: 'off', WORKER: 'off' });
+        redis.battleSet(characterId, { LOOP: 'off', SKILL: 'off' });
 
-        console.log('autoBattle.worker.ts: clear loops', characterId);
+        // console.log('autoBattle.worker.ts: isDead clear loops', characterId);
 
         parentPort?.postMessage(result);
     });
-
     autoAttackLoop(workerData);
     skillAttackLoop(workerData);
 }
-
 
 
 main();
