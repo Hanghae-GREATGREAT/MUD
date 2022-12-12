@@ -52,8 +52,9 @@ class AutoBattleWorker extends EventEmitter {
                 join(env.SRC_PATH, 'workers', 'autoBattle.worker.js'),
                 { workerData }
             );
+            const workerId = worker.threadId;
             this.threads.set(characterId, worker);
-            console.log('autoBattle.ts: worker created', worker.threadId, characterId);
+            console.log('autoBattle.ts: worker created', workerId, characterId);
 
             worker.on('message', (result: AutoWorkerResult) => {
                 console.log('autoBattle.ts: worker message received', characterId);
@@ -66,7 +67,7 @@ class AutoBattleWorker extends EventEmitter {
             worker.on('error', reject);
 
             worker.on('exit', (code) => {
-                console.log(`autoBattle ${worker.threadId} exitCode: ${code}`, characterId);
+                console.log(`autoBattle ${workerId} exitCode: ${code}`, characterId);
                 this.threads.delete(characterId);
 
                 const next = this.waitList.shift();
@@ -80,6 +81,10 @@ class AutoBattleWorker extends EventEmitter {
         if (status === 'error') {
             console.log('autoBattle.ts: result error', characterId);
             battleError(socketId);
+            return;
+        }
+        if (status === 'terminate') {
+            console.log('autoBattle.ts: terminated', characterId);
             return;
         }
 

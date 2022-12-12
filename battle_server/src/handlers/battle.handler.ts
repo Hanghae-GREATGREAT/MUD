@@ -15,16 +15,15 @@ export default {
         return new Promise(async(resolve, reject) => {
             const { characterId } = userInfo;
             const { dungeonLevel, monsterId } = await redis.battleGet(characterId);
-            redis.battleSet(characterId, { LOOP: 'on' });
+            redis.battleSet(characterId, { LOOP: 'on', terminate: 'continue' });
 
             const autoAttackTimer = setInterval(async() => {
 
-                const { LOOP } = await redis.battleGet(characterId);
-                if (LOOP === 'off' || !dungeonLevel) {
+                const cache = await redis.battleGet(characterId);
+                if (cache.LOOP === 'off' || !dungeonLevel) {
                     console.log('battle handler autoAttack LOOP error', userInfo.characterId);
                     clearInterval(autoAttackTimer);
-                    redis.battleSet(characterId, { LOOP: 'on'});
-                    battleError(socketId);
+                    if (cache.status === 'continue') battleError(socketId);
                     return resolve();
                 }
                 battleCache.set(characterId, { dungeonLevel, monsterId, autoAttackTimer });
@@ -91,9 +90,11 @@ export default {
             let tempScript = '';
             let field = 'action';
             const { characterId, attack, mp, skill } = userStatus;
+            // console.log('battle.handler.ts: action skill', characterId);
     
             // 스킬 정보 가져오기
             if (skill[Number(CMD)-1] === undefined) {
+                console.log('battle.handler.ts: wrong skill number', characterId);
                 const script = battleScript.battleHelp(CMD);
                 const field = 'action';
                 BATTLE.to(socketId).emit('printBattle', { field, script, userInfo, userStatus });
@@ -102,15 +103,15 @@ export default {
             const { name: skillName, cost, multiple } = skill[Number(CMD)-1];
             
             // 몬스터 정보 가져오기
-            const { monsterId } = battleCache.get(characterId);
+            const { monsterId } = await redis.battleGet(characterId);
             if (!monsterId) {
-                console.log('skill select cache error: monsterId missing', userInfo.characterId);
+                console.log('battle.handler.ts: skill monsterId missing', characterId);
                 battleError(socketId);
                 return resolve();
             }
             const monster = await MonsterService.findByPk(monsterId);
             if (!monster) {
-                console.log('skill select cache error: monster missing', userInfo.characterId);
+                console.log('battle.handler.ts: skill monster missing', characterId);
                 battleError(socketId);
                 return resolve();
             }        
@@ -118,6 +119,7 @@ export default {
     
             // 마나 잔여량 확인
             if (mp - cost < 0) {
+                console.log('battle.handler.ts: skill empty mana', characterId);
                 tempScript += `??? : 비전력이 부조카당.\n`;
                 const script = tempScript;
                 BATTLE.to(socketId).emit('printBattle', { field, script, userInfo, userStatus });
@@ -138,10 +140,11 @@ export default {
             }  
             tempScript += `\n당신의 ${skillName} 스킬이 ${monsterName}에게 적중! => ${realDamage}의 데미지!\n`;
     
-            const {  autoAttackTimer, dead } = battleCache.get(characterId);
+            const { autoAttackTimer, dead } = battleCache.get(characterId);
             if (isDead === 'dead' || dead === 'monster') {
+                // console.log('battle.handler.ts: skill monster dead', characterId, isDead, dead);
                 clearInterval(autoAttackTimer);
-                redis.battleSet(characterId, { LOOP: 'off' });
+                redis.battleSet(characterId, { LOOP: 'off', status: 'terminate' });
 
                 const report = await deadReport.monster(monster, tempScript);
                 if (report instanceof Error) {
@@ -191,10 +194,14 @@ export default {
 
         try {
             if (autoBattle.get(characterId)) {
+                console.log('battle.handler.ts: stopAutoWorker SAME', characterId);
+
                 autoBattle.terminate(characterId);
                 battleCache.delete(characterId);
             } else {
-                redis.battleSet(characterId, { WORKER: 'off' });
+                console.log('battle.handler.ts: stopAutoWorker DIFFERENT', characterId);
+
+                redis.battleSet(characterId, { LOOP: 'off', SKILL: 'off', status: 'terminate' });
             }
 
             redis.battleGet(characterId).then(({ monsterId }) => {

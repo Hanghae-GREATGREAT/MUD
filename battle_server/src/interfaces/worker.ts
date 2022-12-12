@@ -9,7 +9,7 @@ export interface AutoWorkerData {
 }
 
 export interface AutoWorkerResult {
-    status: 'monster'|'player'|'error'|'continue';
+    status: 'monster'|'player'|'continue'|'terminate'|'error';
     script: string;
 }
 

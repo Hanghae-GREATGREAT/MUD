@@ -119,10 +119,12 @@ export default {
         }
 
         if (CMD === '중단') {
+            console.log('battle.controller.ts: action stop', userInfo.characterId);
             const error = battleHandler.stopAuto(socketId, userInfo);
             error ? next(error) : res.status(200).end();
             return;
         } else if (!CMD.match(/1|2|3/)) {
+            console.log('battle.controller.ts: action wrong', userInfo.characterId);
             const script = battleScript.battleHelp(CMD);
             const field = 'action';
 
