@@ -27,19 +27,6 @@ export default {
         res.status(200).end();
     },
 
-    chatLeave: (req: Request, res: Response, next: NextFunction) => {
-        const { socketId }: PostBody = req.body;
-
-        const joinedRoom = chatCache.getJoinedRoom(socketId);
-        const joinerScript = chatCache.leaveChat(socketId);
-        if (joinerScript.length > 0) {
-            FRONT.to(joinedRoom).emit('leaveChat', joinerScript);
-        }
-        FRONT.in(socketId).socketsLeave(joinedRoom)
-
-        res.status(200).end();
-    },
-
     pvpChatStart: (req: Request, res: Response, next: NextFunction) => {
         console.log('pvpChatStart')
         const { socketId, userInfo, option: pvpRoom }: PostBody = req.body;
@@ -62,6 +49,19 @@ export default {
         res.status(200).end();
     },
 
+    chatLeave: (req: Request, res: Response, next: NextFunction) => {
+        const { socketId }: PostBody = req.body;
+
+        const joinedRoom = chatCache.getJoinedRoom(socketId);
+        const joinerScript = chatCache.leaveChat(socketId);
+        if (joinerScript.length > 0) {
+            FRONT.to(joinedRoom).emit('leaveChat', joinerScript);
+        }
+        FRONT.in(socketId).socketsLeave(joinedRoom)
+
+        res.status(200).end();
+    },
+
     pvpChatLeave: (req: Request, res: Response, next: NextFunction) => {
         const { socketId, userInfo }: PostBody = req.body;
 
@@ -73,7 +73,8 @@ export default {
         FRONT.in(socketId).socketsLeave(joinedRoom)
 
         if (!userInfo) {
-            return res.status(200).end();
+            res.status(200).end();
+            return;
         }
 
         // 채팅방 참가
