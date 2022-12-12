@@ -8,10 +8,14 @@ import { AutoBattleResult, DeadReport } from '../interfaces/battle';
 import { UserInfo, UserStatus } from '../interfaces/user';
 import BATTLE from '../redis';
 import { MonsterService, BattleService, CharacterService } from '../services';
-import { autoAttackWorker, isMonsterDeadWorker, skillAttackWorker } from '../workers';
+import autoBattle from '../workers/autoBattle';
+// import { autoAttackWorker, isMonsterDeadWorker, skillAttackWorker } from '../workers';
 
 
 export default {
+
+    // DEPRECATED
+    // 비교용 싱글스레드 전투
     autoBattle: (socketId: string, userInfo: UserInfo, userStatus: UserStatus): Promise<void> => {
         return new Promise(async(resolve, reject) => {
             let field = 'autoBattleS';
@@ -19,15 +23,11 @@ export default {
             const { dungeonLevel } = await redis.battleGet(characterId);
             redis.battleSet(characterId, { LOOP: 'on' });
             // console.log('auto.handler.ts: check cache ', dungeonLevel, characterId)
+
             if (!dungeonLevel) {
                 console.log('autoBattle cache error: dungeonLevel missing', userInfo.characterId);
                 battleError(socketId);
                 return resolve();
-                // const error = new HttpException(
-                //     'autoBattle cache error: dungeonLevel missing', 
-                //     500, socketId
-                // );
-                // return reject(error);
             }
     
             // 몬스터 생성
@@ -123,7 +123,7 @@ export default {
     autoBattleWorker: (socketId: string, userStatus: UserStatus): Promise<void> => {
         return new Promise(async(resolve, reject) => {
             const { characterId } = userStatus;
-            redis.battleSet(characterId, { LOOP: 'on', SKILL: 'on', WORKER: 'on' });
+            redis.battleSet(characterId, { LOOP: 'on', SKILL: 'on', status: 'continue' });
             
             // console.log('battle.handler.ts: 자동전투 핸들러 시작, ', characterId);
             const { dungeonLevel } = await redis.battleGet(characterId);
@@ -142,40 +142,8 @@ export default {
             const data = { field: 'autoBattle', script: monsterCreatedScript, userStatus }
             BATTLE.to(socketId).emit('printBattle', data);
 
-            // console.log('auto.handler.ts: get cache', cache)
             setEnvironmentData(characterId, JSON.stringify({ monsterId, dungeonLevel }));
-
-            const { port1: autoToDead, port2: autoToDeadReceive } = new MessageChannel();
-            const { port1: skillToDead, port2: skillToDeadReceive } = new MessageChannel();
-            const receiver = { autoToDeadReceive, skillToDeadReceive };
-
-            // 사망판정 워커 할당 >> 소켓 송신
-            isMonsterDeadWorker.check(socketId, userStatus, receiver).then(({ status, script}) => {
-                if (status === 'terminate') {
-                    console.log('isMonsterDeadWorker terminate error', characterId);
-                    battleError(socketId);
-                    return resolve();
-                }
-
-                const battleResult: AutoBattleResult = {
-                    monster: deadReport.autoMonster,
-                    player: deadReport.autoPlayer,
-                }
-                const error = battleResult[status](socketId, characterId, script);
-                error ? reject(error) : resolve();
-            }).catch(reject);
-
-            // 자동공격 워커 할당
-            autoAttackWorker.start(socketId, userStatus, autoToDead).then((result) => {
-                console.log('battle.handler.ts: 자동 공격 resolved', result, characterId);
-                resolve();
-            }).catch(reject);
-
-            // 스킬공격 워커 할당
-            skillAttackWorker.start(socketId, userStatus, skillToDead).then((result) => {
-                console.log('battle.handler.ts: 스킬 공격 resolved', result, characterId);
-                resolve();
-            }).catch(reject);
+            autoBattle.start(socketId, userStatus);
         });
     }
 }

@@ -30,7 +30,7 @@ export default {
 
         const { name, exp } = monster;
         const userStatus = await CharacterService.addExp(characterId, exp);
-        script += `\n${name} 은(는) 쓰러졌다 ! => Exp + ${exp}\n`;
+        script += `\n${name} 은(는) 쓰러졌다 ! => Exp + ${exp}\n\n`;
 
         if (userStatus.levelup) {
             // console.log('result.handler.ts: autoResultMonsterDead() >> levelup!!', characterId);

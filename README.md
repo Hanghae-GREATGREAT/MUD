@@ -119,19 +119,11 @@
 
          - 동시 접속 유저(user scenario 0.5초이내)
 
-### 🔹 Github Actions + Docker, Docker-compose를 활용한 CI/CD
-
-      -  배포 자동화를 통해 효율적인 협업 및 작업 환경을 구축하기 위함
-
-      -  간단한 CI/CD기능을 사용할 예정이라 Github Actions 로 결정
-
-      -  ELK (Elastic Search, Logstash, Kibana)는 모두 연관되어 동작해야 함 → docker-compose로 묶어 구축함
-
 <br><br><br>
 
 
 # 아키텍쳐
-![image](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbEqmpI%2FbtrTltnXyNk%2FPSNRyqJzFH7IvKZAdXGDD1%2Fimg.jpg)
+![image](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FrDP1l%2FbtrTjGHUE0T%2FBulzP6tGktKcRyHv6Isl80%2Fimg.jpg)
 
 <br><br><br>
 
@@ -143,7 +135,7 @@
 
 
 # 시련의 장 (유저 간 PVP 대전) 주요 로직 Flow
-![image](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbaAoRF%2FbtrThmKpVK9%2F49sf2wmle0zx5AMapLCIWk%2Fimg.png)
+![image](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fw55to%2FbtrThNudxyy%2F9qC2BhtkimS6ekIDbsTrY0%2Fimg.png)
 
 <br><br><br>
 
@@ -155,26 +147,8 @@
 |Build Tool|<img src="https://img.shields.io/badge/ts_node-blue?style=for-the-badge&logo=tsnode&logoColor=white">|
 |DB|<img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=MySQL&logoColor=white">|
 |Server|<img src="https://img.shields.io/badge/aws ec2-232F3E?style=for-the-badge&logo=AmazonAWS&logoColor=white">|
-|CI/CD|<img src="https://img.shields.io/badge/GitHub Actions-2088FF?style=for-the-badge&logo=GitHub Actions&logoColor=white"> <img src="https://img.shields.io/badge/docker-00A6E4?style=for-the-badge&logo=docker&logoColor=white">|
 |Caching|<img src="https://img.shields.io/badge/redis-B71C1C?style=for-the-badge&logo=redis&logoColor=white">|
 
-
-<br><br><br>
-
-
-# 설계
-<details>
-    <summary> <b>📝 API 설계</b> </summary>
-    <img src="https://">
-    <div markdown="1">
-        
-> 자세히 보러 가기 👉🏻 [**[Notion] 📝 API 설계**](https://)
->
-        
-<br>
-        
-</div>
-</details>
 
 <br><br><br>
 
