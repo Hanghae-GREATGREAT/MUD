@@ -8,7 +8,7 @@
 
 ### 팀 노션
 팀 워크스페이스 바로가기 <br>
-👉🏻 **[[Notion]](https://www.notion.so/4af95fa3549a44fda6863df00550a2cb)**
+👉🏻 **[[Notion]](https://www.notion.so/TEAM-MUD-7c0b6eafff5042dc8520f0bc073f8f19)**
 
 <br>
 
@@ -37,9 +37,46 @@
 
 ### 🔹 Worker Threads를 활용하여 방치형 자동 전투 구현 
 
-      -  IO < CPU연산
+![image](https://blog.kakaocdn.net/dn/czBKFL/btrToC0v4YB/M9Yk8R9pMkjOxcI1rbhIek/img.png)
 
-      -  로직 소개
+      -  문제:  IO 요청보다 CPU연산의 처리량이 높은 기능들이 다수 존재.
+
+      -  해결: Worker Thread를 사용하여 I/O처리를 제외한 연산을 이관하여 관리하는 방법으로 해결.
+
+### 🔹 Socket.io 기반 MSA 구현
+
+![image](https://blog.kakaocdn.net/dn/bz6gKh/btrTtk5MUOV/4dBlgiFUqqv0zKqgkK3qK1/img.png)
+
+      -  문제: 서버에서 처리된 경과를 수시로 클라이언트에 송신해줘야 하기 때문에 양방향 소켓 통신을 하부 마이크로서비스까지 지속 유지해야할 필요성이 있다고 판단.
+
+      -  1) 첫번째 시도
+            클라이언트 <> 메인서버만 웹소캣으로 두고, 요청 처리는 api로 각각의 마이크로서비스에 분배.
+            단, 1요청 1응답이라는 API 한계가 있으며, 이를 극복하려면 메인 서버 단의 로직이 복잡해진다.
+            따라서, 수동적인 요청-응답에서 벗어나기 위한 다른 방법이 필요하다
+
+      -  2) 두번째 시도
+            로컬에서 레디스로 이전된 소캣 어댑터를 통해 소캣 통신을 중계할 수 있는 기능을 구현하려했으나 
+            실패했고 참고할 레퍼런스가 충분하지 않아 기술적으로 가능한지 의문
+      
+      -  2) 세번째 시도
+            절충안으로 REST와 Socket.io를 혼용하는 방식으로 하되, Socket Adapter의 부가적인 기능인 
+            Emitter를 사용하여 비소켓서버에서 클라이언트로의 자율적인 통신 해결.
+            이를 통해, 멀티 스레드를 도입하면서 워커 스레드에 소캣 객체를 전달하지 못해 워커 스레드에서 
+            처리되는 과정을 전투로그로 클라이언트에 출력하지 못하던 문제도 함께 해결
+
+### 🔹 Load Balancing과 Socket Session
+
+![image](https://blog.kakaocdn.net/dn/DZ16L/btrTvjx2apJ/0NqXn7lpRu6YSAXt4L1eT1/img.webp)
+
+      -  문제: MSA화되어 서버 컨테이너가 증가하자 성능향상을 위해 서버 내부에서 맵핑하여 사용하던 데이터들로의 접근이 보장되지 않음
+         클라이언트<>소켓서버는 초기에는 Nginx sticky session 설정, 
+         나중에는 ELB로 세션이 보장 받으나 WAS 내부적으로는 보장되지 않는 문제
+
+      -  대안: Kafka 등의 Message Broker를 도입하여 사용하는 것이 최선책이었으나,
+               1) 같은 WAS 인스턴스 내에서만 데이터 접근 및 교환이 가능하면 되고
+               2) 개발 기간에 여유가 없었기 때문에 기존에 사용하던 기술 범위 내에서 해결하는 것이 차선책
+               
+      -  해결: 빠르고 잦은 접근이 필요한 데이터는 로컬 Redis에, 그 외에는 Redis Cloud를 NoSQL 로서 사용
 
 ### 🔹 Redis를 활용한 전투정보 캐싱
 
@@ -47,29 +84,11 @@
 
       -  업데이트가 자주 일어나지 않고 반복적으로 동일한 결과를 출력하는 경우가 많음 → 메모리에 저장(캐싱)해두면 DB의 부하는 감소하고,  속도는 향상됨 
 
-### 🔹 Socket.io 기반 MSA 구현
-
-      -  클라이언트<>요청송수신서버<>요청처리서버 소캣 연결 유지
-
-      -  Socket Adapter, Socket Emitter, Redis PUB/SUB
-
-      -  클라이언트 > 소켓서버(API게이트웨이) > 요청처리서버 > 클라이언트
-
-### 🔹 Load Balancing과 Socket Session
-
-      -  소켓서버 > 요청처리서버 Load Balancing이 이루어질 때 최초 클라이언트 정보가 없어, 연속적인 커맨드 입력이 요청처리서버 수에 따라 1/n로 이루어지는 상황
-
-      -  Message Broker
-
-      -  다른 WAS 인스턴스와 연결할 필요가 없고, 시간적인 한계로 WAS 인스턴스 내 로컬 REDIS에 처리 정보 캐싱
-
-      -  ex) 전투 시작&중단
-
 
 <br><br>
 
 
-# 💡 **성능개선 사항**
+# 💡 **테스트 및 성능개선 사항**
 
 ### 🔹 자동전투 연산 처리 속도
 
@@ -80,6 +99,10 @@
       -  멀티스레드 => 연산 병렬화
 
       -  but... 전투1 3워커 메모리 지나치게 점유(전투1당 50mb) => 전투1 1워커로 정리 및 풀 제한
+      
+      -  250ms >> 15ms (94%) 감소
+      
+![image](https://blog.kakaocdn.net/dn/b33KLl/btrTu2iTrht/JqRY5F7B1pOkboM4qg5I9k/img.png)
 
 ### 🔹 메모리 누수로 인하여 리팩토링 진행
 
@@ -88,36 +111,48 @@
       -  ASC 미적용 기준
 
       -  유저 200명: 시나리오 성공률 83%>93.5% / 응답속도 299.90ms>138.21ms
+                    성공률 12.7% 증가, 응답속도 53.91% 감소
 
       -  유저 300명: 시나리오 성공률 76.7%>84.3% / 응답속도 540.68ms>474.13ms
+                    성공률 9.9% 증가, 응답속도 12.30% 감소
+                    
+![image](https://blog.kakaocdn.net/dn/bJ9J8G/btrTthBofgK/fcTKtpFaWJfGHHzMDsDFN0/img.gif)
+![image](https://blog.kakaocdn.net/dn/cyIVRj/btrTt1Ltpsf/kB683kYqBYVcG126kkvhek/img.gif)
+
 
 ### 🔹 동시처리 능력
 
+유저 랜덤 시나리오 테스트에 대해 평균 100ms이내, 최대 500ms 이내, 성공률 95% 이상을 목표
+
       -  monolithic (MVP 스펙)
 
-         - 응답속도
-
-         - 동시처리 한계
+         단순 IO 동시처리 테스트
+         
+         - 100명. 응답속도 평균 250.49ms. 시나리오 성공률 100%
+         
+         - 200명. 응답속도 평균 1416.35ms. 시나리오 성공률 98.8%
+         
+         (테스트 인프라를 갖추기 전이라 유저 시나리오X)
 
       -  microservice
 
-         - 응답속도
-
-         - 동시처리 한계
-
-         - 동시 접속 유저(IO 1초이내)
-
-         - 동시 접속 유저(user scenario 0.5초이내)
+           단순 IO 동시처리 테스트
+           - 100명. 응답속도 평균 39.95ms. 시나리오 성공률 100%
+            - 200명. 응답속도 평균 107.40ms. 시나리오 성공률 93.5%
+            - 300명. 응답속도 평균 622.22ms. 시나리오 성공률 87.2%
+            
+           동시 접속 유저(user scenario 0.5초이내)
+            - 500명. 응답속도 평균 60.32ms. 시나리오 성공률 99.9%
+            - 750명. 응답속도 평균 208.86ms. 시나리오 성공률 95.4%
+            - 1000명. 응답속도 평균 470.33ms. 시나리오 성공률 89.0%
 
       -  asc&lb
 
-         - 응답속도
-
-         - 동시처리 한계
-
-         - 동시 접속 유저(IO 1초이내)
-
-         - 동시 접속 유저(user scenario 0.5초이내)
+         단순 IO 동시처리 테스트
+         - 테스트 진행중
+         
+         동시 접속 유저(user scenario 0.5초이내)
+         - 테스트 진행중
 
 <br><br><br>
 
@@ -134,11 +169,6 @@
 <br><br><br>
 
 
-# 시련의 장 (유저 간 PVP 대전) 주요 로직 Flow
-![image](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fw55to%2FbtrThNudxyy%2F9qC2BhtkimS6ekIDbsTrY0%2Fimg.png)
-
-<br><br><br>
-
 # 기술스택
 |분류|기술|
 | :-: |:- |
@@ -152,11 +182,52 @@
 
 <br><br><br>
 
+# 라이브러리
+```json
+
+"dependencies"
+
+    "@socket.io/redis-adapter": "^7.2.0",
+    "bcrypt": "^5.1.0",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "mysql2": "^2.3.3",
+    "node-fetch": "^2.6.7",
+    "redis": "^4.4.0",
+    "sequelize": "^6.25.5",
+    "socket.io": "^4.5.3"
+    
+
+"devDependencies": {
+    "@babel/core": "^7.20.2",
+    "@babel/preset-env": "^7.20.2",
+    "@babel/preset-typescript": "^7.18.6",
+    "@types/bcrypt": "^5.0.0",
+    "@types/ejs": "^3.1.1",
+    "@types/express": "^4.17.14",
+    "@types/jest": "^29.2.2",
+    "@types/node-fetch": "^2.6.2",
+    "@types/sequelize": "^4.28.14",
+    "@types/supertest": "^2.0.12",
+    "jest": "^29.3.1",
+    "nodemon": "^2.0.20",
+    "socket.io-client": "^4.5.3",
+    "supertest": "^6.3.1",
+    "ts-jest": "^29.0.3",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.4"
+  }
+  
+```
+
+
+<br><br><br>
+
 
 # 팀원
 
-|이름|포지션|분담|@ Email|Github|
-|------|------|------|------|------|
-|김세욱|BackEnd|작<br>업<br>중<br/>|ninthsun91@gmail.com|https://github.com/ninthsun91|
-|왕준혁|BackEnd|작<br>업<br>중|@gmail.com|https://github.com/Monggle88|
-|장용호|BackEnd|작<br>업<br>중|didlsdydgh@gmail.com|https://github.com/JangKroed|
+|이름|포지션|@ Email|Github|
+|------|------|------|------|
+|김세욱|BackEnd|ninthsun91@gmail.com|https://github.com/ninthsun91|
+|왕준혁|BackEnd|fmonggle88@gmail.com|https://github.com/Monggle88|
+|장용호|BackEnd|didlsdydgh@gmail.com|https://github.com/JangKroed|
