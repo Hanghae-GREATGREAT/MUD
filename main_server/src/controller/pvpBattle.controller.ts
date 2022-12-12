@@ -22,18 +22,18 @@ export default {
         }
 
         const cmdRoute: CommandRouter = {
-            '생': 'createRoom',
-            '생성': 'createRoom',
-            'C': 'createRoom',
-            'CREATE': 'createRoom',
-            '입': 'joinRoom',
-            '입장': 'joinRoom',
-            'J': 'joinRoom',
-            'JOIN': 'joinRoom',
-            '새': 'pvpGo',
-            '새로고침': 'pvpGo',
-            'RE': 'pvpGo',
-            'REFRESH': 'pvpGo',
+            '생': 'pvp/createRoom',
+            '생성': 'pvp/createRoom',
+            'C': 'pvp/createRoom',
+            'CREATE': 'pvp/createRoom',
+            '입': 'pvp/joinRoom',
+            '입장': 'pvp/joinRoom',
+            'J': 'pvp/joinRoom',
+            'JOIN': 'pvp/joinRoom',
+            '새': 'pvpNpc/pvpGo',
+            '새로고침': 'pvpNpc/pvpGo',
+            'RE': 'pvpNpc/pvpGo',
+            'REFRESH': 'pvpNpc/pvpGo',
         };
 
         if (!cmdRoute[CMD1]) {
@@ -45,7 +45,7 @@ export default {
         socket.data[socket.id] = `${userStatus.name},pvpRoom ${CMD2},${userInfo.userId}`
         
         const frontId = socketIds.get(userInfo.userId);
-        const URL = `${PVP_URL}/pvp/${cmdRoute[CMD1]}`;
+        const URL = `${PVP_URL}/${cmdRoute[CMD1]}`;
         fetchPost({ URL, socketId: socket.id, CMD: CMD2, userInfo, userStatus, option: frontId })
     },
 
