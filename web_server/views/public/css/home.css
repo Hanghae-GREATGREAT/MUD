@@ -93,8 +93,8 @@ body > .container > .windows > .commendWindow > .userInfo > .infoName {
 body > .container > .windows > .commendWindow > .userInfo > .infoName > span {
     flex: 7;
     color: rgb(192, 192, 192);
-    font-size: 50px;
-    margin: auto 0px auto 50px;
+    font-size: 35px;
+    margin: auto 0px auto 20px;
     /* border: 1px red solid; */
 }
 
