@@ -119,14 +119,6 @@
 
          - 동시 접속 유저(user scenario 0.5초이내)
 
-### 🔹 Github Actions + Docker, Docker-compose를 활용한 CI/CD
-
-      -  배포 자동화를 통해 효율적인 협업 및 작업 환경을 구축하기 위함
-
-      -  간단한 CI/CD기능을 사용할 예정이라 Github Actions 로 결정
-
-      -  ELK (Elastic Search, Logstash, Kibana)는 모두 연관되어 동작해야 함 → docker-compose로 묶어 구축함
-
 <br><br><br>
 
 
