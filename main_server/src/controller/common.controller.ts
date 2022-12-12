@@ -52,15 +52,19 @@ export default {
 
     pvpRoomLeave: (socket: Socket) => {
         console.log('pvpRoomDisconnect');
+        
         const URL = `${PVP_URL}/pvp/pvpDisconnect`;
-        const option = socket.data;
-        fetchPost({ URL, socketId: socket.id, option: option.pvpUser });
+        const option: string = socket.data[socket.id];
+        fetchPost({ URL, socketId: socket.id, option: option });
 
-        if (!option.pvpUser) return;
+        if (!option) return;
 
+        const userId = option.split(',').pop()!;
+        const socketId: string = socketIds.get(Number(userId))!;
+        
         const FRONTURL = `${FRONT_URL}/chat/pvpChatLeave`;
-        const { userId } = option.pvpUser.split(' ').pop();
-        fetchPost({ URL: FRONTURL, socketId: socketIds.get(userId)! });
+        fetchPost({ URL: FRONTURL, socketId });
+        socketIds.delete(Number(userId))
         return;
     }
 };

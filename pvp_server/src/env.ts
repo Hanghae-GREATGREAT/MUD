@@ -18,6 +18,7 @@ class Env {
     WAS_LB: string;
 
     REDIS_URL: string;
+    REDIS_CLOUD: string;
 
     constructor() {
         this.NODE_ENV = process.env.NODE_ENV ? process.env.NODE_ENV.trim().toLowerCase() : 'development';
@@ -47,6 +48,12 @@ class Env {
             `redis://${REDIS_HOST}:${REDIS_PORT}` :
             `redis://${REDIS_USER}:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}/0`;
 
+        const CLOUD_USER = process.env.REDIS_CLOUD_USER;
+        const CLOUD_PASSWORD = process.env.REDIS_CLOUD_PASSWORD;
+        const CLOUD_HOST = process.env.REDIS_CLOUD_HOST;
+        const CLOUD_PORT = process.env.REDIS_CLOUD_PORT;
+        this.REDIS_CLOUD = `redis://${CLOUD_USER}:${CLOUD_PASSWORD}@${CLOUD_HOST}:${CLOUD_PORT}/0`;
+        
         this.HTTP = process.env.HTTP || 'http';
         this.WS = process.env.WS || 'ws';
         this.HOST =

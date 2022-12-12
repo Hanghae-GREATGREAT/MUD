@@ -82,9 +82,6 @@ class ChatCache {
         // 채팅방 참가 데이터 등록
         this.pvpChatJoiner[socketId] = `${pvpRoom}`;
 
-        console.log('TEST pvpRoomList : ', this.pvpRoomList);
-        console.log('TEST pvpChatJoiner : ', this.pvpChatJoiner);
-
         return [joinerSize, this.pvpSetJoinerLimit];
     }
 
