@@ -156,7 +156,7 @@
 # 팀원
 
 |이름|포지션|@ Email|Github|
-|------|------|------|------|------|
+|------|------|------|------|
 |김세욱|BackEnd|ninthsun91@gmail.com|https://github.com/ninthsun91|
 |왕준혁|BackEnd|fmonggle88@gmail.com|https://github.com/Monggle88|
 |장용호|BackEnd|didlsdydgh@gmail.com|https://github.com/JangKroed|
