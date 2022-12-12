@@ -2,13 +2,10 @@ import { Socket } from 'socket.io';
 import { NpcService } from '../../services';
 import { UserInfo } from '../../interfaces/user';
 
-
 export default {
-    
     enhanceHelp: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript: string = '';
-        const tempLine =
-            '=======================================================================\n';
+        const tempLine = '=======================================================================\n';
 
         tempScript += '명령어 : \n';
         tempScript += '1 - 퍼거스와 대화합니다.\n';
@@ -22,8 +19,7 @@ export default {
     },
 
     enhanceTalk: async (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
-        const tempLine =
-            '=======================================================================\n';
+        const tempLine = '=======================================================================\n';
 
         const NpcScript: string = NpcService.enhanceTalkScript(userInfo.name);
 
@@ -35,8 +31,7 @@ export default {
 
     enhance: async (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
         let tempScript: string = '';
-        const tempLine =
-            '=======================================================================\n';
+        const tempLine = '=======================================================================\n';
 
         const { tempScript: actionScript, userStatus } = await NpcService.enhance(
             Number(userInfo.characterId),
@@ -58,11 +53,11 @@ export default {
 
         tempScript += `입력값을 확인해주세요.\n`;
         tempScript += `현재 입력 : '${CMD}'\n`;
-        tempScript += `사용가능한 명령어가 궁금하시다면 '도움말'을 입력해보세요.\n`;
+        tempScript += `[H]elp : 도움말\n`;
 
         const script = 'Error : \n' + tempScript;
         const field = 'enhance';
-        
+
         socket.emit('print', { script, userInfo, field });
     },
 };

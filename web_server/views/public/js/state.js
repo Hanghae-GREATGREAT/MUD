@@ -1,28 +1,23 @@
-
-
-
-class State{
-
+class State {
     #state = undefined;
-    constructor(initialState=undefined) {
+    constructor(initialState = undefined) {
         this.#state = initialState;
+    }
 
-    }
-    
     set = (updateState) => {
-        this.#state = updateState
+        this.#state = updateState;
         this.#render();
-    }
+    };
 
     get = () => {
         return this.#state;
-    }
+    };
 
     #render = () => {
         const status = this.#state;
         const userInfo = $('#userInfo');
         userInfo.empty();
-    
+
         if (JSON.stringify(status) === '{}' || !status) {
             const statusHTML = `
                 <div class="infoName">
@@ -44,8 +39,8 @@ class State{
         <div class="infoSub">
             <div class="infoUser"><span>${status.username}</span></div>
             <div class="infoStatus">
-                <span>체력: ${status.maxhp}/${status.hp}</span>
-                <span>마나: ${status.maxmp}/${status.mp}</span>
+                <span>체력: ${status.hp}/${status.maxhp}</span>
+                <span>마나: ${status.mp}/${status.maxmp}</span>
             </div>
         </div>
         `;
