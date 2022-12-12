@@ -14,10 +14,13 @@ export default {
 
         const cmdRoute: CommandRouter = {
             LOAD: 'load',
+            목록: 'dungeonList',
             LIST: 'dungeonList',
             L: 'dungeonList',
+            도움말: 'help',
             HELP: 'help',
             H: 'help',
+            입장: 'dungeonInfo',
             ENTER: 'dungeonInfo',
             E: 'dungeonInfo',
             // 'OUT': 'signout',
@@ -37,8 +40,10 @@ export default {
 
         const commandHandler: CommandHandler = {
             LOAD: village.NpcList,
+            목록: village.NpcList,
             LIST: village.NpcList,
             LS: village.NpcList,
+            도움말: village.villagehelp,
             HELP: village.villagehelp,
             H: village.villagehelp,
             '1': village.storyInfo,

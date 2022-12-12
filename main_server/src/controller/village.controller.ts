@@ -11,6 +11,7 @@ export default {
         const [CMD1, CMD2]: string[] = line.trim().toUpperCase().split(' ');
 
         const commandHandler: CommandHandler = {
+            도움말: npc.storyHelp,
             HELP: npc.storyHelp,
             H: npc.storyHelp,
             '1': npc.storyTalk,
@@ -30,6 +31,7 @@ export default {
         const [CMD1, CMD2]: string[] = line.trim().toUpperCase().split(' ');
 
         const commandHandler: CommandHandler = {
+            도움말: npc.healHelp,
             HELP: npc.healHelp,
             H: npc.healHelp,
             '1': npc.healTalk,
@@ -49,6 +51,7 @@ export default {
         const [CMD1, CMD2]: string[] = line.trim().toUpperCase().split(' ');
 
         const commandHandler: CommandHandler = {
+            도움말: npc.enhanceHelp,
             HELP: npc.enhanceHelp,
             H: npc.enhanceHelp,
             '1': npc.enhanceTalk,
@@ -68,6 +71,7 @@ export default {
         const [CMD1, CMD2]: string[] = line.trim().toUpperCase().split(' ');
 
         const commandHandler: CommandHandler = {
+            도움말: npc.gambleHelp,
             HELP: npc.gambleHelp,
             H: npc.gambleHelp,
             '1': npc.gambleTalk,

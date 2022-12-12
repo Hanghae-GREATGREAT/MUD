@@ -12,13 +12,18 @@ export default {
         const [CMD1, CMD2] = line.trim().toUpperCase().split(' ');
 
         const cmdRoute: CommandRouter = {
+            도움말: 'help',
             HELP: 'help',
             H: 'help',
+            수동: 'normal',
             NORMAL: 'normal',
             N: 'normal',
+            자동: 'autoW',
             AUTO: 'autoW',
             A: 'autoW',
+            자동단일: 'auto',
             AUTODEV: 'auto',
+            돌: 'dungeonInfo',
             BACK: 'dungeonInfo',
             B: 'dungeonInfo',
             // 'OUT': 'signout',
@@ -36,10 +41,13 @@ export default {
         const [CMD1, CMD2] = line.trim().toUpperCase().split(' ');
 
         const cmdRoute: CommandRouter = {
+            도움말: 'ecthelp',
             HELP: 'ecthelp',
             H: 'ecthelp',
+            공격: 'attack',
             ATTACK: 'attack',
             A: 'attack',
+            도망: 'quit',
             RUN: 'quit',
             R: 'quit',
         };
@@ -63,8 +71,10 @@ export default {
         const [CMD1, CMD2] = line.trim().toUpperCase().split(' ');
 
         const cmdRoute: CommandRouter = {
+            도움말: 'autoHelp',
             HELP: 'autoHelp',
             H: 'autoHelp',
+            중단: 'autoQuit',
             STOP: 'autoQuit',
             S: 'autoQuit',
         };
