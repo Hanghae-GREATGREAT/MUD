@@ -115,11 +115,11 @@ export default {
         const tempLine = '=======================================================================\n';
         let tempScript: string = '';
 
-        tempScript += `샤크스 경\n\n`;
+        tempScript += `샤크스 경\n\n`
         tempScript += `잘 단련된 몸에 가죽을 덧대 만들었음직한 갑옷을 보기 좋게 걸치고, 허리에는\n적당한 길이의 칼을 찬 이 남자.\n머리에 쓴 투구가 코까지 가리고 있어 얼굴을 볼 수는 없지만, 헬멧의 슬릿 사이로 때때로 강렬한 눈빛이 비치는 것만 같다.\n\n`;
-        tempScript += `1. 대화하기\n`;
-        tempScript += `2. 입장하기\n`;
-        tempScript += `3. 돌아가기\n\n`;
+        tempScript += `[대]화하기\n`
+        tempScript += `[시]련의장\n`
+        tempScript += `[돌]아가기\n`
 
         const script = tempLine + tempScript;
         const field = 'pvpNpc';

@@ -89,15 +89,22 @@ export default {
 
     pvpController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
         const [CMD1, CMD2]: string[] = line.trim().toUpperCase().split(' ');
-        if (CMD1 === '3') return village.NpcList(socket, CMD2, userInfo);
+        if (CMD1 === '돌' || CMD1 === '돌아가기' || CMD1 === 'R' || CMD1 === 'RETURN') return village.NpcList(socket, CMD2, userInfo);
 
         const cmdRoute: CommandRouter = {
-            도움말: 'help',
-            HELP: 'help',
-            H: 'help',
-            '1': 'pvpTalk',
-            '2': 'pvpGo',
-        };
+                '도': 'help',
+                '도움말': 'help',
+                'H': 'help',
+                'HELP': 'help',
+                '대': 'pvpTalk',
+                '대화하기': 'pvpTalk',
+                'T': 'pvpTalk',
+                'TALK': 'pvpTalk',
+                '시': 'pvpGo',
+                '시련의장': 'pvpGo',
+                'P': 'pvpGo',
+                'PVP': 'pvpGo',
+            };
 
         if (!cmdRoute[CMD1]) {
             const URL = `${PVP_URL}/pvp/wrongCommand`;
