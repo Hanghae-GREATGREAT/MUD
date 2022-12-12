@@ -5,9 +5,8 @@ import { autoBattleHandler, battleHandler, dungeonHandler } from '../handlers';
 import { battleScript } from '../scripts';
 import { PostBody } from '../interfaces/common';
 
-
 export default {
-    help: async(req: Request, res: Response, next: NextFunction) => {
+    help: async (req: Request, res: Response, next: NextFunction) => {
         const { socketId, userInfo }: PostBody = req.body;
         if (!userInfo) {
             const error = new HttpException('MISSING PARAMS', 400, socketId);
@@ -21,7 +20,7 @@ export default {
 
         res.status(200).end();
     },
-    battleHelp: async(req: Request, res: Response, next: NextFunction) => {
+    battleHelp: async (req: Request, res: Response, next: NextFunction) => {
         const { socketId, CMD, userInfo }: PostBody = req.body;
         if (!userInfo || !CMD) {
             const error = new HttpException('MISSING PARAMS', 400, socketId);
@@ -35,7 +34,7 @@ export default {
 
         res.status(200).end();
     },
-    encounterHelp: async(req: Request, res: Response, next: NextFunction) => {
+    encounterHelp: async (req: Request, res: Response, next: NextFunction) => {
         const { socketId, userInfo }: PostBody = req.body;
         if (!userInfo) {
             const error = new HttpException('MISSING PARAMS', 400, socketId);
@@ -49,7 +48,7 @@ export default {
 
         res.status(200).end();
     },
-    autoHelp: async(req: Request, res: Response, next: NextFunction) => {
+    autoHelp: async (req: Request, res: Response, next: NextFunction) => {
         const { socketId, CMD, userInfo }: PostBody = req.body;
         if (!userInfo || !CMD) {
             const error = new HttpException('MISSING PARAMS', 400, socketId);
@@ -63,7 +62,7 @@ export default {
 
         res.status(200).end();
     },
-    autoHelpS: async(req: Request, res: Response, next: NextFunction) => {
+    autoHelpS: async (req: Request, res: Response, next: NextFunction) => {
         const { socketId, CMD, userInfo }: PostBody = req.body;
         if (!userInfo || !CMD) {
             const error = new HttpException('MISSING PARAMS', 400, socketId);
@@ -78,29 +77,35 @@ export default {
         res.status(200).end();
     },
 
-    encounter: async(req: Request, res: Response, next: NextFunction) => {
+    encounter: async (req: Request, res: Response, next: NextFunction) => {
         const { socketId, userInfo, userStatus }: PostBody = req.body;
         if (!userInfo || !userStatus) {
             const error = new HttpException('MISSING PARAMS', 400, socketId);
             return next(error);
         }
 
-        dungeonHandler.encounter(socketId, userInfo, userStatus).then(() => {
-            res.status(200).end();
-        }).catch(error => next(error));
+        dungeonHandler
+            .encounter(socketId, userInfo, userStatus)
+            .then(() => {
+                res.status(200).end();
+            })
+            .catch((error) => next(error));
     },
-    attack: async(req: Request, res: Response, next: NextFunction) => {
+    attack: async (req: Request, res: Response, next: NextFunction) => {
         const { socketId, userInfo, userStatus }: PostBody = req.body;
         if (!userInfo || !userStatus) {
             const error = new HttpException('MISSING PARAMS', 400, socketId);
             return next(error);
         }
 
-        battleHandler.attack(socketId, userInfo, userStatus).then(() => {
-            res.status(200).end();
-        }).catch(error => next(error));
+        battleHandler
+            .attack(socketId, userInfo, userStatus)
+            .then(() => {
+                res.status(200).end();
+            })
+            .catch((error) => next(error));
     },
-    quit: async(req: Request, res: Response, next: NextFunction) => {
+    quit: async (req: Request, res: Response, next: NextFunction) => {
         const { socketId, userInfo }: PostBody = req.body;
         if (!userInfo) {
             const error = new HttpException('MISSING PARAMS', 400, socketId);
@@ -111,14 +116,14 @@ export default {
 
         res.status(200).end();
     },
-    action: async(req: Request, res: Response, next: NextFunction) => {
+    action: async (req: Request, res: Response, next: NextFunction) => {
         const { socketId, CMD, userInfo, userStatus }: PostBody = req.body;
         if (!userInfo || !userStatus || !CMD) {
             const error = new HttpException('MISSING PARAMS', 400, socketId);
             return next(error);
         }
 
-        if (CMD === '중단') {
+        if (CMD === 'S' || CMD === 'STOP') {
             const error = battleHandler.stopAuto(socketId, userInfo);
             error ? next(error) : res.status(200).end();
             return;
@@ -130,34 +135,43 @@ export default {
             return;
         }
 
-        battleHandler.skill(socketId, CMD, userInfo, userStatus).then(() => {
-            res.status(200).end();
-        }).catch(error => next(error));
+        battleHandler
+            .skill(socketId, CMD, userInfo, userStatus)
+            .then(() => {
+                res.status(200).end();
+            })
+            .catch((error) => next(error));
     },
 
-    autoBattle: async(req: Request, res: Response, next: NextFunction) => {
+    autoBattle: async (req: Request, res: Response, next: NextFunction) => {
         const { socketId, CMD, userInfo, userStatus }: PostBody = req.body;
         if (!userInfo || !userStatus) {
             const error = new HttpException('MISSING PARAMS', 400, socketId);
             return next(error);
         }
 
-        autoBattleHandler.autoBattle(socketId, userInfo, userStatus).then(() => {
-            res.status(200).end();
-        }).catch(error => next(error));
+        autoBattleHandler
+            .autoBattle(socketId, userInfo, userStatus)
+            .then(() => {
+                res.status(200).end();
+            })
+            .catch((error) => next(error));
     },
-    autoBattleWorker: async(req: Request, res: Response, next: NextFunction) => {
+    autoBattleWorker: async (req: Request, res: Response, next: NextFunction) => {
         const { socketId, userInfo, userStatus }: PostBody = req.body;
         if (!userInfo || !userStatus) {
             const error = new HttpException('MISSING PARAMS', 400, socketId);
             return next(error);
         }
 
-        autoBattleHandler.autoBattleWorker(socketId, userStatus).then(() => {
-            res.status(200).end();
-        }).catch(error => next(error));
+        autoBattleHandler
+            .autoBattleWorker(socketId, userStatus)
+            .then(() => {
+                res.status(200).end();
+            })
+            .catch((error) => next(error));
     },
-    autoQuit: async(req: Request, res: Response, next: NextFunction) => {
+    autoQuit: async (req: Request, res: Response, next: NextFunction) => {
         const { socketId, userInfo }: PostBody = req.body;
         if (!userInfo) {
             const error = new HttpException('MISSING PARAMS', 400, socketId);
@@ -167,7 +181,7 @@ export default {
         battleHandler.stopAutoWorker(socketId, userInfo);
         res.status(200).end();
     },
-    autoQuitS: async(req: Request, res: Response, next: NextFunction) => {
+    autoQuitS: async (req: Request, res: Response, next: NextFunction) => {
         const { socketId, userInfo }: PostBody = req.body;
         if (!userInfo) {
             const error = new HttpException('MISSING PARAMS', 400, socketId);
@@ -177,6 +191,4 @@ export default {
         battleHandler.stopAutoS(socketId, userInfo);
         res.status(200).end();
     },
-}
-
-
+};

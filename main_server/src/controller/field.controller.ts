@@ -5,7 +5,6 @@ import { front, village } from '../handler';
 import { SocketInput, CommandHandler, CommandRouter } from '../interfaces/socket';
 import { socketIds } from '../socket.routes';
 
-
 const BATTLE_URL = `${env.HTTP}://${env.WAS_LB}/battle`;
 
 // dungeon, village
@@ -14,18 +13,21 @@ export default {
         const [CMD1, CMD2]: string[] = line.trim().toUpperCase().split(' ');
 
         const cmdRoute: CommandRouter = {
-            'LOAD': 'load',
-            '목록': 'dungeonList',
-            '도움말': 'help',
-            '입장': 'dungeonInfo',
+            LOAD: 'load',
+            LIST: 'dungeonList',
+            L: 'dungeonList',
+            HELP: 'help',
+            H: 'help',
+            ENTER: 'dungeonInfo',
+            E: 'dungeonInfo',
             // 'OUT': 'signout',
-        }
+        };
         if (!cmdRoute[CMD1]) {
             const URL = `${BATTLE_URL}/dungeon/wrongCommand`;
             fetchPost({ URL, socketId: socket.id, CMD: line, userInfo });
             return;
         }
-        const URL = `${BATTLE_URL}/dungeon/${cmdRoute[CMD1]}`
+        const URL = `${BATTLE_URL}/dungeon/${cmdRoute[CMD1]}`;
         fetchPost({ URL, socketId: socket.id, CMD: CMD2, userInfo });
     },
 
@@ -34,16 +36,17 @@ export default {
         console.log('inputCommand : ', CMD1, CMD2);
 
         const commandHandler: CommandHandler = {
-            'LOAD': village.NpcList,
-            '목록': village.NpcList,
-            '도움말': village.villagehelp,
+            LOAD: village.NpcList,
+            LIST: village.NpcList,
+            LS: village.NpcList,
+            HELP: village.villagehelp,
+            H: village.villagehelp,
             '1': village.storyInfo,
             '2': village.healInfo,
             '3': village.enhanceInfo,
             '4': village.gambleInfo,
             '5': village.pvpInfo,
-            'OUT': front.signout
-        }
+        };
         if (!commandHandler[CMD1]) {
             village.villageWrongCommand(socket, CMD1, userInfo);
             return;
