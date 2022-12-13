@@ -117,7 +117,7 @@ class NpcService {
 
         // 강화 성공 확률
         // 25*(x+10) / 1.1^(x+10)
-        const successRate = ((25 * (weaponLevel + 10)) / 1.1) ^ (weaponLevel + 10);
+        const successRate = ( 25*(weaponLevel+10) / 1.1**(weaponLevel+10) );
         // 무기 강화
         const randomRate = Math.random() * 100;
 

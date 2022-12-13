@@ -38,26 +38,14 @@ class Monsters extends Model<
     /***************************************************************
      * 확률에 따른 몬스터 등급 정하는 함수
      ***************************************************************/
-    static isRere() {
-        // 랜덤값 생성(1~100)
-        const ranNum: number = Math.floor(Math.random() * 99 + 1);
-
-        // 몬스터의 타입을 결정, 일반, 정예, 보스 순
-        const type: number[] = [2, 1, 0];
-        // 각 희귀도에 따른 등장확률
-        const isRere: number[] = [2, 28, 70];
-
-        let res: number;
-
-        for (let i = 0; i < type.length; i++) {
-            if (isRere[i] >= ranNum) {
-                res = type[i];
-                return res;
-            } else if (isRere[isRere.length - 1] < ranNum) {
-                res = type[type.length - 1];
-                return res;
-            }
-        }
+    static isRare = () => {
+        const ranNum = Math.random();
+    
+        if (ranNum <= 0.05) {
+            return 2;
+        } else if (ranNum <= 0.2) {
+            return 1;
+        } else return 0;
     }
 
     /***************************************************************
@@ -71,45 +59,22 @@ class Monsters extends Model<
         // 확률적으로 1이 나오면 이름 앞에 '정예'를 넣어주고 각 능력치가 1.5배
         // 2가 나오면 이름앞에 '보스'를 넣어주고 각 능력치가 3배
 
-        const first: string[] = ['다람쥐', '고슴도치', '늑대'];
-        const second: string[] = ['고슴도치', '고블린', '고블린 대장'];
-        const therd: string[] = ['고블린', '오크', '오크 대장'];
-        const fourth: string[] = ['오크', '도적', '도적 대장'];
-        const fifth: string[] = ['도적', '좀비', '좀비 숙주'];
-        const sixth: string[] = ['좀비', '구울', '리치'];
-        const seventh: string[] = ['구울', '임프', '데몬 임프'];
-        const eighth: string[] = ['임프', '머미', '디아블로'];
-        const ninth: string[] = ['머미', '리퍼', '메피스토'];
-        const tenth: string[] = ['리퍼', '뱀파이어', '바알'];
-
-        const names = [
-            '뮤츠',
-            first,
-            second,
-            therd,
-            fourth,
-            fifth,
-            sixth,
-            seventh,
-            eighth,
-            ninth,
-            tenth,
+        const names = [ 
+            '뮤츠',     // BLANK
+            ['다람쥐', '고슴도치', '늑대'],             // lv1
+            ['고슴도치', '고블린', '고블린 대장'],      // lv2
+            ['고블린', '오크', '오크 대장'],            // lv3
+            ['오크', '도적', '도적 대장'],              // lv4
+            ['도적', '좀비', '좀비 숙주'],              // lv5
+            ['좀비', '구울', '리치'],                   // lv6
+            ['구울', '임프', '데몬 임프'],              // lv7
+            ['임프', '머미', '디아블로'],               // lv8
+            ['머미', '리퍼', '메피스토'],               // lv9
+            ['리퍼', '뱀파이어', '바알'],               // lv10
         ];
-        let name: string;
-        let ratio: number;
-        let type = this.isRere();
-        if (type === 0) {
-            name = names[fieldId][0];
-            ratio = fieldId * 1;
-        }
-        if (type === 1) {
-            name = names[fieldId][1];
-            ratio = fieldId * 1.5;
-        }
-        if (type === 2) {
-            name = names[fieldId][2];
-            ratio = fieldId * 3;
-        }
+        const type = this.isRare() || 0;
+        const name = names[fieldId][type]
+        const ratio = ( 0.8 + 0.2*fieldId ) * ( 1 + 1.5*type );
 
         const defaultMonster = {
             hp: 50,
@@ -117,16 +82,15 @@ class Monsters extends Model<
             defense: 5,
             exp: 10,
         };
-        if (!type) type = 0;
         const dumyMonsters = {
             characterId,
             fieldId,
             type,
-            name: name!,
-            hp: Math.ceil(defaultMonster.hp * ratio!),
-            attack: Math.ceil(defaultMonster.attack * ratio!),
-            defense: Math.ceil(defaultMonster.defense * ratio!),
-            exp: Math.ceil(defaultMonster.exp * ratio!),
+            name: name,
+            hp: Math.ceil(defaultMonster.hp * ratio),
+            attack: Math.ceil(defaultMonster.attack * ratio),
+            defense: Math.ceil(defaultMonster.defense * ratio),
+            exp: Math.ceil(defaultMonster.exp * ratio),
         };
         return await Monsters.create(dumyMonsters);
     }

@@ -9,7 +9,7 @@ export interface DeadReport {
 }
 
 export interface AutoBattleResult {
-    [key: string]: (socketId: string, characterId: number, script: string) => Promise<HttpException|void>
+    [key: string]: (socketId: string, script: string, userStatus: UserStatus) => Promise<HttpException|void>
 }
 
 
