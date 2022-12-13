@@ -1,0 +1,52 @@
+[LOG]random-10-100000(2022.12.14.0149).txt
+            
+### DETAIL LOGS ###
+
+progress: 0, clients: 0, connections: 0
+emits/sec: 0.00, scenario completion: 0/0 => 0, average throughput: NaNms
+
+progress: 15, clients: 10, connections: 40
+emits/sec: 2.70, scenario completion: 15/15 => 100, average throughput: 25.85ms
+
+progress: 23, clients: 10, connections: 40
+emits/sec: 0.80, scenario completion: 8/8 => 100, average throughput: NaNms
+
+progress: 26, clients: 10, connections: 40
+emits/sec: 0.30, scenario completion: 3/3 => 100, average throughput: NaNms
+
+progress: 26, clients: 10, connections: 40
+emits/sec: 0.00, scenario completion: 0/0 => 0, average throughput: NaNms
+
+progress: 27, clients: 10, connections: 40
+emits/sec: 0.30, scenario completion: 1/1 => 100, average throughput: NaNms
+
+progress: 27, clients: 10, connections: 40
+emits/sec: 0.00, scenario completion: 0/0 => 0, average throughput: NaNms
+
+progress: 37, clients: 10, connections: 40
+emits/sec: 1.20, scenario completion: 10/10 => 100, average throughput: NaNms
+
+progress: 45, clients: 9, connections: 36
+emits/sec: 0.60, scenario completion: 4/8 => 50, average throughput: NaNms
+
+progress: 54, clients: 9, connections: 36
+emits/sec: 1.30, scenario completion: 9/9 => 100, average throughput: 10.42ms
+
+progress: 72, clients: 7, connections: 28
+emits/sec: 0.80, scenario completion: 4/18 => 22.220000000000002, average throughput: 10.83ms
+
+progress: 72, clients: 7, connections: 28
+emits/sec: 0.00, scenario completion: 0/0 => 0, average throughput: NaNms
+
+progress: 72, clients: 7, connections: 28
+emits/sec: 0.00, scenario completion: 0/0 => 0, average throughput: NaNms
+
+progress: 72, clients: 7, connections: 28
+emits/sec: 0.00, scenario completion: 0/0 => 0, average throughput: NaNms
+
+progress: 72, clients: 7, connections: 28
+emits/sec: 0.00, scenario completion: 0/0 => 0, average throughput: NaNms
+
+progress: 79, clients: 0, connections: 0
+emits/sec: 0.00, scenario completion: 0/7 => 0, average throughput: NaNms
+

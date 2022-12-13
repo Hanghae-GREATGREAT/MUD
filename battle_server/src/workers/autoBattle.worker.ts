@@ -91,7 +91,7 @@ const main = () => {
     const { characterId } = workerData.userStatus;
     associate();
 
-    isDead.on('dead', (result) => {
+    isDead.on('dead', (result: AutoWorkerResult) => {
         const { autoAttackTimer, skillAttackTimer } = battleCache.get(characterId);
         clearInterval(autoAttackTimer);
         clearInterval(skillAttackTimer);

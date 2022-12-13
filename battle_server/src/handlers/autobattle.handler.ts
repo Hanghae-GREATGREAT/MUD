@@ -117,6 +117,7 @@ export default {
             }, 1500)
     
             BATTLE.to(socketId).emit('print', { script: '', userInfo, field });
+            resolve();
         });
     },
 
@@ -144,6 +145,7 @@ export default {
 
             setEnvironmentData(characterId, JSON.stringify({ monsterId, dungeonLevel }));
             autoBattle.start(socketId, userStatus);
+            resolve();
         });
     }
 }

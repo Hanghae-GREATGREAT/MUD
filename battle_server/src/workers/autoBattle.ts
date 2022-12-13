@@ -42,7 +42,10 @@ class AutoBattleWorker extends EventEmitter {
                 this.create(workerData).then((result) => {
                     console.log('autoBattle.ts: worker resolved', characterId);
                     this.result(socketId, result);
-                }).catch(errorReport);
+                }).catch((error) => {
+                    console.log('autoBattle.ts: worker rejected', characterId);
+                    errorReport(error);
+                });
             });
             return;
         }
@@ -50,7 +53,10 @@ class AutoBattleWorker extends EventEmitter {
         this.create(workerData).then((result) => {
             console.log('autoBattle.ts: worker resolved', characterId);
             this.result(socketId, result);
-        }).catch(errorReport);
+        }).catch((error) => {
+            console.log('autoBattle.ts: worker rejected', characterId);
+            errorReport(error);
+        });
     }
 
     create = (workerData: AutoWorkerData): Promise<AutoWorkerResult> => {

@@ -54,8 +54,8 @@ async function autoAttack(socketId: string, userStatus: UserStatus): Promise<Aut
     tempScript += `${monsterName} 이(가) 당신에게 ${monsterAdjective} 공격! => ${monsterHit}의 데미지!\n`;
     // console.log(tempScript);
     
-    const refreshUser = await CharacterService.refreshStatus(userStatus, monsterHit, 0, monsterId);
-    if (refreshUser.isDead === 'dead') {
+    userStatus = await CharacterService.refreshStatus(userStatus, monsterHit, 0, monsterId);
+    if (userStatus.isDead === 'dead') {
         battleCache.set(characterId, { dead: 'player' });
         
         tempScript += '\n!! 치명상 !!\n';
@@ -69,7 +69,7 @@ async function autoAttack(socketId: string, userStatus: UserStatus): Promise<Aut
         return { status: 'player', script: tempScript, userStatus };
     }
 
-    const data = { field: 'autoBattle', script: tempScript, userStatus: refreshUser };
+    const data = { field: 'autoBattle', script: tempScript, userStatus };
     BATTLE.to(socketId).emit('printBattle', data);
 
     return { status: 'continue', script: tempScript, userStatus };

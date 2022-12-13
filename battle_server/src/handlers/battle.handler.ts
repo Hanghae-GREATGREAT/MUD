@@ -24,14 +24,14 @@ export default {
                     console.log('battle handler autoAttack LOOP error', userInfo.characterId);
                     clearInterval(autoAttackTimer);
                     if (cache.status === 'continue') battleError(socketId);
-                    return resolve();
+                    return;
                 }
                 battleCache.set(characterId, { dungeonLevel, monsterId, autoAttackTimer });
     
                 autoAttack(socketId, userStatus).then((result) => {
                     if (!result) {
                         BATTLE.to(socketId).emit('void');
-                        return resolve();
+                        return;
                     }
 
                     const { field, script, userStatus } = result;
@@ -52,10 +52,10 @@ export default {
                         switch(dead) {
                             case 'player': 
                                 dungeonHandler.dungeonList(socketId, userInfo);
-                                return resolve();
+                                return;
                             case 'monster': 
                                 dungeonHandler.encounter(socketId, userInfo, userStatus);
-                                return resolve();
+                                return;
                         }
                     }
                 }).catch(reject);
@@ -65,6 +65,7 @@ export default {
             userStatus.cooldown = Date.now()-2000;
             const data = { field: 'action', script: '', userInfo, userStatus  };
             BATTLE.to(socketId).emit('printBattle', data);
+            resolve();
         });
     },
 
@@ -163,6 +164,7 @@ export default {
             const script = tempScript;
             userStatus.cooldown = Date.now();
             BATTLE.to(socketId).emit('printBattle', { field, script, userInfo, userStatus });
+            resolve();
         });
     },
 
@@ -201,6 +203,7 @@ export default {
             } else {
                 console.log('battle.handler.ts: stopAutoWorker DIFFERENT', characterId);
 
+                battleCache.delete(characterId);
                 redis.battleSet(characterId, { LOOP: 'off', SKILL: 'off', status: 'terminate' });
             }
 

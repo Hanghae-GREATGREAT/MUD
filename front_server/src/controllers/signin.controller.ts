@@ -13,6 +13,7 @@ export default {
         const field = 'sign:20';
 
         FRONT.to(socketId).emit('print', { field, script, userInfo });
+        
         res.status(200).end();
     },
 

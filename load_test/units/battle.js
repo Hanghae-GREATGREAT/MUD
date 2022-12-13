@@ -10,6 +10,7 @@ let alive = 0;
     }
 
     const emit = async(field, input) => {
+        // console.log(`[${new Date(Date.now()+1000*60*60*9)}]`, 'emit...', input?.userInfo?.characterId);
         await sleep(WAIT_COMMAND);
 
         return new Promise( (resolve, reject) => {
@@ -33,7 +34,7 @@ let alive = 0;
     const battleResult = (userInfo, userStatus, battle_duration) => {
         const start = Date.now();
         let flag = false;
-        
+        console.log('battleResult()', flag);
         return new Promise((resolve, reject) => {
             const result = {
                 'autoBattleS': (res, time) => {
@@ -41,7 +42,7 @@ let alive = 0;
     
                     flag = true;
                     alive++;
-                    console.log('ALIVE', userInfo.characterId);
+                    console.log('ALIVE SS', userInfo.characterId, flag);
                     emit('autoBattleS', { line: '중단', userInfo, userStatus }).then((res) => {
                         const field = 'dungeon';
                         resolve({ ...res, field, userInfo, userStatus });
@@ -56,7 +57,7 @@ let alive = 0;
     
                     flag = true;
                     alive++;
-                    console.log('ALIVE', userInfo.characterId);
+                    console.log('ALIVE', userInfo.characterId, flag);
                     emit('autoBattle', { line: '중단', userInfo, userStatus }).then((res) => {
                         console.log('전투중단 성공', userInfo.characterId);
                         const field = 'dungeon';
@@ -69,22 +70,22 @@ let alive = 0;
                 'heal': (res, time) => {
                     flag = true;
                     dead++;
-                    console.log('DEAD', userInfo.characterId);
+                    console.log('DEAD', userInfo.characterId, flag);
                     resolve({ field: res.field, userInfo, userStatus });
                 },
                 'dungeon': (res, time) => {
                     flag = true;
-                    console.log('BATTLE ERROR RETRUNING TO ENTRANCE', userInfo.characterId);
+                    console.log('BATTLE ERROR RETRUNING TO ENTRANCE', userInfo.characterId, flag);
                     resolve({ field: res.field, userInfo, userStatus });
                 }
             }
             socket.on('printBattle', async(res) => {
+                if (flag) return;
                 const time = Date.now() - start;
                 const field = res.field;
                 userStatus = res.userStatus;
-                // console.log('PRINTBATTLE', field, userInfo.characterId);
 
-                if (!flag) result[field](res, time);
+                result[field](res, time);
             });
         });
     }
@@ -100,6 +101,7 @@ let alive = 0;
             } catch (error) {
                 console.log('ERROR: dungeonList');
                 console.error(error);
+                return { cnt: 0, throughput: [], error: true };
             }
         },
         enterDungeon: async(field, userInfo, userStatus) => {
@@ -116,6 +118,7 @@ let alive = 0;
             } catch (error) {
                 console.log('ERROR: enterDungeon');
                 console.error(error);
+                return { cnt: 0, throughput: [], error: true };
             }
         },
         encounterFromList: async(field, userInfo, userStatus) => {
@@ -140,6 +143,7 @@ let alive = 0;
             } catch (error) {
                 console.log('ERROR: encounterFromList');
                 console.error(error);
+                return { cnt: 0, throughput: [], error: true };
             }
         },
 
@@ -162,6 +166,7 @@ let alive = 0;
             } catch (error) {
                 console.log('ERROR: auto');
                 console.error(error);
+                return { cnt: 0, throughput: [], error: true };
             }
         },
         autoFromList: async(field, userInfo, userStatus, battle_duration=30) => {
@@ -198,6 +203,7 @@ let alive = 0;
             } catch (error) {
                 console.log('ERROR: autoFromList');
                 console.error(error);
+                return { cnt: 0, throughput: [], error: true };
             }
     
         },
@@ -225,6 +231,7 @@ let alive = 0;
             } catch (error) {
                 console.log('ERROR: dungeonHelp');
                 console.error(error);
+                return { cnt: 0, throughput: [], error: true };
             }
         },
         dungeonWrong: async(field, userInfo, userStatus) => {
@@ -237,6 +244,7 @@ let alive = 0;
             } catch (error) {
                 console.log('ERROR: dungeonWrong');
                 console.error(error);
+                return { cnt: 0, throughput: [], error: true };
             }
         },
     }

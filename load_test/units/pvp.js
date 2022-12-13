@@ -27,155 +27,255 @@ module.exports = (socket, WAIT_COMMAND) => {
 
     return {
         npcHelp: async(field, userInfo, userStatus) => {
-            const input = { line: '도움말', userInfo, userStatus, option: 'pvpNpc' }
-            const r1 = await emit(field, input);
-            const throughput = [ r1.throughput ];
-
-            return { field, userInfo, userStatus, cnt: 1, throughput };
+            try {
+                const input = { line: '도움말', userInfo, userStatus, option: 'pvpNpc' }
+                const r1 = await emit(field, input);
+                const throughput = [ r1.throughput ];
+    
+                return { field, userInfo, userStatus, cnt: 1, throughput };
+            } catch (error) {
+                console.log('error')
+                return { cnt: 0, throughput: [], error: true };
+            }
         },
         npcTalk: async(field, userInfo, userStatus) => {
-            const input = { line: '1', userInfo, userStatus }
-            const r1 = await emit(field, input);
-            const throughput = [ r1.throughput ];
-
-            return { field, userInfo, userStatus, cnt: 1, throughput };
+            try {
+                const input = { line: '1', userInfo, userStatus }
+                const r1 = await emit(field, input);
+                const throughput = [ r1.throughput ];
+    
+                return { field, userInfo, userStatus, cnt: 1, throughput };
+            } catch (error) {
+                console.log('error')
+                return { cnt: 0, throughput: [], error: true };
+            }
         },
         pvpEnter: async(field, userInfo, userStatus) => {
-            const input = { line: '2', userInfo, userStatus }
-            const r1 = await emit(field, input);
-            const throughput = [ r1.throughput ];
-
-            return { field: 'pvpList', userInfo, userStatus, cnt: 1, throughput };
+            try {
+                const input = { line: '2', userInfo, userStatus }
+                const r1 = await emit(field, input);
+                const throughput = [ r1.throughput ];
+    
+                return { field: 'pvpList', userInfo, userStatus, cnt: 1, throughput };
+            } catch (error) {
+                console.log('error')
+                return { cnt: 0, throughput: [], error: true };
+            }
         },
         npcReturn: async(field, userInfo, userStatus) => {
-            const input = { line: '3', userInfo, userStatus }
-            const r1 = await emit(field, input);
-            const throughput = [ r1.throughput ];
-
-            return { field: 'village', userInfo, userStatus, cnt: 1, throughput };
+            try {
+                const input = { line: '3', userInfo, userStatus }
+                const r1 = await emit(field, input);
+                const throughput = [ r1.throughput ];
+    
+                return { field: 'village', userInfo, userStatus, cnt: 1, throughput };
+            } catch (error) {
+                console.log('error')
+                return { cnt: 0, throughput: [], error: true };
+            }
         },
         npcWrong: async(field, userInfo, userStatus) => {
-            const input = { line: '', userInfo, userStatus, option: 'pvpNpc' }
-            const r1 = await emit(field, input);
-            const throughput = [ r1.throughput ];
-
-            return { field: 'pvpNpc', userInfo, userStatus, cnt: 1, throughput };
+            try {
+                const input = { line: '', userInfo, userStatus, option: 'pvpNpc' }
+                const r1 = await emit(field, input);
+                const throughput = [ r1.throughput ];
+    
+                return { field: 'pvpNpc', userInfo, userStatus, cnt: 1, throughput };
+            } catch (error) {
+                console.log('error')
+                return { cnt: 0, throughput: [], error: true };
+            }
         },
 
         listHelp: async(field, userInfo, userStatus) => {
-            const input = { line: '도움말', userInfo, userStatus, option: 'pvpList' }
-            const r1 = await emit(field, input);
-            const throughput = [ r1.throughput ];
-
-            return { field: 'pvpList', userInfo, userStatus, cnt: 1, throughput };
+            try {
+                const input = { line: '도움말', userInfo, userStatus, option: 'pvpList' }
+                const r1 = await emit(field, input);
+                const throughput = [ r1.throughput ];
+    
+                return { field: 'pvpList', userInfo, userStatus, cnt: 1, throughput };
+            } catch (error) {
+                console.log('error')
+                return { cnt: 0, throughput: [], error: true };
+            }
         },
         listRefresh: async(field, userInfo, userStatus) => {
-            const input = { line: '새', userInfo, userStatus }
-            const r1 = await emit(field, input);
-            const throughput = [ r1.throughput ];
-
-            return { field: 'pvpList', userInfo, userStatus, cnt: 1, throughput };
+            try {
+                const input = { line: '새', userInfo, userStatus }
+                const r1 = await emit(field, input);
+                const throughput = [ r1.throughput ];
+    
+                return { field: 'pvpList', userInfo, userStatus, cnt: 1, throughput };
+            } catch (error) {
+                console.log('error')
+                return { cnt: 0, throughput: [], error: true };
+            }
         },
         listReturn: async(field, userInfo, userStatus) => {
-            const input = { line: '돌', userInfo, userStatus }
-            const r1 = await emit(field, input);
-            const throughput = [ r1.throughput ];
-
-            return { field: 'pvpNpc', userInfo, userStatus, cnt: 1, throughput };
+            try {
+                const input = { line: '돌', userInfo, userStatus }
+                const r1 = await emit(field, input);
+                const throughput = [ r1.throughput ];
+    
+                return { field: 'pvpNpc', userInfo, userStatus, cnt: 1, throughput };
+            } catch (error) {
+                console.log('error')
+                return { cnt: 0, throughput: [], error: true };
+            }
         },
         roomCreate: async(field, userInfo, userStatus) => {
-            const roomId = userInfo.userId;
-            rooms.set(roomId, 1);
-
-            const input = { line: `1 ${roomId}`, userInfo, userStatus }
-            const r1 = await emit(field, input);
-            const throughput = [ r1.throughput ];
-
-            return { field: 'pvpJoin', userInfo, userStatus, cnt: 1, throughput };
+            try {
+                const roomId = userInfo.characterId;
+                rooms.set(roomId, 1);
+    
+                const input = { line: `1 ${roomId}`, userInfo, userStatus }
+                const r1 = await emit(field, input);
+                const throughput = [ r1.throughput ];
+    
+                return { field: 'pvpJoin', userInfo, userStatus, cnt: 1, throughput };
+            } catch (error) {
+                console.log('error')
+                return { cnt: 0, throughput: [], error: true };
+            }
         },
         roomJoin: async(field, userInfo, userStatus) => {
-            const roomList = rooms.values();
-            let room = roomList.next();
-            while(!room.done) {
-                if (room.value < 4) {
-                    var roomId = room.value;
-                    const n = rooms.get(roomId);
-                    rooms.set(roomId, ++n);
-                    break;
+            try {
+                const roomList = rooms.entries();
+                let roomId = -1;
+                let line = '';
+                for (const room of roomList) {
+                    if (room[1] < 4) {
+                        roomId = room[0];
+                        rooms.set(roomId, ++room[1]);
+                        line = `2 ${roomId}`;
+                        break;
+                    }
                 }
-                room = roomList.next();
+                if (roomId === -1) {
+                    roomId = userInfo.characterId;
+                    rooms.set(roomId, 1);
+                    line = `1 ${roomId}`;
+                }
+    
+                const input = { line, userInfo, userStatus }
+                const r1 = await emit(field, input);
+                const throughput = [ r1.throughput ];
+    
+                return { field: 'pvpJoin', userInfo, userStatus, cnt: 1, throughput };
+            } catch (error) {
+                console.log('error')
+                return { cnt: 0, throughput: [], error: true };
             }
-
-            const input = { line: `2 ${roomId}`, userInfo, userStatus }
-            const r1 = await emit(field, input);
-            const throughput = [ r1.throughput ];
-
-            return { field: 'pvpJoin', userInfo, userStatus, cnt: 1, throughput };
         },
         listWrong: async(field, userInfo, userStatus) => {
-            const input = { line: '', userInfo, userStatus, option: 'pvpList' }
-            const r1 = await emit(field, input);
-            const throughput = [ r1.throughput ];
-
-            return { field: 'pvpList', userInfo, userStatus, cnt: 1, throughput };
+            try {
+                const input = { line: '', userInfo, userStatus, option: 'pvpList' }
+                const r1 = await emit(field, input);
+                const throughput = [ r1.throughput ];
+    
+                return { field: 'pvpList', userInfo, userStatus, cnt: 1, throughput };
+            } catch (error) {
+                console.log('error')
+                return { cnt: 0, throughput: [], error: true };
+            }
         },
 
         joinHelp: async(field, userInfo, userStatus) => {
-            const input = { line: '도움말', userInfo, userStatus, option: 'pvpJoin' }
-            const r1 = await emit(field, input);
-            const throughput = [ r1.throughput ];
-
-            return { field: 'pvpJoin', userInfo, userStatus, cnt: 1, throughput };
+            try {
+                const input = { line: '도움말', userInfo, userStatus, option: 'pvpJoin' }
+                const r1 = await emit(field, input);
+                const throughput = [ r1.throughput ];
+    
+                return { field: 'pvpJoin', userInfo, userStatus, cnt: 1, throughput };
+            } catch (error) {
+                console.log('error')
+                return { cnt: 0, throughput: [], error: true };
+            }
         },
         joinReturn: async(field, userInfo, userStatus) => {
-            const input = { line: '돌', userInfo, userStatus }
-            const r1 = await emit(field, input);
-            const throughput = [ r1.throughput ];
-
-            return { field: 'pvpList', userInfo, userStatus, cnt: 1, throughput };
+            try {
+                const input = { line: '돌', userInfo, userStatus }
+                const r1 = await emit(field, input);
+                const throughput = [ r1.throughput ];
+    
+                return { field: 'pvpList', userInfo, userStatus, cnt: 1, throughput };
+            } catch (error) {
+                console.log('error')
+                return { cnt: 0, throughput: [], error: true };
+            }
         },
         joinWrong: async(field, userInfo, userStatus) => {
-            const input = { line: '', userInfo, userStatus, option: 'pvpJoin' }
-            const r1 = await emit(field, input);
-            const throughput = [ r1.throughput ];
-
-            return { field: 'pvpJoin', userInfo, userStatus, cnt: 1, throughput };
+            try {
+                const input = { line: '', userInfo, userStatus, option: 'pvpJoin' }
+                const r1 = await emit(field, input);
+                const throughput = [ r1.throughput ];
+    
+                return { field: 'pvpJoin', userInfo, userStatus, cnt: 1, throughput };
+            } catch (error) {
+                console.log('error')
+                return { cnt: 0, throughput: [], error: true };
+            }
         },
         joinRefresh: async(field, userInfo, userStatus) => {
-            const input = { line: '현', userInfo, userStatus }
-            const r1 = await emit(field, input);
-            const throughput = [ r1.throughput ];
-
-            return { field: 'pvpJoin', userInfo, userStatus, cnt: 1, throughput };
+            try {
+                const input = { line: '현', userInfo, userStatus }
+                const r1 = await emit(field, input);
+                const throughput = [ r1.throughput ];
+    
+                return { field: 'pvpJoin', userInfo, userStatus, cnt: 1, throughput };
+            } catch (error) {
+                console.log('error')
+                return { cnt: 0, throughput: [], error: true };
+            }
         },
 
         battleHelp: async(field, userInfo, userStatus) => {
-            const input = { line: '도움말', userInfo, userStatus, option: 'pvpBattle' }
-            const r1 = await emit(field, input);
-            const throughput = [ r1.throughput ];
-
-            return { field: 'pvpBattle', userInfo, userStatus, cnt: 1, throughput };
+            try {
+                const input = { line: '도움말', userInfo, userStatus, option: 'pvpBattle' }
+                const r1 = await emit(field, input);
+                const throughput = [ r1.throughput ];
+    
+                return { field: 'pvpBattle', userInfo, userStatus, cnt: 1, throughput };
+            } catch (error) {
+                console.log('error')
+                return { cnt: 0, throughput: [], error: true };
+            }
         },
         battleWrong: async(field, userInfo, userStatus) => {
-            const input = { line: '', userInfo, userStatus, option: 'pvpBattle' }
-            const r1 = await emit(field, input);
-            const throughput = [ r1.throughput ];
-
-            return { field: 'pvpBattle', userInfo, userStatus, cnt: 1, throughput };
+            try {
+                const input = { line: '', userInfo, userStatus, option: 'pvpBattle' }
+                const r1 = await emit(field, input);
+                const throughput = [ r1.throughput ];
+    
+                return { field: 'pvpBattle', userInfo, userStatus, cnt: 1, throughput };
+            } catch (error) {
+                console.log('error')
+                return { cnt: 0, throughput: [], error: true };
+            }
         },
         battleStatus: async(field, userInfo, userStatus) => {
-            const input = { line: '상', userInfo, userStatus }
-            const r1 = await emit(field, input);
-            const throughput = [ r1.throughput ];
-
-            return { field: 'pvpBattle', userInfo, userStatus, cnt: 1, throughput };
+            try {
+                const input = { line: '상', userInfo, userStatus }
+                const r1 = await emit(field, input);
+                const throughput = [ r1.throughput ];
+    
+                return { field: 'pvpBattle', userInfo, userStatus, cnt: 1, throughput };
+            } catch (error) {
+                console.log('error')
+                return { cnt: 0, throughput: [], error: true };
+            }
         },
         battleAttack: async(field, userInfo, userStatus) => {
-            const input = { line: '', userInfo, userStatus, option: 'pvpBattle' }
-            const r1 = await emit(field, input);
-            const throughput = [ r1.throughput ];
-
-            return { field: 'pvpBattle', userInfo, userStatus, cnt: 1, throughput };
+            try {
+                const input = { line: '', userInfo, userStatus, option: 'pvpBattle' }
+                const r1 = await emit(field, input);
+                const throughput = [ r1.throughput ];
+    
+                return { field: 'pvpBattle', userInfo, userStatus, cnt: 1, throughput };
+            } catch (error) {
+                console.log('error')
+                return { cnt: 0, throughput: [], error: true };
+            }
         },
         
     }

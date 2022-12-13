@@ -1,0 +1,103 @@
+[LOG]random-300-300000(2022.12.14.0658).txt
+            
+### DETAIL LOGS ###
+
+progress: 0, clients: 0, connections: 0
+emits/sec: 0.00, scenario completion: 0/0 => 0, average throughput: NaNms
+
+progress: 0, clients: 300, connections: 1200
+emits/sec: 74.99, scenario completion: 0/0 => 0, average throughput: 141.82ms
+
+progress: 0, clients: 300, connections: 1200
+emits/sec: 160.82, scenario completion: 0/0 => 0, average throughput: 284.37ms
+
+progress: 0, clients: 300, connections: 1200
+emits/sec: 66.40, scenario completion: 0/0 => 0, average throughput: 9.39ms
+
+progress: 0, clients: 300, connections: 1200
+emits/sec: 38.84, scenario completion: 0/0 => 0, average throughput: 9.24ms
+
+progress: 0, clients: 300, connections: 1200
+emits/sec: 33.58, scenario completion: 0/0 => 0, average throughput: 9.03ms
+
+progress: 0, clients: 300, connections: 1200
+emits/sec: 27.56, scenario completion: 0/0 => 0, average throughput: 9.33ms
+
+progress: 0, clients: 300, connections: 1200
+emits/sec: 25.58, scenario completion: 0/0 => 0, average throughput: 11.20ms
+
+progress: 0, clients: 300, connections: 1200
+emits/sec: 23.47, scenario completion: 0/0 => 0, average throughput: 9.40ms
+
+progress: 0, clients: 300, connections: 1200
+emits/sec: 22.19, scenario completion: 0/0 => 0, average throughput: 10.25ms
+
+progress: 0, clients: 300, connections: 1200
+emits/sec: 24.00, scenario completion: 0/0 => 0, average throughput: 10.90ms
+
+progress: 0, clients: 300, connections: 1200
+emits/sec: 24.86, scenario completion: 0/0 => 0, average throughput: 14.33ms
+
+progress: 0, clients: 300, connections: 1200
+emits/sec: 25.77, scenario completion: 0/0 => 0, average throughput: 14.37ms
+
+progress: 0, clients: 300, connections: 1200
+emits/sec: 24.36, scenario completion: 0/0 => 0, average throughput: 10.77ms
+
+progress: 0, clients: 300, connections: 1200
+emits/sec: 21.18, scenario completion: 0/0 => 0, average throughput: 9.65ms
+
+progress: 0, clients: 300, connections: 1200
+emits/sec: 24.98, scenario completion: 0/0 => 0, average throughput: 10.21ms
+
+progress: 0, clients: 300, connections: 1200
+emits/sec: 26.58, scenario completion: 0/0 => 0, average throughput: 10.52ms
+
+progress: 0, clients: 300, connections: 1200
+emits/sec: 22.78, scenario completion: 0/0 => 0, average throughput: 11.76ms
+
+progress: 0, clients: 300, connections: 1200
+emits/sec: 22.68, scenario completion: 0/0 => 0, average throughput: 9.85ms
+
+progress: 0, clients: 300, connections: 1200
+emits/sec: 27.10, scenario completion: 0/0 => 0, average throughput: 10.99ms
+
+progress: 0, clients: 300, connections: 1200
+emits/sec: 24.98, scenario completion: 0/0 => 0, average throughput: 10.16ms
+
+progress: 0, clients: 300, connections: 1200
+emits/sec: 24.00, scenario completion: 0/0 => 0, average throughput: 9.58ms
+
+progress: 0, clients: 300, connections: 1200
+emits/sec: 27.89, scenario completion: 0/0 => 0, average throughput: 10.16ms
+
+progress: 0, clients: 300, connections: 1200
+emits/sec: 27.06, scenario completion: 0/0 => 0, average throughput: 9.90ms
+
+progress: 0, clients: 300, connections: 1200
+emits/sec: 29.99, scenario completion: 0/0 => 0, average throughput: 9.92ms
+
+progress: 0, clients: 300, connections: 1200
+emits/sec: 32.48, scenario completion: 0/0 => 0, average throughput: 10.33ms
+
+progress: 0, clients: 300, connections: 1200
+emits/sec: 29.77, scenario completion: 0/0 => 0, average throughput: 10.29ms
+
+progress: 0, clients: 300, connections: 1200
+emits/sec: 31.89, scenario completion: 0/0 => 0, average throughput: 11.22ms
+
+progress: 0, clients: 300, connections: 1200
+emits/sec: 29.59, scenario completion: 0/0 => 0, average throughput: 9.59ms
+
+progress: 0, clients: 300, connections: 1200
+emits/sec: 30.75, scenario completion: 0/0 => 0, average throughput: 10.40ms
+
+progress: 0, clients: 300, connections: 1200
+emits/sec: 29.70, scenario completion: 0/0 => 0, average throughput: 10.79ms
+
+progress: 145, clients: 157, connections: 628
+emits/sec: 15.30, scenario completion: 145/145 => 100, average throughput: 11.01ms
+
+progress: 313, clients: 0, connections: 0
+emits/sec: 4.79, scenario completion: 168/168 => 100, average throughput: NaNms
+
