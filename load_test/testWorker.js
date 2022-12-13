@@ -131,9 +131,9 @@ class TestWorker {
         fs.writeFileSync(FILE_PATH, LOG_HEADER);
         console.log(`log file created '${FILE_NAME}'`);
 
-        const ERROR_NAME = `[ERROR]${this.#TEST_NAME}.txt`;
-        const ERROR_PATH = path.join(__dirname, 'errors', ERROR_NAME);
-        fs.writeFileSync(ERROR_PATH, '');
+        // const ERROR_NAME = `[ERROR]${this.#TEST_NAME}.txt`;
+        // const ERROR_PATH = path.join(__dirname, 'errors', ERROR_NAME);
+        // fs.writeFileSync(ERROR_PATH, '');
 
         this.#reportInterval = setInterval(() => {
             this.#printLog(FILE_PATH)
@@ -253,12 +253,13 @@ class TestWorker {
         fs.writeFileSync(REPORT_PATH, JSON.stringify(RESULT))
         console.log(`report created '${REPORT_NAME}'`);
 
-        fetch('http://great-effect.com:3334/clear').then(async(res) => {
-            const data = await res.json();
-            console.log(data);
-        }).catch((error) => {
-            console.log(`FAILED TO CLEAR CACHE, ${error.message}`);
-        });
+        console.log('fetch?')
+        // fetch('http://54.180.171.225:3500/clear').then(async(res) => {
+        //     const data = await res.json();
+        //     console.log(data);
+        // }).catch((error) => {
+        //     console.log(`FAILED TO CLEAR CACHE, ${error.message}`);
+        // });
         this.terminate();
         process.exit(0);
     }

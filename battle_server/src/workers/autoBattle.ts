@@ -7,6 +7,7 @@ import { UserStatus } from '../interfaces/user';
 import { battleError, errorReport } from '../common';
 import { deadReport } from '../handlers';
 import { AutoBattleResult } from '../interfaces/battle';
+import { redis } from '../db/cache';
 
 
 class AutoBattleWorker extends EventEmitter {
@@ -32,9 +33,14 @@ class AutoBattleWorker extends EventEmitter {
             console.log('POOL IS FULL', characterId)
 
             this.waitList.push(characterId);
-            this.once(`${characterId}`, () => {
-                console.log('POOL IS READY', characterId);
+            this.once(`${characterId}`, async(next) => {
+                console.log('POOL IS READY', next, characterId);
+
+                const { status } = await redis.battleGet(characterId);
+                if (status === 'terminate') return;
+                
                 this.create(workerData).then((result) => {
+                    console.log('autoBattle.ts: worker resolved', characterId);
                     this.result(socketId, characterId, result);
                 }).catch(errorReport);
             });
@@ -42,6 +48,7 @@ class AutoBattleWorker extends EventEmitter {
         }
 
         this.create(workerData).then((result) => {
+            console.log('autoBattle.ts: worker resolved', characterId);
             this.result(socketId, characterId, result);
         }).catch(errorReport);
     }
@@ -59,10 +66,12 @@ class AutoBattleWorker extends EventEmitter {
             console.log('autoBattle.ts: worker created', workerId, this.threads.size, characterId);
 
             worker.on('message', (result: AutoWorkerResult) => {
-                console.log('autoBattle.ts: worker message received', characterId);
+                console.log('autoBattle.ts: worker message received', result.status, characterId);
 
                 resolve(result);
-                worker.terminate().catch(errorReport);
+                worker.terminate().then(()=>{
+                    console.log('worker terminated', workerId, characterId);
+                }).catch(errorReport);
             });
 
             worker.on('messageerror', reject);
@@ -73,13 +82,14 @@ class AutoBattleWorker extends EventEmitter {
                 this.threads.delete(characterId);
 
                 const next = this.waitList.shift();
-                if (next) this.emit(`${next}`);
+                if (next) this.emit(`${next}`, next);
             });
         });
     }
 
     result = (socketId: string, characterId: number, result: AutoWorkerResult) => {
         const { status, script } = result;
+        console.log('autoBattle.ts: result', status, characterId);
         if (status === 'error') {
             console.log('autoBattle.ts: result error', characterId);
             battleError(socketId);
@@ -95,7 +105,9 @@ class AutoBattleWorker extends EventEmitter {
             player: deadReport.autoPlayer,
         }
         battleResult[status](socketId, characterId, script)
-            .then().catch(errorReport);
+            .then(()=>{
+                console.log('autoBattle.ts: battleresult success', characterId);
+            }).catch(errorReport);
     }
 
     get = (characterId: number) => {

@@ -34,11 +34,16 @@ app.get('/', (req, res) => {
 });
 
 import { battleCache } from './db/cache';
+import autoBattle from './workers/autoBattle';
 app.get('/cache', (req, res) => {
+    const worker = autoBattle.all();
     const cache = battleCache.getAll();
+
+    console.log(worker);
+    console.log('========================')
     console.log(cache);
 
-    res.status(200).json({ cache });
+    res.status(200).json({ cache, worker });
 });
 
 app.get('/clear', (req, res) => {

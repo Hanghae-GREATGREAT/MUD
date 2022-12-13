@@ -8,7 +8,7 @@ services:
       - '6379:6379'
 
   server:
-    image: ninthsun91/mud-server:${VERSION}.${SUB_VERSION}
+    image: ninthsun91/mud-server:${VERSION}
     build:
       context: main_server
       dockerfile: ./Dockerfile
@@ -16,7 +16,7 @@ services:
       - ./main_server/.env
 
   battle:
-    image: ninthsun91/mud-battle:${VERSION}.${SUB_VERSION}
+    image: ninthsun91/mud-battle:${VERSION}
     build:
       context: battle_server
       dockerfile: ./Dockerfile
@@ -24,7 +24,7 @@ services:
       - ./battle_server/.env
 
   pvp:
-    image: ninthsun91/mud-pvp:${VERSION}.${SUB_VERSION}
+    image: ninthsun91/mud-pvp:${VERSION}
     restart: always
     build:
       context: pvp_server
@@ -33,7 +33,7 @@ services:
       - ./pvp_server/.env
 
   front:
-    image: ninthsun91/mud-front:${VERSION}.${SUB_VERSION}
+    image: ninthsun91/mud-front:${VERSION}
     restart: always
     build:
       context: front_server
@@ -42,13 +42,13 @@ services:
       - ./front_server/.env
 
   web:
-    image: ninthsun91/mud-web:${VERSION}.${SUB_VERSION}
+    image: ninthsun91/mud-web:${VERSION}
     restart: always
     build:
       context: web_server
       dockerfile: ./Dockerfile
 
   was-lb:
-    image: ninthsun91/mud-waslb:${VERSION}.${SUB_VERSION}
+    image: ninthsun91/mud-waslb:${VERSION}
     restart: always
     build: was_lb
