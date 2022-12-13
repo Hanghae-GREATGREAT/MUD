@@ -10,7 +10,6 @@ async function skillAttack(socketId: string, userStatus: UserStatus): Promise<Au
     // console.log('skillAttack.worker.ts >> autoBattleSkill(): 시작')
     const { characterId, mp, attack, skill } = userStatus
     let field = 'autoBattle';
-    let tempScript = '';
 
     // 스킬 정보 가져오기 & 사용할 스킬 선택 (cost 반비례 확률)
     const selectedSkill = skillSelector(skill);
@@ -19,17 +18,16 @@ async function skillAttack(socketId: string, userStatus: UserStatus): Promise<Au
     // 몬스터 정보 가져오기
     // const { monsterId } = await redis.hGetAll(characterId);
     const { monsterId } = battleCache.get(characterId);
-    if (!monsterId) return { status: 'error', script: '몬스터 정보 에러' };
+    if (!monsterId) return { status: 'error', script: '몬스터 정보 에러', userStatus };
     const monster = await MonsterService.findByPk(monsterId);
-    if (!monster) return { status: 'error', script: '몬스터 정보 에러' };
+    if (!monster) return { status: 'error', script: '몬스터 정보 에러', userStatus };
     const { name: monsterName, hp: monsterHp, exp: monsterExp } = monster;
 
     // 마나 잔여량 확인
     if (mp - skillCost < 0) {
-        tempScript += `??? : 비전력이 부조카당.\n`;
-        const script = tempScript;
+        const script = `??? : 비전력이 부조카당.\n`;
         // console.log('skillAttack.worker.ts: 마나 부족')
-        return { status: 'continue', script: '' };
+        return { status: 'continue', script, userStatus };
     }
 
     // 스킬 데미지 계산 & 마나 cost 소모
@@ -41,8 +39,8 @@ async function skillAttack(socketId: string, userStatus: UserStatus): Promise<Au
 
     // 몬스터에게 스킬 데미지 적중
     const isDead = await MonsterService.refreshStatus(monsterId, realDamage, characterId);
-    if (!isDead) return { status: 'error', script: '몬스터 정보 에러' };
-    tempScript += `\n당신의 ${skillName} 스킬이 ${monsterName}에게 적중! => ${realDamage}의 데미지!\n`;
+    if (!isDead) return { status: 'error', script: '몬스터 정보 에러', userStatus };
+    const script = `\n당신의 ${skillName} 스킬이 ${monsterName}에게 적중! => ${realDamage}의 데미지!\n`;
     // console.log(tempScript);
 
     if (isDead === 'dead') {
@@ -51,13 +49,12 @@ async function skillAttack(socketId: string, userStatus: UserStatus): Promise<Au
         // await redis.hSet(characterId, { dead: 'monster' });
 
         const script = `\n${monsterName}에게 ${skillName} 마무리 일격!! => ${realDamage}의 데미지!`;
-        return { status: 'monster', script };
+        return { status: 'monster', script, userStatus };
     }
 
     // isDead === 'alive'
-    const script = tempScript;
     // console.log('스킬로 안쥬금ㅇㅇㅇㅇ')
-    return { status: 'continue', script: '' };
+    return { status: 'continue', script, userStatus };
 }
 
 function skillSelector(skill: InferAttributes<Skills, { omit: never; }>[]) {

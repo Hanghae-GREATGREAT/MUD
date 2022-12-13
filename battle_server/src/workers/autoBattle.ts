@@ -41,7 +41,7 @@ class AutoBattleWorker extends EventEmitter {
                 
                 this.create(workerData).then((result) => {
                     console.log('autoBattle.ts: worker resolved', characterId);
-                    this.result(socketId, characterId, result);
+                    this.result(socketId, result);
                 }).catch(errorReport);
             });
             return;
@@ -49,7 +49,7 @@ class AutoBattleWorker extends EventEmitter {
 
         this.create(workerData).then((result) => {
             console.log('autoBattle.ts: worker resolved', characterId);
-            this.result(socketId, characterId, result);
+            this.result(socketId, result);
         }).catch(errorReport);
     }
 
@@ -87,8 +87,9 @@ class AutoBattleWorker extends EventEmitter {
         });
     }
 
-    result = (socketId: string, characterId: number, result: AutoWorkerResult) => {
-        const { status, script } = result;
+    result = (socketId: string, result: AutoWorkerResult) => {
+        const { status, script, userStatus } = result;
+        const { characterId } = userStatus;
         console.log('autoBattle.ts: result', status, characterId);
         if (status === 'error') {
             console.log('autoBattle.ts: result error', characterId);
@@ -104,7 +105,7 @@ class AutoBattleWorker extends EventEmitter {
             monster: deadReport.autoMonster,
             player: deadReport.autoPlayer,
         }
-        battleResult[status](socketId, characterId, script)
+        battleResult[status](socketId, script, userStatus)
             .then(()=>{
                 console.log('autoBattle.ts: battleresult success', characterId);
             }).catch(errorReport);

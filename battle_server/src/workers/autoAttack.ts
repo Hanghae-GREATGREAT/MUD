@@ -12,13 +12,13 @@ async function autoAttack(socketId: string, userStatus: UserStatus): Promise<Aut
     let tempScript = '';
     const { autoAttackTimer, monsterId } = battleCache.get(characterId);
     if (!autoAttackTimer! || !monsterId) {
-        return { status: 'error', script: '몬스터 정보 에러' };
+        return { status: 'error', script: '몬스터 정보 에러', userStatus };
     }
 
     // 몬스터 정보 불러오기
     // console.log('autoAttack.worker.ts: 몬스터 정보, ', characterId);
     const monster = await MonsterService.findByPk(monsterId);
-    if (!monster) return { status: 'error', script: '몬스터 정보 에러' };
+    if (!monster) return { status: 'error', script: '몬스터 정보 에러', userStatus };
     const { name: monsterName, hp: monsterHP, attack: monsterDamage, exp: monsterExp } = monster;
 
     // 유저 턴
@@ -32,7 +32,7 @@ async function autoAttack(socketId: string, userStatus: UserStatus): Promise<Aut
     // console.log(tempScript);
     
     const isDead = await MonsterService.refreshStatus(monsterId, playerHit, characterId);
-    if (!isDead) return { status: 'error', script: '몬스터 정보 에러' };
+    if (!isDead) return { status: 'error', script: '몬스터 정보 에러', userStatus };
     
     if (isDead === 'dead') {
         battleCache.set(characterId, { dead: 'monster' });
@@ -40,10 +40,10 @@ async function autoAttack(socketId: string, userStatus: UserStatus): Promise<Aut
         // const data = { field: 'autoBattle', script: tempScript, userStatus };
         // BATTLE.to(socketId).emit('printBattle', data);
 
-        return { status: 'monster', script: tempScript };
+        return { status: 'monster', script: tempScript, userStatus };
     }
 
-    if (!monster) return { status: 'error', script: '몬스터 정보 에러' };
+    if (!monster) return { status: 'error', script: '몬스터 정보 에러', userStatus };
     // 몬스터 턴
     // console.log('autoAttack.worker.ts: 몬스터 턴, ', characterId);
     const monsterHit = BattleService.hitStrength(monsterDamage);
@@ -66,13 +66,13 @@ async function autoAttack(socketId: string, userStatus: UserStatus): Promise<Aut
         // const data = { field: 'autoBattle', script: tempScript, userStatus: refreshUser };
         // BATTLE.to(socketId).emit('printBattle', data);
 
-        return { status: 'player', script: tempScript };
+        return { status: 'player', script: tempScript, userStatus };
     }
 
     const data = { field: 'autoBattle', script: tempScript, userStatus: refreshUser };
     BATTLE.to(socketId).emit('printBattle', data);
 
-    return { status: 'continue', script: tempScript };
+    return { status: 'continue', script: tempScript, userStatus };
 }
 
 

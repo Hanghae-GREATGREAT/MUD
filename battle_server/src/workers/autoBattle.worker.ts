@@ -34,7 +34,7 @@ const autoAttackLoop = ({ socketId, userStatus }: AutoWorkerData) => {
         // console.log('autoBattle.worker.ts: autoAttack calc', characterId)
         autoAttack(socketId, userStatus).then((result: AutoWorkerResult) => {
             // console.log('autoBattle.worker.ts: autoAttack resolved', characterId);
-            // result = { status, script }
+            // result = { status, script, userStatus }
             // status = player | monster | terminate
 
             if (result.status !== 'continue') isDead.emit('dead', result);
@@ -74,7 +74,7 @@ const skillAttackLoop = ({ socketId, userStatus }: AutoWorkerData) => {
         console.log('autoBattle.worker.ts: skillAttack calc', characterId)
         skillAttack(socketId, userStatus).then((result: AutoWorkerResult) => {
             // console.log('autoBattle.worker.ts: skillAttack resolved', characterId);
-            // result = { status, script }
+            // result = { status, script, userStatus }
             // status = player | monster | terminate
 
             if (result.status !== 'continue') isDead.emit('dead', result);

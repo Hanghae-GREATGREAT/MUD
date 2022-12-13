@@ -15,8 +15,9 @@ import { battleScript } from '../scripts';
 
 
 export default {
-    autoMonster: async(socketId: string, characterId: number, script: string): Promise<HttpException|void> => {
+    autoMonster: async(socketId: string, script: string, userStatus: UserStatus): Promise<HttpException|void> => {
         // console.log('battleCache, after DEAD', battleCache.get(characterId), characterId)
+        const { characterId } = userStatus;
         const { monsterId, dungeonLevel } = battleCache.get(characterId);
         if (!monsterId || !dungeonLevel) {
             console.log('deadReport.autoMonster cache error: monsterId missing');
@@ -29,7 +30,7 @@ export default {
         }
 
         const { name, exp } = monster;
-        const userStatus = await CharacterService.addExp(characterId, exp);
+        userStatus = await CharacterService.addExp(characterId, exp);
         script += `\n${name} 은(는) 쓰러졌다 ! => Exp + ${exp}\n\n`;
 
         if (userStatus.levelup) {
@@ -49,8 +50,8 @@ export default {
         autoBattleHandler.autoBattleWorker(socketId, userStatus);
         return;
     },
-    autoPlayer: async(socketId: string, characterId: number, script: string) => {
-        const userStatus = await CharacterService.addExp(characterId, 0);
+    autoPlayer: async(socketId: string, script: string, userStatus: UserStatus) => {
+        const { characterId } = userStatus;
         BATTLE.to(socketId).emit('printBattle', { field: 'dungeon', script, userStatus });
 
         const healScript = battleScript.heal;

@@ -32,7 +32,7 @@ function CryptoController() {
 
     return {
         GenerateKey: () => {
-            fetch(`http://${SERVER_URL}/api/key`).then((response) => {
+            fetch(`https://${SERVER_URL}/api/key`).then((response) => {
                 response.json().then(({ key }) => {
                     secretKey = key;
                 });

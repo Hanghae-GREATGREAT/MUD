@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { FRONT } from '../redis';
 import { PostBody } from '../interfaces/common';
 import { UserService, CharacterService } from '../services';
-import { signinScript } from '../scripts';
+import { signinScript, signupScript } from '../scripts';
 import { chatCache, redis } from '../db/cache';
 
 export default {
@@ -54,7 +54,10 @@ export default {
         const character = await CharacterService.findOneByUserId(userId);
 
         if (!character) {
-            throw new Error('signinCheck: cannot find character');
+            const script = signupScript.create;
+            const field = 'sign:12';
+            FRONT.to(socketId).emit('print', { field, script, userInfo });
+            return res.status(200).end();
         }
 
         const userStatus = await CharacterService.getUserStatus(character.characterId);
