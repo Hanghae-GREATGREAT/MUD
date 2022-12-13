@@ -1,4 +1,4 @@
-![image](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FoR6nn%2FbtrTqgg8jQ3%2FZ3qNmXHdvsefTRJrVhueKK%2Fimg.png)
+![image](https://blog.kakaocdn.net/dn/ltg7j/btrTzkSklWF/2x1jgJvjDp2ZixZk3yaVj1/img.png)
 
 <h3 align="center"> Node.js의 장점인 동시 I/O를 활용하여 제작한 프로젝트 입니다. </h2>
 
@@ -31,6 +31,12 @@
 
 
 <br><br>
+
+
+# 아키텍쳐
+![image](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FrDP1l%2FbtrTjGHUE0T%2FBulzP6tGktKcRyHv6Isl80%2Fimg.jpg)
+
+<br><br><br>
 
 
 # 💡 **기술적인 도전 및 트러블 슈팅**
@@ -157,12 +163,6 @@
 <br><br><br>
 
 
-# 아키텍쳐
-![image](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FrDP1l%2FbtrTjGHUE0T%2FBulzP6tGktKcRyHv6Isl80%2Fimg.jpg)
-
-<br><br><br>
-
-
 # ERD
 ![image](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FLQM3y%2FbtrTmYuuoFa%2FofPvJOnd27c03eGDHviBQk%2Fimg.png)
 
@@ -173,11 +173,10 @@
 |분류|기술|
 | :-: |:- |
 |Language|<img src="https://img.shields.io/badge/JavaScript-yellow?style=for-the-badge&logo=javascript&logoColor=white"> <img src="https://img.shields.io/badge/TypeScript-blue?style=for-the-badge&logo=typescript&logoColor=white">|
-|Framework|<img src="https://img.shields.io/badge/nodejs-green?style=for-the-badge&logo=node.js&logoColor=white"> <img src="https://img.shields.io/badge/express-yellow?style=for-the-badge&logo=express&logoColor=white">|
-|Build Tool|<img src="https://img.shields.io/badge/ts_node-blue?style=for-the-badge&logo=tsnode&logoColor=white">|
-|DB|<img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=MySQL&logoColor=white">|
-|Server|<img src="https://img.shields.io/badge/aws ec2-232F3E?style=for-the-badge&logo=AmazonAWS&logoColor=white">|
-|Caching|<img src="https://img.shields.io/badge/redis-B71C1C?style=for-the-badge&logo=redis&logoColor=white">|
+|Framework|<img src="https://img.shields.io/badge/nodejs-green?style=for-the-badge&logo=node.js&logoColor=white"> <img src="https://img.shields.io/badge/express-yellow?style=for-the-badge&logo=express&logoColor=white"> <img src="https://img.shields.io/badge/socketio-black?style=for-the-badge&logo=socket.io&logoColor=white">|
+|DB|<img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=MySQL&logoColor=white"> <img src="https://img.shields.io/badge/sequelize-blue?style=for-the-badge&logo=sequelize&logoColor=white"> <img src="https://img.shields.io/badge/redis-B71C1C?style=for-the-badge&logo=redis&logoColor=white">|
+|Server|<img src="https://img.shields.io/badge/aws ec2-232F3E?style=for-the-badge&logo=AmazonAWS&logoColor=white"> <img src="https://img.shields.io/badge/aws%20esc-yellow?style=for-the-badge&logo=AmazonAWS&logoColor=white"> <img src="https://img.shields.io/badge/aws%20elb-ff6600?style=for-the-badge&logo=AmazonAWS&logoColor=white"> <img src="https://img.shields.io/badge/nginx-green?style=for-the-badge&logo=nginx&logoColor=white">|
+|DevOps|<img src="https://img.shields.io/badge/docker-0066ff?style=for-the-badge&logo=docker&logoColor=white"> <img src="https://img.shields.io/badge/docker%20compose-0099ff?style=for-the-badge&logo=docker_compose&logoColor=white">  <img src="https://img.shields.io/badge/aws%20cloud%20watch-000000?style=for-the-badge&logo=AmazonAWS&logoColor=white">|
 
 
 <br><br><br>
