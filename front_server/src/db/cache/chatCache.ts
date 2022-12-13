@@ -115,6 +115,7 @@ class ChatCache {
             const pvpRoom = this.pvpChatJoiner[socketId];
             this.pvpRoomList.get(pvpRoom)!.delete(socketId);
             delete this.pvpChatJoiner[socketId];
+            // console.log(`채팅방 참여데이터 삭제 성공\n(${socketId} : ${pvpRoom})\n`);
 
             const joinerCnt: number = this.pvpRoomList.get(pvpRoom)!.size;
 
@@ -133,6 +134,8 @@ class ChatCache {
     }
 
     pvpGetJoinedRoom(socketId: string): string {
+        // console.log('socketId :', socketId);
+        // console.log('chatJoiner : ', this.chatJoiner);
         return this.pvpChatJoiner[socketId];
     }
 

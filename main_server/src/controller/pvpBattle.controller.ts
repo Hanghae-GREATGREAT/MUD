@@ -11,23 +11,29 @@ export default {
 
     // pvp룸 생성 및 입장
     pvpListController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
-        const [CMD1, CMD2]: string[] = line.trim().split(' ');
+        const [CMD1, CMD2]: string[] = line.trim().toUpperCase().split(' ');
         
-        if (CMD1 === '새' || CMD1 === '새로고침') {
-            const URL = `${PVP_URL}/pvpNpc/pvpGo`;
-            fetchPost({ URL, socketId: socket.id, CMD: CMD1, userInfo, userStatus });
-            return;
-        }
-        if (CMD1 === '돌'|| CMD1 === '돌아가기') return village.NpcList(socket, CMD2, userInfo);
-        if (CMD1 === '도움말') {
+        if (CMD1 === '돌'|| CMD1 === '돌아가기' || CMD1 === 'R' || CMD1 === 'RETURN') return village.NpcList(socket, CMD2, userInfo);
+
+        if (CMD1 === '도' || CMD1 === '도움말' || CMD1 === 'H' || CMD1 === 'HELP') {
             const URL = `${PVP_URL}/pvp/help`
             fetchPost({ URL, socketId: socket.id, CMD: CMD1, userInfo, option: 'pvpList' })
             return;
         }
 
         const cmdRoute: CommandRouter = {
-            '1': 'createRoom',
-            '2': 'joinRoom'
+            '생': 'pvp/createRoom',
+            '생성': 'pvp/createRoom',
+            'C': 'pvp/createRoom',
+            'CREATE': 'pvp/createRoom',
+            '입': 'pvp/joinRoom',
+            '입장': 'pvp/joinRoom',
+            'J': 'pvp/joinRoom',
+            'JOIN': 'pvp/joinRoom',
+            '새': 'pvpNpc/pvpGo',
+            '새로고침': 'pvpNpc/pvpGo',
+            'RE': 'pvpNpc/pvpGo',
+            'REFRESH': 'pvpNpc/pvpGo',
         };
 
         if (!cmdRoute[CMD1]) {
@@ -36,27 +42,28 @@ export default {
             return;
         }
 
+        socket.data[socket.id] = `${userStatus.name},pvpRoom ${CMD2},${userInfo.userId}`
+        
         const frontId = socketIds.get(userInfo.userId);
-
-        const URL = `${PVP_URL}/pvp/${cmdRoute[CMD1]}`;
-        socket.data.pvpUser = `${userStatus.name},pvpRoom ${CMD2},${userInfo.userId}`
+        const URL = `${PVP_URL}/${cmdRoute[CMD1]}`;
         fetchPost({ URL, socketId: socket.id, CMD: CMD2, userInfo, userStatus, option: frontId })
     },
 
     // pvp룸 입장 후 6명이 되기까지 기다리는중
     pvpJoinController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
-        const [CMD1, CMD2]: string[] = line.trim().split(' ');
-
-        if (CMD1 === '도움말') {
-            const URL = `${PVP_URL}/pvp/help`
-            fetchPost({ URL, socketId: socket.id, CMD: CMD1, userInfo, option: 'pvpJoin' })
-            return;
-        }
+        const [CMD1, CMD2]: string[] = line.trim().toUpperCase().split(' ');
 
         const cmdRoute: CommandRouter = {
             '현': 'getUsers',
+            '현재인원': 'getUsers',
             '돌': 'leaveRoom',
             '돌아가기': 'leaveRoom',
+            'R': 'leaveRoom',
+            'RETURN': 'leaveRoom',
+            '도': 'help',
+            '도움말': 'help',
+            'H': 'help',
+            'HELP': 'help',
         };
 
         if (!cmdRoute[CMD1]) {
@@ -65,19 +72,19 @@ export default {
             return;
         }
         const URL = `${PVP_URL}/pvp/${cmdRoute[CMD1]}`
-        fetchPost({ URL, socketId: socket.id, CMD: CMD2, userInfo, userStatus });
+        fetchPost({ URL, socketId: socket.id, CMD: CMD2, userInfo, userStatus, option: 'pvpJoin' });
     },
 
     pvpBattleController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
-        const CMD = line.trim();
+        const CMD = line.toUpperCase().trim();
 
-        if (CMD === '도움말') {
+        if (CMD === '도움말' || CMD === '도' || CMD === 'H' || CMD === 'HELP') {
             const URL = `${PVP_URL}/pvp/help`
             fetchPost({ URL, socketId: socket.id, CMD, userInfo, option: 'pvpBattle' })
             return;
         }
 
-        if (CMD === '상' || CMD === '상태창') {
+        if (CMD === '상' || CMD === '상태창' || CMD === 'S' || CMD === 'STATUS') {
             const URL = `${PVP_URL}/pvp/users`
             fetchPost({ URL, socketId: socket.id, CMD, userInfo, userStatus })
             return;

@@ -11,19 +11,18 @@ import env from '../env';
 
 export const FRONT_URL = `${env.HTTP}://${env.WAS_LB}/front`;
 
-export const maxUsers: number = 4;
+export const maxUsers: number = 6;
 // export const pvpRoomList: Map<string, boolean> = new Map<string, boolean>();
 
 export default {
     createRoom: async (req: Request, res: Response, next: NextFunction) => {
         try {
-            console.log('createRoom');
             const { socketId, CMD, userInfo, userStatus, option }: PostBody = req.body;
-            console.log(`메인에서 받아온 front socketId : ${option}`)
-            const roomName = `pvpRoom ${CMD}`;
 
             if (!userInfo) new HttpException('userInfo missing', 400);
             if (!userStatus) new HttpException('userStatus missing', 400);
+            
+            const roomName = `pvpRoom ${CMD}`;
 
             // 방 생성 시 중복된 이름 또는 입력하지 않았는지 체크
             const validation = await pvpService.createRoomValidation(req, res, next, roomName)
@@ -40,8 +39,9 @@ export default {
             PVP.to(roomName).emit('fieldScriptPrint', { script, field });
             PVP.to(socketId).emit('printBattle', { field, userInfo, userStatus: newUserStatus });
 
+            // Global Chat leave, PVP Chat Join
             const URL = `${FRONT_URL}/chat/pvpChatStart`
-            fetchPost({ URL, socketId: userStatus.frontId!, userInfo, option: roomName });
+            fetchPost({ URL, socketId: option!, userInfo, option: roomName });
 
             res.status(200).end();
         } catch (err) {
@@ -51,21 +51,23 @@ export default {
 
     joinRoom: async (req: Request, res: Response, next: NextFunction) => {
         try {
-            console.log('joinRoom');
             const { socketId, CMD, userInfo, userStatus, option }: PostBody = req.body;
-            console.log(`메인에서 받아온 front socketId : ${option}`)
-            const roomName = `pvpRoom ${CMD}`;
 
             if (!userInfo) new HttpException('userInfo missing', 400);
             if (!userStatus) new HttpException('userStatus missing', 400);
 
+            const roomName = `pvpRoom ${CMD}`;
+
+            // 방 입장 시 존재하는 방인지 체크
             const validation = await pvpService.joinRoomValidation(req, res, next, roomName)
             if (validation === 'wrongCommand') return;
 
+            // rooms 갱신 및 수정된 유저정보 갱신 후 새로운 userStatus를 return 받아온다.
             const newUserStatus = await pvpService.joinRoom({ socketId, CMD, userInfo, userStatus, option })
             if (newUserStatus === undefined) return;
 
-            const startValidation = await pvpService.startValidation(req, res, next, roomName)
+            // 전투 시작 요건이 되는지 체크한다.
+            const startValidation = await pvpService.startValidation(req, res, next, newUserStatus)
             if (startValidation === undefined) return;
 
             const script = pvpScript.pvpRoomJoin(userInfo!.name);
@@ -76,7 +78,7 @@ export default {
             PVP.to(socketId).emit('printBattle', { field, userInfo, userStatus: newUserStatus });
 
             const URL = `${FRONT_URL}/chat/pvpChatStart`
-            fetchPost({ URL, socketId: userStatus.frontId!, userInfo, option: roomName });
+            fetchPost({ URL, socketId: option!, userInfo, option: roomName });
 
             res.status(200).end();
         } catch (err) {
@@ -86,7 +88,6 @@ export default {
 
     getUsers:async (req: Request, res: Response, next: NextFunction) => {
         try {
-            console.log('getUsers')
             const { socketId, CMD, userInfo, userStatus }: PostBody = req.body;
 
             if (!userInfo) new HttpException('userInfo missing', 400);
@@ -106,7 +107,6 @@ export default {
 
     leaveRoom:async (req: Request, res: Response, next: NextFunction) => {
         try {
-            console.log('leaveRoom')
             const { socketId, CMD, userInfo, userStatus }: PostBody = req.body;
 
             if (!userInfo) new HttpException('userInfo missing', 400);
@@ -132,9 +132,10 @@ export default {
 
     pvpDisconnect:async (req: Request, res: Response, next: NextFunction) => {
         try {
-            console.log('pvpDisconnect')
             const { socketId, option }: PostBody = req.body;
+
             if (!option) return;
+
             const [ name, roomName ] = option.split(',');
             await pvpService.pvpDisconnect(name, roomName, socketId)
 
@@ -144,33 +145,14 @@ export default {
         }
     },
 
-    pvpStart:(req: Request, res: Response, next: NextFunction) => {
+    pvpStart:async (req: Request, res: Response, next: NextFunction) => {
         try {
-            console.log('pvpStart')
             const { socketId, CMD, userInfo, userStatus }: PostBody = req.body;
 
             if (!userInfo) new HttpException('userInfo missing', 400);
             if (!userStatus) new HttpException('userStatus missing', 400);
 
-            // const roomName = userStatus.pvpRoom;
-
-            // if (!isEnd.get(roomName!)) {
-            //     const pvpUsersTimer = setInterval(async ()=>{
-            //         const script = await pvpService.pvpStart(userStatus);
-            //         const field = 'pvpBattle';
-
-            //         PVP.to(roomName!).emit('fieldScriptPrint', { script, field });
-            //         await pvpService.getSkills(userStatus)
-            //     }, 8000)
-            //     isEnd.set(roomName!, pvpUsersTimer)
-            // }
-
-
-            console.time("pvpUsers.worker.ts");
-            pvpUsers.start(userStatus).then((result) => {
-                console.log('pvpUsers.handler.ts: 전투 중 유저 목록 GET Start');
-            })
-            console.timeEnd("pvpUsers.worker.ts");
+            await pvpUsers.start(userStatus)
 
             res.status(200).end();
         } catch (err) {
@@ -180,7 +162,6 @@ export default {
 
     pvpBattle: async (req: Request, res: Response, next: NextFunction) => {
         try {
-            console.log('pvpbattle')
             const { socketId, CMD, userInfo, userStatus }: PostBody = req.body;
             const [ CMD1, CMD2 ] = CMD.trim().split(' ');
             const roomName = userStatus.pvpRoom;
@@ -212,7 +193,6 @@ export default {
 
     battleUsers: async (req: Request, res: Response, next: NextFunction) => {
         try {
-            console.log('battleUsers')
             const { socketId, CMD, userInfo, userStatus }: PostBody = req.body;
 
             const script = await pvpService.pvpStart(userStatus, '');
@@ -228,7 +208,6 @@ export default {
 
     wrongCommand: (req: Request, res: Response, next: NextFunction) => {
         try {
-            console.log('pvpWrongCommand')
             const { socketId, CMD, userInfo, userStatus, option }: PostBody = req.body;
 
             const script = pvpScript.wrongCommand(CMD);
@@ -245,7 +224,6 @@ export default {
     help: (req: Request, res: Response, next: NextFunction) => {
         try {
             const { socketId, CMD, userInfo, userStatus, option }: PostBody = req.body;
-            console.log(`${option}`)
 
             if (!userInfo) new HttpException('userInfo missing', 400);
             if (!userStatus) new HttpException('userStatus missing', 400);

@@ -20,20 +20,28 @@ class NpcService {
     story(userName: string, userLevel: number): string {
         let tempScript: string = '';
 
+        interface StoryScr {
+            [key: number]: string;
+        }
+
         // 스토리 스크립트
-        const story: string[] = [
-            `1 - 모험의 시작.\n모험가의 꿈을 안고 울라대륙으로 떠난 ${userName}.\n그의 모험은 지금부터 시작이다.\n\n`,
-            `2 - 첫 보스급 몬스터 처치\n${userName}은 이제 모험가가 되었다.\n\n`,
-            `3 - 도시로 상경\n${userName}의 모험록이 도시까지 퍼졌다.\n그의 모험은 지금부터 시작이다.\n\n`,
-            `4 - 바튼의 뒷골목\n곤경에 처한 주민을 도와준 ${userName}.\n그의 바튼 모험은 이 때 시작되었다.\n\n`,
-            `5 - 왕국의 지원요청\n${userName}의 모험록은 왕국까지 닿았다.\n마왕 폴리베어와의 전쟁이 예상되는데..\n\n`,
-            `6 - 마왕 폴리베어\n${userName}, 그는 마왕 폴리베어와의 싸움에서 승리했다.\n그의 모험은 다시 시작이다.\n\n`,
-        ];
+        const storyScr: StoryScr = {
+            1: `모험의 시작.\n모험가의 꿈을 안고 울라대륙으로 떠난 ${userName}.\n그의 모험은 지금부터 시작이다.\n\n`,
+            10: `첫 보스급 몬스터 처치\n${userName}은 이제 모험가가 되었다.\n\n`,
+            20: `도시로 상경\n${userName}의 모험록이 도시까지 퍼졌다.\n그의 모험은 지금부터 시작이다.\n\n`,
+            30: `바튼의 뒷골목\n곤경에 처한 주민을 도와준 ${userName}.\n그의 바튼 모험은 이 때 시작되었다.\n\n`,
+            40: `왕국의 지원요청\n${userName}의 모험록은 왕국까지 닿았다.\n마왕 폴리베어와의 전쟁이 예상되는데..\n\n`,
+            50: `마왕 폴리베어\n${userName}, 그는 마왕 폴리베어와의 싸움에서 승리했다.\n그의 모험은 다시 시작이다.\n\n`,
+        };
 
         // 레벨만큼 공개
-        for (let i = 0; i < userLevel; i++) {
-            tempScript += story[i];
-        }
+        for (let i = 0; i < Object.keys(storyScr).length; i++) {}
+
+        Object.keys(storyScr).forEach((key) => {
+            if (Number(key) < userLevel) {
+                tempScript += storyScr[Number(key)];
+            }
+        });
 
         return tempScript;
     }
@@ -89,7 +97,7 @@ class NpcService {
         return '퍼거스 : \n' + scripts[randomIndex];
     }
 
-    /** (임시) 무기 강화 */
+    /** 무기 강화 */
     async enhance(characterId: number) {
         const userStatus = await CharacterService.getUserStatus(characterId);
         // 임시 스크립트 선언
@@ -103,38 +111,39 @@ class NpcService {
 
         // 강화 비용 확인
         if (exp < weaponLevel * 10) {
-            const tempScript = `다음 단계 강화를 위한 필요 경험치 ${weaponLevel*10}\n\n`;
+            const tempScript = `다음 단계 강화를 위한 필요 경험치 ${weaponLevel * 10}\n\n`;
             return { tempScript, userStatus };
         }
 
         // 강화 성공 확률
         // 25*(x+10) / 1.1^(x+10)
-        const successRate = (25*(weaponLevel+10)) / 1.1^(weaponLevel+10)
-        // 무기 강화(임시)
-        const randomRate = (Math.random() * 100);
+        const successRate = ((25 * (weaponLevel + 10)) / 1.1) ^ (weaponLevel + 10);
+        // 무기 강화
+        const randomRate = Math.random() * 100;
 
         if (randomRate < successRate) {
             userStatus.attack = 10 + level + weaponLevel + 1;
             userStatus.item = `${weaponLevel + 1}:1`;
             userStatus.exp = exp - 10 * weaponLevel;
-            await Characters.update({
-                attack: userStatus.attack,
-                item: userStatus.item,
-                exp: userStatus.exp
-            }, { where: { characterId } });
+            await Characters.update(
+                {
+                    attack: userStatus.attack,
+                    item: userStatus.item,
+                    exp: userStatus.exp,
+                },
+                { where: { characterId } },
+            );
             tempScript += '강화에 성공했습니다!! => 무기레벨 + 1\n\n';
             tempScript += '퍼거스 : 크하하! 이몸도 아직 죽지 않았다구!\n\n';
-            return { tempScript, userStatus }
+            return { tempScript, userStatus };
         } else {
             const userStatus = await CharacterService.addExp(characterId, -10);
             tempScript += '강화에 실패했습니다..\n\n';
             tempScript += '퍼거스 : 어이쿠.. 손이 미끄러졌네.. 헐..\n';
             tempScript += '퍼거스 : ...\n';
-            tempScript +=
-                '퍼거스 : 자, 자, 이미 이렇게 된거, 새로하나 장만... 응? 응?\n\n';
+            tempScript += '퍼거스 : 자, 자, 이미 이렇게 된거, 새로하나 장만... 응? 응?\n\n';
             return { tempScript, userStatus };
         }
-
     }
 
     /** 에트나 스크립트 랜덤 반환 */
@@ -159,8 +168,7 @@ class NpcService {
             throw new Error('Gamble Error : Character not found');
         }
 
-        let tempScript: string =
-            '다섯 번의 주사위 게임을 통해 랜덤한 성장 효과를 받을 수 있습니다.\n\n';
+        let tempScript: string = '다섯 번의 주사위 게임을 즐겨볼 수 있습니다.\n\n';
         let victoryPoint: number = 0;
 
         for (let i = 0; i < 5; i++) {

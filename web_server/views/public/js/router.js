@@ -1,44 +1,43 @@
 class Server {
     #PORT = 3333;
-    // #URL = 'localhost'
+    // #URL = 'localhost';
     // #URL = 'host.docker.internal'
     // #URL = 'server';
-    #URL = 'great-effect.com';
+    #URL = 'api.great-effect.com';
 
     getServerUrl = () => {
         return `${this.#URL}:${this.#PORT}`;
-    }
+    };
 }
 const SERVER = new Server();
 
-
 const commandRouter = {
-    'none': frontSend,
-    'front': frontSend,
-    'sign': frontSend,
+    none: frontSend,
+    front: frontSend,
+    sign: frontSend,
 
-    'dungeon': battleSend,
-    'encounter': battleSend,
-    'action': battleSend,
-    'battle': battleSend,
-    'autoBattle': battleSend,
-    'autoBattleS': battleSend,
-    'adventureResult': battleSend,
+    dungeon: battleSend,
+    encounter: battleSend,
+    action: battleSend,
+    battle: battleSend,
+    autoBattle: battleSend,
+    autoBattleS: battleSend,
+    adventureResult: battleSend,
 
-    'village': gerneralSend,
-    'story': gerneralSend,
-    'heal': gerneralSend,
-    'enhance': gerneralSend,
-    'gamble': gerneralSend,
+    village: gerneralSend,
+    story: gerneralSend,
+    heal: gerneralSend,
+    enhance: gerneralSend,
+    gamble: gerneralSend,
 
-    'pvpNpc': pvpSend,
-    'pvpList': pvpSend,
-    'pvpJoin': pvpSend,
-    'pvpBattle': pvpSend,
-    'pvpResult': pvpSend,
+    pvpNpc: pvpSend,
+    pvpList: pvpSend,
+    pvpJoin: pvpSend,
+    pvpBattle: pvpSend,
+    pvpResult: pvpSend,
 
-    'global': globalSend,
-}
+    global: globalSend,
+};
 
 function gerneralSend(field, input) {
     console.log('general send', field, input.line);
@@ -70,7 +69,7 @@ function battleSend(field, input) {
 
 function pvpSend(field, input) {
     console.log('pvp send', field, input.line);
-    
+
     pvpSocket.volatile.emit(field, input);
 }
 

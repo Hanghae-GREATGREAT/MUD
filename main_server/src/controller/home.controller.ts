@@ -43,11 +43,10 @@ export default {
             return;
         }
 
+        socketIds.set(userInfo.userId, socket.id)
+
         const URL = `${FRONT_URL}/front/${cmdRoute[CMD1]}`;
         fetchPost({ URL, socketId: socket.id, CMD: line, userInfo });
-
-        socketIds.set(userInfo.userId, socket.id)
-        console.log(`front socketId save : ${socketIds.get(userInfo.userId)}`)
     },
 
     signController: async (socket: Socket, { line, userInfo, option }: SocketInput) => {
