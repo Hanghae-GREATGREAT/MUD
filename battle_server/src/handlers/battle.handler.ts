@@ -129,7 +129,7 @@ export default {
             // 스킬 데미지 계산 & 마나 cost 소모
             const playerSkillDamage = ((attack * multiple) / 100)|0;
             const realDamage = BattleService.hitStrength(playerSkillDamage);
-            userStatus = await CharacterService.refreshStatus(characterId, 0, cost, monsterId);
+            userStatus = await CharacterService.refreshStatus(userStatus, 0, cost, monsterId);
     
             // 몬스터에게 스킬 데미지 적용 
             const isDead = await MonsterService.refreshStatus(monsterId, realDamage, characterId);
@@ -146,7 +146,7 @@ export default {
                 clearInterval(autoAttackTimer);
                 redis.battleSet(characterId, { LOOP: 'off', status: 'terminate' });
 
-                const report = await deadReport.monster(monster, tempScript);
+                const report = await deadReport.monster(monster, tempScript, userStatus);
                 if (report instanceof Error) {
                     console.log('battle hadler skill error', report.message, userInfo.characterId);
                     battleError(socketId);

@@ -54,7 +54,7 @@ async function autoAttack(socketId: string, userStatus: UserStatus): Promise<Aut
     tempScript += `${monsterName} 이(가) 당신에게 ${monsterAdjective} 공격! => ${monsterHit}의 데미지!\n`;
     // console.log(tempScript);
     
-    const refreshUser = await CharacterService.refreshStatus(characterId, monsterHit, 0, monsterId);
+    const refreshUser = await CharacterService.refreshStatus(userStatus, monsterHit, 0, monsterId);
     if (refreshUser.isDead === 'dead') {
         battleCache.set(characterId, { dead: 'player' });
         

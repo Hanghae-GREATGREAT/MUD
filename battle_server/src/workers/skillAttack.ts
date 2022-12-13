@@ -35,7 +35,7 @@ async function skillAttack(socketId: string, userStatus: UserStatus): Promise<Au
         (attack * multiple) / 100,
     );
     const realDamage: number = BattleService.hitStrength(playerSkillDamage);
-    userStatus = await CharacterService.refreshStatus(characterId, 0, skillCost, monsterId);
+    userStatus = await CharacterService.refreshStatus(userStatus, 0, skillCost, monsterId);
 
     // 몬스터에게 스킬 데미지 적중
     const isDead = await MonsterService.refreshStatus(monsterId, realDamage, characterId);

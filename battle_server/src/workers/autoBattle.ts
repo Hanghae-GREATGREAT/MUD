@@ -87,8 +87,7 @@ class AutoBattleWorker extends EventEmitter {
         });
     }
 
-    result = (socketId: string, result: AutoWorkerResult) => {
-        const { status, script, userStatus } = result;
+    result = (socketId: string, { status, script, userStatus } : AutoWorkerResult) => {
         const { characterId } = userStatus;
         console.log('autoBattle.ts: result', status, characterId);
         if (status === 'error') {
