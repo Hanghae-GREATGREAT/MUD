@@ -1,4 +1,4 @@
-![image](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FoR6nn%2FbtrTqgg8jQ3%2FZ3qNmXHdvsefTRJrVhueKK%2Fimg.png)
+![image](https://blog.kakaocdn.net/dn/ltg7j/btrTzkSklWF/2x1jgJvjDp2ZixZk3yaVj1/img.png)
 
 <h3 align="center"> Node.js의 장점인 동시 I/O를 활용하여 제작한 프로젝트 입니다. </h2>
 
