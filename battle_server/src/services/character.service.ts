@@ -133,20 +133,16 @@ class CharacterService {
          전투 턴이 종료되고 hp, mp 상태 갱신
     ****************************************************************/
     async refreshStatus(
-        characterId: number | string,
+        userStatus: UserStatus,
         damage: number,
         cost: number,
         monsterId?: number | string,
     ): Promise<UserStatus> {
-        const result = await this.getUserStatus(characterId);
-        // const questId = await QuestCompletes.findOne()
-        if (!result) throw new Error('존재하지 않는 캐릭터');
 
-        const { hp, mp } = result;
+        const { characterId, hp, mp } = userStatus;
         const newHp = hp - damage;
         const newMp = mp - cost > 0 ? mp - cost : 0;
 
-        let isDead = '';
         if (newHp > 0) {
             Characters.update(
                 { hp: newHp, mp: newMp },
@@ -154,47 +150,43 @@ class CharacterService {
                     where: { characterId },
                 },
             );
-            isDead = 'alive';
+            userStatus.isDead = 'alive';
         } else {
             // MonsterService.destroyMonster(monsterId, characterId);
-            isDead = 'dead';
+            userStatus.isDead = 'dead';
         }
 
         return {
-            ...result,
+            ...userStatus,
             hp: newHp,
             mp: newMp,
-            isDead,
         };
     }
 
     /***************************************************************
         전투 종료 경험치&레벨 계산
     ****************************************************************/
-    async addExp(
-        characterId: number | string,
-        exp: number,
-    ): Promise<UserStatus> {
-        const status = await this.getUserStatus(characterId);
-        if (!status) throw new Error('존재하지 않는 캐릭터');
+    async addExp(userStatus: UserStatus, expAdd: number): Promise<UserStatus> {
+        const { characterId, maxhp, maxmp, hp, mp, exp, level } = userStatus;
 
-        const reHp = status.hp + (status.maxhp / 20);
-        const reMp = status.mp + (status.maxmp / 5);
+        const reHp = hp + (maxhp / 20);
+        const reMp = mp + (maxmp / 5);
+        const newExp = exp + expAdd;
         Characters.update(
             {
-                exp: status.exp + exp,
-                hp: status.maxhp > reHp ? reHp : status.maxhp,
-                mp: status.maxmp > reMp ? reMp : status.maxmp,
+                exp: newExp,
+                hp: maxhp > reHp ? reHp : maxhp,
+                mp: maxmp > reMp ? reMp : maxmp,
             },
             {
                 where: { characterId },
             },
         );
 
-        const level = Characters.levelCalc(status.exp + exp, status.level);
-        let levelup = false;
-        if (level !== status.level) {
-            levelup = true;
+        userStatus.level = Characters.levelCalc(newExp, level);
+        userStatus.levelup = false;
+        if (userStatus.level !== level) {
+            userStatus.levelup = true;
             Characters.update(
                 {
                     level,
@@ -212,9 +204,10 @@ class CharacterService {
         }
 
         return {
-            ...status,
-            levelup,
-            exp: status.exp + exp,
+            ...userStatus,
+            exp: newExp,
+            hp: maxhp > reHp ? reHp : maxhp,
+            mp: maxmp > reMp ? reMp : maxmp,
         };
     }
 

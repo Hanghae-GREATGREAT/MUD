@@ -30,7 +30,7 @@ export default {
         }
 
         const { name, exp } = monster;
-        userStatus = await CharacterService.addExp(characterId, exp);
+        userStatus = await CharacterService.addExp(userStatus, exp);
         script += `\n${name} 은(는) 쓰러졌다 ! => Exp + ${exp}\n\n`;
 
         if (userStatus.levelup) {
@@ -67,12 +67,12 @@ export default {
         MonsterService.destroyMonster(monsterId, characterId);
         return;
     },
-    monster: (monster: Monsters, script: string): Promise<DeadReport|Error> => {
+    monster: (monster: Monsters, script: string, userStatus: UserStatus): Promise<DeadReport|Error> => {
         const { monsterId, characterId, name: monsterName, exp: monsterExp } = monster;
         MonsterService.destroyMonster(monsterId, characterId);
 
         return new Promise((resolve, reject) => {
-            CharacterService.addExp(characterId, monsterExp!).then((userStatus) => {
+            CharacterService.addExp(userStatus, monsterExp!).then((userStatus) => {
                 script += `\n${monsterName} 은(는) 쓰러졌다 ! => Exp + ${monsterExp}\n`;
     
                 if (userStatus.levelup) {

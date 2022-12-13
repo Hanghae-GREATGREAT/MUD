@@ -183,7 +183,7 @@ export const autoAttack = async (socketId: string, userStatus: UserStatus): Prom
     // 몬스터 사망
     if (isDead === 'dead') {
         battleCache.set(characterId, { dead: 'monster' });
-        const report = await deadReport.monster(monster, tempScript);
+        const report = await deadReport.monster(monster, tempScript, userStatus);
         if (report instanceof Error) {
             console.log('autoAttack monster isDead error', characterId);
             return battleError(socketId);
@@ -198,7 +198,7 @@ export const autoAttack = async (socketId: string, userStatus: UserStatus): Prom
         monsterDamage,
     );
     tempScript += `${monsterName} 이(가) 당신에게 ${monsterAdjective} 공격! => ${monsterHit}의 데미지!\n`;
-    userStatus = await CharacterService.refreshStatus(characterId, monsterHit, 0, monsterId);
+    userStatus = await CharacterService.refreshStatus(userStatus, monsterHit, 0, monsterId);
 
     // 플레이어 사망
     if (userStatus.isDead === 'dead') {
@@ -247,7 +247,7 @@ const autoBattleSkill = async(socketId: string,
     // 스킬 데미지 계산 & 마나 cost 소모
     const playerSkillDamage = ((attack * multiple) / 100)|0;
     const realDamage = BattleService.hitStrength(playerSkillDamage);
-    userStatus = await CharacterService.refreshStatus(characterId, 0, skillCost, monsterId);
+    userStatus = await CharacterService.refreshStatus(userStatus, 0, skillCost, monsterId);
 
     // 몬스터에게 스킬 데미지 적중
     const isDead = await MonsterService.refreshStatus(monsterId, realDamage, characterId);
@@ -259,7 +259,7 @@ const autoBattleSkill = async(socketId: string,
 
     if (isDead === 'dead') {
         battleCache.set(characterId, { dead: 'monster' });
-        const report = await deadReport.monster(monster, tempScript);
+        const report = await deadReport.monster(monster, tempScript, userStatus);
         if (report instanceof Error) {
             console.log('autoBattleSkill monster isDead error', characterId);
             return battleError(socketId);

@@ -74,7 +74,7 @@ class Monsters extends Model<
         ];
         const type = this.isRare() || 0;
         const name = names[fieldId][type]
-        const ratio = ( 0.8 + 0.2*fieldId ) * ( 1 + 1.5*type );
+        const ratio = fieldId * ( 0.8 + 0.2*fieldId ) * ( 1 + 1.5*type );
 
         const defaultMonster = {
             hp: 50,
