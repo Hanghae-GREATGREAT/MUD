@@ -3,7 +3,7 @@ class Server {
     // #URL = 'localhost';
     // #URL = 'host.docker.internal'
     // #URL = 'server';
-    #URL = 'great-effect.com';
+    #URL = 'api.great-effect.com';
 
     getServerUrl = () => {
         return `${this.#URL}:${this.#PORT}`;
