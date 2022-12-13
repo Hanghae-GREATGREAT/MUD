@@ -11,8 +11,7 @@ const {
 } = workerData;
 
 // const URL = 'localhost:3333';
-// const URL = '3.39.234.153:3333';
-const URL = 'great-effect.com:3333';
+const URL = 'api.great-effect.com:3333';
 
 // LOGGING VARIABLES
 const throughputs = [];
@@ -62,18 +61,20 @@ const createClient = async(i) => {
             const res1 = await front.signin(username);
             emitCount += res1.cnt;
             throughputs.push(...res1.throughput);
+            if (res1.error) continue;
 
             const res2 = await front.signout();
             emitCount += res2.cnt;
             throughputs.push(...res1.throughput);
+            if (res1.error) continue;
 
+            completeCount++;
             if (Date.now() - CLIENT_START > TEST_DURATION_IN_MS) {
                 break;
             }
         }
 
         console.log('TEST SUCCESS', i)
-        completeCount++;
         clientCount--;
 
     } catch (error) {

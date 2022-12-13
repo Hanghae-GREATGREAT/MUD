@@ -13,8 +13,7 @@ const {
 } = workerData;
 
 // const URL = 'localhost:3333';
-// const URL = '3.39.234.153:3333';
-const URL = 'great-effect.com:3333';
+const URL = 'api.great-effect.com:3333';
 
 // LOGGING VARIABLES
 const throughputs = [];
@@ -30,6 +29,8 @@ const MAIN_SOCKETS = new Set();
 const FRONT_SOCKETS = new Set();
 const BATTLE_SOCKETS = new Set();
 const PVP_SOCKETS = new Set();
+const IN_BATTLE = new Set();
+module.IN_BATTLE = IN_BATTLE;
 
 const sleep = (ms) => {
     return new Promise(r => setTimeout(r, ms))
@@ -39,10 +40,10 @@ const sleep = (ms) => {
 const createClient = async(i) => {
     // SOCKET CONNECTION
     const { io } = require('socket.io-client');
-    const mainSocket = io(`ws://${URL}/`, { transports: ['websocket'] });
-    const frontSocket = io(`ws://${URL}/front`, { transports: ['websocket'] });
-    const battleSocket = io(`ws://${URL}/battle`, { transports: ['websocket'] });
-    const pvpSocket = io(`ws://${URL}/pvp`, { transports: ['websocket'] });
+    const mainSocket = io(`wss://${URL}/`, { transports: ['websocket'] });
+    const frontSocket = io(`wss://${URL}/front`, { transports: ['websocket'] });
+    const battleSocket = io(`wss://${URL}/battle`, { transports: ['websocket'] });
+    const pvpSocket = io(`wss://${URL}/pvp`, { transports: ['websocket'] });
 
     MAIN_SOCKETS.add(mainSocket);
     FRONT_SOCKETS.add(frontSocket);
@@ -88,32 +89,38 @@ const createClient = async(i) => {
 
 
         chatLoop = setInterval(() => {
+            if (Date.now() - CLIENT_START > TEST_DURATION_IN_MS) return clearInterval(chatLoop);
             if (Math.random() < 0.80) return;
             front.chatSubmit(username, 'chatchat').then((res) => {
                 throughputs.push(...res.throughput);
                 emitCount++;
-                // console.log(res.script);
             })
         }, 3000);
-    
-        while (true) {
+
+        let loop = true;
+        while (loop) {
+            console.log('LOOOOOOOOOOP', field, userInfo?.characterId);
+
             const FIELD = Math.random() < 0.9 ?
                 selector[field] : selector['global'];
             const SELECT = (Math.random()*FIELD.length)|0;
-            
+
             if (field === 'battle' || (field === 'dungeon' && SELECT <= 1)) {
                 const REMAIN_TEST_DURATION = TEST_DURATION_IN_MS - (Date.now() - CLIENT_START);
                 const BATTLE_DURATION = (
                     ((Math.random() * 0.8 * REMAIN_TEST_DURATION) / 1000)|0
                 );
                 console.log('battle duration: ', userInfo.characterId, BATTLE_DURATION);
+                if (BATTLE_DURATION < 5) break;
     
+                IN_BATTLE.add(userInfo);
                 const res = await FIELD[0](field, userInfo, userStatus, BATTLE_DURATION);
                 field = res.field;
                 userInfo = res.userInfo;
                 userStatus = res.userStatus;
                 emitCount += res.cnt;
                 throughputs.push(...res.throughput);
+                IN_BATTLE.delete(userInfo);
             } else {
                 const res = await FIELD[SELECT](field, userInfo, userStatus);
                 field = res.field;
@@ -123,23 +130,19 @@ const createClient = async(i) => {
                 throughputs.push(...res.throughput);
             }
             
-            console.log(userInfo.characterId, field);
-    
-            if (Date.now() - CLIENT_START > TEST_DURATION_IN_MS) break;
+            completeCount++;
+            if (Date.now() - CLIENT_START > TEST_DURATION_IN_MS) {
+                console.log('BREAK', userInfo.characterId);
+                loop = false;
+                break;
+            }
         }
 
-        console.log('TEST SUCCESS', i)
-
-        completeCount++;
+        console.log('TEST SUCCESS', userInfo)
         clientCount--;
     } catch (error) {
-        console.log('TEST FAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIIIIL', i);
+        console.log('TEST FAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIIIIL', i, error?.message);
 
-        const fs = require('fs');
-        const path = require('path');
-        const ERROR_NAME = `[ERROR]${TEST_NAME}.txt`;
-        const ERROR_PATH = path.join(__dirname, 'errors', ERROR_NAME);
-        fs.appendFile(ERROR_PATH, error.message, ()=>{});
         failCount++;
         clientCount--;
     }
@@ -167,7 +170,7 @@ try {
     // START LOGGING
     const printReport = setInterval(() => {
         const expire = Date.now() + 1000*60*60*9;
-        if (expire - start > 1.2*TEST_DURATION_IN_MS) {
+        if (expire - start > 2*TEST_DURATION_IN_MS) {
             failCount += clientCount;
             clientCount = 0;
         }

@@ -90,6 +90,7 @@ module.exports = (socket, WAIT_COMMAND) => {
             } catch (error) {
                 console.log('ERROR: signin');
                 console.error(error);
+                return { cnt: 0, throughput: [], error: true };
             }
         },    
         signup: async(username) => {
@@ -140,6 +141,7 @@ module.exports = (socket, WAIT_COMMAND) => {
             } catch (error) {
                 console.log('ERROR: signOut');
                 console.error(error);
+                return { cnt: 0, throughput: [], error: true };
             }
         },
     

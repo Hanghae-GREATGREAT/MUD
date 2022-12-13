@@ -30,20 +30,35 @@ let alive = 0;
         });
     }
 
-    const battleResult = (userInfo, userStatus, seconds) => {
+    const battleResult = (userInfo, userStatus, battle_duration) => {
         const start = Date.now();
         let flag = false;
         
         return new Promise((resolve, reject) => {
             const result = {
                 'autoBattleS': (res, time) => {
-                    if (time < seconds * 1000) return;
+                    if (time < battle_duration * 1000) return;
     
                     flag = true;
                     alive++;
                     console.log('ALIVE', userInfo.characterId);
                     emit('autoBattleS', { line: '중단', userInfo, userStatus }).then((res) => {
-                        userInfo = res.userInfo;
+                        const field = 'dungeon';
+                        resolve({ ...res, field, userInfo, userStatus });
+                    }).catch((error) => {
+                        console.log('battleResult Error', userInfo.characterId, error.message);
+                        reject(`Error: battleResult, ${userInfo.characterId}, ${error.message}`);
+                    });
+                },
+                'autoBattle': (res, time) => {
+                    // console.log('AB INNNNNNNNNNNNNNNNNN', userInfo.characterId);
+                    if (time < battle_duration * 1000) return;
+    
+                    flag = true;
+                    alive++;
+                    console.log('ALIVE', userInfo.characterId);
+                    emit('autoBattle', { line: '중단', userInfo, userStatus }).then((res) => {
+                        console.log('전투중단 성공', userInfo.characterId);
                         const field = 'dungeon';
                         resolve({ ...res, field, userInfo, userStatus });
                     }).catch((error) => {
@@ -67,6 +82,7 @@ let alive = 0;
                 const time = Date.now() - start;
                 const field = res.field;
                 userStatus = res.userStatus;
+                // console.log('PRINTBATTLE', field, userInfo.characterId);
 
                 if (!flag) result[field](res, time);
             });
@@ -131,7 +147,7 @@ let alive = 0;
             try {
                 const throughput = [];
     
-                const r1 = await emit('battle', { line: '자동단일', userInfo, userStatus });
+                const r1 = await emit('battle', { line: '자동', userInfo, userStatus });
                 throughput.push(r1.throughput);
     
                 const result = await battleResult(userInfo, userStatus, seconds);
@@ -148,7 +164,7 @@ let alive = 0;
                 console.error(error);
             }
         },
-        autoFromList: async(field, userInfo, userStatus, seconds=30) => {
+        autoFromList: async(field, userInfo, userStatus, battle_duration=30) => {
             console.log('autoFromList', userInfo.characterId);
 
             try {
@@ -157,30 +173,46 @@ let alive = 0;
                 const line = dungeonLevel <= 5 ? `입장 ${dungeonLevel}` : '입장 5';
                 const throughput = [];
         
-                console.log('to dungeon', userInfo.characterId);
+                // console.log('to dungeon', userInfo.characterId);
                 const r1 = await emit('dungeon', { line, userInfo, userStatus });
                 throughput.push(r1.throughput);
         
                 console.log('auto start', userInfo.characterId);
-                const r2 = await emit('battle', { line: '자동단일', userInfo, userStatus });
+                const r2 = await emit('battle', { line: '자동', userInfo, userStatus });
                 throughput.push(r2.throughput);
                 
                 console.log('listen result', userInfo.characterId);
-                const result = await battleResult(userInfo, userStatus, seconds);
-                cnt++;
-                console.log('RESULT OUT', cnt);
+                const result = await battleResult(userInfo, userStatus, battle_duration);
+
+                console.log('RESULT OUT', userInfo.characterId);
                 switch (result.field) {
                     case 'heal':
                         return { ...result, cnt: 2, throughput };
                     case 'dungeon':
-                        throughput.push(result.throughput);
+                        const t = result?.throughput;
+                        if (t) throughput.push(t);
                         return { ...result, cnt: 3, throughput };
+                    default:
+                        return { ...result, cnt: 2, throughput };
                 }
             } catch (error) {
                 console.log('ERROR: autoFromList');
                 console.error(error);
             }
     
+        },
+        quitAuto: async(field, userInfo, userStatus) => {
+            console.log('quit autobattle', userInfo.characterId);
+            
+            emit('autoBattle', { line: '중단', userInfo, userStatus }).then((res) => {
+                console.log('전투중단 성공', userInfo.characterId);
+                const throughput = [ res.throughput ];
+                const field = 'dungeon';
+
+                return { field, userInfo, userStatus, cnt: 1, throughput };
+            }).catch((error) => {
+                console.log('battleResult Error', userInfo.characterId, error?.message);
+            });
         },
 
         dungeonHelp: async(field, userInfo, userStatus) => {
