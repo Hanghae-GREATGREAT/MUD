@@ -4,19 +4,13 @@ import redis from '../db/cache/redis';
 import { maxUsers } from '../controllers/pvp.controller';
 import PVP from '../redis';
 import { isEnd } from '../services/pvp.service';
+import { UserStatus } from '../interfaces/user';
 
-console.log('pvpUsers.worker.ts: 8 >> 자동공격 워커 모듈 동작, ', workerData.userStatus.characterId)
-
-parentPort?.once('message', (userStatus) => {
-    pvpUsersWorker(workerData);
-    console.log('pvpUsers.worker.ts: 12 >>', workerData.socketId, userStatus.name)
+parentPort?.once('message', (userStatus: UserStatus) => {
+    pvpUsersWorker(userStatus);
 });
 
-async function pvpUsersWorker({ userStatus, path }: PvpUsersWorkerData) {    
-
-    const { characterId } = userStatus;
-    console.log('pvpUsers.worker.ts: 18 >> pvpUsersWorker() 시작', characterId);
-    let cnt = 1
+async function pvpUsersWorker(userStatus: UserStatus) {    
     const roomName = userStatus.pvpRoom;
     
     const pvpUsersTimer = setInterval(async () => {
@@ -60,7 +54,6 @@ async function pvpUsersWorker({ userStatus, path }: PvpUsersWorkerData) {
         PVP.to(users[y][1].socketId).emit('printBattle', { script: `${script2}\n\n`, field, userStatus: user });
         skillScript = '';
         }
-        console.log(`pvpUsers.worker.ts: 58 >> pvpUsersWorker() ${cnt++}회 작동중`)
     }, 1000 * 10);
     isEnd.set(roomName!, pvpUsersTimer)
     return;

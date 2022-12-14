@@ -8,11 +8,11 @@ import pvpService, { isEnd } from '../services/pvp.service';
 import pvpUsers from '../workers/pvpUsers';
 import fetchPost from '../common/fetch';
 import env from '../env';
+// import test from '../workers/test';
 
 export const FRONT_URL = `${env.HTTP}://${env.WAS_LB}/front`;
 
 export const maxUsers: number = 6;
-// export const pvpRoomList: Map<string, boolean> = new Map<string, boolean>();
 
 export default {
     createRoom: async (req: Request, res: Response, next: NextFunction) => {
@@ -152,6 +152,7 @@ export default {
             if (!userInfo) new HttpException('userInfo missing', 400);
             if (!userStatus) new HttpException('userStatus missing', 400);
 
+            // worker threads 할당
             await pvpUsers.start(userStatus)
 
             res.status(200).end();
@@ -163,8 +164,7 @@ export default {
     pvpBattle: async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { socketId, CMD, userInfo, userStatus }: PostBody = req.body;
-            const [ CMD1, CMD2 ] = CMD.trim().split(' ');
-            const roomName = userStatus.pvpRoom;
+            const { pvpRoom } = userStatus;
 
             if (!userInfo) new HttpException('userInfo missing', 400);
             if (!userStatus) new HttpException('userStatus missing', 400);
@@ -181,7 +181,7 @@ export default {
             const script = battleStart;
             const field = 'pvpBattle';
 
-            PVP.to(roomName!).emit('fieldScriptPrint', { script, field });
+            PVP.to(pvpRoom!).emit('fieldScriptPrint', { script, field });
 
             await pvpService.pvpResultValidation({ socketId, CMD, userInfo, userStatus });
 

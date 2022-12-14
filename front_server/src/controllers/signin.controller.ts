@@ -57,6 +57,9 @@ export default {
         if (!character) {
             const script = signupScript.create;
             const field = 'sign:12';
+            const userCreated = await UserService.signin({ username, password });
+            userInfo.userId = userCreated!.getDataValue('userId');
+            FRONT.to(socketId).emit('pwCoveringOff');
             FRONT.to(socketId).emit('print', { field, script, userInfo });
             return res.status(200).end();
         }
