@@ -122,6 +122,7 @@ commendForm.submit((e) => {
     const userStatus = status.get();
 
     if (
+        field !== 'sign' &&
         line
             .slice(0, 2)
             .trim()
@@ -132,7 +133,6 @@ commendForm.submit((e) => {
 
     if (!Object.hasOwn(commandRouter, field)) gerneralSend(field, input);
     commandRouter[field](field, input);
-
 });
 
 /*****************************************************************************
@@ -223,7 +223,7 @@ chatForm.submit((e) => {
     const data = {
         name,
         message: chatInput.val(),
-        field: decryptData[0]
+        field: decryptData[0],
     };
     frontSocket.emit('submit', data);
     chatInput.val('');
