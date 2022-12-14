@@ -44,6 +44,7 @@ let alive = 0;
                     alive++;
                     console.log('ALIVE SS', userInfo.characterId, flag);
                     emit('autoBattleS', { line: '중단', userInfo, userStatus }).then((res) => {
+                        console.log('전투중단 성공', userInfo.characterId);
                         const field = 'dungeon';
                         resolve({ ...res, field, userInfo, userStatus });
                     }).catch((error) => {
@@ -210,7 +211,7 @@ let alive = 0;
         quitAuto: async(field, userInfo, userStatus) => {
             console.log('quit autobattle', userInfo.characterId);
             
-            emit('autoBattle', { line: '중단', userInfo, userStatus }).then((res) => {
+            emit('autoBattle', { line: 'STOP', userInfo, userStatus }).then((res) => {
                 console.log('전투중단 성공', userInfo.characterId);
                 const throughput = [ res.throughput ];
                 const field = 'dungeon';

@@ -33,7 +33,7 @@ export default {
             // 몬스터 생성
             const { monsterId, name } = await MonsterService.createNewMonster(dungeonLevel, characterId);
             const monsterCreatedScript = `\n${name}이(가) 등장했습니다.\n\n`;
-            battleCache.set(characterId, { dungeonLevel, monsterId });
+            battleCache.set(characterId, { dungeonLevel, monsterId, userStatus });
     
             BATTLE.to(socketId).emit('printBattle', { script: monsterCreatedScript, field, userStatus })
     
@@ -41,12 +41,13 @@ export default {
             const autoAttackTimer = setInterval(async() => {
 
                 const { LOOP } = await redis.battleGet(characterId);
-                if (LOOP === 'off' || !dungeonLevel) {
-                    console.log('autoAttack LOOP error', userInfo.characterId);
+                const { userStatus } = battleCache.get(characterId);
+                if (LOOP === 'off' || !dungeonLevel || !userStatus) {
+                    // console.log('autoAttack LOOP error', userInfo.characterId);
                     clearInterval(autoAttackTimer);
                     redis.battleSet(characterId, { LOOP: 'on'});
                     battleError(socketId);
-                    return resolve();
+                    return;
                 }
                 battleCache.set(characterId, { autoAttackTimer });
 
@@ -54,7 +55,7 @@ export default {
                 autoAttack(socketId, userStatus).then((result) => {
                     if (!result) {
                         BATTLE.to(socketId).emit('void');
-                        return resolve();
+                        return;
                     }
     
                     const { field, script, userStatus } = result
@@ -73,10 +74,10 @@ export default {
                       
                         switch (dead) {
                             case 'player':
-                                return resolve();
+                                return;
                             case 'monster':
                                 autoBattleHandler.autoBattle(socketId, userInfo, userStatus)
-                                return resolve();
+                                return;
                         }
                     }
     
@@ -84,13 +85,13 @@ export default {
                     const chance = Math.random();
                     if (chance < 0.5) {
                         BATTLE.to(socketId).emit('void');
-                        return resolve();
+                        return;
                     }
     
                     autoBattleSkill(socketId, userStatus).then((result) => {
                         if (!result) {
                             BATTLE.to(socketId).emit('void');
-                            return resolve();
+                            return;
                         }
     
                         const { field, script, userStatus } = result    
@@ -106,10 +107,10 @@ export default {
     
                             switch (dead) {
                                 case 'player':
-                                    return resolve();
+                                    return;
                                 case 'monster':
                                     autoBattleHandler.autoBattle(socketId, userInfo, userStatus)
-                                    return resolve();
+                                    return;
                             }
                         }
                     }).catch(reject);
@@ -174,7 +175,7 @@ export const autoAttack = async (socketId: string, userStatus: UserStatus): Prom
     const playerHit = BattleService.hitStrength(playerDamage);
     const playerAdjective = BattleService.dmageAdjective(playerHit, playerDamage);
     tempScript += 
-    `\n당신의 ${playerAdjective} 공격이 ${monsterName}에게 적중했다. => ${playerHit}의 데미지!\n`;
+    `\n당신의 <span style="color:blue">${playerAdjective} 공격</span>이 ${monsterName}에게 적중했다. => <span style="color:blue">${playerHit}</span>의 데미지!\n`;
 
     const isDead = await MonsterService.refreshStatus(monsterId, playerHit, characterId);
     if (!isDead) {
@@ -199,8 +200,9 @@ export const autoAttack = async (socketId: string, userStatus: UserStatus): Prom
         monsterHit,
         monsterDamage,
     );
-    tempScript += `${monsterName} 이(가) 당신에게 ${monsterAdjective} 공격! => ${monsterHit}의 데미지!\n`;
+    tempScript += `${monsterName} 이(가) 당신에게 <span style="color:red">${monsterAdjective} 공격</span>! => <span style="color:red">${monsterHit}</span>의 데미지!\n`;
     userStatus = await CharacterService.refreshStatus(userStatus, monsterHit, 0, monsterId);
+    battleCache.set(characterId, { userStatus });
 
     // 플레이어 사망
     if (userStatus.isDead === 'dead') {
@@ -241,7 +243,7 @@ const autoBattleSkill = async(socketId: string,
 
     // 마나 잔여량 확인
     if (mp - skillCost < 0) {
-        tempScript += `??? : 비전력이 부조카당.\n`;
+        tempScript += `<span style="color:yellow">??? : 비전력이 부조카당.</span>\n`;
         const script = tempScript;
         return { field, script, userStatus };
     }
@@ -257,7 +259,7 @@ const autoBattleSkill = async(socketId: string,
         console.log('autoBattleSkill monster refresh error: monster missing', characterId);
         return battleError(socketId);
     }
-    tempScript += `\n당신의 ${skillName} 스킬이 ${monsterName}에게 적중! => ${realDamage}의 데미지!\n`;
+    tempScript += `\n당신의 <span style="color:blue">${skillName}</span> ${monsterName}에게 적중! => <span style="color:blue">${realDamage}</span>의 데미지!\n`;
 
     if (isDead === 'dead') {
         battleCache.set(characterId, { dead: 'monster' });

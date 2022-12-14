@@ -31,13 +31,13 @@ export default {
 
         const { name, exp } = monster;
         userStatus = await CharacterService.addExp(userStatus, exp);
-        script += `\n${name} 은(는) 쓰러졌다 ! => Exp + ${exp}\n\n`;
+        script += `\n${name} 은(는) 쓰러졌다 ! => <span style="color:yellow">Exp + ${exp}</span>\n\n`;
 
         if (userStatus.levelup) {
             // console.log('result.handler.ts: autoResultMonsterDead() >> levelup!!', characterId);
-            script += `\n==!! LEVEL UP !! 레벨이 ${userStatus.level - 1} => ${
+            script += `\n<span style="color:yellow">==!! LEVEL UP !! 레벨이 ${userStatus.level - 1} => ${
                 userStatus.level
-            } 올랐습니다 !! LEVEL UP !!==\n\n`;
+            } 올랐습니다 !! LEVEL UP !!==</span>\n\n`;
         }
 
         const result = { field: 'autoBattle', script, userStatus };
@@ -73,12 +73,12 @@ export default {
 
         return new Promise((resolve, reject) => {
             CharacterService.addExp(userStatus, monsterExp!).then((userStatus) => {
-                script += `\n${monsterName} 은(는) 쓰러졌다 ! => Exp + ${monsterExp}\n`;
+                script += `\n${monsterName} 은(는) 쓰러졌다 ! => <span style="color:yellow">Exp + ${monsterExp}</span>\n`;
     
                 if (userStatus.levelup) {
-                    script += `\n==!! LEVEL UP !! 레벨이 ${userStatus.level - 1} => ${
+                    script += `\n<span stype="color:yelow">==!! LEVEL UP !! 레벨이 ${userStatus.level - 1} => ${
                         userStatus.level
-                    } 올랐습니다 !! LEVEL UP !!==\n\n`;
+                    } 올랐습니다 !! LEVEL UP !!==</span>\n\n`;
                 }
     
                 const field = 'encounter';
@@ -91,8 +91,8 @@ export default {
         MonsterService.destroyMonster(monsterId, characterId);
         const dungeonList = DungeonService.getDungeonList();
 
-        const script = `\n!! 치명상 !!
-        당신은 ${name}의 공격을 버티지 못했습니다..\n`
+        const script = `\n<span style="color:red">!! 치명상 !!
+        당신은 ${name}의 공격을 버티지 못했습니다..</span>\n`
         const healScript = battleScript.heal;
         const field = 'heal';
         return { field, script: script+healScript, userStatus };

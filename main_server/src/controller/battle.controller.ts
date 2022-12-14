@@ -77,6 +77,8 @@ export default {
             중단: 'autoQuit',
             STOP: 'autoQuit',
             S: 'autoQuit',
+            QUIT: 'autoQuit',
+            Q: 'autoQuit',
         };
         if (!cmdRoute[CMD1]) {
             const URL = `${BATTLE_URL}/dungeon/wrongCommand`;
@@ -95,6 +97,9 @@ export default {
             H: 'autoHelpS',
             STOP: 'autoQuitS',
             S: 'autoQuitS',
+            중단: 'autoQuitS',
+            QUIT: 'autoQuit',
+            Q: 'autoQuit',
         };
         if (!cmdRoute[CMD1]) {
             const URL = `${BATTLE_URL}/dungeon/wrongCommand`;

@@ -25,7 +25,7 @@ async function skillAttack(socketId: string, userStatus: UserStatus): Promise<Au
 
     // 마나 잔여량 확인
     if (mp - skillCost < 0) {
-        const script = `??? : 비전력이 부조카당.\n`;
+        const script = `<span style="color:yellow">??? : 비전력이 부조카당.</span>\n`;
         // console.log('skillAttack.worker.ts: 마나 부족')
         return { status: 'continue', script, userStatus };
     }
@@ -40,7 +40,7 @@ async function skillAttack(socketId: string, userStatus: UserStatus): Promise<Au
     // 몬스터에게 스킬 데미지 적중
     const isDead = await MonsterService.refreshStatus(monsterId, realDamage, characterId);
     if (!isDead) return { status: 'error', script: '몬스터 정보 에러', userStatus };
-    const script = `\n당신의 ${skillName} 스킬이 ${monsterName}에게 적중! => ${realDamage}의 데미지!\n`;
+    const script = `\n당신의 <span style="color:blue">${skillName}</span> ${monsterName}에게 적중! => <span style="color:blue">${realDamage}</span>의 데미지!\n`;
     // console.log(tempScript);
 
     if (isDead === 'dead') {
@@ -48,7 +48,7 @@ async function skillAttack(socketId: string, userStatus: UserStatus): Promise<Au
         battleCache.set(characterId, { dead: 'monster' });
         // await redis.hSet(characterId, { dead: 'monster' });
 
-        const script = `\n${monsterName}에게 ${skillName} 마무리 일격!! => ${realDamage}의 데미지!`;
+        const script = `\n${monsterName}에게 <span style="color:blue">${skillName}</span> 마무리 일격!! => <span style="color:blue">${realDamage}</span>의 데미지!`;
         return { status: 'monster', script, userStatus };
     }
 

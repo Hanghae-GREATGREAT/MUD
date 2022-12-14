@@ -1,0 +1,60 @@
+[LOG]io-100-120000(2022.12.14.1336).txt
+            
+### DETAIL LOGS ###
+
+time: Wed Dec 14 2022 22:37:03 GMT+0900 (대한민국 표준시)
+progress: 0, clients: 0, connections: 0
+emits/sec: 0.00, scenario completion: 0/0 => 0, average throughput: NaNms
+
+time: Wed Dec 14 2022 22:37:13 GMT+0900 (대한민국 표준시)
+progress: 43, clients: 0[object Set][object Set][object Set][object Set][object Set][object Set][object Set][object Set][object Set][object Set], connections: NaN
+emits/sec: 24.07, scenario completion: 43/43 => 100, average throughput: 39.06ms
+
+time: Wed Dec 14 2022 22:37:23 GMT+0900 (대한민국 표준시)
+progress: 232, clients: 0[object Set][object Set][object Set][object Set][object Set][object Set][object Set][object Set][object Set][object Set], connections: NaN
+emits/sec: 76.77, scenario completion: 189/189 => 100, average throughput: 38.57ms
+
+time: Wed Dec 14 2022 22:37:33 GMT+0900 (대한민국 표준시)
+progress: 430, clients: 0[object Set][object Set][object Set][object Set][object Set][object Set][object Set][object Set][object Set][object Set], connections: NaN
+emits/sec: 78.57, scenario completion: 198/198 => 100, average throughput: 39.05ms
+
+time: Wed Dec 14 2022 22:37:43 GMT+0900 (대한민국 표준시)
+progress: 617, clients: 0[object Set][object Set][object Set][object Set][object Set][object Set][object Set][object Set][object Set][object Set], connections: NaN
+emits/sec: 74.19, scenario completion: 187/187 => 100, average throughput: 41.62ms
+
+time: Wed Dec 14 2022 22:37:53 GMT+0900 (대한민국 표준시)
+progress: 807, clients: 0[object Set][object Set][object Set][object Set][object Set][object Set][object Set][object Set][object Set][object Set], connections: NaN
+emits/sec: 77.19, scenario completion: 190/190 => 100, average throughput: 38.94ms
+
+time: Wed Dec 14 2022 22:38:03 GMT+0900 (대한민국 표준시)
+progress: 998, clients: 0[object Set][object Set][object Set][object Set][object Set][object Set][object Set][object Set][object Set][object Set], connections: NaN
+emits/sec: 75.18, scenario completion: 191/191 => 100, average throughput: 38.28ms
+
+time: Wed Dec 14 2022 22:38:13 GMT+0900 (대한민국 표준시)
+progress: 1190, clients: 0[object Set][object Set][object Set][object Set][object Set][object Set][object Set][object Set][object Set][object Set], connections: NaN
+emits/sec: 77.08, scenario completion: 192/192 => 100, average throughput: 38.15ms
+
+time: Wed Dec 14 2022 22:38:23 GMT+0900 (대한민국 표준시)
+progress: 1383, clients: 0[object Set][object Set][object Set][object Set][object Set][object Set][object Set][object Set][object Set][object Set], connections: NaN
+emits/sec: 75.90, scenario completion: 193/193 => 100, average throughput: 38.26ms
+
+time: Wed Dec 14 2022 22:38:33 GMT+0900 (대한민국 표준시)
+progress: 1576, clients: 0[object Set][object Set][object Set][object Set][object Set][object Set][object Set][object Set][object Set][object Set], connections: NaN
+emits/sec: 77.77, scenario completion: 193/193 => 100, average throughput: 37.49ms
+
+time: Wed Dec 14 2022 22:38:43 GMT+0900 (대한민국 표준시)
+progress: 1762, clients: 0[object Set][object Set][object Set][object Set][object Set][object Set][object Set][object Set][object Set][object Set], connections: NaN
+emits/sec: 76.50, scenario completion: 186/186 => 100, average throughput: 40.29ms
+
+time: Wed Dec 14 2022 22:38:53 GMT+0900 (대한민국 표준시)
+progress: 1957, clients: 0[object Set][object Set][object Set][object Set][object Set][object Set][object Set][object Set][object Set][object Set], connections: NaN
+emits/sec: 74.36, scenario completion: 195/195 => 100, average throughput: 39.41ms
+
+time: Wed Dec 14 2022 22:39:03 GMT+0900 (대한민국 표준시)
+progress: 2146, clients: 0[object Set][object Set][object Set][object Set][object Set][object Set][object Set][object Set][object Set][object Set], connections: NaN
+emits/sec: 78.51, scenario completion: 189/189 => 100, average throughput: 38.10ms
+
+time: Wed Dec 14 2022 22:39:13 GMT+0900 (대한민국 표준시)
+progress: 0, clients: 0, connections: 0
+emits/sec: 0.00, scenario completion: 0/0 => 0, average throughput: NaNms
+

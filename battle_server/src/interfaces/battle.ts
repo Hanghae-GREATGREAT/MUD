@@ -21,4 +21,5 @@ export interface BattleCacheInterface {
     isMonsterDeadTimer?: NodeJS.Timer;
     quit?: boolean;
     dead?: string;
+    userStatus?: UserStatus;
 }

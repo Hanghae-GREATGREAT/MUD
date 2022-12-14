@@ -45,7 +45,7 @@ export default {
             field = 'battle';
         }
 
-        console.log(field);
+        // console.log(field);
         BATTLE.to(socketId).emit('print', { field, script, userInfo });
     },
 

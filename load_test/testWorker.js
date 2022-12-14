@@ -151,9 +151,9 @@ class TestWorker {
         this.#clientCount = 0;
 
         const length = this.#throughputAvg.length;
-        const currentThroughputs = this.#throughputAvg.splice(0, length);
+        const currentThroughputs = this.#throughputAvg.splice(0, length).filter(a=>Number(a));
         const averageThroughput = (
-            currentThroughputs.reduce((a,b) => a+b, 0) / length
+            currentThroughputs.reduce((a,b) => a+b, 0) / currentThroughputs.length
         ).toFixed(2);
 
         const connectionCount = this.#TEST === 'random' ? 4 : 2;
@@ -170,6 +170,7 @@ class TestWorker {
         // const [ ONE_MIN, FIVE_MIN, FIFTEEN_MIN ] = []
     
         const LOG = 
+        `time: ${new Date(Date.now()+1000*60*60*9)}\n`+
         `progress: ${currentProgressCount}, clients: ${clientCount}, connections: ${connections}\n` + 
         `emits/sec: ${emitSeconds}, ` +
         `scenario completion: ${currentCompleteCount}/${currentTotalCount} => ${scenarioCompleteRate}, ` +

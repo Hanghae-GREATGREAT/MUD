@@ -84,7 +84,7 @@ export default {
         const { characterId, name: monsterName, exp: monsterExp } = monster;
         const userStatus = await CharacterService.addExp(characterId, monsterExp!);
         const field = 'encounter';
-        script += `\n${monsterName} 은(는) 쓰러졌다 ! => Exp + ${monsterExp}\n`;
+        script += `\n${monsterName} 은(는) 쓰러졌다 ! => <span style="color:yellow">Exp + ${monsterExp}</span>\n`;
 
         if (userStatus.levelup) {
             script += `\n==!! LEVEL UP !! 레벨이 ${userStatus.level - 1} => ${

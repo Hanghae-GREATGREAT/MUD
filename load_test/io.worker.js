@@ -15,7 +15,7 @@ const URL = 'api.great-effect.com:3333';
 
 // LOGGING VARIABLES
 const throughputs = [];
-let clientCount = 0;
+const clientCount = new Set();
 let emitCount = 0;
 let previousEmitCount = 0;
 let failCount = 0;
@@ -34,8 +34,8 @@ const sleep = (ms) => {
 const createClient = async(i) => {
     // SOCKET CONNECTION
     const { io } = require('socket.io-client');
-    const mainSocket = io(`ws://${URL}/`, { transports: ['websocket'] });
-    const frontSocket = io(`ws://${URL}/front`, { transports: ['websocket'] });
+    const mainSocket = io(`wss://${URL}/`, { transports: ['websocket'] });
+    const frontSocket = io(`wss://${URL}/front`, { transports: ['websocket'] });
 
     MAIN_SOCKETS.add(mainSocket);
     FRONT_SOCKETS.add(frontSocket);
@@ -46,7 +46,7 @@ const createClient = async(i) => {
     
     try {
         const username = `user${i}`;
-        clientCount++;
+        clientCount.add(i);
 
         // SET START TIME
         const CLIENT_START = Date.now();
@@ -57,7 +57,18 @@ const createClient = async(i) => {
          * througputs.push(...response.throughput);
          */
 
-        while (true) {
+        let loop = true;
+        setTimeout(() => {
+            const userInfo = IN_BATTLE.get(i);
+            if (userInfo) {
+                loop = false;
+                completeCount++;
+                clientCount.delete(i);
+                battle.quitAuto('autuBattle', userInfo, {});
+            }
+        }, TEST_DURATION_IN_MS);
+
+        while (loop) {
             const res1 = await front.signin(username);
             emitCount += res1.cnt;
             throughputs.push(...res1.throughput);
@@ -70,18 +81,20 @@ const createClient = async(i) => {
 
             completeCount++;
             if (Date.now() - CLIENT_START > TEST_DURATION_IN_MS) {
+                loop = false;
+                clientCount.delete(i);
                 break;
             }
         }
 
         console.log('TEST SUCCESS', i)
-        clientCount--;
+        clientCount.delete(i);
 
     } catch (error) {
         console.log('FAIL', error.message);
         console.error(error);
         failCount++;
-        clientCount--;
+        clientCount.delete(i);
     }
 
     mainSocket.disconnect();
@@ -111,7 +124,7 @@ try {
     // START LOGGING
     const printReport = setInterval(() => {
         const expire = Date.now() + 1000*60*60*9;
-        if (expire - start > 1.5*TEST_DURATION_IN_MS) {
+        if (expire - start > 1.2*TEST_DURATION_IN_MS) {
             failCount += clientCount;
             clientCount = 0;
             
@@ -143,7 +156,7 @@ try {
         const throughputAvg = throughputSum / currentEmitCount;
 
         const report = {
-            currentProgressCount, clientCount, currentEmitCount,
+            currentProgressCount, clientCount: clientCount.size, currentEmitCount,
             currentCompleteCount, currentTotalCount,
             throughputSum, throughputAvg,
         }
@@ -153,8 +166,8 @@ try {
         previousFailCount += currentFailCount;
         previousCompleteCount += currentCompleteCount;
 
-        if (clientCount === 0) {
-            console.log('WORKER END', clientCount)
+        if (clientCount.size === 0) {
+            // console.log('WORKER END', clientCount)
             clearInterval(printReport);
         }
     }, 10000);

@@ -133,9 +133,9 @@ module.exports = (socket, WAIT_COMMAND) => {
         },
         signout: async() => {
             try {
-                console.log('FRONT SIGN OUT')
+                // console.log('FRONT SIGN OUT')
                 const r1 = await emit('front', { line: 'out', userInfo: {}, userStatus: {} });
-                console.log('SIGNOUT', r1);
+                // console.log('SIGNOUT', r1);
                 const throughput = [ r1.throughput ];
     
                 const field = 'none';

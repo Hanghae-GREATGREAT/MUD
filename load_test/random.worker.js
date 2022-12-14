@@ -10,7 +10,7 @@ const {
 // const URL = 'localhost:3333';
 const URL = 'api.great-effect.com:3333';
 
-const MAX_WAIT_TIME = 1.5 * TEST_DURATION_IN_MS;
+const MAX_WAIT_TIME = 1.2 * TEST_DURATION_IN_MS;
 
 // LOGGING VARIABLES
 const clientCount = new Set();
@@ -218,6 +218,11 @@ try {
 
     // START LOGGING
     const printReport = setInterval(() => {
+        const now = Date.now() + 1000*60*60*9;
+        if (now - start > MAX_WAIT_TIME) {
+            failCount += clientCount.size;
+            clientCount.clear();
+        }
 
         // EMIT COUNTS
         const currentEmitCount = emitCount - previousEmitCount;
