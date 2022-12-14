@@ -8,7 +8,6 @@ import pvpService, { isEnd } from '../services/pvp.service';
 import pvpUsers from '../workers/pvpUsers';
 import fetchPost from '../common/fetch';
 import env from '../env';
-// import test from '../workers/test';
 
 export const FRONT_URL = `${env.HTTP}://${env.WAS_LB}/front`;
 
@@ -153,7 +152,7 @@ export default {
             if (!userStatus) new HttpException('userStatus missing', 400);
 
             // worker threads 할당
-            await pvpUsers.start(userStatus)
+            pvpUsers.start(userStatus)
 
             res.status(200).end();
         } catch (err) {

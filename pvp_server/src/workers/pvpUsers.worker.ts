@@ -1,5 +1,4 @@
-import { parentPort, workerData, getEnvironmentData, MessagePort } from 'worker_threads'
-import { PvpUsersWorkerData} from '../interfaces/worker';
+import { parentPort } from 'worker_threads'
 import redis from '../db/cache/redis';
 import { maxUsers } from '../controllers/pvp.controller';
 import PVP from '../redis';
