@@ -51,6 +51,7 @@ export default {
         userInfo.username = username;
 
         FRONT.to(socketId).emit('print', { field, script, userInfo });
+        FRONT.to(socketId).emit('pwCoveringOn');
         res.status(200).end();
     },
 
@@ -76,6 +77,7 @@ export default {
             field = 'sign:12';
             const userCreated = await UserService.signup({ username: userInfo.username, password: CMD });
             userInfo.userId = userCreated.getDataValue('userId');
+            FRONT.to(socketId).emit('pwCoveringOff');
         }
 
         FRONT.to(socketId).emit('print', { field, script, userInfo });
