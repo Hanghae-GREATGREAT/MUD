@@ -11,6 +11,7 @@ class Env {
     DB_PASSWORD: string;
 
     REDIS_URL: string;
+    REDIS_CHAT: string;
 
     constructor() {
         this.PORT = Number(process.env.FRONT_PORT);
@@ -36,6 +37,12 @@ class Env {
 
         this.REDIS_URL = process.env.NODE_ENV === 'production' ?
             `redis://${REDIS_HOST}:${REDIS_PORT}` :
+            `redis://${REDIS_USER}:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}/0`;
+
+        const CHAT_PORT = Number(process.env.CHAT_PORT);
+        const CHAT_HOST = process.env.CHAT_HOST || 'host.docker.internal';
+        this.REDIS_CHAT = process.env.NODE_ENV === 'production' ?
+            `redis://${CHAT_HOST}:${CHAT_PORT}` :
             `redis://${REDIS_USER}:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}/0`;
     }
 }

@@ -24,7 +24,7 @@ export default {
         try {
             console.log('session authmiddleware validation');
             const { socketId, CMD, userInfo, userStatus }: PostBody = req.body;
-            const sessionData = await redis.get(userInfo?.userId!);
+            const sessionData = await redis.get(userInfo?.characterId!);
             console.log(sessionData);
             if (!sessionData) {
                 req.app.locals.user = null;
@@ -41,7 +41,7 @@ export default {
         try {
             console.log('session login user validation');
             const { socketId, CMD, userInfo, userStatus }: PostBody = req.body;
-            const sessionData = await redis.get(userInfo?.userId!);
+            const sessionData = await redis.get(userInfo?.characterId!);
             console.log(sessionData);
             if (sessionData) {
                 frontController.emptyCommand(req, res, next);

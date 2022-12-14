@@ -1,9 +1,9 @@
-import { NextFunction, Request, Response } from "express";
-import { HttpException } from "../common";
-import { chatCache } from "../db/cache";
-import { PostBody } from "../interfaces/common";
-import { FRONT } from "../redis";
-import { globalScript } from "../scripts";
+import { NextFunction, Request, Response } from 'express';
+import { HttpException } from '../common';
+import { redisChat } from '../db/cache';
+import { PostBody } from '../interfaces/common';
+import { FRONT } from '../redis';
+import { globalScript } from '../scripts';
 
 
 export default {
@@ -41,8 +41,7 @@ export default {
     disconnect: (req: Request, res: Response, next: NextFunction) => {
         const { socketId }: PostBody = req.body;
 
-        const joinedRoom = chatCache.getJoinedRoom(socketId);
-        if (joinedRoom) chatCache.leaveChat(socketId);
+        redisChat.leaveChat(socketId);
 
         res.status(200).end();
     },

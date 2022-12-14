@@ -1,0 +1,52 @@
+[LOG]random-57-87000(2022.12.14.2305).txt
+            
+### DETAIL LOGS ###
+
+time: Thu Dec 15 2022 08:05:51 GMT+0900 (대한민국 표준시)
+progress: 0, clients: 0, connections: 0
+emits/sec: 0.00, scenario completion: 0/0 => 0, average throughput: NaNms
+
+time: Thu Dec 15 2022 08:06:01 GMT+0900 (대한민국 표준시)
+progress: 59, clients: 57, connections: 228
+emits/sec: 17.78, scenario completion: 59/59 => 100, average throughput: 34.25ms
+
+time: Thu Dec 15 2022 08:06:11 GMT+0900 (대한민국 표준시)
+progress: 197, clients: 57, connections: 228
+emits/sec: 24.29, scenario completion: 138/138 => 100, average throughput: 25.53ms
+
+time: Thu Dec 15 2022 08:06:21 GMT+0900 (대한민국 표준시)
+progress: 257, clients: 57, connections: 228
+emits/sec: 9.89, scenario completion: 60/60 => 100, average throughput: 15.58ms
+
+time: Thu Dec 15 2022 08:06:31 GMT+0900 (대한민국 표준시)
+progress: 307, clients: 57, connections: 228
+emits/sec: 10.29, scenario completion: 50/50 => 100, average throughput: 44.96ms
+
+time: Thu Dec 15 2022 08:06:41 GMT+0900 (대한민국 표준시)
+progress: 349, clients: 57, connections: 228
+emits/sec: 8.39, scenario completion: 42/42 => 100, average throughput: 58.10ms
+
+time: Thu Dec 15 2022 08:06:51 GMT+0900 (대한민국 표준시)
+progress: 376, clients: 57, connections: 228
+emits/sec: 6.60, scenario completion: 27/27 => 100, average throughput: 65.73ms
+
+time: Thu Dec 15 2022 08:07:01 GMT+0900 (대한민국 표준시)
+progress: 391, clients: 57, connections: 228
+emits/sec: 5.50, scenario completion: 15/15 => 100, average throughput: 77.80ms
+
+time: Thu Dec 15 2022 08:07:11 GMT+0900 (대한민국 표준시)
+progress: 399, clients: 57, connections: 228
+emits/sec: 5.40, scenario completion: 8/8 => 100, average throughput: 69.46ms
+
+time: Thu Dec 15 2022 08:07:21 GMT+0900 (대한민국 표준시)
+progress: 405, clients: 56, connections: 224
+emits/sec: 4.10, scenario completion: 6/6 => 100, average throughput: 51.07ms
+
+time: Thu Dec 15 2022 08:07:31 GMT+0900 (대한민국 표준시)
+progress: 459, clients: 3, connections: 12
+emits/sec: 1.40, scenario completion: 54/54 => 100, average throughput: 66.82ms
+
+time: Thu Dec 15 2022 08:07:41 GMT+0900 (대한민국 표준시)
+progress: 144, clients: 0, connections: 0
+emits/sec: 0.00, scenario completion: 3/3 => 100, average throughput: NaNms
+

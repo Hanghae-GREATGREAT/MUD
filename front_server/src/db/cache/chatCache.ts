@@ -4,7 +4,9 @@ interface ChatJoinerInterface {
 
 class ChatCache {
     private roomList: Map<number, Set<string>>;
+    // room number => socketId[]
     private pvpRoomList: Map<string, Set<string>>;
+    // room name => socketId[]
     private chatJoiner: ChatJoinerInterface = {};
     private pvpChatJoiner: ChatJoinerInterface = {};
     // 채팅방 입장 정원

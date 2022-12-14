@@ -180,7 +180,8 @@ class TestWorker {
         fs.appendFile(FILE_PATH, LOG+'\n', (err) => {
             if (err) {
                 console.log(err.message);
-                return process.exit(0);
+                // process.exit(1);
+                return;
             }
             console.log(LOG, clientCount);
 
@@ -254,15 +255,8 @@ class TestWorker {
         fs.writeFileSync(REPORT_PATH, JSON.stringify(RESULT))
         console.log(`report created '${REPORT_NAME}'`);
 
-        console.log('fetch?')
-        // fetch('http://54.180.171.225:3500/clear').then(async(res) => {
-        //     const data = await res.json();
-        //     console.log(data);
-        // }).catch((error) => {
-        //     console.log(`FAILED TO CLEAR CACHE, ${error.message}`);
-        // });
         this.terminate();
-        process.exit(0);
+        // process.exit(0)
     }
 
     #getTime = () => {

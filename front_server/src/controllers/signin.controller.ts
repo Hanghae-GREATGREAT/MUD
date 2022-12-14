@@ -3,7 +3,7 @@ import { FRONT } from '../redis';
 import { PostBody } from '../interfaces/common';
 import { UserService, CharacterService } from '../services';
 import { signinScript, signupScript } from '../scripts';
-import { chatCache, redis } from '../db/cache';
+import { redis, redisChat } from '../db/cache';
 
 export default {
     signinUsername: (req: Request, res: Response, next: NextFunction) => {
@@ -77,18 +77,18 @@ export default {
         const field = 'front';
 
         // 채팅방 참가
-        const chatData: Array<number> = chatCache.joinChat(socketId);
-        const enteredRoom = chatData[0];
-        const joinerCntScript = `(${chatData[1]}/${chatData[2]})`;
-        FRONT.in(socketId).socketsJoin(`${enteredRoom}`);
-        FRONT.to(`${enteredRoom}`).emit('joinChat', userInfo.name, joinerCntScript);
+        const [chatId, chatSize, chatLimit] = await redisChat.joinChat(socketId)
+        const chatJoinScript = `(${chatSize}/${chatLimit})`;
+        console.log(socketId, userInfo, chatId, chatJoinScript);
+        FRONT.in(socketId).socketsJoin(`${chatId}`);
+        FRONT.to(`${chatId}`).emit('joinChat', userInfo?.name, chatJoinScript);
 
         FRONT.to(socketId).emit('printBattle', { field, script, userInfo, userStatus });
         FRONT.to(socketId).emit('pwCoveringOff');
 
         // sesstion create
-        redis.set(userInfo.userId, socketId, { EX : 60*60*24 })
-        console.log(`login session create`)
+        // console.log(`login session create`);
+        redis.set(userInfo.characterId, socketId, { EX : 60*60*24 })
 
         res.status(200).end();
     },

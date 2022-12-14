@@ -54,6 +54,7 @@ async function autoAttack(socketId: string, userStatus: UserStatus): Promise<Aut
     // console.log(tempScript);
     
     userStatus = await CharacterService.refreshStatus(userStatus, monsterHit, 0, monsterId);
+    battleCache.set(characterId, { userStatus });
     if (userStatus.isDead === 'dead') {
         battleCache.set(characterId, { dead: 'player' });
         

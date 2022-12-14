@@ -3,10 +3,10 @@ const SERVER_URL = SERVER.getServerUrl();
 // const frontSocket = io.connect(`ws://${SERVER_URL}/front`);
 // const battleSocket = io.connect(`ws://${SERVER_URL}/battle`);
 // const pvpSocket = io.connect(`ws://${SERVER_URL}/pvp`);
-const mainSocket = io.connect(`ws://${SERVER_URL}/`, { transports: ['websocket'] });
-const frontSocket = io.connect(`ws://${SERVER_URL}/front`, { transports: ['websocket'] });
-const battleSocket = io.connect(`ws://${SERVER_URL}/battle`, { transports: ['websocket'] });
-const pvpSocket = io.connect(`ws://${SERVER_URL}/pvp`, { transports: ['websocket'] });
+const mainSocket = io.connect(`wss://${SERVER_URL}/`, { transports: ['websocket'] });
+const frontSocket = io.connect(`wss://${SERVER_URL}/front`, { transports: ['websocket'] });
+const battleSocket = io.connect(`wss://${SERVER_URL}/battle`, { transports: ['websocket'] });
+const pvpSocket = io.connect(`wss://${SERVER_URL}/pvp`, { transports: ['websocket'] });
 
 const commandLine = $('.commendLine');
 const commendInput = $('#commendInput');

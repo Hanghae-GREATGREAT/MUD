@@ -95,7 +95,7 @@ module.exports = (socket, WAIT_COMMAND) => {
             }
         },    
         signup: async(username) => {
-            console.log(username);
+            // console.log(username);
             try {
                 let userInfo = {};
                 let userStatus = {};
@@ -210,14 +210,14 @@ module.exports = (socket, WAIT_COMMAND) => {
         },
         globalSignout: async() => {
             try {
-                console.log('GLOBAL SIGNOUT');
+                // console.log('GLOBAL SIGNOUT');
                 const r1 = await emit('global', { line: 'g out', userInfo, userStatus });
                 const throughput = [ r1.throughput ];
         
                 const field = 'none';
                 const userInfo = {};
                 const userStatus = {};
-                console.log('SIGNOUT SUCCESS');
+                // console.log('SIGNOUT SUCCESS');
                 return { field, userInfo, userStatus, cnt: 1, throughput };
             } catch (error) {
                 console.log('ERROR: globalSignout');

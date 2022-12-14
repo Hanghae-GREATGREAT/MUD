@@ -35,14 +35,12 @@ app.get('/', (req, res) => {
     res.status(200).json({ message: 'FRONT INDEX' });
 });
 
-import { chatCache } from './db/cache';
 import { FRONT, CHAT } from './redis';
 app.get('/cache', (req, res) => {
-    const result = chatCache.getAll();
     console.log(FRONT)
     console.log(CHAT)
 
-    res.status(200).json({ ...result, FRONT, CHAT });
+    res.status(200).json({ FRONT, CHAT });
 });
 
 app.get('/report', (req, res) => {

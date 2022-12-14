@@ -99,7 +99,7 @@ const createClient = async(i) => {
 
         chatLoop = setInterval(() => {
             if (Date.now() - CLIENT_START > TEST_DURATION_IN_MS) {
-                console.log('STOP CHAT', userInfo?.characterId);
+                // console.log('STOP CHAT', userInfo?.characterId);
                 return clearInterval(chatLoop);
             }
             if (Math.random() < 0.80) return;
@@ -125,7 +125,7 @@ const createClient = async(i) => {
         }, TEST_DURATION_IN_MS);
 
         while (loop) {
-            console.log(`[${new Date(Date.now()+1000*60*60*9)}]`, field, userInfo?.characterId);
+            // console.log(`[${new Date(Date.now()+1000*60*60*9)}]`, field, userInfo?.characterId);
 
             const FIELD = Math.random() < 0.9 ? selector[field] : selector['global'];
             const SELECT = (Math.random()*FIELD.length)|0;
@@ -140,7 +140,7 @@ const createClient = async(i) => {
                 const BATTLE_DURATION = (
                     ((Math.random() * 0.8 * REMAIN_TEST_DURATION) / 1000)|0
                 );
-                console.log('battle duration: ', userInfo?.characterId, BATTLE_DURATION);
+                // console.log('battle duration: ', userInfo?.characterId, BATTLE_DURATION);
     
                 IN_BATTLE.set(i, userInfo);
                 const res = await FIELD[0](field, userInfo, userStatus, BATTLE_DURATION);
@@ -171,10 +171,10 @@ const createClient = async(i) => {
             
             completeCount++;            
             const now = Date.now();
-            console.log(`${now} - ${CLIENT_START} > ${TEST_DURATION_IN_MS}`,
-            now - CLIENT_START > TEST_DURATION_IN_MS);
+            // console.log(`${now} - ${CLIENT_START} > ${TEST_DURATION_IN_MS}`,
+            // now - CLIENT_START > TEST_DURATION_IN_MS);
             if (now - CLIENT_START > TEST_DURATION_IN_MS) {
-                console.log('BREAK LOOP', userInfo.characterId);
+                // console.log('BREAK LOOP', userInfo.characterId);
                 loop = false;
                 clientCount.delete(i);
                 break;
@@ -187,7 +187,7 @@ const createClient = async(i) => {
         // emitCount += res.cnt;
         // throughputs.push(...res.throughput);
 
-        console.log('TEST SUCCESS', userInfo)
+        // console.log('TEST SUCCESS', userInfo)
         clientCount.delete(i);
     } catch (error) {
         console.log('TEST FAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIIIIL', i, error?.message);
@@ -202,7 +202,7 @@ const main = async() => {
     console.log('MAIN CALLED');
 
     for(let i=0; i<WORKER_MAX_CLIENT; i++) {
-        console.log('create client', ID_START+i);
+        // console.log('create client', ID_START+i);
         await sleep(CLIENT_CREATE_INTERVAL_IN_MS);
         createClient(ID_START+i);
     }
@@ -254,7 +254,7 @@ try {
         previousCompleteCount += currentCompleteCount;
 
         if (clientCount.size === 0) {
-            console.log('WORKER END', clientCount)
+            console.log('WORKER END', clientCount.size)
             clearInterval(printReport);
         }
     }, 10000);
