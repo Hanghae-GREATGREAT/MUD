@@ -4,7 +4,7 @@ import { pvpController } from "../controllers";
 import { redis, redisCloud } from "../db/cache";
 import { FRONT_URL, maxUsers } from "../controllers/pvp.controller";
 import { PostBody } from "../interfaces/common";
-import { PvpUser } from '../interfaces/pvp'
+import { PvpPlayer, PvpUser } from '../interfaces/pvp'
 import { UserInfo, UserStatus } from "../interfaces/user";
 import PVP from "../redis";
 import { pvpScript } from "../scripts";
@@ -35,8 +35,7 @@ class PvpService {
         else {
             const pvpRooms = Object.entries(getAllRooms).filter(name=>!name[0].includes('watch'))
             for (const room of pvpRooms) {
-                const roomName = room[0];
-                const roomState = room[1];
+                const [ roomName, roomState ] = room;
 
                 const isState = roomState === true ? '전투중' : '대기중';
                 
@@ -292,7 +291,7 @@ class PvpService {
     }
 
     battleValidation({ socketId, CMD, userInfo, userStatus }: PostBody) {
-        const [ CMD1, CMD2 ] = CMD.trim().split(' ');
+        const input = CMD.trim().split(' ').pop();
         const field = 'pvpBattle'
 
         if (userStatus.damage === -1) {
@@ -316,7 +315,7 @@ class PvpService {
         const skills: string[] = ['기본공격'];
         for (const skill of userStatus.skill) skills.push(skill.name);
 
-        if (!skills.includes(CMD2)) {
+        if (!skills.includes(input!)) {
             PVP.to(socketId).emit('fieldScriptPrint', { field, script: '잘못된 입력 또는 보유한 스킬이 아닙니다.\n' })
             return undefined;
         }
@@ -325,9 +324,8 @@ class PvpService {
     }
 
     async targetValidation({ socketId, CMD, userInfo, userStatus }: PostBody) {
-        const [ CMD1, CMD2 ] = CMD.trim().split(' ');
-        const roomName = userStatus.pvpRoom;
-        const pvpRoom = await redis.hGetPvpRoom(roomName!);
+        const input = CMD.trim().split(' ').shift();
+        const pvpRoom = await redis.hGetPvpRoom(userStatus.pvpRoom!);
         const users = Object.entries(pvpRoom);
         const TeamA: string[] = [];
         const TeamB: string[] = [];
@@ -335,21 +333,22 @@ class PvpService {
         for (let i = 0; i < maxUsers; i++) {
             if (!users[i]) continue;
 
-            const user = users[i][1].userStatus.isTeam;
-            if (user === 'A TEAM') TeamA.push(users[i][0]);
-            else if (user === 'B TEAM') TeamB.push(users[i][0]);
+            const { isTeam } = users[i][1].userStatus;
+
+            if (isTeam === 'A TEAM') TeamA.push(users[i][0]);
+            else if (isTeam === 'B TEAM') TeamB.push(users[i][0]);
         }
         
         const field = 'pvpBattle'
-        if (!TeamA.concat(TeamB).includes(CMD1)) {
+        if (!TeamA.concat(TeamB).includes(input!)) {
             PVP.to(socketId).emit('fieldScriptPrint', { field, script: '잘못된 입력 또는 없는 유저입니다.\n' })
             return undefined;
         }
-        if (TeamA.includes(userStatus.name) && TeamA.includes(CMD1)) {
+        if (TeamA.includes(userStatus.name) && TeamA.includes(input!)) {
             PVP.to(socketId).emit('fieldScriptPrint', { field, script: '본인 또는 같은 팀은 공격하지 못합니다.\n' })
             return undefined;
         }
-        if (TeamB.includes(userStatus.name) && TeamB.includes(CMD1)) {
+        if (TeamB.includes(userStatus.name) && TeamB.includes(input!)) {
             PVP.to(socketId).emit('fieldScriptPrint', { field, script: '본인 또는 같은 팀은 공격하지 못합니다.\n' })
             return undefined;
         }
