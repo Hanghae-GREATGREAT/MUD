@@ -16,22 +16,24 @@ export default {
             const { characterId } = userInfo;
             const { dungeonLevel, monsterId } = await redis.battleGet(characterId);
             redis.battleSet(characterId, { LOOP: 'on', terminate: 'continue' });
+            battleCache.set(characterId, { dungeonLevel, monsterId, userStatus });
 
             const autoAttackTimer = setInterval(async() => {
 
                 const cache = await redis.battleGet(characterId);
-                if (cache.LOOP === 'off' || !dungeonLevel) {
-                    console.log('battle handler autoAttack LOOP error', userInfo.characterId);
+                const { userStatus } = battleCache.get(characterId);
+                if (cache.LOOP === 'off' || !dungeonLevel || !userStatus) {
+                    // console.log('battle handler autoAttack LOOP error', userInfo.characterId);
                     clearInterval(autoAttackTimer);
                     if (cache.status === 'continue') battleError(socketId);
-                    return resolve();
+                    return;
                 }
-                battleCache.set(characterId, { dungeonLevel, monsterId, autoAttackTimer });
+                battleCache.set(characterId, { autoAttackTimer });
     
                 autoAttack(socketId, userStatus).then((result) => {
                     if (!result) {
                         BATTLE.to(socketId).emit('void');
-                        return resolve();
+                        return;
                     }
 
                     const { field, script, userStatus } = result;
@@ -52,10 +54,10 @@ export default {
                         switch(dead) {
                             case 'player': 
                                 dungeonHandler.dungeonList(socketId, userInfo);
-                                return resolve();
+                                return;
                             case 'monster': 
                                 dungeonHandler.encounter(socketId, userInfo, userStatus);
-                                return resolve();
+                                return;
                         }
                     }
                 }).catch(reject);
@@ -65,6 +67,7 @@ export default {
             userStatus.cooldown = Date.now()-2000;
             const data = { field: 'action', script: '', userInfo, userStatus  };
             BATTLE.to(socketId).emit('printBattle', data);
+            resolve();
         });
     },
 
@@ -120,7 +123,7 @@ export default {
             // 마나 잔여량 확인
             if (mp - cost < 0) {
                 console.log('battle.handler.ts: skill empty mana', characterId);
-                tempScript += `??? : 비전력이 부조카당.\n`;
+                tempScript += `<span style="color:yellow">??? : 비전력이 부조카당.</span>\n`;
                 const script = tempScript;
                 BATTLE.to(socketId).emit('printBattle', { field, script, userInfo, userStatus });
                 return resolve();
@@ -138,7 +141,7 @@ export default {
                 battleError(socketId);
                 return resolve();
             }  
-            tempScript += `\n당신의 ${skillName} 스킬이 ${monsterName}에게 적중! => ${realDamage}의 데미지!\n`;
+            tempScript += `\n당신의 <span style="color:blue">${skillName}</span> ${monsterName}에게 적중! => <span style="color:blue">${realDamage}</span>의 데미지!\n`;
     
             const { autoAttackTimer, dead } = battleCache.get(characterId);
             if (isDead === 'dead' || dead === 'monster') {
@@ -163,6 +166,7 @@ export default {
             const script = tempScript;
             userStatus.cooldown = Date.now();
             BATTLE.to(socketId).emit('printBattle', { field, script, userInfo, userStatus });
+            resolve();
         });
     },
 
@@ -194,13 +198,14 @@ export default {
 
         try {
             if (autoBattle.get(characterId)) {
-                console.log('battle.handler.ts: stopAutoWorker SAME', characterId);
+                // console.log('battle.handler.ts: stopAutoWorker SAME', characterId);
 
                 autoBattle.terminate(characterId);
                 battleCache.delete(characterId);
             } else {
-                console.log('battle.handler.ts: stopAutoWorker DIFFERENT', characterId);
+                // console.log('battle.handler.ts: stopAutoWorker DIFFERENT', characterId);
 
+                battleCache.delete(characterId);
                 redis.battleSet(characterId, { LOOP: 'off', SKILL: 'off', status: 'terminate' });
             }
 
@@ -224,11 +229,11 @@ export default {
             return battleError(socketId);
         }
     },
-    stopAutoS: (socketId: string, userInfo: UserInfo) => {
+    stopAutoS: async(socketId: string, userInfo: UserInfo) => {
         try {
             const { characterId } = userInfo;
 
-            redis.battleSet(characterId, { LOOP: 'off' });
+            await redis.battleSet(characterId, { LOOP: 'off' });
 
             const cache = battleCache.get(characterId);
             if (cache) {

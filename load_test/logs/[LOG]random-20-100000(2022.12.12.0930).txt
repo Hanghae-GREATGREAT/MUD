@@ -1,0 +1,43 @@
+[LOG]random-20-100000(2022.12.12.0930).txt
+            
+### DETAIL LOGS ###
+
+progress: 0, clients: 0, connections: 0
+emits/sec: 0.00, scenario completion: 0/0 => 0, average throughput: NaNms
+
+progress: 48, clients: 20, connections: 40
+emits/sec: 11.89, scenario completion: 48/48 => 100, average throughput: 25.40ms
+
+progress: 137, clients: 20, connections: 40
+emits/sec: 10.09, scenario completion: 89/89 => 100, average throughput: 9.27ms
+
+progress: 173, clients: 20, connections: 40
+emits/sec: 4.89, scenario completion: 36/36 => 100, average throughput: NaNms
+
+progress: 202, clients: 20, connections: 40
+emits/sec: 5.70, scenario completion: 29/29 => 100, average throughput: NaNms
+
+progress: 221, clients: 20, connections: 40
+emits/sec: 3.20, scenario completion: 19/19 => 100, average throughput: NaNms
+
+progress: 238, clients: 20, connections: 40
+emits/sec: 4.30, scenario completion: 17/17 => 100, average throughput: NaNms
+
+progress: 256, clients: 20, connections: 40
+emits/sec: 4.60, scenario completion: 18/18 => 100, average throughput: NaNms
+
+progress: 269, clients: 20, connections: 40
+emits/sec: 4.10, scenario completion: 13/13 => 100, average throughput: NaNms
+
+progress: 287, clients: 19, connections: 38
+emits/sec: 4.80, scenario completion: 17/18 => 94.44, average throughput: NaNms
+
+progress: 323, clients: 19, connections: 38
+emits/sec: 7.30, scenario completion: 36/36 => 100, average throughput: NaNms
+
+progress: 337, clients: 8, connections: 16
+emits/sec: 3.70, scenario completion: 14/14 => 100, average throughput: 13.04ms
+
+progress: 345, clients: 0, connections: 0
+emits/sec: 0.30, scenario completion: 0/8 => 0, average throughput: 8.58ms
+

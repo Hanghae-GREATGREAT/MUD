@@ -28,7 +28,7 @@ async function autoAttack(socketId: string, userStatus: UserStatus): Promise<Aut
         playerHit,
         playerDamage,
     );
-    tempScript += `\n당신의 ${playerAdjective} 공격이 ${monsterName}에게 적중했다. => ${playerHit}의 데미지!\n`;
+    tempScript += `\n당신의 <span style="color:blue">${playerAdjective} 공격</span>이 ${monsterName}에게 적중했다. => <span style="color:blue">${playerHit}</span>의 데미지!\n`;
     // console.log(tempScript);
     
     const isDead = await MonsterService.refreshStatus(monsterId, playerHit, characterId);
@@ -51,25 +51,26 @@ async function autoAttack(socketId: string, userStatus: UserStatus): Promise<Aut
         monsterHit,
         monsterDamage,
     );
-    tempScript += `${monsterName} 이(가) 당신에게 ${monsterAdjective} 공격! => ${monsterHit}의 데미지!\n`;
     // console.log(tempScript);
     
-    const refreshUser = await CharacterService.refreshStatus(userStatus, monsterHit, 0, monsterId);
-    if (refreshUser.isDead === 'dead') {
+    userStatus = await CharacterService.refreshStatus(userStatus, monsterHit, 0, monsterId);
+    if (userStatus.isDead === 'dead') {
         battleCache.set(characterId, { dead: 'player' });
         
-        tempScript += '\n!! 치명상 !!\n';
-        tempScript += `당신은 ${monsterName}의 공격을 버티지 못했습니다.. \n`;        
-        tempScript += `${monsterName} 의 ${monsterAdjective} 공격이 치명상으로 적중! => ${monsterHit}의 데미지!
-        마을로 돌아갑니다...!!\n`;
+        tempScript += '\n<span style="color:red">!! 치명상 !!</span>\n';
+        tempScript += `${monsterName} 의 <span style="color:red">${monsterAdjective} 공격<span style="color:red">이 치명상으로 적중! => <span style="color:red">${monsterHit}<span style="color:red">의 데미지!\n`
+        tempScript += `당신은 ${monsterName}의 공격을 버티지 못했습니다.. \n`;
+        tempScript += `마을로 돌아갑니다...!!\n`;
 
         // const data = { field: 'autoBattle', script: tempScript, userStatus: refreshUser };
         // BATTLE.to(socketId).emit('printBattle', data);
 
         return { status: 'player', script: tempScript, userStatus };
+    } else {
+        tempScript += `${monsterName} 이(가) 당신에게 <span style="color:red">${monsterAdjective} 공격</span>! => <span style="color:red">${monsterHit}</span>의 데미지!\n`;
     }
 
-    const data = { field: 'autoBattle', script: tempScript, userStatus: refreshUser };
+    const data = { field: 'autoBattle', script: tempScript, userStatus };
     BATTLE.to(socketId).emit('printBattle', data);
 
     return { status: 'continue', script: tempScript, userStatus };

@@ -1,7 +1,8 @@
 import { BattleCacheInterface } from "../../interfaces/battle";
+import { UserStatus } from "../../interfaces/user";
 
 interface KeyPair {
-    [key: string]: number|string|NodeJS.Timer;
+    [key: string]: number|string|NodeJS.Timer|UserStatus;
 }
 
 class BattleCache {

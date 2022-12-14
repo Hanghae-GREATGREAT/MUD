@@ -1,0 +1,48 @@
+[LOG]random-300-30000(2022.12.14.1508).txt
+            
+### DETAIL LOGS ###
+
+time: Thu Dec 15 2022 00:08:59 GMT+0900 (대한민국 표준시)
+progress: 0, clients: 0, connections: 0
+emits/sec: 0.00, scenario completion: 0/0 => 0, average throughput: NaNms
+
+time: Thu Dec 15 2022 00:09:09 GMT+0900 (대한민국 표준시)
+progress: 91, clients: 90, connections: 360
+emits/sec: 23.69, scenario completion: 91/91 => 100, average throughput: 28.46ms
+
+time: Thu Dec 15 2022 00:09:19 GMT+0900 (대한민국 표준시)
+progress: 493, clients: 190, connections: 760
+emits/sec: 78.61, scenario completion: 402/402 => 100, average throughput: 24.19ms
+
+time: Thu Dec 15 2022 00:09:29 GMT+0900 (대한민국 표준시)
+progress: 853, clients: 290, connections: 1160
+emits/sec: 68.85, scenario completion: 360/360 => 100, average throughput: 287.05ms
+
+time: Thu Dec 15 2022 00:09:39 GMT+0900 (대한민국 표준시)
+progress: 1047, clients: 245, connections: 980
+emits/sec: 43.38, scenario completion: 185/194 => 95.36, average throughput: 2043.70ms
+
+time: Thu Dec 15 2022 00:09:49 GMT+0900 (대한민국 표준시)
+progress: 1212, clients: 163, connections: 652
+emits/sec: 28.26, scenario completion: 149/165 => 90.3, average throughput: 5027.15ms
+
+time: Thu Dec 15 2022 00:09:59 GMT+0900 (대한민국 표준시)
+progress: 1326, clients: 95, connections: 380
+emits/sec: 19.99, scenario completion: 109/114 => 95.61, average throughput: 6349.08ms
+
+time: Thu Dec 15 2022 00:10:09 GMT+0900 (대한민국 표준시)
+progress: 1360, clients: 71, connections: 284
+emits/sec: 4.79, scenario completion: 33/34 => 97.06, average throughput: 9618.32ms
+
+time: Thu Dec 15 2022 00:10:19 GMT+0900 (대한민국 표준시)
+progress: 1376, clients: 71, connections: 284
+emits/sec: 4.80, scenario completion: 16/16 => 100, average throughput: NaNms
+
+time: Thu Dec 15 2022 00:10:29 GMT+0900 (대한민국 표준시)
+progress: 1376, clients: 71, connections: 284
+emits/sec: 0.00, scenario completion: 0/0 => 0, average throughput: NaNms
+
+time: Thu Dec 15 2022 00:10:39 GMT+0900 (대한민국 표준시)
+progress: 1376, clients: 71, connections: 284
+emits/sec: 0.00, scenario completion: 0/0 => 0, average throughput: NaNms
+

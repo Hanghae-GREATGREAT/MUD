@@ -1,0 +1,34 @@
+[LOG]random-70-60000(2022.12.14.0609).txt
+            
+### DETAIL LOGS ###
+
+progress: 0, clients: 0, connections: 0
+emits/sec: 0.00, scenario completion: 0/0 => 0, average throughput: NaNms
+
+progress: 105, clients: 0[object Set][object Set][object Set][object Set][object Set], connections: NaN
+emits/sec: 31.48, scenario completion: 105/105 => 100, average throughput: 31.30ms
+
+progress: 328, clients: 0[object Set][object Set][object Set][object Set][object Set], connections: NaN
+emits/sec: 30.17, scenario completion: 223/223 => 100, average throughput: 15.12ms
+
+progress: 431, clients: 0[object Set][object Set][object Set][object Set][object Set], connections: NaN
+emits/sec: 16.38, scenario completion: 103/103 => 100, average throughput: 9.81ms
+
+progress: 504, clients: 0[object Set][object Set][object Set][object Set][object Set], connections: NaN
+emits/sec: 14.46, scenario completion: 73/73 => 100, average throughput: 11.16ms
+
+progress: 571, clients: 0[object Set][object Set][object Set][object Set][object Set], connections: NaN
+emits/sec: 13.99, scenario completion: 67/67 => 100, average throughput: 12.31ms
+
+progress: 621, clients: 0[object Set][object Set][object Set][object Set][object Set], connections: NaN
+emits/sec: 11.28, scenario completion: 50/50 => 100, average throughput: 12.54ms
+
+progress: 696, clients: 0[object Set][object Set][object Set][object Set][object Set], connections: NaN
+emits/sec: 8.00, scenario completion: 75/75 => 100, average throughput: 11.84ms
+
+progress: 717, clients: 0[object Set][object Set][object Set][object Set][object Set], connections: NaN
+emits/sec: 3.00, scenario completion: 21/21 => 100, average throughput: 18.98ms
+
+progress: 0, clients: 0, connections: 0
+emits/sec: 0.00, scenario completion: 0/0 => 0, average throughput: NaNms
+

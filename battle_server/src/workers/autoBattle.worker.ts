@@ -14,22 +14,21 @@ const autoAttackLoop = ({ socketId, userStatus }: AutoWorkerData) => {
     const { characterId } = userStatus;
     // console.log('autoBattle.worker.ts: autoAttack start', characterId);
 
-    const cache = getEnvironmentData(characterId);
-    const { dungeonLevel, monsterId } = JSON.parse(cache.toString());
-
     const autoAttackTimer = setInterval(async() => {
         // console.log('autuBattle.worker.ts: autoAttack interval', characterId);
 
         const cache = await redis.battleGet(characterId);
-        if (cache.LOOP === 'off' || !dungeonLevel) {
+        const { dungeonLevel, userStatus } = battleCache.get(characterId);
+        if (cache.LOOP === 'off' || !dungeonLevel || !userStatus) {
             clearInterval(autoAttackTimer);
             redis.battleSet(characterId, { LOOP: 'on'});
 
             const status = cache.status === 'terminate' ? 'terminate' : 'error';
             const msg = `AUTOATTACK ERROR: ${cache.LOOP} ${dungeonLevel}, ${characterId}`;
             isDead.emit('dead', { status, msg });
+            return;
         }
-        battleCache.set(characterId, { dungeonLevel, monsterId, autoAttackTimer });
+        battleCache.set(characterId, { autoAttackTimer });
 
         // console.log('autoBattle.worker.ts: autoAttack calc', characterId)
         autoAttack(socketId, userStatus).then((result: AutoWorkerResult) => {
@@ -52,26 +51,25 @@ const skillAttackLoop = ({ socketId, userStatus }: AutoWorkerData) => {
     const { characterId } = userStatus;
     // console.log('autoBattle.worker.ts: skillAttack start', characterId);
 
-    const cache = getEnvironmentData(characterId);
-    const { dungeonLevel, monsterId } = JSON.parse(cache.toString());
-
     const skillAttackTimer = setInterval(async () => {
         // console.log('skillAttack.worker.ts: START INTERVAL', Date.now())
         const cache = await redis.battleGet(characterId);
-        if (cache.SKILL === 'off' || !dungeonLevel) {
+        const { dungeonLevel, userStatus } = battleCache.get(characterId);
+        if (cache.SKILL === 'off' || !dungeonLevel || !userStatus) {
             clearInterval(skillAttackTimer);
             redis.battleSet(characterId, { SKILL: 'on'});
             
             const status = cache.status === 'terminate' ? 'terminate' : 'error';
             const msg = `AUTOATTACK ERROR: ${cache.SKILL}, ${dungeonLevel}, ${characterId}`;
             isDead.emit('dead', { status, msg });
+            return;
         }
-        battleCache.set(characterId, { dungeonLevel, monsterId, skillAttackTimer });
+        battleCache.set(characterId, { skillAttackTimer });
 
         const chance = Math.random();
-        if (chance < 0.5) return console.log('pass skill', characterId);
+        if (chance < 0.5) return //console.log('pass skill', characterId);
 
-        console.log('autoBattle.worker.ts: skillAttack calc', characterId)
+        // console.log('autoBattle.worker.ts: skillAttack calc', characterId)
         skillAttack(socketId, userStatus).then((result: AutoWorkerResult) => {
             // console.log('autoBattle.worker.ts: skillAttack resolved', characterId);
             // result = { status, script, userStatus }
@@ -88,10 +86,16 @@ const skillAttackLoop = ({ socketId, userStatus }: AutoWorkerData) => {
 }
 
 const main = () => {
-    const { characterId } = workerData.userStatus;
     associate();
 
-    isDead.on('dead', (result) => {
+    const { userStatus } = workerData;
+    const { characterId } = userStatus;
+    
+    const cache = getEnvironmentData(characterId);
+    const { dungeonLevel, monsterId } = JSON.parse(cache.toString());
+    battleCache.set(characterId, { dungeonLevel, monsterId, userStatus });
+
+    isDead.on('dead', (result: AutoWorkerResult) => {
         const { autoAttackTimer, skillAttackTimer } = battleCache.get(characterId);
         clearInterval(autoAttackTimer);
         clearInterval(skillAttackTimer);

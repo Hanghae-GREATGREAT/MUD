@@ -8,6 +8,7 @@ module.exports = (socket, WAIT_COMMAND) => {
     }
 
     const emit = async(field, input) => {
+        // console.log(`[${new Date(Date.now()+1000*60*60*9)}]`, 'emit...', input?.userInfo?.characterId);
         await sleep(WAIT_COMMAND);
 
         return new Promise( (resolve, reject) => {
@@ -80,7 +81,7 @@ module.exports = (socket, WAIT_COMMAND) => {
                     chatCnt.set(username, 0);
                 }).catch(err => console.error(err));
     
-                const res3 = await emit('sign', { line: '1234', userInfo, userStatus, option: '21' });
+                const res3 = await emit('sign', { line: 'qwe123', userInfo, userStatus, option: '21' });
                 throughput.push(res3.throughput);
                 userInfo = res3.userInfo;
                 userStatus = res3.userStatus;
@@ -94,6 +95,7 @@ module.exports = (socket, WAIT_COMMAND) => {
             }
         },    
         signup: async(username) => {
+            console.log(username);
             try {
                 let userInfo = {};
                 let userStatus = {};
@@ -107,7 +109,7 @@ module.exports = (socket, WAIT_COMMAND) => {
                 throughput.push(r2.throughput);
                 userInfo = r2.userInfo;
     
-                const r3 = await emit('sign', { line: '1234', userInfo, userStatus, option: '11' });
+                const r3 = await emit('sign', { line: 'qwe123', userInfo, userStatus, option: '11' });
                 throughput.push(r3.throughput);
                 userInfo = r3.userInfo;
     
@@ -126,11 +128,14 @@ module.exports = (socket, WAIT_COMMAND) => {
             } catch (error) {
                 console.log('ERROR: signup');
                 console.error(error);
+                return { cnt: 0, throughput: [], error: true };
             }
         },
         signout: async() => {
             try {
+                // console.log('FRONT SIGN OUT')
                 const r1 = await emit('front', { line: 'out', userInfo: {}, userStatus: {} });
+                // console.log('SIGNOUT', r1);
                 const throughput = [ r1.throughput ];
     
                 const field = 'none';
@@ -157,6 +162,7 @@ module.exports = (socket, WAIT_COMMAND) => {
             } catch (error) {
                 console.log('ERROR: toDungeon');
                 console.error(error);
+                return { cnt: 0, throughput: [], error: true };
             }
         },    
         toVillage: async(field, userInfo, userStatus) => {
@@ -171,6 +177,7 @@ module.exports = (socket, WAIT_COMMAND) => {
             } catch (error) {
                 console.log('ERROR: toVillage');
                 console.error(error);
+                return { cnt: 0, throughput: [], error: true };
             }
         },
     
@@ -186,6 +193,7 @@ module.exports = (socket, WAIT_COMMAND) => {
             } catch (error) {
                 console.log('ERROR: toHome');
                 console.error(error);
+                return { cnt: 0, throughput: [], error: true };
             }
         },
         globalHelp: async(field, userInfo, userStatus) => {
@@ -197,21 +205,24 @@ module.exports = (socket, WAIT_COMMAND) => {
             } catch (error) {
                 console.log('ERROR: globalHelp');
                 console.error(error);
+                return { cnt: 0, throughput: [], error: true };
             }
         },
         globalSignout: async() => {
             try {
+                console.log('GLOBAL SIGNOUT');
                 const r1 = await emit('global', { line: 'g out', userInfo, userStatus });
                 const throughput = [ r1.throughput ];
         
                 const field = 'none';
                 const userInfo = {};
                 const userStatus = {};
-        
+                console.log('SIGNOUT SUCCESS');
                 return { field, userInfo, userStatus, cnt: 1, throughput };
             } catch (error) {
                 console.log('ERROR: globalSignout');
                 console.error(error);
+                return { cnt: 0, throughput: [], error: true };
             }
         },
     
@@ -228,6 +239,7 @@ module.exports = (socket, WAIT_COMMAND) => {
             } catch (error) {
                 console.log('ERROR: account delete');
                 console.error(error);
+                return { cnt: 0, throughput: [], error: true };
             }
         },
 
@@ -242,6 +254,7 @@ module.exports = (socket, WAIT_COMMAND) => {
             } catch (error) {
                 console.log('ERROR: chatSubmit');
                 console.error(error);
+                return { cnt: 0, throughput: [], error: true };
             }
         },
     }

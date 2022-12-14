@@ -66,7 +66,7 @@ export default {
         }
 
         // 비밀번호 유효성검사
-        const regExp = /^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z]{8,16}$/;
+        const regExp = /^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z]{6,12}$/;
         const pwCheck = regExp.test(CMD);
         if (!pwCheck) {
             script = signupScript.invalidPW;
@@ -89,6 +89,7 @@ export default {
         let field: string = '';
 
         if (!userInfo) {
+            console.log('Signup Error: Cannot find userInfo');
             const error = new Error('createCharacter : Can not find userInfo');
             return next(error);
         }
@@ -96,39 +97,39 @@ export default {
         const name = CMD!;
 
         // 닉네임 유효성 검사
-        const regExpEn = /^[a-z]{4}[a-z0-9]{0,12}$/;
-        const regExpKo = /^[가-힣]{2}[가-힣0-9]{0,8}$/;
+        const regExpEn = /^[a-z]{1}[a-z0-9]{3,15}$/;
+        const regExpKo = /^[가-힣]{1}[가-힣0-9]{3,8}$/;
         if (!regExpEn.test(name) && !regExpKo.test(name)) {
             script = signupScript.invalidName;
             field = 'sign:12';
             FRONT.to(socketId).emit('print', { field, script, userInfo });
-        } else {
-            script = signupScript.title;
-            field = 'front';
-            const userId = userInfo.userId;
-            const character = await CharacterService.createNewCharacter({ name, userId });
-
-            const userStatus = await CharacterService.getUserStatus(character.characterId);
-
-            userInfo = {
-                userId,
-                username: userStatus!.username,
-                characterId: userStatus!.characterId,
-                name: userStatus!.name,
-            };
-
-            // 채팅방 참가
-            const chatData: Array<number> = chatCache.joinChat(socketId);
-            const enteredRoom = chatData[0];
-            const joinerCntScript = `(${chatData[1]}/${chatData[2]})`;
-            FRONT.in(socketId).socketsJoin(`${enteredRoom}`);
-            FRONT.to(`${enteredRoom}`).emit('joinChat', userInfo.name, joinerCntScript);
-
-            // sesstion create
-            redis.set(userInfo.userId, socketId, { EX: 60 * 60 * 24 });
-            console.log(`login session create`);
-            FRONT.to(socketId).emit('printBattle', { field, script, userInfo, userStatus });
+            return;
         }
+        script = signupScript.title;
+        field = 'front';
+        const userId = userInfo.userId;
+        const character = await CharacterService.createNewCharacter({ name, userId });
+
+        const userStatus = await CharacterService.getUserStatus(character.characterId);
+
+        userInfo = {
+            userId,
+            username: userStatus!.username,
+            characterId: userStatus!.characterId,
+            name: userStatus!.name,
+        };
+        
+        // sesstion create
+        redis.set(userInfo.userId, socketId, { EX: 60 * 60 * 24 });
+        console.log(`login session create`);
+        FRONT.to(socketId).emit('printBattle', { field, script, userInfo, userStatus });
+
+        // 채팅방 참가
+        const chatData: Array<number> = chatCache.joinChat(socketId);
+        const enteredRoom = chatData[0];
+        const joinerCntScript = `(${chatData[1]}/${chatData[2]})`;
+        FRONT.in(socketId).socketsJoin(`${enteredRoom}`);
+        FRONT.to(`${enteredRoom}`).emit('joinChat', userInfo.name, joinerCntScript);
 
         res.status(200).end();
     },

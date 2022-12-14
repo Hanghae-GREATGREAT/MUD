@@ -11,10 +11,10 @@ const io_load = () => {
 
         MAX_CLIENT: 500,
         TEST_DURATION_IN_MS: 1000 * 300,
-        CLIENT_CREATE_INTERVAL_IN_MS: 200,
+        CLIENT_CREATE_INTERVAL_IN_MS: 1500,
 
         // client increment per interval
-        threadCount: 10,
+        threadCount: 20,
     }
     // const threadCount = MAX_CLIENTS > 100 ? 10 : Math.ceil(MAX_CLIENTS/10);
 

@@ -1,0 +1,25 @@
+[LOG]random-1-60000(2022.12.14.0202).txt
+            
+### DETAIL LOGS ###
+
+progress: 0, clients: 0, connections: 0
+emits/sec: 0.00, scenario completion: 0/0 => 0, average throughput: NaNms
+
+progress: 3, clients: 1, connections: 4
+emits/sec: 0.60, scenario completion: 3/3 => 100, average throughput: 26.16ms
+
+progress: 6, clients: 1, connections: 4
+emits/sec: 0.30, scenario completion: 3/3 => 100, average throughput: 8.60ms
+
+progress: 6, clients: 1, connections: 4
+emits/sec: 0.00, scenario completion: 0/0 => 0, average throughput: NaNms
+
+progress: 6, clients: 1, connections: 4
+emits/sec: 0.10, scenario completion: 0/0 => 0, average throughput: 9.03ms
+
+progress: 6, clients: 1, connections: 4
+emits/sec: 0.10, scenario completion: 0/0 => 0, average throughput: 8.15ms
+
+progress: 7, clients: 0, connections: 0
+emits/sec: 0.40, scenario completion: 1/1 => 100, average throughput: 13.70ms
+

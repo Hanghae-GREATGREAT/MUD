@@ -110,7 +110,7 @@ class TestWorker {
                 worker.on('exit', (code) => {
                     if (code !== 0) console.log(`worker exit with ${code}`);
 
-                    console.log(`${threads.size} off`);
+                    console.log(`remaining thread: ${threads.size}`);
                     threads.delete(worker);
                     if (threads.size === 0) {
                         console.log('TEST COMPLETE');
@@ -120,7 +120,6 @@ class TestWorker {
             }
         });
     }
-
     #createLog = () => {
         const FILE_NAME = `[LOG]${this.#TEST_NAME}.txt`;
         const FILE_PATH = path.join(__dirname, 'logs', FILE_NAME);
@@ -152,12 +151,13 @@ class TestWorker {
         this.#clientCount = 0;
 
         const length = this.#throughputAvg.length;
-        const currentThroughputs = this.#throughputAvg.splice(0, length);
+        const currentThroughputs = this.#throughputAvg.splice(0, length).filter(a=>Number(a));
         const averageThroughput = (
-            currentThroughputs.reduce((a,b) => a+b, 0) / length
+            currentThroughputs.reduce((a,b) => a+b, 0) / currentThroughputs.length
         ).toFixed(2);
 
-        const connections = clientCount * 2;
+        const connectionCount = this.#TEST === 'random' ? 4 : 2;
+        const connections = clientCount * connectionCount;
         const emitSeconds = (
             currentEmitCount / durationSinceLastReport
         ).toFixed(2);
@@ -170,6 +170,7 @@ class TestWorker {
         // const [ ONE_MIN, FIVE_MIN, FIFTEEN_MIN ] = []
     
         const LOG = 
+        `time: ${new Date(Date.now()+1000*60*60*9)}\n`+
         `progress: ${currentProgressCount}, clients: ${clientCount}, connections: ${connections}\n` + 
         `emits/sec: ${emitSeconds}, ` +
         `scenario completion: ${currentCompleteCount}/${currentTotalCount} => ${scenarioCompleteRate}, ` +

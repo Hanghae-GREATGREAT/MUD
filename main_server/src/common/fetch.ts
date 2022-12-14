@@ -35,6 +35,7 @@ const fetchPost = (params: PostParams): Promise<Response> => {
 
             const URI = URL.split(':')[URL.split(':').length-1]
             const localURL = `http://localhost:${URI}`;
+            console.log('RESENDING REQUEST', userInfo?.characterId, URI)
             fetch(localURL, { 
                 method: 'post', 
                 headers,

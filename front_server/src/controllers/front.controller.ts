@@ -32,7 +32,9 @@ export default {
         const character = await CharacterService.findOneByUserId(userId);
 
         // userSession으로 들어온 정보와 일치하는 캐릭터가 없을 때
-        return !character || character.characterId !== characterId || character.name !== name;
+        !character || character.characterId !== characterId || character.name !== name;
+
+        res.status(200).end();
     },
 
     signout: (req: Request, res: Response, next: NextFunction) => {
@@ -59,6 +61,8 @@ export default {
             const script = homeScript.reload;
             FRONT.to(socketId).emit('print', { field, script, userInfo: {} });
         }, 2000);
+
+        res.status(200).end();
     },
 
     toVillage: (req: Request, res: Response, next: NextFunction) => {
@@ -73,6 +77,8 @@ export default {
         const field = 'village';
 
         FRONT.to(socketId).emit('print', { field, script, userInfo });
+
+        res.status(200).end();
     },
 
     toDungeon: (req: Request, res: Response, next: NextFunction) => {
@@ -87,6 +93,8 @@ export default {
         const field = 'dungeon';
 
         FRONT.to(socketId).emit('print', { field, script, userInfo });
+
+        res.status(200).end();
     },
 
     emptyCommand: (req: Request, res: Response, next: NextFunction) => {
@@ -96,6 +104,8 @@ export default {
         const field = 'front';
 
         FRONT.to(socketId).emit('print', { field, script, userInfo });
+
+        res.status(200).end();
     },
 
     deleteAccount: async (req: Request, res: Response, next: NextFunction) => {
@@ -113,5 +123,7 @@ export default {
         const field = 'front';
 
         FRONT.to(socketId).emit('print', { field, script, userInfo });
+
+        res.status(200).end();
     },
 };

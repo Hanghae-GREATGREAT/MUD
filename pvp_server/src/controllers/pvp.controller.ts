@@ -26,7 +26,7 @@ export default {
 
             // 방 생성 시 중복된 이름 또는 입력하지 않았는지 체크
             const validation = await pvpService.createRoomValidation(req, res, next, roomName)
-            if (validation === 'wrongCommand') return;
+            if (validation === 'wrongCommand') return next();
 
             // rooms 갱신 및 수정된 유저정보 갱신 후 새로운 userStatus를 return 받아온다.
             const newUserStatus = await pvpService.createRoom({ socketId, CMD, userInfo, userStatus, option });
@@ -60,15 +60,15 @@ export default {
 
             // 방 입장 시 존재하는 방인지 체크
             const validation = await pvpService.joinRoomValidation(req, res, next, roomName)
-            if (validation === 'wrongCommand') return;
+            if (validation === 'wrongCommand') return next();
 
             // rooms 갱신 및 수정된 유저정보 갱신 후 새로운 userStatus를 return 받아온다.
             const newUserStatus = await pvpService.joinRoom({ socketId, CMD, userInfo, userStatus, option })
-            if (newUserStatus === undefined) return;
+            if (newUserStatus === undefined) return next();
 
             // 전투 시작 요건이 되는지 체크한다.
             const startValidation = await pvpService.startValidation(req, res, next, newUserStatus)
-            if (startValidation === undefined) return;
+            if (startValidation === undefined) return next();
 
             const script = pvpScript.pvpRoomJoin(userInfo!.name);
             const field = 'pvpJoin';
@@ -134,7 +134,7 @@ export default {
         try {
             const { socketId, option }: PostBody = req.body;
 
-            if (!option) return;
+            if (!option) return next();
 
             const [ name, roomName ] = option.split(',');
             await pvpService.pvpDisconnect(name, roomName, socketId)
@@ -170,13 +170,13 @@ export default {
             if (!userStatus) new HttpException('userStatus missing', 400);
 
             const battleValidation = pvpService.battleValidation({ socketId, CMD, userInfo, userStatus });
-            if (battleValidation === undefined) return;
+            if (battleValidation === undefined) return next();
 
             const targetValidation = await pvpService.targetValidation({ socketId, CMD, userInfo, userStatus });
-            if (targetValidation === undefined) return;
+            if (targetValidation === undefined) return next();
 
             const battleStart = await pvpService.battleStart({ socketId, CMD, userInfo, userStatus });
-            if (battleStart === undefined) return;
+            if (battleStart === undefined) return next();
 
             const script = battleStart;
             const field = 'pvpBattle';

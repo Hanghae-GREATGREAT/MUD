@@ -1,0 +1,103 @@
+[LOG]random-500-300000(2022.12.12.0136).txt
+            
+### DETAIL LOGS ###
+
+progress: 0, clients: 0, connections: 0
+emits/sec: 0.00, scenario completion: 0/0 => 0, average throughput: NaNms
+
+progress: 303, clients: 461, connections: 922
+emits/sec: 88.37, scenario completion: 303/303 => 100, average throughput: 66.20ms
+
+progress: 1444, clients: 500, connections: 1000
+emits/sec: 219.46, scenario completion: 1141/1141 => 100, average throughput: 292.12ms
+
+progress: 2387, clients: 500, connections: 1000
+emits/sec: 154.46, scenario completion: 943/943 => 100, average throughput: 257.89ms
+
+progress: 2954, clients: 500, connections: 1000
+emits/sec: 94.95, scenario completion: 567/567 => 100, average throughput: 11.20ms
+
+progress: 3406, clients: 500, connections: 1000
+emits/sec: 84.99, scenario completion: 452/452 => 100, average throughput: 11.78ms
+
+progress: 3947, clients: 500, connections: 1000
+emits/sec: 95.90, scenario completion: 541/541 => 100, average throughput: 13.83ms
+
+progress: 4685, clients: 500, connections: 1000
+emits/sec: 117.84, scenario completion: 738/738 => 100, average throughput: 11.72ms
+
+progress: 5383, clients: 500, connections: 1000
+emits/sec: 112.57, scenario completion: 698/698 => 100, average throughput: 11.12ms
+
+progress: 6023, clients: 500, connections: 1000
+emits/sec: 106.68, scenario completion: 640/640 => 100, average throughput: 12.31ms
+
+progress: 6641, clients: 500, connections: 1000
+emits/sec: 105.98, scenario completion: 618/618 => 100, average throughput: 11.47ms
+
+progress: 7170, clients: 500, connections: 1000
+emits/sec: 92.38, scenario completion: 529/529 => 100, average throughput: 13.36ms
+
+progress: 7637, clients: 500, connections: 1000
+emits/sec: 85.84, scenario completion: 467/467 => 100, average throughput: 12.00ms
+
+progress: 8075, clients: 500, connections: 1000
+emits/sec: 85.30, scenario completion: 438/438 => 100, average throughput: 12.50ms
+
+progress: 8475, clients: 500, connections: 1000
+emits/sec: 79.52, scenario completion: 400/400 => 100, average throughput: 12.18ms
+
+progress: 8814, clients: 500, connections: 1000
+emits/sec: 76.19, scenario completion: 339/339 => 100, average throughput: 12.21ms
+
+progress: 9143, clients: 500, connections: 1000
+emits/sec: 76.24, scenario completion: 329/329 => 100, average throughput: 13.63ms
+
+progress: 9491, clients: 499, connections: 998
+emits/sec: 82.18, scenario completion: 347/348 => 99.71, average throughput: 13.22ms
+
+progress: 9844, clients: 499, connections: 998
+emits/sec: 78.80, scenario completion: 353/353 => 100, average throughput: 13.17ms
+
+progress: 10184, clients: 499, connections: 998
+emits/sec: 75.22, scenario completion: 340/340 => 100, average throughput: 14.30ms
+
+progress: 10511, clients: 499, connections: 998
+emits/sec: 73.16, scenario completion: 327/327 => 100, average throughput: 13.88ms
+
+progress: 10823, clients: 499, connections: 998
+emits/sec: 72.36, scenario completion: 312/312 => 100, average throughput: 16.91ms
+
+progress: 11183, clients: 499, connections: 998
+emits/sec: 84.29, scenario completion: 360/360 => 100, average throughput: 19.06ms
+
+progress: 11487, clients: 499, connections: 998
+emits/sec: 79.88, scenario completion: 304/304 => 100, average throughput: 17.16ms
+
+progress: 11820, clients: 499, connections: 998
+emits/sec: 83.38, scenario completion: 333/333 => 100, average throughput: 18.27ms
+
+progress: 12232, clients: 499, connections: 998
+emits/sec: 93.31, scenario completion: 412/412 => 100, average throughput: 18.20ms
+
+progress: 12720, clients: 498, connections: 996
+emits/sec: 107.60, scenario completion: 487/488 => 99.8, average throughput: 24.12ms
+
+progress: 13267, clients: 498, connections: 996
+emits/sec: 120.28, scenario completion: 547/547 => 100, average throughput: 22.76ms
+
+progress: 13890, clients: 497, connections: 994
+emits/sec: 133.35, scenario completion: 622/623 => 99.83999999999999, average throughput: 24.53ms
+
+progress: 14648, clients: 496, connections: 992
+emits/sec: 153.71, scenario completion: 757/758 => 99.87, average throughput: 24.06ms
+
+progress: 15691, clients: 495, connections: 990
+emits/sec: 206.18, scenario completion: 1042/1043 => 99.9, average throughput: 21.95ms
+
+progress: 16836, clients: 144, connections: 288
+emits/sec: 232.84, scenario completion: 1144/1145 => 99.91, average throughput: 18.88ms
+
+progress: 16985, clients: 0, connections: 0
+emits/sec: 41.87, scenario completion: 149/149 => 100, average throughput: 13.04ms
+

@@ -10,11 +10,11 @@ export default {
 
     dungeon: `=======================================================================\n\n
     당신은 깊은 심연으로 발걸음을 내딛습니다.\n\n
-    입장명령: [E]nter [num]  ex)'e 1'\n\n
-    1. 알비 던전(Lv. 0~9)\n\n
-    2. 라비 던전(Lv. 10~19)\n\n
-    3. 칼페온 신전(Lv. 20~29)\n\n
-    4. 마왕성 주변(Lv. 30~39)\n\n
-    5. 마왕성(Lv. 40~50)\n\n
+    입장명령: <span style="color:yellow">[E]nter [num]</span>  ex)'e 1'
+    <span style="color:yellow">1</span>. 알비 던전(Lv. 0~9)\n\n
+    <span style="color:yellow">2</span>. 라비 던전(Lv. 10~19)\n\n
+    <span style="color:yellow">3</span>. 칼페온 신전(Lv. 20~29)\n\n
+    <span style="color:yellow">4</span>. 마왕성 주변(Lv. 30~39)\n\n
+    <span style="color:yellow">5</span>. 마왕성(Lv. 40~50)\n\n
     `,
 };
