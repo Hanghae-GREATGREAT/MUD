@@ -1,20 +1,27 @@
 const TestWorker = require('./testWorker');
 
+const sleep = (ms) => {
+    return new Promise(r => setTimeout(r, ms));
+}
 
-const io_load = () => {
+const io_load = (
+    TEST='random', 
+    MAX_CLIENT=100, 
+    TEST_DURATION_IN_MS=1000*300,
+    CLIENT_CREATE_INTERVAL_IN_MS=1000,
+    threadCount=10
+    ) => {
     const TEST_CONDITION = {
 
         // 'io' | 'cpu' | 'random'
-        // TEST: 'io',
-        // TEST: 'cpu',
-        TEST: 'random',
+        TEST,
 
-        MAX_CLIENT: 500,
-        TEST_DURATION_IN_MS: 1000 * 300,
-        CLIENT_CREATE_INTERVAL_IN_MS: 1500,
+        MAX_CLIENT,
+        TEST_DURATION_IN_MS,
+        CLIENT_CREATE_INTERVAL_IN_MS,
 
         // client increment per interval
-        threadCount: 20,
+        threadCount: 10,
     }
     // const threadCount = MAX_CLIENTS > 100 ? 10 : Math.ceil(MAX_CLIENTS/10);
 
@@ -30,8 +37,16 @@ const io_load = () => {
     });
 }
 
-io_load();
-process.on('uncaughtException', ()=>{
-    console.log('uncaughtException');
-    process.exit(0);
-})
+(async() => {
+    io_load('random', 300, 1000*120, 1000, 10);
+
+    // await sleep(1000*120);
+
+    // io_load('random', 500, 1000*600, 2000, 10);
+
+    // setTimeout(()=>process.exit(0), 1000*(120+600)*1.2);
+    process.on('uncaughtException', ()=>{
+        console.log('uncaughtException');
+        process.exit(0);
+    });
+})();

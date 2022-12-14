@@ -22,7 +22,7 @@ export default {
             if (!userInfo) new HttpException('userInfo missing', 400);
             if (!userStatus) new HttpException('userStatus missing', 400);
             
-            const roomName = `pvpRoom ${CMD}`;
+            const roomName = `pvp_${CMD}`;
 
             // 방 생성 시 중복된 이름 또는 입력하지 않았는지 체크
             const validation = await pvpService.createRoomValidation(req, res, next, roomName)
@@ -56,7 +56,7 @@ export default {
             if (!userInfo) new HttpException('userInfo missing', 400);
             if (!userStatus) new HttpException('userStatus missing', 400);
 
-            const roomName = `pvpRoom ${CMD}`;
+            const roomName = `pvp_${CMD}`;
 
             // 방 입장 시 존재하는 방인지 체크
             const validation = await pvpService.joinRoomValidation(req, res, next, roomName)

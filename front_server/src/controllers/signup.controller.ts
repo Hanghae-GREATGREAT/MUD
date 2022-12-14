@@ -3,8 +3,7 @@ import { FRONT } from '../redis';
 import { PostBody } from '../interfaces/common';
 import { CharacterService, UserService } from '../services';
 import { signupScript } from '../scripts';
-import { UserInfo } from '../interfaces/user';
-import { chatCache, redis } from '../db/cache';
+import { redis, redisChat } from '../db/cache';
 
 export default {
     signupUsername: (req: Request, res: Response, next: NextFunction) => {
@@ -98,7 +97,7 @@ export default {
 
         // 닉네임 유효성 검사
         const regExpEn = /^[a-z]{1}[a-z0-9]{3,15}$/;
-        const regExpKo = /^[가-힣]{1}[가-힣0-9]{3,8}$/;
+        const regExpKo = /^[가-힣]{1}[가-힣0-9]{1,8}$/;
         if (!regExpEn.test(name) && !regExpKo.test(name)) {
             script = signupScript.invalidName;
             field = 'sign:12';
@@ -118,18 +117,19 @@ export default {
             characterId: userStatus!.characterId,
             name: userStatus!.name,
         };
-        
-        // sesstion create
-        redis.set(userInfo.userId, socketId, { EX: 60 * 60 * 24 });
-        console.log(`login session create`);
-        FRONT.to(socketId).emit('printBattle', { field, script, userInfo, userStatus });
 
         // 채팅방 참가
-        const chatData: Array<number> = chatCache.joinChat(socketId);
-        const enteredRoom = chatData[0];
-        const joinerCntScript = `(${chatData[1]}/${chatData[2]})`;
-        FRONT.in(socketId).socketsJoin(`${enteredRoom}`);
-        FRONT.to(`${enteredRoom}`).emit('joinChat', userInfo.name, joinerCntScript);
+        const [chatId, chatSize, chatLimit] = await redisChat.joinChat(socketId)
+        const chatJoinScript = `(${chatSize}/${chatLimit})`;
+        FRONT.in(socketId).socketsJoin(`${chatId}`);
+        FRONT.to(`${chatId}`).emit('joinChat', userInfo?.name, chatJoinScript);
+
+        FRONT.to(socketId).emit('printBattle', { field, script, userInfo, userStatus });
+        FRONT.to(socketId).emit('pwCoveringOff');
+
+        // sesstion create
+        // console.log(`login session create`);
+        redis.set(userInfo.characterId, socketId, { EX : 60*60*24 })
 
         res.status(200).end();
     },

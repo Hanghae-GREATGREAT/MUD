@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { FRONT } from '../redis';
-import { chatCache, redis } from '../db/cache';
+import { redis } from '../db/cache';
 import { CharacterService, UserService } from '../services';
 import { homeScript, placeScript } from '../scripts';
 import { PostBody } from '../interfaces/common';
@@ -49,7 +49,7 @@ export default {
         // chatCache.leaveChat(socketId);
 
         // 유저 세션 삭제
-        // redis.del(userInfo.characterId)
+        redis.del(userInfo.characterId)
 
         const script = homeScript.signout;
         const field = 'front';

@@ -43,7 +43,7 @@ class PvpService {
                 const getUsers = await this.getUsers(`${roomName}`)
                 const watchers = await this.watchGetUsers(`watch ${roomName}`)
 
-                script += `# [${getUsers}/${maxUsers}] # [${watchers}/${10-maxUsers}] # [ ${isState} ] # [ ${roomName.split(' ').pop()!} ]\n`
+                script += `# [${getUsers}/${maxUsers}] # [${watchers}/${10-maxUsers}] # [ ${isState} ] # [ ${roomName.split('_').pop()!} ]\n`
             }
         }
         
@@ -104,7 +104,7 @@ class PvpService {
      * @returns newUserStatus
      */
     async createRoom({ socketId, CMD, userStatus, option: frontId }: PostBody) {
-        const roomName = `pvpRoom ${CMD}`;
+        const roomName = `pvp_${CMD}`;
 
         // Fight User Setting
         const newUserStatus: UserStatus = {
@@ -133,7 +133,7 @@ class PvpService {
      * @returns newUserStatus
      */
     async joinRoom({ socketId, CMD, userInfo, userStatus, option: frontId }: PostBody) {
-        const roomName = `pvpRoom ${CMD}`;
+        const roomName = `pvp_${CMD}`;
         const getUsers = await this.getUsers(roomName);
         const roomState = await redisCloud.hGetOne(roomName);
 

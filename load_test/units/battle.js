@@ -34,7 +34,7 @@ let alive = 0;
     const battleResult = (userInfo, userStatus, battle_duration) => {
         const start = Date.now();
         let flag = false;
-        console.log('battleResult()', flag);
+        // console.log('battleResult()', flag);
         return new Promise((resolve, reject) => {
             const result = {
                 'autoBattleS': (res, time) => {
@@ -42,9 +42,9 @@ let alive = 0;
     
                     flag = true;
                     alive++;
-                    console.log('ALIVE SS', userInfo.characterId, flag);
+                    // console.log('ALIVE SS', userInfo.characterId, flag);
                     emit('autoBattleS', { line: '중단', userInfo, userStatus }).then((res) => {
-                        console.log('전투중단 성공', userInfo.characterId);
+                        // console.log('전투중단 성공', userInfo.characterId);
                         const field = 'dungeon';
                         resolve({ ...res, field, userInfo, userStatus });
                     }).catch((error) => {
@@ -58,9 +58,9 @@ let alive = 0;
     
                     flag = true;
                     alive++;
-                    console.log('ALIVE', userInfo.characterId, flag);
+                    // console.log('ALIVE', userInfo.characterId, flag);
                     emit('autoBattle', { line: '중단', userInfo, userStatus }).then((res) => {
-                        console.log('전투중단 성공', userInfo.characterId);
+                        // console.log('전투중단 성공', userInfo.characterId);
                         const field = 'dungeon';
                         resolve({ ...res, field, userInfo, userStatus });
                     }).catch((error) => {
@@ -71,12 +71,12 @@ let alive = 0;
                 'heal': (res, time) => {
                     flag = true;
                     dead++;
-                    console.log('DEAD', userInfo.characterId, flag);
+                    // console.log('DEAD', userInfo.characterId, flag);
                     resolve({ field: res.field, userInfo, userStatus });
                 },
                 'dungeon': (res, time) => {
                     flag = true;
-                    console.log('BATTLE ERROR RETRUNING TO ENTRANCE', userInfo.characterId, flag);
+                    // console.log('BATTLE ERROR RETRUNING TO ENTRANCE', userInfo.characterId, flag);
                     resolve({ field: res.field, userInfo, userStatus });
                 }
             }
@@ -123,7 +123,6 @@ let alive = 0;
             }
         },
         encounterFromList: async(field, userInfo, userStatus) => {
-            console.log('normal');
 
             try {
                 const { level } = userStatus;
@@ -171,7 +170,7 @@ let alive = 0;
             }
         },
         autoFromList: async(field, userInfo, userStatus, battle_duration=30) => {
-            console.log('autoFromList', userInfo.characterId);
+            // console.log('autoFromList', userInfo.characterId);
 
             try {
                 const { level } = userStatus;
@@ -183,14 +182,14 @@ let alive = 0;
                 const r1 = await emit('dungeon', { line, userInfo, userStatus });
                 throughput.push(r1.throughput);
         
-                console.log('auto start', userInfo.characterId);
+                // console.log('auto start', userInfo.characterId);
                 const r2 = await emit('battle', { line: '자동', userInfo, userStatus });
                 throughput.push(r2.throughput);
                 
-                console.log('listen result', userInfo.characterId);
+                // console.log('listen result', userInfo.characterId);
                 const result = await battleResult(userInfo, userStatus, battle_duration);
 
-                console.log('RESULT OUT', userInfo.characterId);
+                // console.log('RESULT OUT', userInfo.characterId);
                 switch (result.field) {
                     case 'heal':
                         return { ...result, cnt: 2, throughput };
@@ -209,10 +208,10 @@ let alive = 0;
     
         },
         quitAuto: async(field, userInfo, userStatus) => {
-            console.log('quit autobattle', userInfo.characterId);
+            // console.log('quit autobattle', userInfo.characterId);
             
             emit('autoBattle', { line: 'STOP', userInfo, userStatus }).then((res) => {
-                console.log('전투중단 성공', userInfo.characterId);
+                // console.log('전투중단 성공', userInfo.characterId);
                 const throughput = [ res.throughput ];
                 const field = 'dungeon';
 
