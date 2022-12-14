@@ -96,6 +96,6 @@ export default {
             return;
         }
         const URL = `${PVP_URL}/pvp/pvpBattle`
-        fetchPost({ URL, socketId: socket.id, CMD, userInfo, userStatus });
+        fetchPost({ URL, socketId: socket.id, CMD: line.trim(), userInfo, userStatus });
     },
 }
