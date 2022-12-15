@@ -112,7 +112,7 @@ export default {
             if (!userStatus) new HttpException('userStatus missing', 400);
 
             await pvpService.leaveRoom(userStatus)
-            
+
             PVP.in(socketId).socketsLeave(userStatus.pvpRoom!);
             userStatus!.pvpRoom = undefined;
 

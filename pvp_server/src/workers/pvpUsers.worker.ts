@@ -1,5 +1,5 @@
 import { parentPort } from 'worker_threads'
-import { redisCloud } from "../db/cache";
+import { redis } from "../db/cache";
 import { maxUsers } from '../controllers/pvp.controller';
 import PVP from '../redis';
 import { isEnd } from '../services/pvp.service';
@@ -16,7 +16,7 @@ async function pvpUsersWorker(userStatus: UserStatus) {
         const firstLine = `= TEAM. =Lv. =========== Deamge ======== HP ================ Name======\n`;
         let ATeamScript: string = ``;
         let BTeamScript: string = ``;
-        const pvpRoom = await redisCloud.hGetPvpRoom(roomName!);
+        const pvpRoom = await redis.hGetPvpRoom(roomName!);
         const users = Object.entries(pvpRoom)
         if (!users[0]) {
             clearInterval(pvpUsersTimer)
