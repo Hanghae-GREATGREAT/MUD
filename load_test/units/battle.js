@@ -151,7 +151,7 @@ let alive = 0;
             try {
                 const throughput = [];
     
-                const r1 = await emit('battle', { line: '자동', userInfo, userStatus });
+                const r1 = await emit('battle', { line: '자동단일', userInfo, userStatus });
                 throughput.push(r1.throughput);
     
                 const result = await battleResult(userInfo, userStatus, seconds);
@@ -183,7 +183,7 @@ let alive = 0;
                 throughput.push(r1.throughput);
         
                 // console.log('auto start', userInfo.characterId);
-                const r2 = await emit('battle', { line: '자동', userInfo, userStatus });
+                const r2 = await emit('battle', { line: '자동단일', userInfo, userStatus });
                 throughput.push(r2.throughput);
                 
                 // console.log('listen result', userInfo.characterId);
@@ -210,7 +210,7 @@ let alive = 0;
         quitAuto: async(field, userInfo, userStatus) => {
             // console.log('quit autobattle', userInfo.characterId);
             
-            emit('autoBattle', { line: 'STOP', userInfo, userStatus }).then((res) => {
+            emit('autoBattleS', { line: 'STOP', userInfo, userStatus }).then((res) => {
                 // console.log('전투중단 성공', userInfo.characterId);
                 const throughput = [ res.throughput ];
                 const field = 'dungeon';

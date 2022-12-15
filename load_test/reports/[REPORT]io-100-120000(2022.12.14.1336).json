@@ -1,1 +1,19 @@
-{"TEST_NAME":"io-100-120000(2022.12.14.1336)","test_start":"2022-12-14T13:36:53.413Z","test_end":"2022-12-14T13:39:13.495Z","test_running_time":"2m 20.08s","MAX_CLIENT":100,"THREAD_COUNT":10,"CLIENT_CREATE_INTERVAL_IN_MS":1000,"TEST_DURATION_IN_MS":120000,"total_emit_count":8665,"emit_per_seconds":"72.17","total_scenario_try":2146,"scenario_complete":2146,"scenario_fail":0,"average_throughput":"38.89ms","AWS_MAX_CPU_UTILIZATION":"","AWS_MAX_MEM_USED":"","AWS_MAX_MEM_USED_PERCENT":""}
+{
+    "TEST_NAME": "io-100-120000(2022.12.14.1336)",
+    "test_start": "2022-12-14T13:36:53.413Z",
+    "test_end": "2022-12-14T13:39:13.495Z",
+    "test_running_time": "2m 20.08s",
+    "MAX_CLIENT": 100,
+    "THREAD_COUNT": 10,
+    "CLIENT_CREATE_INTERVAL_IN_MS": 1000,
+    "TEST_DURATION_IN_MS": 120000,
+    "total_emit_count": 8665,
+    "emit_per_seconds": "72.17",
+    "total_scenario_try": 2146,
+    "scenario_complete": 2146,
+    "scenario_fail": 0,
+    "average_throughput": "38.89ms",
+    "AWS_MAX_CPU_UTILIZATION": "",
+    "AWS_MAX_MEM_USED": "",
+    "AWS_MAX_MEM_USED_PERCENT": ""
+}

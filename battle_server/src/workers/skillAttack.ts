@@ -31,11 +31,11 @@ async function skillAttack(socketId: string, userStatus: UserStatus): Promise<Au
     }
 
     // 스킬 데미지 계산 & 마나 cost 소모
-    const playerSkillDamage: number = Math.floor(
-        (attack * multiple) / 100,
-    );
+    const playerSkillDamage = ( (attack * multiple) / 100 )|0;
     const realDamage: number = BattleService.hitStrength(playerSkillDamage);
+
     userStatus = await CharacterService.refreshStatus(userStatus, 0, skillCost, monsterId);
+    battleCache.set(characterId, { userStatus });
 
     // 몬스터에게 스킬 데미지 적중
     const isDead = await MonsterService.refreshStatus(monsterId, realDamage, characterId);
