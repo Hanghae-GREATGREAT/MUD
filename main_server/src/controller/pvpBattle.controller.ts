@@ -42,7 +42,7 @@ export default {
             return;
         }
 
-        socket.data[socket.id] = `${userStatus.name},pvpRoom ${CMD2},${userInfo.userId}`
+        socket.data[socket.id] = `${userStatus.name},pvp_${CMD2},${userInfo.userId}`
         
         const frontId = socketIds.get(userInfo.userId);
         const URL = `${PVP_URL}/${cmdRoute[CMD1]}`;
