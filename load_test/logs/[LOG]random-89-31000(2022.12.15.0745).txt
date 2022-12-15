@@ -1,0 +1,24 @@
+[LOG]random-89-31000(2022.12.15.0745).txt
+            
+### DETAIL LOGS ###
+
+time: Thu Dec 15 2022 16:45:50 GMT+0900 (대한민국 표준시)
+progress: 0, clients: 0, connections: 0
+emits/sec: 0.00, scenario completion: 0/0 => 0, average throughput: NaNms
+
+time: Thu Dec 15 2022 16:46:00 GMT+0900 (대한민국 표준시)
+progress: 56, clients: 89, connections: 356
+emits/sec: 20.39, scenario completion: 56/56 => 100, average throughput: 36.78ms
+
+time: Thu Dec 15 2022 16:46:10 GMT+0900 (대한민국 표준시)
+progress: 369, clients: 89, connections: 356
+emits/sec: 53.34, scenario completion: 313/313 => 100, average throughput: 20.43ms
+
+time: Thu Dec 15 2022 16:46:20 GMT+0900 (대한민국 표준시)
+progress: 587, clients: 89, connections: 356
+emits/sec: 35.15, scenario completion: 218/218 => 100, average throughput: 11.59ms
+
+time: Thu Dec 15 2022 16:46:30 GMT+0900 (대한민국 표준시)
+progress: 868, clients: 0, connections: 0
+emits/sec: 44.95, scenario completion: 252/281 => 89.68, average throughput: 10.94ms
+

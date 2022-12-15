@@ -1,0 +1,19 @@
+{
+    "TEST_NAME": "random-5000-300000(2022.12.15.1216)",
+    "test_start": "2022-12-15T12:16:39.969Z",
+    "test_end": "2022-12-15T12:16:56.180Z",
+    "test_running_time": "0m 16.21s",
+    "MAX_CLIENT": 5000,
+    "THREAD_COUNT": 10,
+    "CLIENT_CREATE_INTERVAL_IN_MS": 200,
+    "TEST_DURATION_IN_MS": 300000,
+    "total_emit_count": 826,
+    "emit_per_seconds": "NaN",
+    "total_scenario_try": 346,
+    "scenario_complete": 262,
+    "scenario_fail": 84,
+    "average_throughput": "35.52ms",
+    "AWS_MAX_CPU_UTILIZATION": "",
+    "AWS_MAX_MEM_USED": "",
+    "AWS_MAX_MEM_USED_PERCENT": ""
+}
