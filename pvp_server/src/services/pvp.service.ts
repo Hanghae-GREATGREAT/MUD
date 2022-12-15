@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import fetchPost from "../common/fetch";
 import { pvpController } from "../controllers";
-import { redis, redisCloud } from "../db/cache";
+import { redisCloud } from "../db/cache";
 import { FRONT_URL, maxUsers } from "../controllers/pvp.controller";
 import { PostBody } from "../interfaces/common";
 import { PvpUser } from '../interfaces/pvp'
@@ -62,7 +62,7 @@ class PvpService {
         }
         
         // 생성하려는 방 이름이 존재할경우
-        const existRoom = await redis.hGetPvpRoom(roomName);
+        const existRoom = await redisCloud.hGetPvpRoom(roomName);
         if (JSON.stringify(existRoom) !== '{}') {
             const request = { body: { socketId, CMD: '이미 존재하는 방 입니다.', userStatus, option: 'pvpList' }};
             pvpController.wrongCommand(request as Request, res, next)
@@ -80,7 +80,7 @@ class PvpService {
         }
 
         // 입장하려는 방 이름이 존재하지 않을 경우
-        const existRoom = await redis.hGetPvpRoom(roomName);
+        const existRoom = await redisCloud.hGetPvpRoom(roomName);
         if (JSON.stringify(existRoom) === '{}') {
             const request = { body: { socketId, CMD: '존재하지 않는 방이름 입니다.', userStatus, option: 'pvpList' }};
             pvpController.wrongCommand(request as Request, res, next)
@@ -116,7 +116,7 @@ class PvpService {
 
         // 방 생성시 local redis에 저장되는 data
         const inputPlayer:PvpUser = { [userStatus.name]: { socketId, userStatus: newUserStatus }}
-        await redis.hSetPvpUser(roomName, inputPlayer)
+        await redisCloud.hSetPvpUser(roomName, inputPlayer)
 
         // 방 생성시 Global redis에 저장되는 data
         // { roomName: boolean } 이며, true면 전투중, false면 대기중을 뜻한다.
@@ -161,7 +161,7 @@ class PvpService {
         }
 
         const inputPlayer:PvpUser = { [userStatus.name]: { socketId, userStatus: newUserStatus }}
-        await redis.hSetPvpUser(roomName, inputPlayer)
+        await redisCloud.hSetPvpUser(roomName, inputPlayer)
 
         return newUserStatus;
     }
@@ -172,7 +172,7 @@ class PvpService {
      * @returns 전투 참여 인원 수
      */
     async getUsers(roomName: string): Promise<number> {
-        const getUsers = Object.entries(await redis.hGetPvpRoom(roomName));
+        const getUsers = Object.entries(await redisCloud.hGetPvpRoom(roomName));
         return getUsers.length
     }
 
@@ -199,7 +199,7 @@ class PvpService {
         const roomState = await redisCloud.hGetOne(roomName);
 
         if (getUsers === maxUsers && roomState[roomName] === false) {
-            const pvpRoom = await redis.hGetPvpRoom(roomName!);
+            const pvpRoom = await redisCloud.hGetPvpRoom(roomName!);
             const users = Object.entries(pvpRoom)
             
             const URL = `${FRONT_URL}/chat/pvpChatStart`
@@ -210,7 +210,7 @@ class PvpService {
                 i < maxUsers / 2 ? user.isTeam = 'B TEAM' : user.isTeam = 'A TEAM'
 
                 const inputPlayer:PvpUser = { [users[i][0]]: { socketId: users[i][1].socketId, userStatus: user }}
-                await redis.hSetPvpUser(roomName, inputPlayer)
+                await redisCloud.hSetPvpUser(roomName, inputPlayer)
             }
 
             const room = { [roomName]: 'true' }
@@ -242,7 +242,7 @@ class PvpService {
     async pvpStart(userStatus: UserStatus, result: string) {
         const firstLine = `= TEAM. =Lv. =========== Deamge ======== HP ================ Name======\n`;
         const roomName = userStatus.pvpRoom;
-        const pvpRoom = await redis.hGetPvpRoom(roomName!);
+        const pvpRoom = await redisCloud.hGetPvpRoom(roomName!);
         const users = Object.entries(pvpRoom)
         let colorA:string = '';
         let colorB:string = '';
@@ -274,7 +274,7 @@ class PvpService {
      */
     async leaveRoom(userStatus: UserStatus) {
         const roomName = userStatus!.pvpRoom
-        await redis.hDel(roomName!, userStatus.name)
+        await redisCloud.hDel(roomName!, userStatus.name)
         await redisCloud.hDel(`watch ${roomName}`, userStatus.name)
 
         const getUsers = await this.getUsers(roomName!);
@@ -283,7 +283,7 @@ class PvpService {
 
     async pvpDisconnect(name: string, roomName: string, socketId: string) {
         PVP.in(socketId).socketsLeave(roomName);
-        await redis.hDel(roomName, name);
+        await redisCloud.hDel(roomName, name);
         await redisCloud.hDel(`watch ${roomName}`, name);
 
         const getUsers = await this.getUsers(roomName);
@@ -325,7 +325,7 @@ class PvpService {
 
     async targetValidation({ socketId, CMD, userInfo, userStatus }: PostBody) {
         const input = CMD.trim().split(' ').shift();
-        const pvpRoom = await redis.hGetPvpRoom(userStatus.pvpRoom!);
+        const pvpRoom = await redisCloud.hGetPvpRoom(userStatus.pvpRoom!);
         const users = Object.entries(pvpRoom);
         const TeamA: string[] = [];
         const TeamB: string[] = [];
@@ -359,7 +359,7 @@ class PvpService {
         const [ CMD1, CMD2 ] = CMD.trim().split(' ');
 
         const roomName = userStatus.pvpRoom;
-        const pvpRoom = await redis.hGetPvpRoom(roomName!);
+        const pvpRoom = await redisCloud.hGetPvpRoom(roomName!);
         const users = Object.entries(pvpRoom);
         const user = users.filter(user=>user[0] === CMD1).pop()!;
         const enemy = user[1].userStatus;
@@ -383,8 +383,8 @@ class PvpService {
         const inputPlayer: PvpUser = {[userStatus.name]: { socketId, userStatus }}
         const inputEnemy: PvpUser = {[enemy.name]: user[1]}
 
-        await redis.hSetPvpUser(roomName!, inputPlayer);
-        await redis.hSetPvpUser(roomName!, inputEnemy)
+        await redisCloud.hSetPvpUser(roomName!, inputPlayer);
+        await redisCloud.hSetPvpUser(roomName!, inputEnemy)
         
         PVP.to(user[1].socketId).emit('printBattle', { field, userStatus: enemy });
         PVP.to(socketId).emit('printBattle', { field, userStatus })
@@ -394,7 +394,7 @@ class PvpService {
 
     async pvpResultValidation({ socketId, CMD, userInfo, userStatus }: PostBody) {
         const roomName = userStatus.pvpRoom;
-        const pvpRoom = await redis.hGetPvpRoom(roomName!);
+        const pvpRoom = await redisCloud.hGetPvpRoom(roomName!);
         const users = Object.entries(pvpRoom);
         let ATeamHp: number = 0;
         let BTeamHp: number = 0;
