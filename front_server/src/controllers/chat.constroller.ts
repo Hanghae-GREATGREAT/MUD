@@ -75,7 +75,6 @@ export default {
 
     pvpChatLeave: (req: Request, res: Response, next: NextFunction) => {
         const { socketId, userInfo }: PostBody = req.body;
-        if (!userInfo) return res.status(400).end();
 
         // const joinedRoom = chatCache.pvpGetJoinedRoom(socketId);
         redisChat.findPvpJoiner(socketId).then(async(joinedRoom) => {
@@ -86,6 +85,7 @@ export default {
                 FRONT.to(joinedRoom).emit('leaveChat', script);
             }
             FRONT.in(socketId).socketsLeave(`${joinedRoom}`);
+        if (!userInfo) return res.status(400).end();
             
             // 채팅방 참가
             redisChat.joinChat(socketId).then(([chatId, chatSize, chatLimit]) => {
