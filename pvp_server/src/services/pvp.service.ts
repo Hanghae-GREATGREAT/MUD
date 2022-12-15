@@ -156,7 +156,7 @@ class PvpService {
             PVP.to(socketId).emit('printBattle', { script: `${CMD}에 입장하셨습니다.\n`, field: 'pvpBattle', userStatus: watchUserStatus });
 
             const URL = `${FRONT_URL}/chat/pvpChatStart`
-            fetchPost({ URL, socketId: frontId!, userInfo, option: roomName });
+            fetchPost({ URL, socketId: frontId!, userInfo, option: `pvpChat_${CMD}` });
             return undefined;
         }
 
@@ -203,7 +203,7 @@ class PvpService {
             const users = Object.entries(pvpRoom)
             
             const URL = `${FRONT_URL}/chat/pvpChatStart`
-            fetchPost({ URL, socketId: userStatus.frontId!, userInfo, option: roomName });
+            fetchPost({ URL, socketId: userStatus.frontId!, userInfo, option: `pvpChat_${CMD}` });
 
             for (let i = 0; i < maxUsers; i++){
                 const user = users[i][1].userStatus
