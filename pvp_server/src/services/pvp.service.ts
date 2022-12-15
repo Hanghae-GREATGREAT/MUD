@@ -4,7 +4,7 @@ import { pvpController } from "../controllers";
 import { redis, redisCloud } from "../db/cache";
 import { FRONT_URL, maxUsers } from "../controllers/pvp.controller";
 import { PostBody } from "../interfaces/common";
-import { PvpPlayer, PvpUser } from '../interfaces/pvp'
+import { PvpUser } from '../interfaces/pvp'
 import { UserInfo, UserStatus } from "../interfaces/user";
 import PVP from "../redis";
 import { pvpScript } from "../scripts";

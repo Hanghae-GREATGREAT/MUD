@@ -4,7 +4,7 @@ import { pvpScript } from '../scripts';
 import { HttpException } from '../common';
 import { PostBody } from '../interfaces/common';
 import { pvpHandler } from '../handler'
-import pvpService, { isEnd } from '../services/pvp.service';
+import pvpService from '../services/pvp.service';
 import pvpUsers from '../workers/pvpUsers';
 import fetchPost from '../common/fetch';
 import env from '../env';
@@ -40,7 +40,7 @@ export default {
 
             // Global Chat leave, PVP Chat Join
             const URL = `${FRONT_URL}/chat/pvpChatStart`
-            fetchPost({ URL, socketId: option!, userInfo, option: roomName });
+            fetchPost({ URL, socketId: option!, userInfo, option: `pvpChat_${CMD}` });
 
             res.status(200).end();
         } catch (err) {
@@ -77,7 +77,7 @@ export default {
             PVP.to(socketId).emit('printBattle', { field, userInfo, userStatus: newUserStatus });
 
             const URL = `${FRONT_URL}/chat/pvpChatStart`
-            fetchPost({ URL, socketId: option!, userInfo, option: roomName });
+            fetchPost({ URL, socketId: option!, userInfo, option: `pvpChat_${CMD}` });
 
             res.status(200).end();
         } catch (err) {
