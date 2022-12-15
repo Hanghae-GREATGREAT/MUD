@@ -1,0 +1,44 @@
+[LOG]random-127-68000(2022.12.15.0723).txt
+            
+### DETAIL LOGS ###
+
+time: Thu Dec 15 2022 16:23:50 GMT+0900 (대한민국 표준시)
+progress: 0, clients: 0, connections: 0
+emits/sec: 0.00, scenario completion: 0/0 => 0, average throughput: NaNms
+
+time: Thu Dec 15 2022 16:24:00 GMT+0900 (대한민국 표준시)
+progress: 15, clients: 90, connections: 360
+emits/sec: 6.09, scenario completion: 15/15 => 100, average throughput: 35.14ms
+
+time: Thu Dec 15 2022 16:24:10 GMT+0900 (대한민국 표준시)
+progress: 72, clients: 127, connections: 508
+emits/sec: 14.59, scenario completion: 57/57 => 100, average throughput: 26.81ms
+
+time: Thu Dec 15 2022 16:24:20 GMT+0900 (대한민국 표준시)
+progress: 133, clients: 127, connections: 508
+emits/sec: 12.70, scenario completion: 61/61 => 100, average throughput: 17.62ms
+
+time: Thu Dec 15 2022 16:24:30 GMT+0900 (대한민국 표준시)
+progress: 174, clients: 127, connections: 508
+emits/sec: 7.80, scenario completion: 41/41 => 100, average throughput: 11.18ms
+
+time: Thu Dec 15 2022 16:24:40 GMT+0900 (대한민국 표준시)
+progress: 242, clients: 127, connections: 508
+emits/sec: 11.49, scenario completion: 68/68 => 100, average throughput: 10.88ms
+
+time: Thu Dec 15 2022 16:24:50 GMT+0900 (대한민국 표준시)
+progress: 275, clients: 127, connections: 508
+emits/sec: 5.29, scenario completion: 33/33 => 100, average throughput: 12.33ms
+
+time: Thu Dec 15 2022 16:25:00 GMT+0900 (대한민국 표준시)
+progress: 319, clients: 127, connections: 508
+emits/sec: 12.00, scenario completion: 44/44 => 100, average throughput: 2864.29ms
+
+time: Thu Dec 15 2022 16:25:10 GMT+0900 (대한민국 표준시)
+progress: 366, clients: 115, connections: 460
+emits/sec: 8.90, scenario completion: 45/47 => 95.74000000000001, average throughput: 1012.91ms
+
+time: Thu Dec 15 2022 16:25:20 GMT+0900 (대한민국 표준시)
+progress: 482, clients: 0, connections: 0
+emits/sec: 3.00, scenario completion: 14/116 => 12.07, average throughput: 13.32ms
+

@@ -26,6 +26,7 @@ export default {
 
             if (!dungeonLevel) {
                 console.log('autoBattle cache error: dungeonLevel missing', userInfo.characterId);
+                redis.battleSet(characterId, { LOOP: 'off' });
                 battleError(socketId);
                 return resolve();
             }
@@ -45,7 +46,6 @@ export default {
                 if (LOOP === 'off' || !dungeonLevel || !userStatus) {
                     // console.log('autoAttack LOOP error', userInfo.characterId);
                     clearInterval(autoAttackTimer);
-                    redis.battleSet(characterId, { LOOP: 'on'});
                     battleError(socketId);
                     return;
                 }
@@ -54,15 +54,17 @@ export default {
                 // 기본공격
                 autoAttack(socketId, userStatus).then((result) => {
                     if (!result) {
+                        redis.battleSet(characterId, { LOOP: 'off' });
+                        clearInterval(autoAttackTimer);
                         BATTLE.to(socketId).emit('void');
                         return;
                     }
     
-                    const { field, script, userStatus } = result
+                    const { field, script, userStatus } = result;
                     const data = { 
                         field: field !== 'heal' ? 'autoBattleS' : 'heal', 
-                        script, userInfo, userStatus }
-    
+                        script, userInfo, userStatus
+                    }    
                     BATTLE.to(socketId).emit('printBattle', data);
     
                     // dead = 'moster'|'player'|undefined
@@ -90,13 +92,14 @@ export default {
     
                     autoBattleSkill(socketId, userStatus).then((result) => {
                         if (!result) {
-                            BATTLE.to(socketId).emit('void');
-                            return;
+                            clearInterval(autoAttackTimer);
+                            redis.battleSet(characterId, { LOOP: 'off' });
+                            // BATTLE.to(socketId).emit('void');
+                            return
                         }
     
                         const { field, script, userStatus } = result    
                         const data = { field: 'autoBattleS', script, userInfo, userStatus }
-    
                         BATTLE.to(socketId).emit('printBattle', data);
     
                         const { dead } = battleCache.get(characterId);

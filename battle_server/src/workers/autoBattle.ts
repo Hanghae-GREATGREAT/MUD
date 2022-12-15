@@ -133,4 +133,4 @@ class AutoBattleWorker extends EventEmitter {
 }
 
 
-export default new AutoBattleWorker(20);
+export default new AutoBattleWorker(30);

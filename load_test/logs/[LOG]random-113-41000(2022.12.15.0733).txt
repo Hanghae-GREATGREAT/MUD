@@ -1,0 +1,28 @@
+[LOG]random-113-41000(2022.12.15.0733).txt
+            
+### DETAIL LOGS ###
+
+time: Thu Dec 15 2022 16:33:50 GMT+0900 (대한민국 표준시)
+progress: 0, clients: 0, connections: 0
+emits/sec: 0.00, scenario completion: 0/0 => 0, average throughput: NaNms
+
+time: Thu Dec 15 2022 16:34:00 GMT+0900 (대한민국 표준시)
+progress: 49, clients: 86, connections: 344
+emits/sec: 18.08, scenario completion: 49/49 => 100, average throughput: 84.31ms
+
+time: Thu Dec 15 2022 16:34:10 GMT+0900 (대한민국 표준시)
+progress: 303, clients: 113, connections: 452
+emits/sec: 50.48, scenario completion: 254/254 => 100, average throughput: 56.35ms
+
+time: Thu Dec 15 2022 16:34:20 GMT+0900 (대한민국 표준시)
+progress: 436, clients: 113, connections: 452
+emits/sec: 24.50, scenario completion: 133/133 => 100, average throughput: 438.55ms
+
+time: Thu Dec 15 2022 16:34:30 GMT+0900 (대한민국 표준시)
+progress: 577, clients: 113, connections: 452
+emits/sec: 25.69, scenario completion: 141/141 => 100, average throughput: 70.14ms
+
+time: Thu Dec 15 2022 16:34:40 GMT+0900 (대한민국 표준시)
+progress: 797, clients: 0, connections: 0
+emits/sec: 20.90, scenario completion: 127/220 => 57.730000000000004, average throughput: 16.73ms
+
