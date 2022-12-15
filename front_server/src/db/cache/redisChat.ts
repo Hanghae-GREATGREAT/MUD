@@ -46,7 +46,7 @@ class RedisChat {
 
         console.log('redisChat.joinChat()');
         // 입장 가능한 채팅방 탐색
-        for (let i = 1; i <= this.chatRoomCount; i++) {
+        for (let i = 0; i <= this.chatRoomCount; i++) {
             const room = await this.getChatRoom(i);
 
             const joinerSize = room.length;
@@ -54,7 +54,7 @@ class RedisChat {
 
                 this.joinChatRoom(i, socketId);
                 this.addChatJoiner(socketId, i);
-                return [i, joinerSize, this.chatRoomLimit];
+                return [i, joinerSize + 1, this.chatRoomLimit];
             }
         }
 
