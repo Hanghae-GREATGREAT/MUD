@@ -1,5 +1,5 @@
 import { parentPort } from 'worker_threads'
-import redis from '../db/cache/redis';
+import { redis } from "../db/cache";
 import { maxUsers } from '../controllers/pvp.controller';
 import PVP from '../redis';
 import { isEnd } from '../services/pvp.service';

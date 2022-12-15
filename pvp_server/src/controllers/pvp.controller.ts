@@ -112,13 +112,14 @@ export default {
             if (!userStatus) new HttpException('userStatus missing', 400);
 
             await pvpService.leaveRoom(userStatus)
+
+            PVP.in(socketId).socketsLeave(userStatus.pvpRoom!);
             userStatus!.pvpRoom = undefined;
 
             const script = pvpScript.village;
             const field = 'village';
 
             PVP.to(socketId).emit('printBattle', { script, userInfo, field, userStatus });
-            PVP.in(socketId).socketsLeave(userStatus.pvpRoom!);
 
             const URL = `${FRONT_URL}/chat/pvpChatLeave`
             fetchPost({ URL, socketId: userStatus.frontId!, userInfo });
