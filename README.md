@@ -2,6 +2,12 @@
 
 <h3 align="center"> Node.js의 장점인 동시 I/O를 활용하여 제작한 프로젝트 입니다. </h2>
 
+![image](https://postfiles.pstatic.net/MjAyMjEyMTZfMjgy/MDAxNjcxMTQ0Mzg4OTUw.hnqNNxWEtavH54M6zXUyIU5nBDOXuL5XSU7tUjnZGRog.wtckPYC01WFAwKuPbyKjsvMci0zMqwJS9JsWqGPZM6og.PNG.celloman1929/image.png?type=w773)
+
+![image](https://postfiles.pstatic.net/MjAyMjEyMTZfMTQg/MDAxNjcxMTQ0MzQ3Nzg4.XnZ0I2BE1hIYvpivtFmXnyhQFO4qXfziIwsX3XH8hCQg.5UO4CboFGEueLAm2aYVewTPWqEPEeLsxtkQuVVzz_msg.PNG.celloman1929/image.png?type=w773)
+
+<h3 align="center"> 자동전투와 3vs3 플레이어 대전 </h2>
+
 <br><br>
 
 # 💡 **프로젝트 소개**
@@ -15,13 +21,20 @@
 ### 핵심 키워드
 
 1. Socket.io
-    - 서버의 능동적인 통신
-    - vs REST api
-    - 쉬운 ws 구현 및 자체적인 테스트 환경 제공
-2. MSA
-    - 트래픽 증가 대처
-    - vs Monolithic
-    - 기타 Auto Scaling, ASC, ELB, Nginx 등
+    - RestAPI는 1요청 1응답이라는 수동적인 한계가 있음
+    - 전투 로그 등 서버의 처리 경과를 수시로 출력해야하기 때문에
+      서버가 능동적으로 통신을 할 수 있는 웹소켓 기반의 서버 구축
+    - 쉬운 WS 구현 및 자체적인 테스트 환경 제공하는 Socket.io
+2. Microservice
+    - 트래픽이 몰리는 서버의 부분만 유연하게 스케일링하기 위해 Microservice 도입
+    - EKS&K8S vs EC2&ASG
+    - 프로젝트 기간의 시간적 한계로 EC2 인스턴스 단위의 오토스케일링 적용
+    - ASG, ELB, Route53, CloudWatch 등 AWS 서비스를 함께 사용하여 유지관리
+3. Worker Thread
+    - 전투연산 등 IO대비 CPU연산의 비중이 큰 작업들이 존재하며
+      해당 작업들에 트래픽이 치중되는 상황이 예상
+    - 따라서 멀티스레드 환경을 구성하여 메인 스레드에서는 IO처리에만 집중하고,
+      전투연산 등의 작업은 Worker Thread에 할당하여 처리 
 
 <br>
 
@@ -43,11 +56,13 @@
 
 ### 🔹 Worker Threads를 활용하여 방치형 자동 전투 구현 
 
-![image](https://blog.kakaocdn.net/dn/czBKFL/btrToC0v4YB/M9Yk8R9pMkjOxcI1rbhIek/img.png)
+![image](https://postfiles.pstatic.net/MjAyMjEyMTZfMjkg/MDAxNjcxMTQzNzgzMjAx.B5MX2yOHDvskf11yVLHa7OfosmWK8H4zggTw2dckReIg.PVA06fE86dN83Jo3e4jDdbRaT-5eE5TqLnJtz8YOCR0g.PNG.celloman1929/image.png?type=w773)
 
       -  문제:  IO 요청보다 CPU연산의 처리량이 높은 기능들이 다수 존재.
 
       -  해결: Worker Thread를 사용하여 I/O처리를 제외한 연산을 이관하여 관리하는 방법으로 해결.
+               또한, eventEmitter를 사용해 워커풀 직접 구성
+![image](https://postfiles.pstatic.net/MjAyMjEyMTZfMjUy/MDAxNjcxMTQyODc0NTQ2.ZR2teXq_JifVi3job_tQp1DM-AsPFof6bTEczJP1E1cg._0x2zPVcWslINofWodWTthmWk9-4XxaNLju1OLAOOLog.PNG.celloman1929/%EC%9B%8C%EC%BB%A4%ED%92%80.png?type=w773)
 
 ### 🔹 Socket.io 기반 MSA 구현
 
@@ -128,37 +143,38 @@
 
 ### 🔹 동시처리 능력
 
-유저 랜덤 시나리오 테스트에 대해 평균 100ms이내, 최대 500ms 이내, 성공률 95% 이상을 목표
+      마이크로서비스 아키텍쳐를 적용함에 따라 구조적으로 IO서버와 연산서버가 분리됨
+      이에 따라 기존 워커스레드를 적용했던 원인과 의미가 퇴색하여 오히려 워커스레드를 생성 및 유지하는데 
+      사용되는 자원이 더 크게 소모되는 상황 발생하여 다시 싱글스레드 연산으로 바꿨고, 동시처리 능력이 크게 향상됨
 
-      -  monolithic (MVP 스펙)
+![image](https://postfiles.pstatic.net/MjAyMjEyMTZfMTc4/MDAxNjcxMTQzMDY0Mzg1.K94A29cSfCrxnJQbuHaFpuR32EsBYDuEVlKcwvfH0Tsg.PcYVkdykyXoe3kohc43YCBcsrepLizIgdNErXWng2Zgg.PNG.celloman1929/image.png?type=w773)
 
-         단순 IO 동시처리 테스트
-         
-         - 100명. 응답속도 평균 250.49ms. 시나리오 성공률 100%
-         
-         - 200명. 응답속도 평균 1416.35ms. 시나리오 성공률 98.8%
-         
-         (테스트 인프라를 갖추기 전이라 유저 시나리오X)
+단일 인스턴스에서 1000명 동시 랜덤 시나리오 테스트 멀티스레드 vs 싱글스레드 비교
 
-      -  microservice
+![image](https://postfiles.pstatic.net/MjAyMjEyMTZfNjkg/MDAxNjcxMTQyOTU2NDQ5.DAzVxDWud5z1WSaQQIjpfhK9N88WD3WNFhF39897rikg.cn_0ecCgzrigKJzfOCb7_zQYEQQJe0v0INnaIJVNj7Qg.PNG.celloman1929/image.png?type=w773)
 
-           단순 IO 동시처리 테스트
-           - 100명. 응답속도 평균 39.95ms. 시나리오 성공률 100%
-            - 200명. 응답속도 평균 107.40ms. 시나리오 성공률 93.5%
-            - 300명. 응답속도 평균 622.22ms. 시나리오 성공률 87.2%
-            
-           동시 접속 유저(user scenario 0.5초이내)
-            - 500명. 응답속도 평균 60.32ms. 시나리오 성공률 99.9%
-            - 750명. 응답속도 평균 208.86ms. 시나리오 성공률 95.4%
-            - 1000명. 응답속도 평균 470.33ms. 시나리오 성공률 89.0%
+각 단계별 동시처리 능력 그래프
 
-      -  asc&lb
+![image](https://postfiles.pstatic.net/MjAyMjEyMTZfMTg1/MDAxNjcxMTQzMjI3ODI3.GYMIHe-sV1a0X0xI1u0NNs3gFNVnmr9QoGLFNo6F_wMg.NdyjHveuaGhX6P4mCA2bP8CdwqCdHInDXdqysK-6aLQg.PNG.celloman1929/image.png?type=w773)
 
-         단순 IO 동시처리 테스트
-         - 테스트 진행중
-         
-         동시 접속 유저(user scenario 0.5초이내)
-         - 테스트 진행중
+오토스케일링&로드밸런싱 적용 전과 후 동시접속자 수와 응답속도
+
+      1000명을 기본 접속자수로 상정하였으며, 3000명 이상 최대 5000명까지 50ms 이내의 응답속도
+      5000명 이상은 최대 인스턴스 개수, RDS 타입 등 설정한 자원의 한계를 풀어야 가능할 것으로 보임
+
+
+### 🔹 오토스케일링 적용 확인
+
+![image](https://postfiles.pstatic.net/MjAyMjEyMTZfMTI2/MDAxNjcxMTQyODExMzM4.91BBGeqvvATwq2mlhb_zGZtrYQwWst5cd3Jly6Wqsbgg.LOOBPuAU0RLqXeJH_v1OoJcHGavm5Xvc-exErgd7mm8g.PNG.celloman1929/111.png?type=w773)
+
+      테스트 시나리오
+      15분간 1000명 랜덤 테스트 기본으로 수행
+      2~5분: 초당 100명씩 추가로 1000명 랜덤 테스트 추가
+      7~13분: 초당 20명씩 추가로 3000명  랜덤 테스트 추가
+      
+      3000명의 접속자가 추가로 발생할 때 성공적으로 오토스케일링이 이루어지며 트래픽이 분산되는 것을 확인
+
+
 
 <br><br><br>
 
