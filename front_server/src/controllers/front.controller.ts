@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { FRONT } from '../redis';
-import { redis } from '../db/cache';
+import { chatCache, redis } from '../db/cache';
 import { CharacterService, UserService } from '../services';
 import { homeScript, placeScript } from '../scripts';
 import { PostBody } from '../interfaces/common';
