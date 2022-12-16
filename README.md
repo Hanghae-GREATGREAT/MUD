@@ -1,6 +1,7 @@
 ![image](https://blog.kakaocdn.net/dn/ltg7j/btrTzkSklWF/2x1jgJvjDp2ZixZk3yaVj1/img.png)
 
-<h3 align="center"> Node.js의 장점인 동시 I/O를 활용하여 제작한 프로젝트 입니다. </h2>
+<h3 align="center"> Node.js의 장점인 동시I/O를 강조하기위한 텍스트형 온라인웹게임입니다. </h2>
+<h3 align="center">동시접속자 기본 1000명 이상, 최대 5천명까지의 트래픽을 처리할 수 있습니다. </h3>
 
 ![image](https://postfiles.pstatic.net/MjAyMjEyMTZfMjgy/MDAxNjcxMTQ0Mzg4OTUw.hnqNNxWEtavH54M6zXUyIU5nBDOXuL5XSU7tUjnZGRog.wtckPYC01WFAwKuPbyKjsvMci0zMqwJS9JsWqGPZM6og.PNG.celloman1929/image.png?type=w773)
 
@@ -49,6 +50,19 @@
 # 아키텍쳐
 ![image](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FrDP1l%2FbtrTjGHUE0T%2FBulzP6tGktKcRyHv6Isl80%2Fimg.jpg)
 
+<br><br>
+
+
+# 기술스택
+|분류|기술|
+| :-: |:- |
+|Language|<img src="https://img.shields.io/badge/JavaScript-yellow?style=for-the-badge&logo=javascript&logoColor=white"> <img src="https://img.shields.io/badge/TypeScript-blue?style=for-the-badge&logo=typescript&logoColor=white">|
+|Framework|<img src="https://img.shields.io/badge/nodejs-green?style=for-the-badge&logo=node.js&logoColor=white"> <img src="https://img.shields.io/badge/express-yellow?style=for-the-badge&logo=express&logoColor=white"> <img src="https://img.shields.io/badge/socketio-black?style=for-the-badge&logo=socket.io&logoColor=white">|
+|DB|<img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=MySQL&logoColor=white"> <img src="https://img.shields.io/badge/sequelize-blue?style=for-the-badge&logo=sequelize&logoColor=white"> <img src="https://img.shields.io/badge/redis-B71C1C?style=for-the-badge&logo=redis&logoColor=white">|
+|Server|<img src="https://img.shields.io/badge/aws ec2-232F3E?style=for-the-badge&logo=AmazonAWS&logoColor=white"> <img src="https://img.shields.io/badge/aws%20asg-yellow?style=for-the-badge&logo=AmazonAWS&logoColor=white"> <img src="https://img.shields.io/badge/aws%20elb-ff6600?style=for-the-badge&logo=AmazonAWS&logoColor=white"> <img src="https://img.shields.io/badge/nginx-green?style=for-the-badge&logo=nginx&logoColor=white">|
+|DevOps|<img src="https://img.shields.io/badge/docker-0066ff?style=for-the-badge&logo=docker&logoColor=white"> <img src="https://img.shields.io/badge/docker%20compose-0099ff?style=for-the-badge&logo=docker_compose&logoColor=white">  <img src="https://img.shields.io/badge/aws%20cloud%20watch-000000?style=for-the-badge&logo=AmazonAWS&logoColor=white">|
+
+
 <br><br><br>
 
 
@@ -93,7 +107,7 @@
          클라이언트<>소켓서버는 초기에는 Nginx sticky session 설정, 
          나중에는 ELB로 세션이 보장 받으나 WAS 내부적으로는 보장되지 않는 문제
 
-      -  대안: Kafka 등의 Message Broker를 도입하여 사용하는 것이 최선책이었으나,
+      -  대안: Kafka 등의 이벤트 스트리밍이나 메시지 브로커를 도입하여 사용하는 것이 최선책이었으나,
                1) 같은 WAS 인스턴스 내에서만 데이터 접근 및 교환이 가능하면 되고
                2) 개발 기간에 여유가 없었기 때문에 기존에 사용하던 기술 범위 내에서 해결하는 것이 차선책
                
@@ -184,18 +198,6 @@
 
 <br><br><br>
 
-
-# 기술스택
-|분류|기술|
-| :-: |:- |
-|Language|<img src="https://img.shields.io/badge/JavaScript-yellow?style=for-the-badge&logo=javascript&logoColor=white"> <img src="https://img.shields.io/badge/TypeScript-blue?style=for-the-badge&logo=typescript&logoColor=white">|
-|Framework|<img src="https://img.shields.io/badge/nodejs-green?style=for-the-badge&logo=node.js&logoColor=white"> <img src="https://img.shields.io/badge/express-yellow?style=for-the-badge&logo=express&logoColor=white"> <img src="https://img.shields.io/badge/socketio-black?style=for-the-badge&logo=socket.io&logoColor=white">|
-|DB|<img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=MySQL&logoColor=white"> <img src="https://img.shields.io/badge/sequelize-blue?style=for-the-badge&logo=sequelize&logoColor=white"> <img src="https://img.shields.io/badge/redis-B71C1C?style=for-the-badge&logo=redis&logoColor=white">|
-|Server|<img src="https://img.shields.io/badge/aws ec2-232F3E?style=for-the-badge&logo=AmazonAWS&logoColor=white"> <img src="https://img.shields.io/badge/aws%20esc-yellow?style=for-the-badge&logo=AmazonAWS&logoColor=white"> <img src="https://img.shields.io/badge/aws%20elb-ff6600?style=for-the-badge&logo=AmazonAWS&logoColor=white"> <img src="https://img.shields.io/badge/nginx-green?style=for-the-badge&logo=nginx&logoColor=white">|
-|DevOps|<img src="https://img.shields.io/badge/docker-0066ff?style=for-the-badge&logo=docker&logoColor=white"> <img src="https://img.shields.io/badge/docker%20compose-0099ff?style=for-the-badge&logo=docker_compose&logoColor=white">  <img src="https://img.shields.io/badge/aws%20cloud%20watch-000000?style=for-the-badge&logo=AmazonAWS&logoColor=white">|
-
-
-<br><br><br>
 
 # 라이브러리
 ```json
