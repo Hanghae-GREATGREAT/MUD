@@ -123,6 +123,7 @@ commendForm.submit((e) => {
 
     if (
         field !== 'sign' &&
+        field !== 'pvpBattle' &&
         line
             .slice(0, 2)
             .trim()
