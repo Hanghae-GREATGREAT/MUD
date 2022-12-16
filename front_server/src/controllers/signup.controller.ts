@@ -121,7 +121,7 @@ export default {
         };
 
         // sesstion create
-        redis.set(userInfo.userId, socketId, { EX: 60 * 60 * 24 });
+        redis.set(userInfo.characterId, socketId, { EX: 60 * 60 * 24 });
         console.log(`login session create`);
         FRONT.to(socketId).emit('printBattle', { field, script, userInfo, userStatus });
 
