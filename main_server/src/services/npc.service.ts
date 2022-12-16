@@ -1,5 +1,6 @@
 import { CharacterService } from '.';
 import { Characters } from '../db/models';
+import { UserStatus } from '../interfaces/user';
 
 class NpcService {
     /** 프라데이리 스크립트 랜덤 반환 */
@@ -98,8 +99,8 @@ class NpcService {
     }
 
     /** 무기 강화 */
-    async enhance(characterId: number) {
-        const userStatus = await CharacterService.getUserStatus(characterId);
+    async enhance(userStatus: UserStatus) {
+        const { characterId } = userStatus;
         // 임시 스크립트 선언
         let tempScript = '';
         if (!userStatus) {
@@ -111,7 +112,7 @@ class NpcService {
 
         // 강화 비용 확인
         if (exp < weaponLevel * 10) {
-            const tempScript = `다음 단계 강화를 위한 필요 경험치 ${weaponLevel * 10}\n\n`;
+            const tempScript = `<span style="color:yellow">다음 단계 강화를 위한 필요 경험치 ${weaponLevel * 10}</span>\n\n`;
             return { tempScript, userStatus };
         }
 
@@ -137,8 +138,10 @@ class NpcService {
             tempScript += '퍼거스 : 크하하! 이몸도 아직 죽지 않았다구!\n\n';
             return { tempScript, userStatus };
         } else {
-            const userStatus = await CharacterService.addExp(characterId, -10);
-            tempScript += '강화에 실패했습니다..\n\n';
+            CharacterService.addExp(characterId, -10);
+            userStatus.exp += -10;
+
+            tempScript += '<span style="color:red">강화에 실패했습니다..</span>\n\n';
             tempScript += '퍼거스 : 어이쿠.. 손이 미끄러졌네.. 헐..\n';
             tempScript += '퍼거스 : ...\n';
             tempScript += '퍼거스 : 자, 자, 이미 이렇게 된거, 새로하나 장만... 응? 응?\n\n';

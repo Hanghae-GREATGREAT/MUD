@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io';
 import { NpcService } from '../../services';
-import { UserInfo } from '../../interfaces/user';
+import { UserInfo, UserStatus } from '../../interfaces/user';
 
 export default {
     enhanceHelp: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
@@ -29,15 +29,13 @@ export default {
         socket.emit('print', { script, userInfo, field });
     },
 
-    enhance: async (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
+    enhance: async (socket: Socket, CMD: string | undefined, userInfo: UserInfo, userStatus: UserStatus) => {
         let tempScript: string = '';
         const tempLine = '=======================================================================\n';
 
-        const { tempScript: actionScript, userStatus } = await NpcService.enhance(
-            Number(userInfo.characterId),
-        );
+        const result = await NpcService.enhance(userStatus);
 
-        tempScript += actionScript;
+        tempScript += result.tempScript;
         tempScript += '1 - 퍼거스와 대화합니다.\n';
         tempScript += '2 - 장비를 강화 합니다.\n';
         tempScript += '3 - 이전 단계로 돌아갑니다.\n';
@@ -45,7 +43,7 @@ export default {
         const script = tempLine + tempScript;
         const field = 'enhance';
 
-        socket.emit('printBattle', { field, script, userInfo, userStatus });
+        socket.emit('printBattle', { field, script, userInfo, userStatus: result.userStatus });
     },
 
     enhanceWrongCommand: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {

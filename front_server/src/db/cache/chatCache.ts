@@ -10,7 +10,7 @@ class ChatCache {
     private chatJoiner: ChatJoinerInterface = {};
     private pvpChatJoiner: ChatJoinerInterface = {};
     // 채팅방 입장 정원
-    private setJoinerLimit: number = 5;
+    private setJoinerLimit: number = 10;
     private pvpSetJoinerLimit: number = 10;
 
     constructor() {
@@ -75,8 +75,10 @@ class ChatCache {
         const roomName: Set<string> = this.pvpRoomList.get(pvpRoom)!
 
         if (!roomName) {
+            console.log('create pvp room', socketId);
             this.pvpRoomList.set(pvpRoom, new Set())
         }
+        console.log('join pvp room', socketId);
         this.pvpRoomList.get(pvpRoom)!.add(socketId)
 
         const joinerSize = this.pvpRoomList.get(pvpRoom)!.size;

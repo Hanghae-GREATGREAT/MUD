@@ -189,7 +189,7 @@ class CharacterService {
             userStatus.levelup = true;
             Characters.update(
                 {
-                    level,
+                    level: userStatus.level,
                     maxhp: 100 * level,
                     maxmp: 100 * level,
                     hp: 100 * level,
@@ -201,6 +201,15 @@ class CharacterService {
                     where: { characterId },
                 },
             );
+            return { 
+                ...userStatus,
+                maxhp: 100 * level,
+                maxmp: 100 * level,
+                hp: 100 * level,
+                mp: 100 * level,
+                attack: 10 + level,
+                defense: 10 + level,
+            }
         }
 
         return {

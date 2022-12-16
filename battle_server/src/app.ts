@@ -33,8 +33,15 @@ app.get('/', (req, res) => {
     res.status(200).json({ message: 'BATTLE INDEX '});
 });
 
+app.get('/user', (req, res) => {
+    CharacterService.getUserStatus(1000).then((userStatus) => {
+        res.status(200).json({ userStatus });
+    }) 
+})
+
 import { battleCache } from './db/cache';
 import autoBattle from './workers/autoBattle';
+import { CharacterService } from './services';
 app.get('/cache', (req, res) => {
     const worker = autoBattle.all();
     const cache = battleCache.getAll();

@@ -27,7 +27,7 @@ export default {
             return next(error);
         }
 
-        const script = battleScript.battleHelp(CMD);
+        const script = battleScript.battleHelp(CMD, userStatus);
         const field = 'action';
 
         BATTLE.to(socketId).emit('printBattle', { field, script, userInfo });
@@ -130,7 +130,7 @@ export default {
             return;
         } else if (!CMD.match(/1|2|3/)) {
             // console.log('battle.controller.ts: action wrong', userInfo.characterId);
-            const script = battleScript.battleHelp(CMD);
+            const script = battleScript.battleHelp(CMD, userStatus);
             const field = 'action';
 
             BATTLE.to(socketId).emit('printBattle', { field, script, userInfo });

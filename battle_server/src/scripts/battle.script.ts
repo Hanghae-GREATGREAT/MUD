@@ -1,3 +1,5 @@
+import { UserStatus } from "../interfaces/user";
+
 export default {
     help: `=======================================================================
     명령어 : 
@@ -5,13 +7,21 @@ export default {
     <span style="color:yellow">[A]uto</span>- 자동 전투를 진행합니다.
     <span style="color:yellow">[B]ack</span>- 이전 단계로 돌아갑니다.\n`,
 
-    battleHelp: (CMD: string) => {
+    battleHelp: (CMD: string, userStatus: UserStatus) => {
+        const skill1 = userStatus.skill[0]?.name;
+        const skill2 = userStatus.skill[1]?.name;
+        const skill3 = userStatus.skill[2]?.name;
+
+        const s1 = skill1 !== undefined ? `${skill1}을 사용합니다` : '1번 스킬이 비었습니다.';
+        const s2 = skill2 !== undefined ? `${skill2}을 사용합니다` : '2번 스킬이 비었습니다.';
+        const s3 = skill3 !== undefined ? `${skill3}을 사용합니다` : '3번 스킬이 비었습니다.';
+
         const script = `\n잘못된 명령입니다.
         현재 입력 : '${CMD}'
         ---전투 중 명령어---
-        <span style="color:yellow">[1]</span> - 1번 슬롯에 장착된 스킬을 사용합니다.
-        <span style="color:yellow">[2]</span> - 2번 슬롯에 장착된 스킬을 사용합니다.
-        <span style="color:yellow">[3]</span> - 3번 슬롯에 장착된 스킬을 사용합니다.\n`;
+        <span style="color:yellow">[1]</span> - ${s1}
+        <span style="color:yellow">[2]</span> - ${s2}
+        <span style="color:yellow">[3]</span> - ${s3}\n`;
 
         return script;
     },
