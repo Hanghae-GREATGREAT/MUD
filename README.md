@@ -15,7 +15,7 @@
 
 ### 팀 노션
 팀 워크스페이스 바로가기 <br>
-👉🏻 **[[Notion]]([https://www.notion.so/TEAM-MUD-7c0b6eafff5042dc8520f0bc073f8f19](https://loving-skipjack-9c0.notion.site/TEAM-MUD-7c0b6eafff5042dc8520f0bc073f8f19))**
+👉🏻 **[[Notion]](https://loving-skipjack-9c0.notion.site/TEAM-MUD-7c0b6eafff5042dc8520f0bc073f8f19))**
 
 <br>
 
