@@ -11,7 +11,7 @@ class isMonsterDead {
 
     check = (userStatus: UserStatus, { autoToDeadReceive, skillToDeadReceive }: IsDeadReceiver): Promise<AutoWorkerResult> => {
         const { characterId } = userStatus;
-        console.log('isMonsterDead.ts: 사망확인 check() 시작, ', characterId);
+        //console.log('isMonsterDead.ts: 사망확인 check() 시작, ', characterId);
         const workerData: AutoWorkerData = { 
             userStatus,
             path: './isMonsterDead.worker.ts',
@@ -24,7 +24,7 @@ class isMonsterDead {
             );
             worker.postMessage({ autoToDeadReceive, skillToDeadReceive }, [ autoToDeadReceive, skillToDeadReceive ]);
             this.threads.set(characterId, worker);
-            console.log('isMonsterDead.ts: check() Promise', worker.threadId, characterId);
+            //console.log('isMonsterDead.ts: check() Promise', worker.threadId, characterId);
 
             worker.on('message', (result: AutoWorkerResult) => {
                 worker.terminate();
@@ -34,7 +34,7 @@ class isMonsterDead {
             // worker.on('messageerror', reject);
             worker.on('error', reject);
             worker.on('exit', (code) => {
-                console.log(`isMonsterDead ${characterId} exitCode: ${code}`, characterId);
+                //console.log(`isMonsterDead ${characterId} exitCode: ${code}`, characterId);
                 this.threads.delete(characterId);
             });
         });

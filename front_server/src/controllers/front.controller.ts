@@ -9,8 +9,8 @@ export default {
     loadHome: (req: Request, res: Response, next: NextFunction) => {
         const { socketId, userInfo }: PostBody = req.body;
 
-        // console.log('loadHome activated!');
-        // console.log(`socket: ${socketId}`);
+        // //console.log('loadHome activated!');
+        // //console.log(`socket: ${socketId}`);
 
         const script = homeScript.loadHome;
         const field = 'front';

@@ -8,7 +8,7 @@ const sleep = (ms) => {
     user_load('random', 1000, 1000*60*15, 500, 10);
     await sleep(1000*120);
     
-    user_load('random', 1000, 1000*60*3, 200, 10);
+    user_load('random', 2000, 1000*60*3, 200, 10);
 
     await sleep(1000*180);
 

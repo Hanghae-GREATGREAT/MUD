@@ -1,0 +1,12 @@
+[LOG]random-3000-360000(2022.12.15.1727).txt
+            
+### DETAIL LOGS ###
+
+time: Fri Dec 16 2022 02:27:21 GMT+0900 (대한민국 표준시)
+progress: 0, clients: 0, connections: 0
+emits/sec: 0.00, scenario completion: 0/0 => 0, average throughput: NaNms
+
+time: Fri Dec 16 2022 02:27:31 GMT+0900 (대한민국 표준시)
+progress: 15, clients: 180, connections: 720
+emits/sec: 9.77, scenario completion: 15/15 => 100, average throughput: 768.01ms
+

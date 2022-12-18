@@ -28,20 +28,20 @@ const fetchPost = (params: PostParams): Promise<Response> => {
             headers,
             body: JSON.stringify(body),
         }).then((response) => {
-            console.log(`[${new Date(Date.now()+1000*60*60*9)}]`, response.status, response.url, userInfo?.characterId);
+            //console.log(`[${new Date(Date.now()+1000*60*60*9)}]`, response.status, response.url, userInfo?.characterId);
             resolve(response);
         }).catch((error) => {
             errorReport(error);
 
             const URI = URL.split(':')[URL.split(':').length-1]
             const localURL = `http://localhost:${URI}`;
-            console.log('RESENDING REQUEST', userInfo?.characterId, URI)
+            //console.log('RESENDING REQUEST', userInfo?.characterId, URI)
             fetch(localURL, { 
                 method: 'post', 
                 headers,
                 body: JSON.stringify(body),
             }).then((response) => {
-                console.log(`[${new Date(Date.now()+1000*60*60*9)}]`, response.status, response.url, userInfo?.characterId);
+                //console.log(`[${new Date(Date.now()+1000*60*60*9)}]`, response.status, response.url, userInfo?.characterId);
                 resolve(response);
             }).catch(errorReport);
         });

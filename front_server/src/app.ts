@@ -12,11 +12,11 @@ sequelize
     .authenticate()
     .then(() => {
         associate();
-        console.log('DB CONNECTED');
+        //console.log('DB CONNECTED');
     })
     .catch((error) => {
         console.error(error);
-        console.log('DB CONNECTION FAIL');
+        //console.log('DB CONNECTION FAIL');
         process.exit(0);
     });
 
@@ -31,14 +31,14 @@ app.use((req, res, next) => {
 });
 
 app.get('/', (req, res) => {
-    console.log('FRONT INDEX');
+    //console.log('FRONT INDEX');
     res.status(200).json({ message: 'FRONT INDEX' });
 });
 
 import { FRONT, CHAT } from './redis';
 app.get('/cache', (req, res) => {
-    console.log(FRONT)
-    console.log(CHAT)
+    //console.log(FRONT)
+    //console.log(CHAT)
 
     res.status(200).json({ FRONT, CHAT });
 });
@@ -56,6 +56,6 @@ app.use('/chat', chatRouter);
 app.use(errorHandler);
 
 app.listen(PORT, () => {
-    console.log(env);
-    console.log(`FRONT SERVER RUNNING ON ${PORT}`);
+    //console.log(env);
+    //console.log(`FRONT SERVER RUNNING ON ${PORT}`);
 });

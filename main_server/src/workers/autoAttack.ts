@@ -11,7 +11,7 @@ class AutoAttackWorker {
 
     start = (userStatus: UserStatus, autoToDead: MessagePort): Promise<void> => {
         const { characterId } = userStatus;
-        console.log('autoAttack.ts: 기본공격반복 start() 시작, ', characterId);
+        //console.log('autoAttack.ts: 기본공격반복 start() 시작, ', characterId);
         const workerData: AutoWorkerData = {
             userStatus,
             path: './autoAttack.worker.ts',
@@ -24,7 +24,7 @@ class AutoAttackWorker {
             );
             worker.postMessage({ autoToDead }, [ autoToDead ]);
             this.threads.set(characterId, worker);
-            console.log('autoAttack.ts: start() Promise', worker.threadId, characterId);
+            //console.log('autoAttack.ts: start() Promise', worker.threadId, characterId);
 
             worker.on('message', (result) => {
                 worker.terminate();
@@ -34,7 +34,7 @@ class AutoAttackWorker {
             worker.on('messageerror', reject);
             worker.on('error', reject);
             worker.on('exit', (code) => {
-                console.log(`autoAttack ${characterId} exitCode: ${code}`, characterId);
+                //console.log(`autoAttack ${characterId} exitCode: ${code}`, characterId);
                 this.threads.delete(characterId);
             });
         });

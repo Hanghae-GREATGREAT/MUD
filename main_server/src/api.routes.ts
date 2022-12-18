@@ -19,7 +19,7 @@ router.get('/key', async (req, res, next) => {
 router.get('/battleCache', (req, res) => {
     const cache = battleCache.getAll();
 
-    console.log(cache);
+    //console.log(cache);
     res.status(200).json({ cache });
 });
 
@@ -29,7 +29,7 @@ import { emitCount } from './socket.routes';
 
 router.get('/resource', (req, res) => {
     // const { CPU: PREV_CPU } = req.body;
-    // console.log(PREV_CPU);
+    // //console.log(PREV_CPU);
     // const OS_CPUS = os.cpus();
     const OS_LOADAVGH = os.loadavg();
     const PROCESS_CPU_USAGE = process.cpuUsage();

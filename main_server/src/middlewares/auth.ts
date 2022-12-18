@@ -21,10 +21,10 @@ interface PostBody {
 
 export default async (req: Request, res: Response, next: NextFunction) => {
     try {
-        console.log('session authmiddleware validation')
+        //console.log('session authmiddleware validation')
         const { socketId, CMD, userInfo, userStatus }: PostBody = req.body;
         const sessionData = await redis.get(userInfo?.userId!);
-        console.log(sessionData);
+        //console.log(sessionData);
         if (!sessionData) {
             req.app.locals.user = null;
             const URL = `http://${env.HOST}:${env.FRONT_PORT}/front/loadHome`;

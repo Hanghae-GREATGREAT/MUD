@@ -93,7 +93,7 @@ export default {
         userInfo: UserInfo, userStatus: UserStatus
     ) => {
 
-        console.log('battle.handler.ts: actionSkill()');
+        //console.log('battle.handler.ts: actionSkill()');
         let tempScript = '';
         let field = 'action';
         const { characterId, attack, mp, skill } = userStatus;
@@ -103,7 +103,7 @@ export default {
             battle.battleHelp(socket, CMD, userInfo);
         }
         const { name: skillName, cost, multiple } = skill[Number(CMD)-1];
-        console.log('battle.handler.ts: skill use', skillName);
+        //console.log('battle.handler.ts: skill use', skillName);
         
         // 몬스터 정보 가져오기
         const { monsterId } = battleCache.get(characterId);
@@ -134,7 +134,7 @@ export default {
         if (!isDead) throw new Error('몬스터 정보를 찾을 수 없습니다');
 
         if (isDead === 'dead') {
-            console.log('battle.handler.ts: monster dead by skill');
+            //console.log('battle.handler.ts: monster dead by skill');
             battleCache.set(characterId, { dead: 'monster' });
             const result = await battle.resultMonsterDead(monster, tempScript);
             socket.emit('printBattle', result);
@@ -142,7 +142,7 @@ export default {
         }
 
         // isDead === 'alive'
-        console.log('battle.handler.ts: monster alive from skill');
+        //console.log('battle.handler.ts: monster alive from skill');
         const script = tempScript;
         userStatus.cooldown = Date.now();
         socket.emit('printBattle', { field, script, userInfo, userStatus });
@@ -169,7 +169,7 @@ export default {
         const { name: monsterName, hp: monsterHP, attack: monsterDamage, exp: monsterExp } = monster;
 
         // 유저 턴
-        // console.log('유저턴');
+        // //console.log('유저턴');
         const playerHit = BattleService.hitStrength(playerDamage);
         const playerAdjective = BattleService.dmageAdjective(
             playerHit,
@@ -181,7 +181,7 @@ export default {
         if (!isDead) return { script: '내부에러', field: 'dungeon', userStatus, error: true };
 
         if (isDead === 'dead') {
-            // console.log('몬스터 사망');
+            // //console.log('몬스터 사망');
             battleCache.set(characterId, { dead: 'monster' });
             // await redis.hSet(characterId, { dead: 'monster' });
             const { script, field, userStatus } = await battle.resultMonsterDead(monster, tempScript);
@@ -190,7 +190,7 @@ export default {
         }
 
         // 몬스터 턴
-        // console.log('몬스터 턴');
+        // //console.log('몬스터 턴');
         const monsterHit = BattleService.hitStrength(monsterDamage);
         const monsterAdjective = BattleService.dmageAdjective(
             monsterHit,
@@ -200,7 +200,7 @@ export default {
 
         userStatus = await CharacterService.refreshStatus(characterId, monsterHit, 0, monsterId);
         if (userStatus.isDead === 'dead') {
-            // console.log('유저 사망');
+            // //console.log('유저 사망');
 
             field = 'adventureResult';
             tempScript += '\n!! 치명상 !!\n';

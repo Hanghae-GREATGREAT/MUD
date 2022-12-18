@@ -7,7 +7,7 @@ import { MonsterService, BattleService, CharacterService } from "../services";
 
 
 async function skillAttack(socketId: string, userStatus: UserStatus): Promise<AutoWorkerResult> {
-    // console.log('skillAttack.worker.ts >> autoBattleSkill(): 시작')
+    // //console.log('skillAttack.worker.ts >> autoBattleSkill(): 시작')
     const { characterId, mp, attack, skill } = userStatus
     let field = 'autoBattle';
 
@@ -26,7 +26,7 @@ async function skillAttack(socketId: string, userStatus: UserStatus): Promise<Au
     // 마나 잔여량 확인
     if (mp - skillCost < 0) {
         const script = `<span style="color:yellow">??? : 비전력이 부조카당.</span>\n`;
-        // console.log('skillAttack.worker.ts: 마나 부족')
+        // //console.log('skillAttack.worker.ts: 마나 부족')
         return { status: 'continue', script, userStatus };
     }
 
@@ -41,10 +41,10 @@ async function skillAttack(socketId: string, userStatus: UserStatus): Promise<Au
     const isDead = await MonsterService.refreshStatus(monsterId, realDamage, characterId);
     if (!isDead) return { status: 'error', script: '몬스터 정보 에러', userStatus };
     const script = `\n당신의 <span style="color:blue">${skillName}</span> ${monsterName}에게 적중! => <span style="color:blue">${realDamage}</span>의 데미지!\n`;
-    // console.log(tempScript);
+    // //console.log(tempScript);
 
     if (isDead === 'dead') {
-        // console.log('몬스터 사망 by SKILL ATTACK');
+        // //console.log('몬스터 사망 by SKILL ATTACK');
         battleCache.set(characterId, { dead: 'monster' });
         // await redis.hSet(characterId, { dead: 'monster' });
 
@@ -53,7 +53,7 @@ async function skillAttack(socketId: string, userStatus: UserStatus): Promise<Au
     }
 
     // isDead === 'alive'
-    // console.log('스킬로 안쥬금ㅇㅇㅇㅇ')
+    // //console.log('스킬로 안쥬금ㅇㅇㅇㅇ')
     return { status: 'continue', script, userStatus };
 }
 

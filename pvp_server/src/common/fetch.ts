@@ -28,7 +28,7 @@ const fetchPost = (params: PostParams): Promise<unknown> => {
             headers,
             body: JSON.stringify(body),
         }).then((response) => {
-            console.log(userInfo?.userId, response.status, response.url)
+            //console.log(userInfo?.userId, response.status, response.url)
             resolve(response);
         }).catch((error) => {
             errorReport(error);
@@ -40,7 +40,7 @@ const fetchPost = (params: PostParams): Promise<unknown> => {
                 headers,
                 body: JSON.stringify(body),
             }).then((response) => {
-                console.log(userInfo?.userId, response.status, response.url);
+                //console.log(userInfo?.userId, response.status, response.url);
                 resolve(response);
             }).catch(errorReport);
         });

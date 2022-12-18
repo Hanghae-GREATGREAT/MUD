@@ -36,7 +36,7 @@ export default {
 
     villageController: async (socket: Socket, { line, userInfo }: SocketInput) => {
         const [CMD1, CMD2]: string[] = line.trim().toUpperCase().split(' ');
-        console.log('inputCommand : ', CMD1, CMD2);
+        //console.log('inputCommand : ', CMD1, CMD2);
 
         const commandHandler: CommandHandler = {
             LOAD: village.NpcList,

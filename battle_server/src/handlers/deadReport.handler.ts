@@ -16,16 +16,16 @@ import { battleScript } from '../scripts';
 
 export default {
     autoMonster: async(socketId: string, script: string, userStatus: UserStatus): Promise<HttpException|void> => {
-        // console.log('battleCache, after DEAD', battleCache.get(characterId), characterId)
+        // //console.log('battleCache, after DEAD', battleCache.get(characterId), characterId)
         const { characterId } = userStatus;
         const { monsterId, dungeonLevel } = battleCache.get(characterId);
         if (!monsterId || !dungeonLevel) {
-            console.log('deadReport.autoMonster cache error: monsterId missing');
+            //console.log('deadReport.autoMonster cache error: monsterId missing');
             return battleError(socketId);
         }
         const monster = await MonsterService.findByPk(monsterId);
         if (!monster) {
-            console.log('deadReport.autoMonster error: monster missing');
+            //console.log('deadReport.autoMonster error: monster missing');
             return battleError(socketId);
         }
 
@@ -34,7 +34,7 @@ export default {
         script += `\n${name} 은(는) 쓰러졌다 ! => <span style="color:yellow">Exp + ${exp}</span>\n\n`;
 
         if (userStatus.levelup) {
-            // console.log('result.handler.ts: autoResultMonsterDead() >> levelup!!', characterId);
+            // //console.log('result.handler.ts: autoResultMonsterDead() >> levelup!!', characterId);
             script += `\n<span style="color:yellow">==!! LEVEL UP !! 레벨이 ${userStatus.level - 1} => ${
                 userStatus.level
             } 올랐습니다 !! LEVEL UP !!==</span>\n\n`;
@@ -60,7 +60,7 @@ export default {
 
         const { monsterId } = battleCache.get(characterId);
         if (!monsterId) {
-            console.log('deadReport.autoPlayer cache error: monsterId missing');
+            //console.log('deadReport.autoPlayer cache error: monsterId missing');
             return battleError(socketId);
         }
         battleCache.delete(characterId);

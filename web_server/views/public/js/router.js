@@ -40,7 +40,7 @@ const commandRouter = {
 };
 
 function gerneralSend(field, input) {
-    console.log('general send', field, input.line);
+    //console.log('general send', field, input.line);
 
     mainSocket.volatile.emit(field, input);
 }
@@ -50,12 +50,12 @@ function checkSkillCD(cooldown) {
 }
 
 function frontSend(field, input) {
-    console.log('front send', field, input.line);
+    //console.log('front send', field, input.line);
     frontSocket.volatile.emit(field, input);
 }
 
 function battleSend(field, input) {
-    console.log('battle send', field, input.line);
+    //console.log('battle send', field, input.line);
     const { cooldown } = input.userStatus;
 
     if (checkSkillCD(+cooldown)) {
@@ -68,13 +68,13 @@ function battleSend(field, input) {
 }
 
 function pvpSend(field, input) {
-    console.log('pvp send', field, input.line);
+    //console.log('pvp send', field, input.line);
 
     pvpSocket.volatile.emit(field, input);
 }
 
 function globalSend(field, input) {
-    console.log('global send', field, input.line, input.option);
+    //console.log('global send', field, input.line, input.option);
 
     if (input.option.match(/battle|action|autoBattle|pvp/)) {
         const script = `\n전투 중에는 불가능한 명령입니다!!\n`;

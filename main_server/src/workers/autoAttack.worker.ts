@@ -6,7 +6,7 @@ import { AutoWorkerData, AutoWorkerResult } from '../interfaces/worker';
 import { UserStatus } from '../interfaces/user';
 
 
-console.log('autoAttack.worker.ts: 9 >> 자동공격 워커 모듈 동작, ', workerData.userStatus.characterId)
+//console.log('autoAttack.worker.ts: 9 >> 자동공격 워커 모듈 동작, ', workerData.userStatus.characterId)
 associate();
 parentPort?.once('message', ({ autoToDead }) => {
     autoAttackWorker(workerData, autoToDead);
@@ -16,19 +16,19 @@ parentPort?.once('message', ({ autoToDead }) => {
 function autoAttackWorker({ userStatus }: AutoWorkerData, autoToDead: MessagePort) {    
 
     const { characterId } = userStatus;
-    console.log('autoAttack.worker.ts: 18 >> autoAttackWorker() 시작', characterId);
+    //console.log('autoAttack.worker.ts: 18 >> autoAttackWorker() 시작', characterId);
 
     const cache = getEnvironmentData(characterId);
     battleCache.set(characterId, JSON.parse(cache.toString()));
 
-    console.log(battleCache.getAll());
+    //console.log(battleCache.getAll());
 
     const autoAttackTimer = setInterval(async () => {
-        console.log('autoAttack.worker.ts: START INTERVAL', Date.now(), characterId);
+        //console.log('autoAttack.worker.ts: START INTERVAL', Date.now(), characterId);
         battleCache.set(characterId, { autoAttackTimer });
 
         autoAttack(userStatus).then(({ status, script }: AutoWorkerResult) => {
-            console.log('autoAttack.worker.ts: 38 >> autoAttack result: ', status, characterId);
+            //console.log('autoAttack.worker.ts: 38 >> autoAttack result: ', status, characterId);
             const statusHandler = {
                 continue: continueWorker,
                 monster: resultWorker,
@@ -48,7 +48,7 @@ function autoAttackWorker({ userStatus }: AutoWorkerData, autoToDead: MessagePor
 
 async function autoAttack(userStatus: UserStatus): Promise<AutoWorkerResult> {
     const { characterId, attack } = userStatus;
-    console.log('autoAttack.worker.ts: 50 >> autoAttack() 시작', characterId);
+    //console.log('autoAttack.worker.ts: 50 >> autoAttack() 시작', characterId);
 
     let tempScript: string = '';
     const { autoAttackTimer, monsterId } = battleCache.get(characterId);
@@ -57,7 +57,7 @@ async function autoAttack(userStatus: UserStatus): Promise<AutoWorkerResult> {
     }
 
     // 유저&몬스터 정보 불러오기
-    console.log('autoAttack.worker.ts: 유저&몬스터 정보, ', characterId);
+    //console.log('autoAttack.worker.ts: 유저&몬스터 정보, ', characterId);
     const character = await CharacterService.findByPk(characterId);
     const { hp: playerHP, attack: playerDamage } = character!
     const monster = await MonsterService.findByPk(monsterId);
@@ -66,14 +66,14 @@ async function autoAttack(userStatus: UserStatus): Promise<AutoWorkerResult> {
     const { name: monsterName, hp: monsterHP, attack: monsterDamage, exp: monsterExp } = monster;
 
     // 유저 턴
-    console.log('autoAttack.worker.ts: 66 >> 플레이어 턴, ', characterId);
+    //console.log('autoAttack.worker.ts: 66 >> 플레이어 턴, ', characterId);
     const playerHit = BattleService.hitStrength(playerDamage);
     const playerAdjective = BattleService.dmageAdjective(
         playerHit,
         playerDamage,
     );
     tempScript += `\n당신의 ${playerAdjective} 공격이 ${monsterName}에게 적중했다. => ${playerHit}의 데미지!\n`;
-    console.log(tempScript);
+    //console.log(tempScript);
     
     const isDead = await MonsterService.refreshStatus(monsterId, playerHit, characterId);
     if (!isDead) return { status: 'terminate', script: '몬스터 정보 에러' };
@@ -81,20 +81,20 @@ async function autoAttack(userStatus: UserStatus): Promise<AutoWorkerResult> {
     if (isDead === 'dead') {
         battleCache.set(characterId, { dead: 'monster' });
         const script = `\n당신의 ${playerAdjective} 공격에 ${monsterName}이 쓰러졌다. => ${playerHit}의 데미지!`;
-        console.log('autoAttack.worker.ts: ', script, characterId);
+        //console.log('autoAttack.worker.ts: ', script, characterId);
         return { status: 'monster', script };
     }
 
     if (!monster) return { status: 'terminate', script: '몬스터 정보 에러' };
     // 몬스터 턴
-    console.log('autoAttack.worker.ts: 몬스터 턴, ', characterId);
+    //console.log('autoAttack.worker.ts: 몬스터 턴, ', characterId);
     const monsterHit = BattleService.hitStrength(monsterDamage);
     const monsterAdjective = BattleService.dmageAdjective(
         monsterHit,
         monsterDamage,
     );
     tempScript += `${monsterName} 이(가) 당신에게 ${monsterAdjective} 공격! => ${monsterHit}의 데미지!\n`;
-    console.log(tempScript);
+    //console.log(tempScript);
     
     const refreshUser = await CharacterService.refreshStatus(characterId, monsterHit, 0, monsterId);
     if (refreshUser.isDead === 'dead') {
@@ -104,18 +104,18 @@ async function autoAttack(userStatus: UserStatus): Promise<AutoWorkerResult> {
         
         const script = `${monsterName} 의 ${monsterAdjective} 공격이 치명상으로 적중! => ${monsterHit}의 데미지!
         마을로 돌아갑니다...!!\n`;
-        console.log('autoAttack.worker.ts: ', script, characterId);
+        //console.log('autoAttack.worker.ts: ', script, characterId);
         return { status: 'player', script };
     }
     const result = { script: tempScript, field: 'action', user: refreshUser };
-    console.log('autoAttack.worker.ts: end of autoAttack turn', characterId);
+    //console.log('autoAttack.worker.ts: end of autoAttack turn', characterId);
 
     return { status: 'continue', script: '' };
 }
 
 
 function continueWorker({ status, script }: AutoWorkerResult, characterId: number, autoToDead: MessagePort) {
-    console.log('continue autoAttack, ', characterId);
+    //console.log('continue autoAttack, ', characterId);
 }
 
 function resultWorker({ status, script }: AutoWorkerResult, characterId: number, autoToDead: MessagePort) {

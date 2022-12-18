@@ -19,11 +19,11 @@ const errorReport = (error: Error) => {
             시스템 오류로 던전 목록으로 돌아갑니다.\n`,
         };
         BATTLE.to(error.socketId).emit('print', result);
-        console.log('HttpException', error.message);
-        console.error(error);
+        // //console.log('HttpException', error.message);
+        // console.error(error);
     } else {
-        console.log('ERROR: ', error.message);
-        console.error(error);
+        // //console.log('ERROR: ', error.message);
+        // console.error(error);
     }
 }
 

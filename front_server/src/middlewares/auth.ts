@@ -22,10 +22,10 @@ interface PostBody {
 export default {
     loginValidation: async (req: Request, res: Response, next: NextFunction) => {
         try {
-            console.log('session authmiddleware validation');
+            //console.log('session authmiddleware validation');
             const { socketId, CMD, userInfo, userStatus }: PostBody = req.body;
             const sessionData = await redis.get(userInfo?.characterId!);
-            console.log(sessionData);
+            //console.log(sessionData);
             if (!sessionData) {
                 req.app.locals.user = null;
                 frontController.loadHome(req, res, next);
@@ -39,10 +39,10 @@ export default {
     },
     loginUserValidation: async (req: Request, res: Response, next: NextFunction) => {
         try {
-            console.log('session login user validation');
+            //console.log('session login user validation');
             const { socketId, CMD, userInfo, userStatus }: PostBody = req.body;
             const sessionData = await redis.get(userInfo?.characterId!);
-            console.log(sessionData);
+            //console.log(sessionData);
             if (sessionData) {
                 frontController.emptyCommand(req, res, next);
                 return;

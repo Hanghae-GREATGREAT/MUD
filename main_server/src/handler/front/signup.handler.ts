@@ -26,7 +26,7 @@ export default {
     },
 
     createUser: async (socket: Socket, CMD: string | undefined, userInfo: UserInfo, id: string) => {
-        console.log('CREATE USER');
+        //console.log('CREATE USER');
         const userCreated = await UserService.signup({ username: userInfo.username, password: CMD });
 
         userInfo.userId = userCreated.getDataValue('userId');    
@@ -41,7 +41,7 @@ export default {
         userInfo: UserInfo, id: string
     ) => {
         
-        console.log('CREATE CHARACTER');
+        //console.log('CREATE CHARACTER');
         const name = CMD!;
         const userId = userInfo.userId;
         const character = await CharacterService.createNewCharacter({ name, userId });

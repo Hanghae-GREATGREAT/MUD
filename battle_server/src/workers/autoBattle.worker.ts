@@ -12,10 +12,10 @@ const isDead = new EventEmitter();
 
 const autoAttackLoop = ({ socketId, userStatus }: AutoWorkerData) => {
     const { characterId } = userStatus;
-    // console.log('autoBattle.worker.ts: autoAttack start', characterId);
+    // //console.log('autoBattle.worker.ts: autoAttack start', characterId);
 
     const autoAttackTimer = setInterval(async() => {
-        // console.log('autuBattle.worker.ts: autoAttack interval', characterId);
+        // //console.log('autuBattle.worker.ts: autoAttack interval', characterId);
 
         const cache = await redis.battleGet(characterId);
         const { dungeonLevel, userStatus } = battleCache.get(characterId);
@@ -30,16 +30,16 @@ const autoAttackLoop = ({ socketId, userStatus }: AutoWorkerData) => {
         }
         battleCache.set(characterId, { autoAttackTimer });
 
-        // console.log('autoBattle.worker.ts: autoAttack calc', characterId)
+        // //console.log('autoBattle.worker.ts: autoAttack calc', characterId)
         autoAttack(socketId, userStatus).then((result: AutoWorkerResult) => {
-            // console.log('autoBattle.worker.ts: autoAttack resolved', characterId);
+            // //console.log('autoBattle.worker.ts: autoAttack resolved', characterId);
             // result = { status, script, userStatus }
             // status = player | monster | terminate
 
             if (result.status !== 'continue') isDead.emit('dead', result);
 
         }).catch((error) => {
-            console.log(`autoBattle.worker.ts: autoAttack error, ${error?.message}`);
+            //console.log(`autoBattle.worker.ts: autoAttack error, ${error?.message}`);
             return battleError(socketId);
         });
     }, 500);
@@ -49,10 +49,10 @@ const autoAttackLoop = ({ socketId, userStatus }: AutoWorkerData) => {
 
 const skillAttackLoop = ({ socketId, userStatus }: AutoWorkerData) => {
     const { characterId } = userStatus;
-    // console.log('autoBattle.worker.ts: skillAttack start', characterId);
+    // //console.log('autoBattle.worker.ts: skillAttack start', characterId);
 
     const skillAttackTimer = setInterval(async () => {
-        // console.log('skillAttack.worker.ts: START INTERVAL', Date.now())
+        // //console.log('skillAttack.worker.ts: START INTERVAL', Date.now())
         const cache = await redis.battleGet(characterId);
         const { dungeonLevel, userStatus } = battleCache.get(characterId);
         if (cache.SKILL === 'off' || !dungeonLevel || !userStatus) {
@@ -67,18 +67,18 @@ const skillAttackLoop = ({ socketId, userStatus }: AutoWorkerData) => {
         battleCache.set(characterId, { skillAttackTimer });
 
         const chance = Math.random();
-        if (chance < 0.5) return //console.log('pass skill', characterId);
+        if (chance < 0.5) return ////console.log('pass skill', characterId);
 
-        // console.log('autoBattle.worker.ts: skillAttack calc', characterId)
+        // //console.log('autoBattle.worker.ts: skillAttack calc', characterId)
         skillAttack(socketId, userStatus).then((result: AutoWorkerResult) => {
-            // console.log('autoBattle.worker.ts: skillAttack resolved', characterId);
+            // //console.log('autoBattle.worker.ts: skillAttack resolved', characterId);
             // result = { status, script, userStatus }
             // status = player | monster | terminate
 
             if (result.status !== 'continue') isDead.emit('dead', result);
     
         }).catch((error) => {
-            console.log(`autoBattle.worker.ts: skillAttack error, ${error?.message}`);
+            //console.log(`autoBattle.worker.ts: skillAttack error, ${error?.message}`);
             return battleError(socketId);
         });
 
@@ -101,7 +101,7 @@ const main = () => {
         clearInterval(skillAttackTimer);
         redis.battleSet(characterId, { LOOP: 'off', SKILL: 'off' });
 
-        // console.log('autoBattle.worker.ts: isDead clear loops', characterId);
+        // //console.log('autoBattle.worker.ts: isDead clear loops', characterId);
 
         parentPort?.postMessage(result);
     });

@@ -18,7 +18,7 @@ export default {
 
     pvpSubmit: (req: Request, res: Response, next: NextFunction) => {
         const { socketId, option }: PostBody = req.body;
-        console.log(`시련의장 입장 socketId check : ${socketId}`)
+        //console.log(`시련의장 입장 socketId check : ${socketId}`)
 
         const script = option;
         // const joinedRoom = chatCache.pvpGetJoinedRoom(socketId);
@@ -32,9 +32,9 @@ export default {
     },
 
     pvpChatStart: (req: Request, res: Response, next: NextFunction) => {
-        console.log('pvpChatStart')
+        //console.log('pvpChatStart')
         const { socketId, userInfo, option: pvpRoom }: PostBody = req.body;
-        console.log(`메인서버 시련의장 네임스페이스에서 보낸 socketId : ${socketId}`, pvpRoom);
+        //console.log(`메인서버 시련의장 네임스페이스에서 보낸 socketId : ${socketId}`, pvpRoom);
         if (!pvpRoom || !userInfo) return res.status(500).end();
 
         // const joinedRoom = chatCache.getJoinedRoom(socketId);

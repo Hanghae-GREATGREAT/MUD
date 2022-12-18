@@ -7,7 +7,7 @@ export const socketIds: Map<number, string> = new Map<number, string>();
 export let emitCount = 0;
 
 export const battleConnection = (socket: Socket) => {
-    console.log('BATTLE NAMESPACE CONNECTED', socket.id);
+    //console.log('BATTLE NAMESPACE CONNECTED', socket.id);
     emitCount = (emitCount + 1) % 100_000_000;
 
     socket.on('dungeon', (input: SocketInput) => field.dungeonController(socket, input));
@@ -25,7 +25,7 @@ export const battleConnection = (socket: Socket) => {
 };
 
 export const frontConnection = (socket: Socket) => {
-    console.log('FRONT NAMESPACE CONNECTED', socket.id);
+    //console.log('FRONT NAMESPACE CONNECTED', socket.id);
     emitCount = (emitCount + 1) % 100_000_000;
 
     socket.on('none', (input: SocketInput) => home.noneController(socket, input));
@@ -42,7 +42,7 @@ export const frontConnection = (socket: Socket) => {
 };
 
 export const pvpConnection = (socket: Socket) => {
-    console.log('PVP NAMESPECE CONNECTED', socket.id);
+    //console.log('PVP NAMESPECE CONNECTED', socket.id);
     emitCount = (emitCount + 1) % 100_000_000;
 
     /************************************************************************
@@ -60,7 +60,7 @@ export const pvpConnection = (socket: Socket) => {
 }
 
 export const onConnection = (socket: Socket) => {
-    console.log('MAIN NAMESPACE CONNECTED', socket.id);
+    //console.log('MAIN NAMESPACE CONNECTED', socket.id);
     emitCount = (emitCount + 1) % 100_000_000;
 
     /************************************************************************

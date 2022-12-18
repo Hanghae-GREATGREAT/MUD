@@ -26,11 +26,11 @@
 
 //         // 가능한 방이 있다면 해당 방에 추가, 없다면 새로운 방 생성
 //         if (roomList.get(accessibleRoom)!.size < setLimit) {
-//             console.log('기존 방에 입장', accessibleRoom);
+//             //console.log('기존 방에 입장', accessibleRoom);
 //             enterIndex = accessibleRoom;
 //             roomList.get(accessibleRoom)!.add(socketId);
 //         } else {
-//             console.log('새로운 방 생성', accessibleRoom);
+//             //console.log('새로운 방 생성', accessibleRoom);
 //             const roomId = roomList.size + 1;
 //             roomList.set(roomId, new Set([socketId]));
 //             enterIndex = roomId;

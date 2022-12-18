@@ -19,7 +19,7 @@ export default {
     },
 
     NpcList: async (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
-        console.log('NPC list.');
+        //console.log('NPC list.');
         // 유저 인증정보 확인
         const result = await front.checkUser(userInfo);
         if (result) {

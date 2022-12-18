@@ -90,7 +90,7 @@ export default {
         let field: string = '';
 
         if (!userInfo) {
-            console.log('Signup Error: Cannot find userInfo');
+            //console.log('Signup Error: Cannot find userInfo');
             const error = new Error('createCharacter : Can not find userInfo');
             return next(error);
         }
@@ -130,7 +130,7 @@ export default {
         FRONT.to(socketId).emit('pwCoveringOff');
 
         // sesstion create
-        // console.log(`login session create`);
+        // //console.log(`login session create`);
         redis.set(userInfo.characterId, socketId, { EX : 60*60*24 })
 
         res.status(200).end();

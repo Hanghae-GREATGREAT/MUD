@@ -81,6 +81,5 @@ app.use(errorHandler);
 
 
 app.listen(PORT, () => {
-    console.log(env);
     console.log(`BATTLE SERVER RUNNING ON ${PORT}`);
 });

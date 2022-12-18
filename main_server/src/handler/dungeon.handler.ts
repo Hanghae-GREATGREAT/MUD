@@ -26,7 +26,7 @@ export default {
     },
 
     getDungeonList: async(socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
-        // console.log('dungeon list.');
+        // //console.log('dungeon list.');
 
         const result = await front.checkUser(userInfo)
         if (result) {
@@ -69,7 +69,7 @@ export default {
     },
 
     getDungeonInfo: (socket: Socket, CMD: string | undefined, userInfo: UserInfo) => {
-        console.log('dungeon.handler.ts: dungeonInfo()');
+        //console.log('dungeon.handler.ts: dungeonInfo()');
 
         // 임시 스크립트 선언
         const tempLine =
@@ -99,7 +99,7 @@ export default {
             const dungeonLevel = +CMD!;
             const { characterId } = userInfo;
             battleCache.set(characterId, { dungeonLevel });
-            console.log('dungeon.handler.ts: cache dungeonInfo ', battleCache.get(characterId));
+            //console.log('dungeon.handler.ts: cache dungeonInfo ', battleCache.get(characterId));
             nextField = 'battle';
         }
 
@@ -124,7 +124,7 @@ export default {
 export function dungeonList(name: string) {
     // 던전 목록 불러오기
     const dungeonList = DungeonService.getDungeonList();
-    console.log(dungeonList);
+    //console.log(dungeonList);
 
     // 임시 스크립트 선언
     const tempLine =

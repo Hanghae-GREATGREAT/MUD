@@ -31,7 +31,7 @@ class PvpUserskWorker extends EventEmitter {
 
                 
                 this.create(workerData).then().catch((error) => {
-                    console.log('pvpUsers.ts: worker rejected', pvpRoom);
+                    //console.log('pvpUsers.ts: worker rejected', pvpRoom);
                     errorReport(error);
                 });
             });
@@ -39,7 +39,7 @@ class PvpUserskWorker extends EventEmitter {
         }
 
         this.create(workerData).then().catch((error) => {
-            console.log('pvpUsers.ts: worker rejected', pvpRoom);
+            //console.log('pvpUsers.ts: worker rejected', pvpRoom);
             errorReport(error);
         });
     }

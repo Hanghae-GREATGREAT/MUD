@@ -11,10 +11,10 @@ const app = express();
 if (process.env.NODE_ENV !== 'test') {
     sequelize.authenticate().then(() => {
         associate();
-        console.log('DB CONNECTED');
+        //console.log('DB CONNECTED');
     }).catch((error) => {
         console.error(error);
-        console.log('DB CONNECTION FAIL');
+        //console.log('DB CONNECTION FAIL');
     
         process.exit(0);
     });    
@@ -36,6 +36,6 @@ app.use(errorHandler);
 
 
 app.listen(PORT, () => {
-    console.log(env);
-    console.log(`PVP SERVER RUNNING ON ${PORT}`);
+    //console.log(env);
+    //console.log(`PVP SERVER RUNNING ON ${PORT}`);
 });

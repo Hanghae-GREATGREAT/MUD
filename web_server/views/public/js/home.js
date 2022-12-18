@@ -23,7 +23,7 @@ $(() => {
 
     status = new State();
     const { field, userInfo } = checkSession();
-    console.log('load script', field, userInfo);
+    //console.log('load script', field, userInfo);
     loadScript(field, userInfo);
 });
 
@@ -59,12 +59,12 @@ const crypto = CryptoController();
 crypto.GenerateKey();
 
 function checkSession() {
-    console.log('refreshed...checking session');
+    //console.log('refreshed...checking session');
     let field = localStorage.getItem('field');
     let userInfo = localStorage.getItem('user');
 
     if (!field || !field.match(/dungeon|village/) || !userInfo || userInfo === '{}') {
-        console.log('invalid session');
+        //console.log('invalid session');
         status.set({});
         field = 'none';
         userInfo = '{}';
@@ -72,13 +72,13 @@ function checkSession() {
         return { field, userInfo };
     }
 
-    console.log('valid session found');
+    //console.log('valid session found');
     return new Promise((resolve) => {
         const { characterId } = JSON.parse(userInfo);
         mainSocket.emit('request user status', characterId, (response) => {
             const { userStatus } = response;
             status.set(userStatus);
-            console.log('status loaded: ', userStatus);
+            //console.log('status loaded: ', userStatus);
 
             resolve({ field, userInfo });
         });
@@ -113,10 +113,10 @@ commendForm.submit((e) => {
 
     let [field, option] = decryptData[0].split(':');
 
-    console.log('field : ', field);
+    //console.log('field : ', field);
 
     const line = commendInput.val();
-    console.log('90: ', line);
+    //console.log('90: ', line);
     commendInput.val('');
     const userInfo = decryptData[1];
     const userStatus = status.get();
@@ -174,7 +174,7 @@ function printBattleHandler({ field, script, userInfo, userStatus }) {
 
     if (userInfo) localStorage.setItem('user', encryptData[1]);
     if (userStatus) {
-        console.log('printBattle received status ', userStatus);
+        //console.log('printBattle received status ', userStatus);
         status.set(userStatus);
     }
 
@@ -185,7 +185,7 @@ function printBattleHandler({ field, script, userInfo, userStatus }) {
 function fieldScriptPrint({ field, script }) {
     const encryptData = crypto.encryptClData(field, { dummy: 1 });
 
-    console.log('fieldScriptPrint', field, script);
+    //console.log('fieldScriptPrint', field, script);
     localStorage.setItem('field', encryptData[0]);
 
     commandLine.append(script);

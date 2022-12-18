@@ -13,7 +13,7 @@ export default {
     },
 
     help: (socket: Socket, CMD: string|undefined, userInfo: UserInfo, option: string) => {
-        console.log('help handler', CMD, userInfo, option);
+        //console.log('help handler', CMD, userInfo, option);
         const script = globalScript.help;
         const field = option;
 

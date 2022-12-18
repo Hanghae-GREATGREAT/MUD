@@ -33,18 +33,18 @@ class RedisChat {
         this.connect();
 
         this.client.on('connect', () => {
-            console.log('Redis connected');
+            //console.log('Redis connected');
         });
 
         this.client.on('error', (error) => {
-            console.log('Redis error, service degraded: ', error);
+            //console.log('Redis error, service degraded: ', error);
         });
     }
 
     async joinChat(socketId: string): Promise<
     [chatId: number, chatSize: number, chatLimit: number]> {
 
-        console.log('redisChat.joinChat()');
+        //console.log('redisChat.joinChat()');
         // 입장 가능한 채팅방 탐색
         for (let i = 0; i <= this.chatRoomCount; i++) {
             const room = await this.getChatRoom(i);
@@ -70,24 +70,24 @@ class RedisChat {
 
     async joinPvp(socketId: string, pvpRoom: string): Promise<[chatSize: number, chatLimit: number]> {
 
-        console.log('redisChat.joinPvp()');
+        //console.log('redisChat.joinPvp()');
         this.addPvpJoiner(socketId, pvpRoom);
 
         const room = await this.getPvpRoom(pvpRoom);
-        console.log('joinPvp', room);
+        //console.log('joinPvp', room);
         if (!room) {
-            console.log('create pvp chat', pvpRoom);
+            //console.log('create pvp chat', pvpRoom);
             this.createPvpRoom(pvpRoom, socketId);
             return [1, this.pvpRoomLimit];
         } else {
-            console.log('join pvp chat', pvpRoom);
+            //console.log('join pvp chat', pvpRoom);
             this.joinPvpRoom(pvpRoom, socketId);
             return [room.length+1, this.pvpRoomLimit];
         }
     }
 
     async leaveChat(socketId: string) {
-        console.log('redisChat.leaveChat()');
+        //console.log('redisChat.leaveChat()');
         const roomId = await this.findChatJoiner(socketId);
 
         if (roomId !== -1) {
@@ -103,7 +103,7 @@ class RedisChat {
     }
 
     async leavePvp(socketId: string) {
-        console.log('redisChat.leavePvp()');
+        //console.log('redisChat.leavePvp()');
         const roomName = await this.findPvpJoiner(socketId);
 
         if (roomName) {
@@ -119,7 +119,7 @@ class RedisChat {
     }
 
     private createChatRoom(roomId: number, socketId: string) {
-        console.log('redisChat.createChatRoom()');
+        //console.log('redisChat.createChatRoom()');
         this.chatRoomCount++;
 
         const chatRoomName = `chat${roomId}`;
@@ -127,7 +127,7 @@ class RedisChat {
     }
 
     private async joinChatRoom(roomId: number, socketId: string) {
-        console.log('redisChat.joinChatRoom()');
+        //console.log('redisChat.joinChatRoom()');
         const chatRoomName = `chat${roomId}`;
         const result = await this.client.get(chatRoomName) || '[]';
         const chatList: string[] = JSON.parse(result);
@@ -137,7 +137,7 @@ class RedisChat {
     }
 
     private async leaveChatRoom(roomId: number, socketId: string) {
-        console.log('redisChat.leaveChatRoom()');
+        //console.log('redisChat.leaveChatRoom()');
         const chatRoomName = `chat${roomId}`;
         const result = await this.client.get(chatRoomName) || '[]';
         const chatList: string[] = JSON.parse(result);
@@ -149,7 +149,7 @@ class RedisChat {
     }
 
     private async getChatRoom(roomId: number): Promise<string[]> {
-        console.log('redisChat.getChatRoom()');
+        //console.log('redisChat.getChatRoom()');
         const roomName = `chat${roomId}`;
         const result = await this.client.get(roomName) || '[]';
 
@@ -157,36 +157,36 @@ class RedisChat {
     }
 
     private deleteChatRoom(roomId: number) {
-        console.log('redisChat.deleteChatRoom()');
+        //console.log('redisChat.deleteChatRoom()');
         this.client.del(`chat${roomId}`);
     }
 
     private addChatJoiner(socketId: string, roomId: number) {
-        console.log('redisChat.addChatJoiner()');
+        //console.log('redisChat.addChatJoiner()');
         this.client.hSet('chatJoiner', { [socketId]: roomId.toString() });
     }
 
     async findChatJoiner(socketId: string) {
-        console.log('redisChat.findChatJoiner()');
+        //console.log('redisChat.findChatJoiner()');
         const roomId= await this.client.hGet('chatJoiner', socketId);
         return Number(roomId);
     }
 
     private deleteChatJoiner(socketId: string) {
-        console.log('redisChat.deleteChatJoiner()');
+        //console.log('redisChat.deleteChatJoiner()');
         this.client.hDel('chatJoiner', socketId);
     }
 
 
     private createPvpRoom = (roomName: string, socketId: string) => {
-        console.log('redisChat.createPvpRoom()');
+        //console.log('redisChat.createPvpRoom()');
         this.pvpRoomCount++;
 
         this.client.set(roomName, JSON.stringify([socketId]), { EX: 60*60*24 });
     }
 
     private joinPvpRoom = async (roomName: string, socketId: string) => {
-        console.log('redisChat.joinPvpRoom()');
+        //console.log('redisChat.joinPvpRoom()');
         const result = await this.client.get(roomName) || '[]';
         const pvpList: string[] = JSON.parse(result);
 
@@ -195,7 +195,7 @@ class RedisChat {
     }
     
     private async leavePvpRoom(roomName: string, socketId: string) {
-        console.log('redisChat.leavlPvpRoom()');
+        //console.log('redisChat.leavlPvpRoom()');
         const result = await this.client.get(roomName) || '[]';
         const pvpList: string[] = JSON.parse(result);
 
@@ -206,28 +206,28 @@ class RedisChat {
     }
     
     private deletePvpRoom(roomName: string) {
-        console.log('redisChat.deletePvpRoom()');
+        //console.log('redisChat.deletePvpRoom()');
         this.client.del(roomName);
     }
 
     private async getPvpRoom(roomName: string): Promise<string[]|null> {
-        console.log('redisChat.getPvpRoom()', roomName);
+        //console.log('redisChat.getPvpRoom()', roomName);
         const result = await this.client.get(roomName);
         return result ? JSON.parse(result) : null;
     }
 
     private addPvpJoiner(socketId: string, roomName: string) {
-        console.log('redisChat.addPvpJoiner()');
+        //console.log('redisChat.addPvpJoiner()');
         this.client.hSet('pvpJoiner', { [socketId]: roomName });
     }
 
     async findPvpJoiner(socketId: string) {
-        console.log('redisChat.findPvpJoiner()');
+        //console.log('redisChat.findPvpJoiner()');
         return await this.client.hGet('pvpJoiner', socketId);
     }
     
     private deletePvpJoiner(socketId: string) {
-        console.log('redisChat.deletePvpJoiner()');
+        //console.log('redisChat.deletePvpJoiner()');
         this.client.hDel('pvpJoiner', socketId);
     }
 

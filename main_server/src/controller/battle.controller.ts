@@ -8,7 +8,7 @@ const BATTLE_URL = `${env.HTTP}://${env.WAS_LB}/battle`;
 
 export default {
     battleController: async (socket: Socket, { line, userInfo, userStatus }: SocketInput) => {
-        console.log('battle.controller.ts: battleController', userStatus.name);
+        //console.log('battle.controller.ts: battleController', userStatus.name);
         const [CMD1, CMD2] = line.trim().toUpperCase().split(' ');
 
         const cmdRoute: CommandRouter = {

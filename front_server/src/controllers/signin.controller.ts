@@ -79,7 +79,7 @@ export default {
         // 채팅방 참가
         const [chatId, chatSize, chatLimit] = await redisChat.joinChat(socketId)
         const chatJoinScript = `(${chatSize}/${chatLimit})`;
-        console.log(socketId, userInfo, chatId, chatJoinScript);
+        //console.log(socketId, userInfo, chatId, chatJoinScript);
         FRONT.in(socketId).socketsJoin(`${chatId}`);
         FRONT.to(`${chatId}`).emit('joinChat', userInfo?.name, chatJoinScript);
 
@@ -87,7 +87,7 @@ export default {
         FRONT.to(socketId).emit('pwCoveringOff');
 
         // sesstion create
-        // console.log(`login session create`);
+        // //console.log(`login session create`);
         redis.set(userInfo.characterId, socketId, { EX : 60*60*24 })
 
         res.status(200).end();

@@ -7,7 +7,7 @@ import { CharacterService, MonsterService, BattleService } from "../services";
 
 async function autoAttack(socketId: string, userStatus: UserStatus): Promise<AutoWorkerResult> {
     const { characterId, attack: playerDamage } = userStatus;
-    // console.log('autoAttack.worker.ts: 50 >> autoAttack() 시작', characterId);
+    // //console.log('autoAttack.worker.ts: 50 >> autoAttack() 시작', characterId);
 
     let tempScript = '';
     const { autoAttackTimer, monsterId } = battleCache.get(characterId);
@@ -16,20 +16,20 @@ async function autoAttack(socketId: string, userStatus: UserStatus): Promise<Aut
     }
 
     // 몬스터 정보 불러오기
-    // console.log('autoAttack.worker.ts: 몬스터 정보, ', characterId);
+    // //console.log('autoAttack.worker.ts: 몬스터 정보, ', characterId);
     const monster = await MonsterService.findByPk(monsterId);
     if (!monster) return { status: 'error', script: '몬스터 정보 에러', userStatus };
     const { name: monsterName, hp: monsterHP, attack: monsterDamage, exp: monsterExp } = monster;
 
     // 유저 턴
-    // console.log('autoAttack.worker.ts: 66 >> 플레이어 턴, ', characterId);
+    // //console.log('autoAttack.worker.ts: 66 >> 플레이어 턴, ', characterId);
     const playerHit = BattleService.hitStrength(playerDamage);
     const playerAdjective = BattleService.dmageAdjective(
         playerHit,
         playerDamage,
     );
     tempScript += `\n당신의 <span style="color:blue">${playerAdjective} 공격</span>이 ${monsterName}에게 적중했다. => <span style="color:blue">${playerHit}</span>의 데미지!\n`;
-    // console.log(tempScript);
+    // //console.log(tempScript);
     
     const isDead = await MonsterService.refreshStatus(monsterId, playerHit, characterId);
     if (!isDead) return { status: 'error', script: '몬스터 정보 에러', userStatus };
@@ -45,13 +45,13 @@ async function autoAttack(socketId: string, userStatus: UserStatus): Promise<Aut
 
     if (!monster) return { status: 'error', script: '몬스터 정보 에러', userStatus };
     // 몬스터 턴
-    // console.log('autoAttack.worker.ts: 몬스터 턴, ', characterId);
+    // //console.log('autoAttack.worker.ts: 몬스터 턴, ', characterId);
     const monsterHit = BattleService.hitStrength(monsterDamage);
     const monsterAdjective = BattleService.dmageAdjective(
         monsterHit,
         monsterDamage,
     );
-    // console.log(tempScript);
+    // //console.log(tempScript);
     
     userStatus = await CharacterService.refreshStatus(userStatus, monsterHit, 0, monsterId);
     battleCache.set(characterId, { userStatus });

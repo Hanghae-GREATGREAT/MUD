@@ -29,8 +29,8 @@ io.use((socket, next) => {
 });
 // io.use(SocketMiddleware)
 io.on('connection', onConnection);
-pubClient.on('connect', () => console.log('REDIS PUB CONNECTED'));
-subClient.on('connect', () => console.log('REDIS SUB CONNECTED'));
+pubClient.on('connect', () => //console.log('REDIS PUB CONNECTED'));
+subClient.on('connect', () => //console.log('REDIS SUB CONNECTED'));
 
 const frontNameSpace = io.of('/front');
 frontNameSpace.on('connection', frontConnection);
@@ -45,11 +45,11 @@ if (env.NODE_ENV !== 'test') {
         .authenticate()
         .then(() => {
             associate();
-            console.log('DB CONNECTED');
+            //console.log('DB CONNECTED');
         })
         .catch((error) => {
             console.error(error);
-            console.log('DB CONNECTION FAIL');
+            //console.log('DB CONNECTION FAIL');
 
             process.exit(0);
         });

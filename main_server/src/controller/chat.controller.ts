@@ -8,7 +8,7 @@ const FRONT_URL = `${env.HTTP}://${env.WAS_LB}/front`;
 
 export default {
     chatController: (socket: Socket, { name, message, field }: ChatInput) => {
-        console.log(`chatController : ${field}`)
+        //console.log(`chatController : ${field}`)
         const script = `${name}: ${message}\n`;
         const pvpFields: string[] = ['pvpJoin', 'pvpBattle']
 

@@ -30,19 +30,19 @@ export default {
 
     autoBattle: async(socket: Socket, CMD: string | undefined, userStatus: UserStatus) => {
         const { characterId } = userStatus;
-        console.log('battle.handler.ts: 자동전투 핸들러 시작, ', characterId);
+        //console.log('battle.handler.ts: 자동전투 핸들러 시작, ', characterId);
         const { dungeonLevel } = battleCache.get(characterId);
 
         // 몬스터 생성
         const { monsterId, name } = await MonsterService.createNewMonster(dungeonLevel!, characterId);
         const monsterCreatedScript = `\n${name}이(가) 등장!! 전투시작.`;
         battleCache.set(characterId, { monsterId });
-        console.log('battle.handler.ts: ', monsterCreatedScript)
+        //console.log('battle.handler.ts: ', monsterCreatedScript)
 
         socket.emit('printBattle', { script: monsterCreatedScript, field: 'autoBattle', userStatus });
 
         const cache = battleCache.get(characterId);
-        console.log('auto.handler.ts: get cache', cache)
+        //console.log('auto.handler.ts: get cache', cache)
         setEnvironmentData(characterId, JSON.stringify({ monsterId, dungeonLevel }));
 
         const { port1: autoToDead, port2: autoToDeadReceive } = new MessageChannel();
@@ -51,10 +51,10 @@ export default {
 
         // 사망판정 워커 할당 >> 소켓 송신
         isMonsterDead.check(userStatus, receiver).then(({ status, script}) => {
-            console.log('battle.handler.ts: 사망 확인 resolved', status, characterId);
+            //console.log('battle.handler.ts: 사망 확인 resolved', status, characterId);
 
             if (status === 'terminate') {
-                console.log('battle.handler.ts: 자동전투 강제종료', script)
+                //console.log('battle.handler.ts: 자동전투 강제종료', script)
                 return;
             }
 
@@ -67,12 +67,12 @@ export default {
 
         // 자동공격 워커 할당
         autoAttack.start(userStatus, autoToDead).then((result) => {
-            console.log('battle.handler.ts: 자동 공격 resolved', result, characterId);
+            //console.log('battle.handler.ts: 자동 공격 resolved', result, characterId);
         }).catch(error => console.error(error));
 
         // 스킬공격 워커 할당
         skillAttack.start(userStatus, skillToDead).then((result) => {
-            console.log('battle.handler.ts: 스킬 공격 resolved', result, characterId);
+            //console.log('battle.handler.ts: 스킬 공격 resolved', result, characterId);
         }).catch(error => console.error(error));
 
     },
@@ -89,7 +89,7 @@ export default {
         // 이벤트 루프에 이미 들어가서 대기중인 타이머가 있을 수 있음
         const { autoAttackTimer } = battleCache.get(characterId);
         clearInterval(autoAttackTimer);       
-        console.log('자동공격 타이머 삭제');
+        //console.log('자동공격 타이머 삭제');
         if (autoAttackTimer === undefined) {
             setTimeout(() => {
                 const { autoAttackTimer } = battleCache.get(characterId);
@@ -113,13 +113,13 @@ export default {
         userInfo: UserInfo, userStatus: UserStatus
     ) => {
 
-        // console.log('auto.handler.ts: autoBattleOld()');
+        // //console.log('auto.handler.ts: autoBattleOld()');
 
         let tempScript = ''
         let field = 'autoBattle';
         const { characterId } = userStatus;
         const { dungeonLevel } = battleCache.get(characterId);
-        // console.log('auto.handler.ts: check cache ', dungeonLevel, characterId)
+        // //console.log('auto.handler.ts: check cache ', dungeonLevel, characterId)
         if (!dungeonLevel) return;
 
         // 몬스터 생성
@@ -200,7 +200,7 @@ export default {
     // DEPRECATED
     // (구)자동전투용으로 완전 대체 이후 삭제
     autoBattleSkill: async (userStatus: UserStatus) => {
-        // console.log('autoBattleSkill')
+        // //console.log('autoBattleSkill')
         const { characterId, mp, attack, skill } = userStatus
         let field = 'autoBattle';
         let tempScript = '';
@@ -239,7 +239,7 @@ export default {
         tempScript += `\n당신의 ${skillName} 스킬이 ${monsterName}에게 적중! => ${realDamage}의 데미지!\n`;
 
         if (isDead === 'dead') {
-            // console.log('몬스터 사망');
+            // //console.log('몬스터 사망');
             battleCache.set(characterId, { dead: 'monster' });
             // await redis.hSet(characterId, { dead: 'monster' });
             return await battle.resultMonsterDead(monster, tempScript);
@@ -266,7 +266,7 @@ export default {
         for (let i=0; i<skillCounts; i++) {
             const singleChance = (costSum / skillCosts[i]) / chanceSum
             cumChance += singleChance;
-            console.log(chance, cumChance)
+            //console.log(chance, cumChance)
             if (chance <= cumChance) {
                 skillIndex = i;
                 break;

@@ -23,7 +23,7 @@ export default {
                 const cache = await redis.battleGet(characterId);
                 const { userStatus } = battleCache.get(characterId);
                 if (cache.LOOP === 'off' || !dungeonLevel || !userStatus) {
-                    // console.log('battle handler autoAttack LOOP error', userInfo.characterId);
+                    // //console.log('battle handler autoAttack LOOP error', userInfo.characterId);
                     clearInterval(autoAttackTimer);
                     if (cache.status === 'continue') battleError(socketId);
                     return;
@@ -75,7 +75,7 @@ export default {
         const { characterId } = userInfo;
         const { monsterId } = battleCache.get(characterId);
         if (!monsterId) {
-            console.log('quit battle cache error: monsterId missing', userInfo.characterId);
+            //console.log('quit battle cache error: monsterId missing', userInfo.characterId);
             return battleError(socketId);
         }
 
@@ -93,11 +93,11 @@ export default {
             let tempScript = '';
             let field = 'action';
             const { characterId, attack, mp, skill } = userStatus;
-            // console.log('battle.handler.ts: action skill', characterId);
+            // //console.log('battle.handler.ts: action skill', characterId);
     
             // 스킬 정보 가져오기
             if (skill[Number(CMD)-1] === undefined) {
-                console.log('battle.handler.ts: wrong skill number', characterId);
+                //console.log('battle.handler.ts: wrong skill number', characterId);
                 const script = battleScript.battleHelp(CMD);
                 const field = 'action';
                 BATTLE.to(socketId).emit('printBattle', { field, script, userInfo, userStatus });
@@ -108,13 +108,13 @@ export default {
             // 몬스터 정보 가져오기
             const { monsterId } = await redis.battleGet(characterId);
             if (!monsterId) {
-                console.log('battle.handler.ts: skill monsterId missing', characterId);
+                //console.log('battle.handler.ts: skill monsterId missing', characterId);
                 battleError(socketId);
                 return resolve();
             }
             const monster = await MonsterService.findByPk(monsterId);
             if (!monster) {
-                console.log('battle.handler.ts: skill monster missing', characterId);
+                //console.log('battle.handler.ts: skill monster missing', characterId);
                 battleError(socketId);
                 return resolve();
             }        
@@ -122,7 +122,7 @@ export default {
     
             // 마나 잔여량 확인
             if (mp - cost < 0) {
-                console.log('battle.handler.ts: skill empty mana', characterId);
+                //console.log('battle.handler.ts: skill empty mana', characterId);
                 tempScript += `<span style="color:yellow">??? : 비전력이 부조카당.</span>\n`;
                 const script = tempScript;
                 BATTLE.to(socketId).emit('printBattle', { field, script, userInfo, userStatus });
@@ -137,7 +137,7 @@ export default {
             // 몬스터에게 스킬 데미지 적용 
             const isDead = await MonsterService.refreshStatus(monsterId, realDamage, characterId);
             if (!monster) {
-                console.log('skill monster refresh error: monster missing', userInfo.characterId);
+                //console.log('skill monster refresh error: monster missing', userInfo.characterId);
                 battleError(socketId);
                 return resolve();
             }  
@@ -145,13 +145,13 @@ export default {
     
             const { autoAttackTimer, dead } = battleCache.get(characterId);
             if (isDead === 'dead' || dead === 'monster') {
-                // console.log('battle.handler.ts: skill monster dead', characterId, isDead, dead);
+                // //console.log('battle.handler.ts: skill monster dead', characterId, isDead, dead);
                 clearInterval(autoAttackTimer);
                 redis.battleSet(characterId, { LOOP: 'off', status: 'terminate' });
 
                 const report = await deadReport.monster(monster, tempScript, userStatus);
                 if (report instanceof Error) {
-                    console.log('battle hadler skill error', report.message, userInfo.characterId);
+                    //console.log('battle hadler skill error', report.message, userInfo.characterId);
                     battleError(socketId);
                     return resolve();
                 }
@@ -198,12 +198,12 @@ export default {
 
         try {
             if (autoBattle.get(characterId)) {
-                // console.log('battle.handler.ts: stopAutoWorker SAME', characterId);
+                // //console.log('battle.handler.ts: stopAutoWorker SAME', characterId);
 
                 autoBattle.terminate(characterId);
                 battleCache.delete(characterId);
             } else {
-                // console.log('battle.handler.ts: stopAutoWorker DIFFERENT', characterId);
+                // //console.log('battle.handler.ts: stopAutoWorker DIFFERENT', characterId);
 
                 battleCache.delete(characterId);
                 redis.battleSet(characterId, { LOOP: 'off', SKILL: 'off', status: 'terminate' });
@@ -225,7 +225,7 @@ export default {
             }, 1000);
 
         } catch (err: any) {
-            console.log(`stopAutoWorker Error: ${err?.message}`, userInfo.characterId);
+            //console.log(`stopAutoWorker Error: ${err?.message}`, userInfo.characterId);
             return battleError(socketId);
         }
     },
@@ -257,7 +257,7 @@ export default {
             }, 1000);
             
         } catch (err: any) {
-            console.log(`stopAutoS Error: no Timer, ${err.message}`, userInfo.characterId);
+            //console.log(`stopAutoS Error: no Timer, ${err.message}`, userInfo.characterId);
             return battleError(socketId);
         }
     },

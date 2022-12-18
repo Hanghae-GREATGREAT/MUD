@@ -11,7 +11,7 @@ class SkillAttackWorker {
 
     start = (userStatus: UserStatus, skillToDead: MessagePort): Promise<void> => {
         const { characterId } = userStatus;
-        console.log('skillAttack.ts: 스킬반복 start() 시작, ', characterId);
+        //console.log('skillAttack.ts: 스킬반복 start() 시작, ', characterId);
         const workerData: AutoWorkerData = {
             userStatus,
             path: './skillAttack.worker.ts',
@@ -25,7 +25,7 @@ class SkillAttackWorker {
             );
             worker.postMessage({ skillToDead }, [ skillToDead ]);
             this.threads.set(characterId, worker);
-            console.log('skillAttack.ts: start() Promise', worker.threadId, characterId);
+            //console.log('skillAttack.ts: start() Promise', worker.threadId, characterId);
 
             worker.on('message', (result) => {
                 worker.terminate();
@@ -35,7 +35,7 @@ class SkillAttackWorker {
             worker.on('messageerror', reject);
             worker.on('error', reject);
             worker.on('exit', (code) => {
-                console.log(`skillAttack ${characterId} exitCode: ${code}, `, characterId);
+                //console.log(`skillAttack ${characterId} exitCode: ${code}, `, characterId);
                 this.threads.delete(characterId);
             });
         });

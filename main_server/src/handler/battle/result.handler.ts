@@ -38,7 +38,7 @@ export default {
     
     autoResultMonsterDead: async(socket: Socket, userStatus: UserStatus, script: string) => {
         const { characterId } = userStatus;
-        console.log('battleCache, after DEAD', battleCache.get(characterId), characterId)
+        //console.log('battleCache, after DEAD', battleCache.get(characterId), characterId)
         const { monsterId, dungeonLevel } = battleCache.get(characterId);
         const monster = await MonsterService.findByPk(monsterId!);
         if (!monster) {
@@ -50,7 +50,7 @@ export default {
         script += `\n${name} 은(는) 쓰러졌다 ! => Exp + ${exp}\n`;
 
         if (newStatus.levelup) {
-            console.log('result.handler.ts: autoResultMonsterDead() >> levelup!!', characterId);
+            //console.log('result.handler.ts: autoResultMonsterDead() >> levelup!!', characterId);
             script += `\n==!! LEVEL UP !! 레벨이 ${newStatus.level - 1} => ${
                 newStatus.level
             } 올랐습니다 !! LEVEL UP !!==\n\n`;
