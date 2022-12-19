@@ -41,9 +41,9 @@ class Monsters extends Model<
     static isRare = () => {
         const ranNum = Math.random();
     
-        if (ranNum <= 0.05) {
-            return 2;
-        } else if (ranNum <= 0.2) {
+        if (ranNum >= 0.2) {
+            return 0;
+        } else if (ranNum >= 0.05) {
             return 1;
         } else return 0;
     }
