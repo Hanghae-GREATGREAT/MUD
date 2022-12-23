@@ -87,6 +87,7 @@
 
 <h5 align="center">스레드풀 작동 플로우</h5>
 
+<br>
 
 ### 🔹 PVP 플레이어 대전 실시간 전투 구현
 
@@ -109,6 +110,7 @@
 
 <h5 align="center">최종대전플로우</h5>
 
+<br>
 
 ### 🔹 Socket.io 기반 MSA 구현
 
@@ -136,6 +138,7 @@
             처리되는 과정을 전투로그로 클라이언트에 출력하지 못하던 문제도 함께 해결
                        
 
+<br>
 
 ### 🔹 Load Balancing과 Socket Session
 
@@ -153,6 +156,7 @@
                
       -  해결: 빠르고 잦은 접근이 필요한 데이터는 로컬 Redis에, 그 외에는 Redis Cloud를 NoSQL 로서 사용
       
+<br>
 
 ### 🔹 Redis를 활용한 전투정보 캐싱
 
@@ -161,6 +165,7 @@
       -  업데이트가 자주 일어나지 않고 반복적으로 동일한 결과를 출력하는 경우가 많음
          → 메모리에 저장(캐싱)해두면 DB의 부하는 감소하고 속도는 향상
 
+<br>
 
 ### 🔹 유저 랜덤 테스트 시나리오 작성
 
@@ -220,6 +225,7 @@
 <h5 align="center">프로젝트 단계별 전투연산 처리속도 비교</h5>
 
 
+<br>
 
 ### 🔹 메모리 누수로 인하여 리팩토링 진행
 
@@ -244,6 +250,7 @@
 <h5 align="center">ASG 미적용 100명 동시접속 테스트 - 메모리 개선 전후 비교</h5>
 
 
+<br>
 
 ### 🔹 동시처리 능력
 
@@ -272,6 +279,7 @@
 <h5 align="center">프로젝트 단계별 가능한 동시처리 요청</h5>
 
 
+<br>
 
 ### 🔹 동시접속자 테스트
 
@@ -296,6 +304,7 @@
       - 정해놓은 서버 스펙에서는 5천명이 한계이나, 
         서버 스펙 혹은 인스턴스 개수를 늘리면 늘리는 만큼 추가 수용 가능
 
+<br>
 
 ### 🔹 오토스케일링 적용 확인
 
@@ -317,48 +326,6 @@
 
 # ERD
 ![image](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FLQM3y%2FbtrTmYuuoFa%2FofPvJOnd27c03eGDHviBQk%2Fimg.png)
-
-<br><br><br>
-
-
-# 라이브러리
-```json
-
-"dependencies"
-
-    "@socket.io/redis-adapter": "^7.2.0",
-    "bcrypt": "^5.1.0",
-    "dotenv": "^16.0.3",
-    "express": "^4.18.2",
-    "mysql2": "^2.3.3",
-    "node-fetch": "^2.6.7",
-    "redis": "^4.4.0",
-    "sequelize": "^6.25.5",
-    "socket.io": "^4.5.3"
-    
-
-"devDependencies": {
-    "@babel/core": "^7.20.2",
-    "@babel/preset-env": "^7.20.2",
-    "@babel/preset-typescript": "^7.18.6",
-    "@types/bcrypt": "^5.0.0",
-    "@types/ejs": "^3.1.1",
-    "@types/express": "^4.17.14",
-    "@types/jest": "^29.2.2",
-    "@types/node-fetch": "^2.6.2",
-    "@types/sequelize": "^4.28.14",
-    "@types/supertest": "^2.0.12",
-    "jest": "^29.3.1",
-    "nodemon": "^2.0.20",
-    "socket.io-client": "^4.5.3",
-    "supertest": "^6.3.1",
-    "ts-jest": "^29.0.3",
-    "ts-node": "^10.9.1",
-    "typescript": "^4.8.4"
-  }
-  
-```
-
 
 <br><br><br>
 
